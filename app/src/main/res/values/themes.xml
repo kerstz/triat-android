@@ -6,7 +6,7 @@
     <!-- Splash Screen Theme (Android 12+) -->
     <style name="Theme.App.Starting" parent="Theme.SplashScreen">
         <!-- Set the splash screen background color (Deep Purple) -->
-        <item name="windowSplashScreenBackground">#1A1070</item>
+        <item name="windowSplashScreenBackground">#000000</item>
         <!-- Use the animated vector drawable we created -->
         <item name="windowSplashScreenAnimatedIcon">@drawable/avd_splash</item>
         <!-- Set the animation duration (match the AVD duration) -->
