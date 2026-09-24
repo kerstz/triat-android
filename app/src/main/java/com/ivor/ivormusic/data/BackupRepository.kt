@@ -183,7 +183,7 @@ class BackupRepository(context: Context) {
          */
         fun suggestedFileName(): String {
             val stamp = SimpleDateFormat("yyyy-MM-dd-HHmm", Locale.US).format(Date())
-            return "koda-backup-$stamp.zip"
+            return "triat-backup-$stamp.zip"
         }
 
         /**

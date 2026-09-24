@@ -90,7 +90,7 @@ object DownloadMigration {
                     }
 
                     val fileName = storage.buildFileName(
-                        title = entry.optString("title", "Koda download"),
+                        title = entry.optString("title", "Triat download"),
                         artist = entry.optString("artist", ""),
                         type = DownloadMediaType.MUSIC
                     )

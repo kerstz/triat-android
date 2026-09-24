@@ -257,7 +257,7 @@ fun SubscriptionsManagerScreen(
                             stringResource(R.string.sm_readable_by_newpipe)
                         },
                         enabled = subscriptions.isNotEmpty(),
-                        onClick = { exportLauncher.launch("koda_subscriptions.json") }
+                        onClick = { exportLauncher.launch("triat_subscriptions.json") }
                     )
                 }
             }

@@ -1811,7 +1811,7 @@ internal fun subscribeTargetLabel(value: String): String = when (value) {
 /** Longer picker-row description for a subscription source option. */
 private fun subscriptionSourceOptionLabel(value: String): Pair<String, String> = when (value) {
     ThemePreferences.SUBSCRIPTIONS_LOCAL ->
-        "On this device" to "Only channels you follow inside Koda"
+        "On this device" to "Only channels you follow inside Triat"
     ThemePreferences.SUBSCRIPTIONS_YOUTUBE ->
         "YouTube account" to "Only channels your Google account is subscribed to"
     else ->
@@ -2114,6 +2114,9 @@ private fun StreamQualityDialog(
     }
 }
 
+/** The project Triat is forked from; credited on the About page. */
+private const val KODA_REPO_URL = "https://github.com/Ivorisnoob/Koda"
+
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun ExpressiveAboutDialog(
@@ -2364,6 +2367,16 @@ private fun ExpressiveAboutDialog(
                                     title = stringResource(R.string.about_source_code),
                                     subtitle = stringResource(R.string.about_source_subtitle),
                                     onClick = { context.openAboutLink(githubUrl) },
+                                    showChevron = true,
+                                )
+                                SettingsDivider()
+                                // Credit stays on the page: Triat is a fork, and
+                                // the original project is one tap away.
+                                SettingsRow(
+                                    icon = Icons.Rounded.Info,
+                                    title = stringResource(R.string.about_based_on_title),
+                                    subtitle = stringResource(R.string.about_based_on_subtitle),
+                                    onClick = { context.openAboutLink(KODA_REPO_URL) },
                                     showChevron = true,
                                 )
                                 SettingsDivider()

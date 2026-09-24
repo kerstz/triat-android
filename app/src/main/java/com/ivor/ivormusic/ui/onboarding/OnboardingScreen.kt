@@ -230,7 +230,7 @@ fun OnboardingScreen(
                         )
                     }
                     Text(
-                        text = "Koda",
+                        text = "Triat",
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onSurface

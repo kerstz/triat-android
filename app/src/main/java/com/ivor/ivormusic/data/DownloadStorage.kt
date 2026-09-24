@@ -95,7 +95,7 @@ class DownloadStorage(private val context: Context) {
             .trim('.')
             .take(MAX_NAME_LENGTH)
             .trim()
-            .ifBlank { "Koda download" }
+            .ifBlank { "Triat download" }
     }
 
     /**

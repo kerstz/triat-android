@@ -282,7 +282,10 @@ class ScheduledBackupRepository(context: Context) {
             val existingBackups = root.listFiles()
                 .filter { doc ->
                     val name = doc.name.orEmpty()
-                    name.startsWith("koda-backup-") && name.endsWith(".zip") && doc.isFile
+                    // "koda-backup-" is the name older backups were written
+                    // under; keep pruning them so retention does not skip them.
+                    (name.startsWith("triat-backup-") || name.startsWith("koda-backup-")) &&
+                        name.endsWith(".zip") && doc.isFile
                 }
                 .sortedByDescending { it.lastModified() }
 
