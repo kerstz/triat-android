@@ -90,6 +90,7 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
                 .putString(KEY_KEY, Base64.getEncoder().encodeToString(d.key))
                 .remove(KEY_LAST_SYNC_AT)
                 .remove(KEY_LAST_ERROR)
+                .remove(KEY_SESSION_DIGEST)
                 .putBoolean(KEY_SHARE_SESSION, false)
                 .apply()
         }
@@ -105,6 +106,7 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
             prefs.edit()
                 .remove(KEY_SERVER_ID).remove(KEY_NAME).remove(KEY_HOST).remove(KEY_PORT).remove(KEY_KEY)
                 .remove(KEY_LAST_SYNC_AT).remove(KEY_LAST_ERROR).remove(KEY_SHARE_SESSION)
+                .remove(KEY_SESSION_DIGEST)
                 .apply()
         }
     }
@@ -136,6 +138,21 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
         get() = prefs.getBoolean(KEY_SHARE_SESSION, false)
         set(value) = prefs.edit().putBoolean(KEY_SHARE_SESSION, value).apply()
 
+    /**
+     * Digest of the YouTube session the desktop last handed over, so the same
+     * one is not applied again on every sync (each application is a sign-in:
+     * it bumps the session generation, and from a device-only profile it would
+     * add a profile). Only the digest is kept, never the cookies. Null when no
+     * session was received since the pairing or the consent last changed.
+     */
+    var lastSessionDigest: String?
+        get() = prefs.getString(KEY_SESSION_DIGEST, null)
+        set(value) {
+            val edit = prefs.edit()
+            if (value == null) edit.remove(KEY_SESSION_DIGEST) else edit.putString(KEY_SESSION_DIGEST, value)
+            edit.apply()
+        }
+
     companion object {
         private const val TAG = "SyncStore"
 
@@ -151,6 +168,7 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
         private const val KEY_LAST_SYNC_AT = "last_sync_at"
         private const val KEY_LAST_ERROR = "last_error"
         private const val KEY_SHARE_SESSION = "share_session"
+        private const val KEY_SESSION_DIGEST = "session_digest"
 
         @Suppress("DEPRECATION")
         private fun buildPrefs(context: Context): SharedPreferences =

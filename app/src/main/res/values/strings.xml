@@ -1712,4 +1712,24 @@
     <string name="shorts_refresh_failed">Couldn’t refresh Shorts. Check your connection or account and try again.</string>
     <string name="shorts_feed_empty">No Shorts available. Try refreshing.</string>
     <string name="video_page_load_failed">Couldn’t load this page. Try again.</string>
+    <plurals name="ds_changes_playlists_written">
+        <item quantity="one">%1$d playlist updated</item>
+        <item quantity="other">%1$d playlists updated</item>
+    </plurals>
+    <plurals name="ds_changes_playlists_deleted">
+        <item quantity="one">%1$d playlist removed</item>
+        <item quantity="other">%1$d playlists removed</item>
+    </plurals>
+    <plurals name="ds_changes_likes_added">
+        <item quantity="one">%1$d like added</item>
+        <item quantity="other">%1$d likes added</item>
+    </plurals>
+    <plurals name="ds_changes_likes_removed">
+        <item quantity="one">%1$d like removed</item>
+        <item quantity="other">%1$d likes removed</item>
+    </plurals>
+    <plurals name="ds_changes_history_added">
+        <item quantity="one">%1$d play added</item>
+        <item quantity="other">%1$d plays added</item>
+    </plurals>
 </resources>

@@ -371,4 +371,29 @@
     <string name="subscribed">Abonné</string>
     <string name="subscribe">S\'abonner</string>
     <string name="like">J\'aime</string>
+    <plurals name="ds_changes_playlists_written">
+        <item quantity="one">%1$d playlist mise à jour</item>
+        <item quantity="many">%1$d de playlists mises à jour</item>
+        <item quantity="other">%1$d playlists mises à jour</item>
+    </plurals>
+    <plurals name="ds_changes_playlists_deleted">
+        <item quantity="one">%1$d playlist supprimée</item>
+        <item quantity="many">%1$d de playlists supprimées</item>
+        <item quantity="other">%1$d playlists supprimées</item>
+    </plurals>
+    <plurals name="ds_changes_likes_added">
+        <item quantity="one">%1$d j\'aime ajouté</item>
+        <item quantity="many">%1$d de j\'aime ajoutés</item>
+        <item quantity="other">%1$d j\'aime ajoutés</item>
+    </plurals>
+    <plurals name="ds_changes_likes_removed">
+        <item quantity="one">%1$d j\'aime retiré</item>
+        <item quantity="many">%1$d de j\'aime retirés</item>
+        <item quantity="other">%1$d j\'aime retirés</item>
+    </plurals>
+    <plurals name="ds_changes_history_added">
+        <item quantity="one">%1$d écoute ajoutée</item>
+        <item quantity="many">%1$d d\'écoutes ajoutées</item>
+        <item quantity="other">%1$d écoutes ajoutées</item>
+    </plurals>
 </resources>
