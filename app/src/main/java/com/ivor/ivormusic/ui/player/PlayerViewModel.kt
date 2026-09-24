@@ -26,6 +26,7 @@ import com.ivor.ivormusic.data.LyricsResult
 import com.ivor.ivormusic.service.MusicService
 import com.ivor.ivormusic.service.EXTRA_QUEUE_ITEM_ID
 import com.ivor.ivormusic.service.toPlaybackMediaItem
+import com.ivor.ivormusic.sync.reloadAfterEachSync
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -269,6 +270,10 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         initializeController()
         startProgressUpdates()
         startBufferingWatchdog()
+        // Playlists received from the computer are written to disk by another
+        // instance of the repository, whose cache this one cannot see. The
+        // Add to Playlist sheet reads them from here.
+        viewModelScope.reloadAfterEachSync(context) { playlistRepository.refreshPlaylists() }
     }
 
     /**

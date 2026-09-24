@@ -20,6 +20,7 @@ import com.ivor.ivormusic.data.YouTubeRepository
 import com.ivor.ivormusic.data.LikedSongsRepository
 import com.ivor.ivormusic.data.HomeRecommendationCache
 import com.ivor.ivormusic.data.usableHomeRecommendations
+import com.ivor.ivormusic.sync.reloadAfterEachSync
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -926,6 +927,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             playlistRepository.autoRepairUnresolvedTitles()
         }
+        // Playlists received from the computer are written to disk by another
+        // instance of the repository, whose cache this one cannot see.
+        viewModelScope.reloadAfterEachSync(application) { playlistRepository.refreshPlaylists() }
     }
 
     /**

@@ -93,7 +93,10 @@ class RecommendationEngine(
             }
         }
 
-        // Include tracks from user playlists as taste seeds
+        // Include tracks from user playlists as taste seeds. Read from disk
+        // first: this instance has no scope to follow the Wi-Fi sync with, and
+        // its own cache would not show playlists received since it was built.
+        playlistRepository.refreshPlaylists()
         val playlistSongs = playlistRepository.userPlaylists.value.flatMap { it.songs }
         for (song in playlistSongs) {
             if (song.source == SongSource.YOUTUBE && song.id.isNotBlank()) {
