@@ -8,6 +8,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -38,6 +41,16 @@ class PlaylistRepository(private val context: Context) {
         if (!playlistDir.exists()) playlistDir.mkdirs()
         if (!coversDir.exists()) coversDir.mkdirs()
         loadPlaylists()
+        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
+            autoRepairUnresolvedTitles()
+        }
+    }
+
+    private fun savePlaylistSync(playlist: UserPlaylist) {
+        val file = File(playlistDir, "${playlist.id}.json")
+        val jsonString = json.encodeToString(playlist)
+        file.writeText(jsonString)
+        loadPlaylists()
     }
 
     private fun loadPlaylists() {
@@ -58,6 +71,115 @@ class PlaylistRepository(private val context: Context) {
     
     suspend fun refreshPlaylists() = withContext(Dispatchers.IO) {
         loadPlaylists()
+    }
+
+    /**
+     * Auto-repairs playlists containing songs with placeholder titles ("YouTube <videoId>")
+     * in non-blocking background chunks of 10 and saves updated playlist JSON to disk.
+     */
+    suspend fun autoRepairUnresolvedTitles() = withContext(Dispatchers.IO) {
+        val currentPlaylists = _userPlaylists.value
+        for (playlist in currentPlaylists) {
+            val placeholders = playlist.songs.filter { song ->
+                song.title.startsWith("YouTube ") || song.artist == "YouTube" || song.title.matches(Regex("^[A-Za-z0-9_-]{11}$"))
+            }
+            if (placeholders.isEmpty()) continue
+
+            val updatedSongs = playlist.songs.toMutableList()
+            var modified = false
+
+            for (chunk in placeholders.chunked(10)) {
+                kotlinx.coroutines.coroutineScope {
+                    chunk.map { song ->
+                        async {
+                            val resolved = fetchSingleOembedSong(song.id, playlist.name)
+                            if (resolved != null && !resolved.title.startsWith("YouTube ")) {
+                                val idx = updatedSongs.indexOfFirst { it.id == song.id }
+                                if (idx >= 0) {
+                                    updatedSongs[idx] = resolved
+                                    modified = true
+                                }
+                            }
+                        }
+                    }.awaitAll()
+                }
+                if (modified) {
+                    val updatedPlaylist = playlist.copy(songs = updatedSongs)
+                    val file = File(playlistDir, "${playlist.id}.json")
+                    runCatching { file.writeText(json.encodeToString(updatedPlaylist)) }
+                    loadPlaylists()
+                }
+            }
+        }
+    }
+
+    private fun fetchSingleOembedSong(videoId: String, albumName: String): Song? {
+        try {
+            val url = "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=$videoId&format=json"
+            val request = okhttp3.Request.Builder()
+                .url(url)
+                .header("User-Agent", "Mozilla/5.0 (Linux; Android 10; K)")
+                .build()
+            val client = okhttp3.OkHttpClient.Builder()
+                .connectTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string()
+                    if (!body.isNullOrBlank()) {
+                        val json = org.json.JSONObject(body)
+                        val rawTitle = json.optString("title")
+                        val rawAuthor = json.optString("author_name")
+                        val thumbUrl = json.optString("thumbnail_url").takeIf { it.isNotBlank() }
+                            ?: "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
+                        if (rawTitle.isNotBlank()) {
+                            val (title, artist) = YouTubeTitleParser.parseTitleAndArtist(rawTitle, rawAuthor)
+                            return Song.fromYouTube(
+                                videoId = videoId,
+                                title = title,
+                                artist = artist,
+                                album = albumName,
+                                duration = 0L,
+                                thumbnailUrl = thumbUrl
+                            )
+                        }
+                    }
+                }
+            }
+        } catch (_: Exception) { }
+
+        try {
+            val url = "https://noembed.com/embed?url=https://www.youtube.com/watch?v=$videoId"
+            val request = okhttp3.Request.Builder().url(url).build()
+            val client = okhttp3.OkHttpClient.Builder()
+                .connectTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
+                .readTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
+                .build()
+            client.newCall(request).execute().use { response ->
+                if (response.isSuccessful) {
+                    val body = response.body?.string()
+                    if (!body.isNullOrBlank()) {
+                        val json = org.json.JSONObject(body)
+                        val rawTitle = json.optString("title")
+                        val rawAuthor = json.optString("author_name")
+                        if (rawTitle.isNotBlank()) {
+                            val (title, artist) = YouTubeTitleParser.parseTitleAndArtist(rawTitle, rawAuthor)
+                            return Song.fromYouTube(
+                                videoId = videoId,
+                                title = title,
+                                artist = artist,
+                                album = albumName,
+                                duration = 0L,
+                                thumbnailUrl = "https://i.ytimg.com/vi/$videoId/hqdefault.jpg"
+                            )
+                        }
+                    }
+                }
+            }
+        } catch (_: Exception) { }
+
+        return null
     }
 
     /**

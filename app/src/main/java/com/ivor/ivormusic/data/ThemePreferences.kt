@@ -1082,25 +1082,25 @@ class ThemePreferences(context: Context) {
     }
     
     /**
-     * Get the stored video mode preference. Defaults to false (Music mode).
+     * Get the stored video mode preference. Locked to false (Full Music mode).
      */
     private fun getVideoModePreference(): Boolean {
-        return prefs.getBoolean(KEY_VIDEO_MODE, false)
+        return false
     }
     
     /**
      * Save video mode preference and update the flow.
      */
     fun setVideoMode(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_MODE, enabled).apply()
-        _videoMode.value = enabled
+        prefs.edit().putBoolean(KEY_VIDEO_MODE, false).apply()
+        _videoMode.value = false
     }
     
     /**
      * Toggle video mode setting.
      */
     fun toggleVideoMode() {
-        setVideoMode(!_videoMode.value)
+        setVideoMode(false)
     }
 
     /** Root Home destination restored after Koda is recreated. */
@@ -1301,27 +1301,23 @@ class ThemePreferences(context: Context) {
     }
 
     /**
-     * Get the stored Shorts experience preference. Defaults to false: the Home
-     * shelf stays hidden and Shorts found elsewhere use the ordinary video
-     * player until the user deliberately opts into the endless swipe player.
+     * Get the stored Shorts experience preference. Locked to false (Music mode).
      */
     private fun getShortsEnabledPreference(): Boolean {
-        return prefs.getBoolean(KEY_SHORTS_ENABLED, false)
+        return false
     }
 
     /**
-     * Fresh read of the Shorts preference straight from SharedPreferences —
-     * ViewModels hold their own ThemePreferences instances, so their StateFlow
-     * copy goes stale when the toggle flips through the settings screen.
+     * Fresh read of the Shorts preference straight from SharedPreferences.
      */
-    fun isShortsEnabled(): Boolean = getShortsEnabledPreference()
+    fun isShortsEnabled(): Boolean = false
 
     /**
      * Save the Home shelf / swipe-player preference and update the flow.
      */
     fun setShortsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SHORTS_ENABLED, enabled).apply()
-        _shortsEnabled.value = enabled
+        prefs.edit().putBoolean(KEY_SHORTS_ENABLED, false).apply()
+        _shortsEnabled.value = false
     }
 
     /**
@@ -1546,7 +1542,7 @@ class ThemePreferences(context: Context) {
     }
 
     private fun getSpotlightHomePreference(): Boolean {
-        return prefs.getBoolean(KEY_SPOTLIGHT_HOME, false)
+        return prefs.getBoolean(KEY_SPOTLIGHT_HOME, true)
     }
 
     /**

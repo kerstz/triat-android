@@ -103,6 +103,9 @@
     <string name="song_options_download">Télécharger</string>
     <string name="song_options_download_subtitle">Conserver sur cet appareil</string>
     <string name="song_options_downloaded">Téléchargé</string>
+    <string name="song_options_remove_from_playlist">Retirer de la playlist</string>
+    <string name="song_options_delete_download">Supprimer le téléchargement</string>
+    <string name="song_options_remove_from_history">Retirer de l\'historique</string>
     <string name="song_options_go_to_artist">Aller à %1$s</string>
 
     <string name="add_to_playlist_title">Ajouter à une playlist</string>

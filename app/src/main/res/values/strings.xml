@@ -189,6 +189,9 @@
     <string name="song_options_download">Download</string>
     <string name="song_options_download_subtitle">Keep on this device</string>
     <string name="song_options_downloaded">Downloaded</string>
+    <string name="song_options_remove_from_playlist">Remove from playlist</string>
+    <string name="song_options_delete_download">Delete download</string>
+    <string name="song_options_remove_from_history">Remove from history</string>
     <string name="song_options_go_to_artist">Go to %1$s</string>
     <string name="song_options_not_interested">Not interested</string>
     <string name="song_options_not_interested_subtitle">Stop recommending this song</string>

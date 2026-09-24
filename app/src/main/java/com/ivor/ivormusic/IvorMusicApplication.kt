@@ -3,6 +3,8 @@ package com.ivor.ivormusic
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
+import coil.disk.DiskCache
+import coil.memory.MemoryCache
 import com.ivor.ivormusic.data.CrashReporter
 import com.ivor.ivormusic.data.LocalVideoThumbnail
 import com.ivor.ivormusic.data.LocalVideoThumbnailFetcher
@@ -22,21 +24,26 @@ class IvorMusicApplication : Application(), ImageLoaderFactory {
     }
 
     /**
-     * The one Coil loader for the whole process. AsyncImage and every direct
-     * ImageRequest (artwork color extraction, notification artwork, downloads)
-     * resolve to this instance through Context.imageLoader, so they share one
-     * memory cache, one disk cache and one connection pool instead of each
-     * call site building its own loader.
-     *
-     * The only component added is the device-video frame fetcher, which is
-     * keyed on its own [LocalVideoThumbnail] model and so cannot affect any
-     * other image: every existing request still resolves exactly as it did.
+     * The one Coil loader for the whole process with 25% RAM memory cache,
+     * 100MB disk cache and crossfade for smooth rendering.
      */
     override fun newImageLoader(): ImageLoader =
         ImageLoader.Builder(this)
+            .memoryCache {
+                MemoryCache.Builder(this)
+                    .maxSizePercent(0.25)
+                    .build()
+            }
+            .diskCache {
+                DiskCache.Builder()
+                    .directory(cacheDir.resolve("image_cache"))
+                    .maxSizeBytes(100L * 1024 * 1024) // 100 MB
+                    .build()
+            }
             .components {
                 add(LocalVideoThumbnailFetcher.Factory(this@IvorMusicApplication))
                 add(LocalVideoThumbnailFetcher.ThumbnailKeyer())
             }
+            .crossfade(true)
             .build()
 }

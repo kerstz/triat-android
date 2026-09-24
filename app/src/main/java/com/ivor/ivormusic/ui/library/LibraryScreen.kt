@@ -627,6 +627,9 @@ fun LibraryMainScreen(
             ?: LibrarySortOption.Title
     }
 
+    val scope = rememberCoroutineScope()
+    var showTxtImportSheet by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.refreshRecentlyPlayed()
     }
@@ -823,6 +826,9 @@ fun LibraryMainScreen(
                             savedPlaylistIds = savedPlaylistIds,
                             likedSongs = likedSongs,
                             onPlaylistClick = onNavigateToPlaylist,
+                            onSetCustomCover = { playlistId, uri ->
+                                viewModel.setLocalPlaylistCover(playlistId, uri)
+                            },
                             onRemoveSavedPlaylist = { playlist ->
                                 viewModel.removeSavedPlaylist(playlist.id)
                             },
@@ -868,85 +874,7 @@ fun LibraryMainScreen(
             }
         }
     }
-
-    // --- M3E FAB menu: quick library actions ---
-    // Lifted above the floating nav pill and the mini player(s) via the
-    // overlay inset HomeScreen provides, so the button is never covered.
-    FloatingActionButtonMenu(
-        expanded = fabMenuExpanded,
-        modifier = Modifier
-            .align(Alignment.BottomEnd)
-            .navigationBarsPadding()
-            .padding(
-                end = 4.dp,
-                bottom = com.ivor.ivormusic.ui.components.LocalBottomOverlayInset.current + 8.dp
-            ),
-        button = {
-            ToggleFloatingActionButton(
-                checked = fabMenuExpanded,
-                onCheckedChange = { fabMenuExpanded = it },
-                containerColor = ToggleFloatingActionButtonDefaults.containerColor(
-                    initialColor = MaterialTheme.colorScheme.primaryContainer,
-                    finalColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Icon(
-                    Icons.Rounded.Add,
-                    contentDescription = if (fabMenuExpanded) stringResource(R.string.cd_close_menu) else stringResource(R.string.cd_library_actions),
-                    // + rotates into × as the menu blossoms open
-                    tint = lerp(
-                        MaterialTheme.colorScheme.onPrimaryContainer,
-                        MaterialTheme.colorScheme.onPrimary,
-                        checkedProgress
-                    ),
-                    modifier = Modifier.graphicsLayer { rotationZ = checkedProgress * 45f }
-                )
-            }
-        }
-    ) {
-        FloatingActionButtonMenuItem(
-            onClick = {
-                fabMenuExpanded = false
-                onCreatePlaylist()
-            },
-            icon = { Icon(Icons.AutoMirrored.Rounded.PlaylistAdd, null) },
-            text = { Text(stringResource(R.string.action_new_playlist)) },
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        FloatingActionButtonMenuItem(
-            onClick = {
-                fabMenuExpanded = false
-                onDownloadsClick()
-            },
-            icon = { Icon(Icons.Rounded.DownloadDone, null) },
-            text = { Text(stringResource(R.string.fab_downloads)) },
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        FloatingActionButtonMenuItem(
-            onClick = {
-                fabMenuExpanded = false
-                onNavigateToHistory()
-            },
-            icon = { Icon(Icons.Rounded.History, null) },
-            text = { Text(stringResource(R.string.fab_listening_history)) },
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-        FloatingActionButtonMenuItem(
-            onClick = {
-                fabMenuExpanded = false
-                onNavigateToStats()
-            },
-            icon = { Icon(Icons.Rounded.Insights, null) },
-            text = { Text(stringResource(R.string.fab_statistics)) },
-            containerColor = MaterialTheme.colorScheme.secondaryContainer,
-            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
-        )
-    }
-
-    }
+}
 }
 
 // ============ SUB-SCREENS (Lists & Grids) ============
@@ -1436,18 +1364,14 @@ fun PlaylistsGrid(
     onDeletePlaylist: (playlist: PlaylistDisplayItem) -> Unit,
     onLikedSongsClick: () -> Unit,
     contentPadding: PaddingValues,
+    onSetCustomCover: ((playlistId: String, uri: android.net.Uri) -> Unit)? = null,
     savedPlaylistIds: Set<String> = emptySet(),
     onRemoveSavedPlaylist: (PlaylistDisplayItem) -> Unit = {},
-    /**
-     * Playlists the user told Koda not to list, and the two ways back. Passed
-     * in rather than read from a repository here so this grid stays a pure
-     * rendering of what it is given, as the rest of its arguments are.
-     */
     hiddenPlaylists: List<com.ivor.ivormusic.data.HiddenPlaylist> = emptyList(),
     onHidePlaylist: (PlaylistDisplayItem) -> Unit = {},
     onUnhidePlaylist: (String) -> Unit = {},
-    /** Signed in, so the account's own playlists live on YouTube for real. */
-    isLoggedIn: Boolean = false
+    isLoggedIn: Boolean = false,
+    onImportTxtClick: (() -> Unit)? = null
 ) {
     var showHiddenSheet by remember { mutableStateOf(false) }
 
@@ -1463,8 +1387,7 @@ fun PlaylistsGrid(
         verticalArrangement = Arrangement.spacedBy(20.dp),
         modifier = Modifier.fillMaxSize()
     ) {
-        // Liked songs as a full-width hero banner, same card the Songs tab
-        // uses, instead of an odd square tile among the playlists
+        // Liked songs as a full-width hero banner
         item(key = "liked_hero", span = { GridItemSpan(maxLineSpan) }) {
             ExpressiveLikedSongsCard(
                 count = likedSongs.size,
@@ -1472,9 +1395,6 @@ fun PlaylistsGrid(
             )
         }
 
-        // The header stands whenever there is either a playlist or something
-        // hidden, because the hidden count is the only route back and a
-        // library whose every playlist is hidden is exactly when it is needed.
         if (playlists.isNotEmpty() || hiddenPlaylists.isNotEmpty()) {
             item(key = "playlists_header", span = { GridItemSpan(maxLineSpan) }) {
                 Row(
@@ -1490,20 +1410,33 @@ fun PlaylistsGrid(
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    if (hiddenPlaylists.isNotEmpty()) {
-                        TextButton(onClick = { showHiddenSheet = true }) {
-                            Icon(
-                                Icons.Rounded.VisibilityOff,
-                                contentDescription = null,
-                                modifier = Modifier.size(18.dp)
-                            )
-                            Spacer(Modifier.width(6.dp))
-                            Text(
-                                stringResource(
-                                    R.string.lib_hidden_count,
-                                    hiddenPlaylists.size
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        onImportTxtClick?.let { onImport ->
+                            TextButton(onClick = onImport) {
+                                Icon(
+                                    Icons.Rounded.FileUpload,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
                                 )
-                            )
+                                Spacer(Modifier.width(4.dp))
+                                Text("Importer TXT")
+                            }
+                        }
+                        if (hiddenPlaylists.isNotEmpty()) {
+                            TextButton(onClick = { showHiddenSheet = true }) {
+                                Icon(
+                                    Icons.Rounded.VisibilityOff,
+                                    contentDescription = null,
+                                    modifier = Modifier.size(18.dp)
+                                )
+                                Spacer(Modifier.width(6.dp))
+                                Text(
+                                    stringResource(
+                                        R.string.lib_hidden_count,
+                                        hiddenPlaylists.size
+                                    )
+                                )
+                            }
                         }
                     }
                 }
@@ -1545,6 +1478,7 @@ fun PlaylistsGrid(
                 isSaved = isSavedPlaylist,
                 affectsYouTubeAccount = isYouTubeEditable && isLoggedIn,
                 onEditConfirmed = { name, description -> onEditPlaylist(playlist, name, description) },
+                onCoverPicked = { uri -> onSetCustomCover?.invoke(playlist.id, uri) },
                 onDeleteConfirmed = { onDeletePlaylist(playlist) },
                 onRemoveSaved = { onRemoveSavedPlaylist(playlist) },
                 onHide = { onHidePlaylist(playlist) },
@@ -1887,6 +1821,7 @@ fun ExpressivePlaylistCard(
      */
     onHide: (() -> Unit)? = null,
     onEditConfirmed: (String, String?) -> Unit = { _, _ -> },
+    onCoverPicked: ((android.net.Uri) -> Unit)? = null,
     onDeleteConfirmed: () -> Unit = {},
     onRemoveSaved: () -> Unit = {},
     onClick: () -> Unit
@@ -2080,6 +2015,7 @@ fun ExpressivePlaylistCard(
         EditPlaylistDialog(
             initialName = name,
             initialDescription = description,
+            onCoverPicked = onCoverPicked,
             onDismiss = { showEditDialog = false },
             onConfirm = { newName, newDescription ->
                 onEditConfirmed(newName, newDescription)
@@ -2122,10 +2058,19 @@ private fun EditPlaylistDialog(
     initialDescription: String?,
     onDismiss: () -> Unit,
     onConfirm: (name: String, description: String?) -> Unit,
+    onCoverPicked: ((android.net.Uri) -> Unit)? = null,
     title: String? = null
 ) {
     var name by remember(initialName) { mutableStateOf(initialName) }
     var description by remember(initialDescription) { mutableStateOf(initialDescription ?: "") }
+
+    val imagePickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri: android.net.Uri? ->
+        if (uri != null && onCoverPicked != null) {
+            onCoverPicked(uri)
+        }
+    }
 
     AlertDialog(
         onDismissRequest = onDismiss,
@@ -2161,6 +2106,17 @@ private fun EditPlaylistDialog(
                     label = { Text(stringResource(R.string.description_optional_label)) },
                     maxLines = 2
                 )
+                if (onCoverPicked != null) {
+                    OutlinedButton(
+                        onClick = { imagePickerLauncher.launch("image/*") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp)
+                    ) {
+                        Icon(Icons.Rounded.Image, contentDescription = null, modifier = Modifier.size(18.dp))
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Changer la photo de couverture")
+                    }
+                }
             }
         },
         confirmButton = {
@@ -2201,8 +2157,8 @@ fun SongListItem(
         shadowElevation = shadowElevation
     ) {
         ListItem(
-            headlineContent = { Text(song.title, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold) },
-            supportingContent = { Text(song.artist, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+            headlineContent = { Text(song.displayTitle, maxLines = 1, overflow = TextOverflow.Ellipsis, fontWeight = FontWeight.SemiBold) },
+            supportingContent = { Text(song.displayArtist, maxLines = 1, overflow = TextOverflow.Ellipsis) },
             leadingContent = {
                 Surface(
                     shape = RoundedCornerShape(12.dp),
@@ -2590,14 +2546,14 @@ private fun PlaylistTrackRow(
         ListItem(
             headlineContent = {
                 Text(
-                    song.title,
+                    song.displayTitle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     fontWeight = FontWeight.SemiBold
                 )
             },
             supportingContent = {
-                Text(song.artist, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                Text(song.displayArtist, maxLines = 1, overflow = TextOverflow.Ellipsis)
             },
             leadingContent = {
                 Surface(
@@ -2626,8 +2582,25 @@ private fun PlaylistTrackRow(
             // row is what made entering edit mode stutter, and the controls
             // appearing is a content change rather than a moving surface.
             trailingContent = {
-                if (manageEnabled) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    if (song.duration > 0) {
+                        Text(
+                            formatSongDuration(song.duration),
+                            style = MaterialTheme.typography.labelMedium,
+                            color = playlistOnGround().copy(alpha = 0.7f),
+                            modifier = Modifier.padding(end = 4.dp)
+                        )
+                    }
+                    if (onLongClick != null) {
+                        IconButton(onClick = onLongClick) {
+                            Icon(
+                                imageVector = Icons.Rounded.MoreVert,
+                                contentDescription = "Options for ${song.title}",
+                                tint = playlistOnGround().copy(alpha = 0.7f)
+                            )
+                        }
+                    }
+                    if (manageEnabled) {
                         IconButton(onClick = onRemove, enabled = !isDragging) {
                             Icon(
                                 imageVector = Icons.Rounded.RemoveCircleOutline,
@@ -2652,12 +2625,6 @@ private fun PlaylistTrackRow(
                             }
                         }
                     }
-                } else if (song.duration > 0) {
-                    Text(
-                        formatSongDuration(song.duration),
-                        style = MaterialTheme.typography.labelMedium,
-                        color = playlistOnGround().copy(alpha = 0.7f)
-                    )
                 }
             },
             // Manage mode owns the gesture: rows are being dragged and removed
@@ -2672,9 +2639,9 @@ private fun PlaylistTrackRow(
             // theme surface that is not what the row is drawn on.
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent,
-                headlineColor = playlistOnGround(),
-                supportingColor = playlistOnGround().copy(alpha = 0.78f),
-                trailingIconColor = playlistOnGround().copy(alpha = 0.78f)
+                headlineColor = MaterialTheme.colorScheme.onSurface,
+                supportingColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                trailingIconColor = MaterialTheme.colorScheme.onSurfaceVariant
             )
         )
     }
@@ -3542,8 +3509,6 @@ fun PlaylistDetailScreen(
         },
         floatingActionButton = {
             if (isReorderMode) {
-                // Vibrant floating toolbar = the M3 Expressive signal for a
-                // temporary edit mode; stays reachable however far the list scrolls
                 val canReorder = isLocalPlaylist ||
                     (canReorderRemote && songRows.any { it.setVideoId != null })
                 ManageModeToolbar(
@@ -3554,36 +3519,6 @@ fun PlaylistDetailScreen(
                         bottom = com.ivor.ivormusic.ui.components.LocalBottomOverlayInset.current
                     )
                 )
-            } else if (filteredSongs.isNotEmpty()) {
-                AnimatedVisibility(
-                    visible = headerScrolledAway || isSearchActive,
-                    enter = fadeIn() + scaleIn(spring(dampingRatio = Spring.DampingRatioMediumBouncy)),
-                    exit = fadeOut() + scaleOut(),
-                ) {
-                    // M3E split button: Play + menu (shuffle, radio). This is the
-                    // one primary action on the page.
-                    val radioSeed = filteredSongs.firstOrNull {
-                        it.source == com.ivor.ivormusic.data.SongSource.YOUTUBE
-                    }
-                    com.ivor.ivormusic.ui.artist.PlaySplitButton(
-                        onPlay = { onPlayQueue(filteredSongs, filteredSongs.first()) },
-                        onShuffle = { onShuffleQueue(filteredSongs) },
-                        onStartRadio = if (radioSeed != null) {
-                            {
-                                scope.launch {
-                                    val radio = viewModel.getRadioSongs(radioSeed.id)
-                                    if (radio.isNotEmpty()) {
-                                        onPlayQueue(listOf(radioSeed) + radio, radioSeed)
-                                    }
-                                }
-                            }
-                        } else null,
-                        // Clear the floating nav pill and mini player(s)
-                        modifier = Modifier.padding(
-                            bottom = com.ivor.ivormusic.ui.components.LocalBottomOverlayInset.current
-                        )
-                    )
-                }
             }
         }
     ) { _ ->
@@ -4184,6 +4119,9 @@ fun PlaylistDetailScreen(
         EditPlaylistDialog(
             initialName = resolvedPlaylist.name,
             initialDescription = resolvedPlaylist.description,
+            onCoverPicked = { uri ->
+                viewModel.setLocalPlaylistCover(resolvedPlaylist.id, uri)
+            },
             onDismiss = { showEditDialog = false },
             onConfirm = { newName, newDescription ->
                 if (isLocalPlaylist) {

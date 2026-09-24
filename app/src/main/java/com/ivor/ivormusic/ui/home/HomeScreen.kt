@@ -38,6 +38,7 @@ import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.rounded.Cookie
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Subscriptions
 import androidx.compose.material.icons.filled.VideoLibrary
@@ -517,6 +518,7 @@ fun HomeScreen(
     var showAuthDialog by remember { mutableStateOf(false) }
     var addAuthAsNewProfile by remember { mutableStateOf(false) }
     var showAccountSheet by remember { mutableStateOf(false) }
+    var showCookiePasteSheet by remember { mutableStateOf(false) }
 
     // The avatar always opens the profile switcher now, signed in or not: with
     // device-only profiles there is always something to switch between, and
@@ -958,6 +960,7 @@ fun HomeScreen(
                                                 onProfileClick = onProfileClick,
                                                 onSettingsClick = onNavigateToSettings,
                                                 onDownloadsClick = onNavigateToDownloads,
+                                                onImportCookiesClick = { showCookiePasteSheet = true },
                                                 isDarkMode = isDarkMode,
                                                 contentPadding = listContentPadding,
                                                 viewModel = viewModel,
@@ -1631,22 +1634,33 @@ fun HomeScreen(
                 }
             },
             onReconnectProfile = {
-                // Same jar wipe as adding an account, for the same reason: the
-                // login page auto-continues as whoever WebView still holds, so
-                // without this a reconnect can silently store the *other*
-                // account's session against this profile.
                 val cookieManager = android.webkit.CookieManager.getInstance()
                 cookieManager.removeAllCookies {
                     cookieManager.flush()
-                    // False, unlike the add path: the profile already exists
-                    // and is now active, so the session has to land on it
-                    // rather than in a new row. addYouTubeProfileAndSwitch
-                    // cannot match it either - the datasyncId is only known
-                    // after an authenticated call, so it would mint a fresh id
-                    // and orphan this profile's subscriptions and blocklist.
                     addAuthAsNewProfile = false
                     showAuthDialog = true
                 }
+            },
+            onImportCookies = {
+                showAccountSheet = false
+                showCookiePasteSheet = true
+            }
+        )
+    }
+
+    if (showCookiePasteSheet) {
+        val context = androidx.compose.ui.platform.LocalContext.current
+        com.ivor.ivormusic.ui.settings.CookiePasteSheet(
+            onDismiss = { showCookiePasteSheet = false },
+            onSave = { rawCookies ->
+                val normalized = com.ivor.ivormusic.data.YouTubeAuthUtils.normalizeCookieString(rawCookies)
+                viewModel.saveSessionCookies(normalized)
+                showCookiePasteSheet = false
+                android.widget.Toast.makeText(
+                    context,
+                    "Cookies importés ! Recommandations YouTube Music mises à jour.",
+                    android.widget.Toast.LENGTH_LONG
+                ).show()
             }
         )
     }
@@ -1680,6 +1694,7 @@ fun YourMixContent(
     onProfileClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onDownloadsClick: () -> Unit = {},
+    onImportCookiesClick: (() -> Unit)? = null,
     isDarkMode: Boolean,
     contentPadding: PaddingValues,
     viewModel: HomeViewModel,
@@ -1730,7 +1745,18 @@ fun YourMixContent(
                     alpha = if (visible) 1f else 0f
                     translationY = if (visible) 0f else -20f
                 }.animateContentSize()) {
-                    TopBarSection(onProfileClick = onProfileClick, onSettingsClick = onSettingsClick, onDownloadsClick = onDownloadsClick, isDarkMode = isDarkMode, viewModel = viewModel, videoMode = videoMode, onVideoModeToggle = onVideoModeToggle, showModeToggle = showModeToggle, modeToggleState = modeToggleState)
+                    TopBarSection(
+                        onProfileClick = onProfileClick,
+                        onSettingsClick = onSettingsClick,
+                        onDownloadsClick = onDownloadsClick,
+                        onImportCookiesClick = onImportCookiesClick,
+                        isDarkMode = isDarkMode,
+                        viewModel = viewModel,
+                        videoMode = videoMode,
+                        onVideoModeToggle = onVideoModeToggle,
+                        showModeToggle = showModeToggle,
+                        modeToggleState = modeToggleState
+                    )
                 }
             }
             
@@ -1838,6 +1864,7 @@ fun TopBarSection(
     onProfileClick: () -> Unit,
     onSettingsClick: () -> Unit,
     onDownloadsClick: () -> Unit = {},
+    onImportCookiesClick: (() -> Unit)? = null,
     isDarkMode: Boolean,
     viewModel: HomeViewModel,
     videoMode: Boolean = false,
@@ -1861,98 +1888,107 @@ fun TopBarSection(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Profile avatar. Tap opens the switcher; long-press flips straight
-        // back to the last profile, which is the whole point of a switcher for
-        // someone bouncing between two accounts. Incognito shows as a badge on
-        // the avatar itself rather than a chip beside it, so the bar keeps its
-        // shape whether history is paused or not.
         val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
         val accountSwitcher = remember(context) {
             com.ivor.ivormusic.data.AccountSwitcher(context)
         }
         val isSwitching by accountSwitcher.switching.collectAsState()
-        Box {
-            Box(
-                modifier = Modifier
-                    .size(44.dp)
-                    .clip(CircleShape)
-                    .background(surfaceColor)
-                    .combinedClickable(
-                        onClick = onProfileClick,
-                        onLongClick = {
-                            // A long-press that does nothing reads as broken, so
-                            // this only fires when there is somewhere to go.
-                            if (accountSwitcher.quickSwitchTarget() != null) {
-                                haptics.performHapticFeedback(
-                                    androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
-                                )
-                                accountSwitcher.quickSwitch()
-                            }
-                        }
-                    ),
-                contentAlignment = Alignment.Center
-            ) {
-                if (userAvatar != null) {
-                    AsyncImage(
-                        model = userAvatar,
-                        contentDescription = stringResource(R.string.cd_profile),
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = stringResource(R.string.cd_profile),
-                        tint = iconColor,
-                        modifier = Modifier.size(26.dp)
-                    )
-                }
-                // Progress rides on the avatar rather than blocking the screen: the
-                // switch itself is instant, but the feeds behind it are refetching,
-                // and the status belongs where the user just tapped.
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = isSwitching,
-                    enter = androidx.compose.animation.fadeIn(),
-                    exit = androidx.compose.animation.fadeOut()
-                ) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.fillMaxSize(),
-                        strokeWidth = 2.dp,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
+
+        val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
+        val greeting = remember(hour) {
+            when (hour) {
+                in 5..11 -> "Bonjour"
+                in 12..17 -> "Bon après-midi"
+                else -> "Bonsoir"
             }
-            // The history-paused mark. Tonal fill so it reads as "a mode is on"
-            // without taking over the bar; the badge itself carries the label,
-            // so a screen reader announces it alongside the profile button.
-            androidx.compose.animation.AnimatedVisibility(
-                visible = incognito,
-                enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.scaleIn(),
-                exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.scaleOut(),
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .offset(x = 2.dp, y = 2.dp)
-            ) {
+        }
+
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Box {
                 Box(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(44.dp)
                         .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.secondaryContainer)
-                        .border(
-                            width = 2.dp,
-                            color = MaterialTheme.colorScheme.surface,
-                            shape = CircleShape
+                        .background(surfaceColor)
+                        .combinedClickable(
+                            onClick = onProfileClick,
+                            onLongClick = {
+                                if (accountSwitcher.quickSwitchTarget() != null) {
+                                    haptics.performHapticFeedback(
+                                        androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
+                                    )
+                                    accountSwitcher.quickSwitch()
+                                }
+                            }
                         ),
                     contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector = Icons.Rounded.VisibilityOff,
-                        contentDescription = stringResource(R.string.incognito_active),
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.size(11.dp)
-                    )
+                    if (userAvatar != null) {
+                        AsyncImage(
+                            model = userAvatar,
+                            contentDescription = stringResource(R.string.cd_profile),
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = stringResource(R.string.cd_profile),
+                            tint = iconColor,
+                            modifier = Modifier.size(26.dp)
+                        )
+                    }
+                    androidx.compose.animation.AnimatedVisibility(
+                        visible = isSwitching,
+                        enter = androidx.compose.animation.fadeIn(),
+                        exit = androidx.compose.animation.fadeOut()
+                    ) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.fillMaxSize(),
+                            strokeWidth = 2.dp,
+                            color = MaterialTheme.colorScheme.primary
+                        )
+                    }
+                }
+                androidx.compose.animation.AnimatedVisibility(
+                    visible = incognito,
+                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.scaleIn(),
+                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.scaleOut(),
+                    modifier = Modifier
+                        .align(Alignment.BottomEnd)
+                        .offset(x = 2.dp, y = 2.dp)
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(20.dp)
+                            .clip(CircleShape)
+                            .background(MaterialTheme.colorScheme.secondaryContainer)
+                            .border(
+                                width = 2.dp,
+                                color = MaterialTheme.colorScheme.surface,
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.VisibilityOff,
+                            contentDescription = stringResource(R.string.incognito_active),
+                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                            modifier = Modifier.size(11.dp)
+                        )
+                    }
                 }
             }
+
+            Text(
+                text = greeting,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onBackground
+            )
         }
         
         // Right side icons with shape morphing
@@ -1990,6 +2026,25 @@ fun TopBarSection(
                 }
             }
             
+            if (onImportCookiesClick != null) {
+                IconButton(
+                    onClick = onImportCookiesClick,
+                    shapes = IconButtonDefaults.shapes(),
+                    colors = IconButtonDefaults.iconButtonColors(
+                        containerColor = containerColor,
+                        contentColor = iconColor
+                    ),
+                    modifier = Modifier.size(44.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Cookie,
+                        contentDescription = "Importer Cookies",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(22.dp)
+                    )
+                }
+            }
+
             IconButton(
                 onClick = onSettingsClick,
                 shapes = IconButtonDefaults.shapes(),

@@ -26,6 +26,7 @@ class RecommendationEngine(
     private val statsRepository = StatsRepository(context)
     private val searchHistoryRepository = SearchHistoryRepository(context)
     private val likedSongsRepository = LikedSongsRepository(context)
+    private val playlistRepository = PlaylistRepository(context)
 
     data class TasteProfile(
         /** Artist names ranked by recency-weighted listening, best first. */
@@ -89,6 +90,26 @@ class RecommendationEngine(
         for (id in likedIds) {
             if (entryById.containsKey(id)) {
                 songScores.merge(id, LIKED_BONUS, Double::plus)
+            }
+        }
+
+        // Include tracks from user playlists as taste seeds
+        val playlistSongs = playlistRepository.userPlaylists.value.flatMap { it.songs }
+        for (song in playlistSongs) {
+            if (song.source == SongSource.YOUTUBE && song.id.isNotBlank()) {
+                songScores.merge(song.id, 2.5, Double::plus)
+                if (!entryById.containsKey(song.id)) {
+                    entryById[song.id] = PlayHistoryEntry(
+                        songId = song.id,
+                        title = song.title,
+                        artist = song.artist,
+                        album = song.album,
+                        duration = song.duration,
+                        timestamp = now,
+                        thumbnailUrl = song.thumbnailUrl,
+                        source = SongSource.YOUTUBE
+                    )
+                }
             }
         }
 
@@ -169,35 +190,44 @@ class RecommendationEngine(
      */
     suspend fun getHomeRecommendations(limit: Int = 30): List<Song> = coroutineScope {
         val profile = buildTasteProfile()
-        if (profile.isEmpty()) {
-            // Nothing local to personalize with yet — fall back to trending.
-            return@coroutineScope youTubeRepository.search("trending music", YouTubeRepository.FILTER_SONGS)
+
+        // 1. YouTube related-songs radios seeded by user's top played/liked tracks
+        val radioJobs = profile.topSongs.take(4).map { seed ->
+            async {
+                runCatching { youTubeRepository.getRelatedSongs(seed.songId) }
+                    .getOrDefault(emptyList())
+            }
         }
 
+        // 2. Searches seeded by user's top artists
         val seedQueries = buildList {
-            profile.topArtists.take(3).forEach { add("$it songs") }
+            profile.topArtists.take(4).forEach { add("$it songs") }
             profile.recentSearches.take(2).forEach { add(it) }
         }
 
-        val searchBuckets = seedQueries.map { query ->
+        val searchJobs = seedQueries.map { query ->
             async {
                 runCatching { youTubeRepository.search(query, YouTubeRepository.FILTER_SONGS) }
                     .getOrDefault(emptyList())
             }
         }
-        val radioBucket = async {
-            profile.topSongs.firstOrNull()?.let { seed ->
-                runCatching { youTubeRepository.getRelatedSongs(seed.songId) }
-                    .getOrDefault(emptyList())
-            } ?: emptyList()
-        }
 
-        val buckets = (searchBuckets.map { it.await() } + listOf(radioBucket.await()))
-            .filter { it.isNotEmpty() }
+        val radioBuckets = radioJobs.map { it.await() }
+        val searchBuckets = searchJobs.map { it.await() }
+        val allBuckets = (radioBuckets + searchBuckets).filter { it.isNotEmpty() }
 
-        val mixed = interleave(buckets).distinctBy { it.id }.take(limit)
+        val mixed = interleave(allBuckets).distinctBy { it.id }.take(limit)
         if (mixed.isNotEmpty()) mixed
-        else youTubeRepository.search("trending music", YouTubeRepository.FILTER_SONGS)
+        else profile.topSongs.map { seed ->
+            Song.fromYouTube(
+                videoId = seed.songId,
+                title = seed.title,
+                artist = seed.artist,
+                album = seed.album ?: "",
+                duration = seed.duration,
+                thumbnailUrl = seed.thumbnailUrl
+            )
+        }
     }
 
     /**

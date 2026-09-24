@@ -13,12 +13,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.VideoLibrary
@@ -84,56 +86,28 @@ fun MusicVideoToggle(
     state: MusicVideoToggleState,
     modifier: Modifier = Modifier
 ) {
-    val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-    val segmentWidth = 38.dp
-    val segmentHeight = 36.dp
-
     Surface(
-        modifier = modifier.height(44.dp),
+        modifier = modifier.height(40.dp),
         shape = CircleShape,
         color = MaterialTheme.colorScheme.surfaceContainerHigh
     ) {
-        Box(modifier = Modifier.padding(4.dp)) {
-            // Overshoot is clamped so the stretched thumb squashes against the
-            // track ends instead of poking outside them.
-            val start = minOf(state.fastEdge.value, state.slowEdge.value).coerceAtLeast(0f)
-            val end = maxOf(state.fastEdge.value, state.slowEdge.value).coerceAtMost(1f)
-            Box(
-                modifier = Modifier
-                    .offset(x = segmentWidth * start)
-                    .width(segmentWidth * (1f + end - start))
-                    .height(segmentHeight)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primaryContainer)
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 14.dp, vertical = 6.dp)
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.MusicNote,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.primary,
+                modifier = Modifier.size(18.dp)
             )
-            Row {
-                ToggleSegment(
-                    icon = Icons.Rounded.MusicNote,
-                    contentDescription = stringResource(R.string.cd_switch_to_music),
-                    selected = !videoMode,
-                    segmentWidth = segmentWidth,
-                    segmentHeight = segmentHeight,
-                    onClick = {
-                        if (videoMode) {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onVideoModeChange(false)
-                        }
-                    }
-                )
-                ToggleSegment(
-                    icon = Icons.Rounded.VideoLibrary,
-                    contentDescription = stringResource(R.string.cd_switch_to_video),
-                    selected = videoMode,
-                    segmentWidth = segmentWidth,
-                    segmentHeight = segmentHeight,
-                    onClick = {
-                        if (!videoMode) {
-                            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                            onVideoModeChange(true)
-                        }
-                    }
-                )
-            }
+            Spacer(modifier = androidx.compose.ui.Modifier.width(6.dp))
+            androidx.compose.material3.Text(
+                text = "Music",
+                style = MaterialTheme.typography.labelMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
         }
     }
 }

@@ -532,6 +532,16 @@ class YouTubeRepository(private val context: Context) {
                 }
             }
         }
+
+        // Try searching without strict music filter
+        val generalResponse = postMusicMetadata("search", org.json.JSONObject().put("query", query))
+        if (generalResponse != null) {
+            val generalSongs = parseSongsFromInternalJson(generalResponse.toString())
+            if (generalSongs.isNotEmpty()) {
+                return@withContext generalSongs
+            }
+        }
+
         try {
             // YouTube Music search often uses the search extractor with specific filters
             val searchExtractor = youtubeService.getSearchExtractor(query, listOf(filter), "")
@@ -542,12 +552,16 @@ class YouTubeRepository(private val context: Context) {
             searchNextPageCache[query] =
                 if (searchExtractor.initialPage.hasNextPage()) searchExtractor.initialPage.nextPage else null
 
-            searchExtractor.initialPage.items.filterIsInstance<StreamInfoItem>().mapNotNull { item: StreamInfoItem ->
+            val results = searchExtractor.initialPage.items.filterIsInstance<StreamInfoItem>().mapNotNull { item: StreamInfoItem ->
                 try {
+                    val (cleanTitle, cleanArtist) = YouTubeTitleParser.parseTitleAndArtist(
+                        item.name ?: "Unknown",
+                        item.uploaderName ?: "Unknown Artist"
+                    )
                     Song.fromYouTube(
                         videoId = extractVideoId(item.url),
-                        title = item.name ?: "Unknown",
-                        artist = item.uploaderName ?: "Unknown Artist",
+                        title = cleanTitle,
+                        artist = cleanArtist,
                         album = "",
                         duration = item.duration * 1000L,
                         thumbnailUrl = item.thumbnails?.firstOrNull()?.url
@@ -556,9 +570,31 @@ class YouTubeRepository(private val context: Context) {
                     null
                 }
             }
-        } catch (e: Exception) {
-            emptyList()
-        }
+            if (results.isNotEmpty()) return@withContext results
+        } catch (e: Exception) { }
+
+        // Fallback: search videos and convert to Song
+        try {
+            val videoFeed = searchVideosInnerTube(query, VideoSearchSort.RELEVANCE)
+            if (videoFeed != null && videoFeed.videos.isNotEmpty()) {
+                return@withContext videoFeed.videos.map { video ->
+                    val (cleanTitle, cleanArtist) = YouTubeTitleParser.parseTitleAndArtist(
+                        video.title,
+                        video.channelName ?: "YouTube"
+                    )
+                    Song.fromYouTube(
+                        videoId = video.videoId,
+                        title = cleanTitle,
+                        artist = cleanArtist,
+                        album = "",
+                        duration = video.duration * 1000L,
+                        thumbnailUrl = video.thumbnailUrl
+                    )
+                }
+            }
+        } catch (e: Exception) { }
+
+        emptyList()
     }
 
     /**
@@ -1485,31 +1521,21 @@ class YouTubeRepository(private val context: Context) {
      * Uses Internal YTM API with Cookies for personalized content.
      */
     suspend fun getRecommendations(): List<Song> = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) {
-            KLog.d("YouTubeRepo", "Not logged in, falling back to popular search")
-            return@withContext search("trending music 2026", FILTER_SONGS)
-        }
-
         try {
-            // Fetch personalized home page content
-            KLog.d("YouTubeRepo", "Fetching personalized recommendations from FEmusic_home")
+            // Fetch personalized home page content from FEmusic_home
+            KLog.d("YouTubeRepo", "Fetching recommendations from FEmusic_home")
             val jsonResponse = fetchInternalApi("FEmusic_home")
             
-            if (jsonResponse.isEmpty()) {
-                KLog.e("YouTubeRepo", "Empty response from FEmusic_home")
-                return@withContext fillHomeRecommendations(emptyList())
+            if (jsonResponse.isNotBlank()) {
+                val items = usableHomeRecommendations(
+                    listOf(parseSongsFromInternalJson(jsonResponse))
+                )
+                if (items.isNotEmpty()) {
+                    KLog.d("YouTubeRepo", "Parsed ${items.size} songs from recommendations")
+                    return@withContext fillHomeRecommendations(items)
+                }
             }
-            
-            // Parse songs from the home page response
-            val items = usableHomeRecommendations(
-                listOf(parseSongsFromInternalJson(jsonResponse))
-            )
-            KLog.d("YouTubeRepo", "Parsed ${items.size} songs from recommendations")
-
-            // Classic Home needs three valid entries for its three artwork
-            // shapes. A partially parsed response is still useful, but it must
-            // be filled rather than accepted as complete.
-            fillHomeRecommendations(items)
+            fillHomeRecommendations(emptyList())
         } catch (cancelled: kotlinx.coroutines.CancellationException) {
             throw cancelled
         } catch (e: Exception) {
@@ -1534,7 +1560,7 @@ class YouTubeRepository(private val context: Context) {
         if (withLiked.size >= 3) return withLiked
 
         val trending = try {
-            search("trending music 2026", FILTER_SONGS)
+            search("trending music", FILTER_SONGS)
         } catch (cancelled: kotlinx.coroutines.CancellationException) {
             throw cancelled
         } catch (e: Exception) {
@@ -2603,34 +2629,39 @@ class YouTubeRepository(private val context: Context) {
         try {
             val root = org.json.JSONObject(json)
             
-            // OPTIMIZED: Direct traversal instead of recursive search
             // Find the SectionListRenderer which contains the shelves
-            val contentsArray = findRootContents(root) ?: return emptyList()
+            val contentsArray = findRootContents(root)
 
-            // Iterate over shelves (musicCarouselShelfRenderer, musicShelfRenderer, etc.)
-            for (i in 0 until contentsArray.length()) {
-                val shelfWrapper = contentsArray.optJSONObject(i) ?: continue
-                
-                // Get the items array from the shelf
-                val items = parseItemsFromShelf(shelfWrapper)
-                
-                // Process items
-                items.forEach { item ->
-                    try {
-                        // Strategy 1: musicResponsiveListItemRenderer (Flex Columns) - Standard Song/Video list
-                        val responsiveItem = item.optJSONObject("musicResponsiveListItemRenderer")
-                        if (responsiveItem != null) {
-                            parseResponsiveListItem(responsiveItem)?.let { songs.add(it) }
+            if (contentsArray != null) {
+                // Iterate over shelves (musicCarouselShelfRenderer, musicShelfRenderer, etc.)
+                for (i in 0 until contentsArray.length()) {
+                    val shelfWrapper = contentsArray.optJSONObject(i) ?: continue
+                    val items = parseItemsFromShelf(shelfWrapper)
+                    
+                    items.forEach { item ->
+                        try {
+                            val responsiveItem = item.optJSONObject("musicResponsiveListItemRenderer")
+                            if (responsiveItem != null) {
+                                parseResponsiveListItem(responsiveItem)?.let { songs.add(it) }
+                            }
+                            
+                            val twoRowItem = item.optJSONObject("musicTwoRowItemRenderer")
+                            if (twoRowItem != null) {
+                                 parseTwoRowItem(twoRowItem)?.let { songs.add(it) }
+                            }
+                        } catch (e: Exception) {
+                            // Skip malformed item
                         }
-                        
-                        // Strategy 2: musicTwoRowItemRenderer (Title/Subtitle) - Cards/Shelves
-                        val twoRowItem = item.optJSONObject("musicTwoRowItemRenderer")
-                        if (twoRowItem != null) {
-                             parseTwoRowItem(twoRowItem)?.let { songs.add(it) }
-                        }
-                    } catch (e: Exception) {
-                        // Skip malformed item
                     }
+                }
+            }
+
+            // Fallback: If structured traversal found nothing, recursively extract items
+            if (songs.isEmpty()) {
+                val responsiveItems = MusicMetadata.objects(root, "musicResponsiveListItemRenderer")
+                val twoRowItems = MusicMetadata.objects(root, "musicTwoRowItemRenderer")
+                (responsiveItems + twoRowItems).forEach { item ->
+                    MusicMetadata.song(item)?.let { songs.add(it) }
                 }
             }
         } catch (e: Exception) {

@@ -142,10 +142,11 @@ internal object MusicMetadata {
         }.map(::text)
         val duration = (listOf(length) + fixed + metadata.filter { endpoint(it) == null }.map { it.optString("text").trim() })
             .firstNotNullOfOrNull(::duration) ?: 0L
+        val (cleanTitle, cleanArtist) = YouTubeTitleParser.parseTitleAndArtist(title, artist)
         return Song(
             id = videoId,
-            title = title,
-            artist = artist,
+            title = cleanTitle,
+            artist = cleanArtist,
             album = albumRun?.optString("text")?.takeIf(String::isNotBlank) ?: UNKNOWN_ALBUM,
             duration = duration,
             thumbnailUrl = thumbnail(row),

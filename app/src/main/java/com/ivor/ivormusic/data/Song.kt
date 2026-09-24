@@ -63,14 +63,25 @@ data class Song(
                     } else url
                 }
                 url.contains("ytimg.com") || url.contains("youtube.com") -> {
-                    // Replace low res filenames with max res
-                    url.replace("mqdefault", "maxresdefault")
-                       .replace("hqdefault", "maxresdefault")
-                       .replace("sddefault", "maxresdefault")
+                    // Replace low res filenames with hqdefault (480x360, guaranteed 100% available without 404s)
+                    url.replace("mqdefault", "hqdefault")
+                       .replace("sddefault", "hqdefault")
                 }
                 else -> url
             }
         }
+
+    val displayTitle: String
+        get() = when {
+            title.startsWith("YouTube ") -> title.removePrefix("YouTube ").trim()
+            else -> title
+        }.ifBlank { "Titre $id" }
+
+    val displayArtist: String
+        get() = when {
+            artist == "YouTube" -> UNKNOWN_ARTIST
+            else -> artist
+        }.ifBlank { UNKNOWN_ARTIST }
 
     companion object {
         /**
@@ -113,15 +124,18 @@ data class Song(
             album: String,
             duration: Long,
             thumbnailUrl: String?
-        ): Song = Song(
-            id = videoId,
-            title = title,
-            artist = artist,
-            album = album,
-            duration = duration,
-            thumbnailUrl = thumbnailUrl,
-            source = SongSource.YOUTUBE
-        )
+        ): Song {
+            val (cleanTitle, cleanArtist) = YouTubeTitleParser.parseTitleAndArtist(title, artist)
+            return Song(
+                id = videoId,
+                title = cleanTitle.ifBlank { "YouTube $videoId" },
+                artist = cleanArtist.ifBlank { UNKNOWN_ARTIST },
+                album = album,
+                duration = duration,
+                thumbnailUrl = thumbnailUrl,
+                source = SongSource.YOUTUBE
+            )
+        }
     }
 }
 

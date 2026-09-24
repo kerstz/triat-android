@@ -534,6 +534,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                     song?.let {
                         _currentQueueItemId.value = queueItem?.id
                         _currentSong.value = it
+                        resolvePlaceholderSongIfNeeded(it)
                         updateCurrentSongLikedStatus()
                         fetchLyrics(it)
                         
@@ -714,6 +715,50 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                     it.name == metadata.extras?.getString(com.ivor.ivormusic.service.EXTRA_MUSIC_RELEASE_TYPE)
                 }
             )
+        }
+    }
+
+    private fun resolvePlaceholderSongIfNeeded(song: Song) {
+        val needsResolution = song.title.startsWith("YouTube ") ||
+            song.title.matches(Regex("^[A-Za-z0-9_-]{11}$")) ||
+            song.artist == "YouTube"
+        if (!needsResolution) return
+
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.IO) {
+            try {
+                val url = "https://www.youtube.com/oembed?url=https://www.youtube.com/watch?v=${song.id}&format=json"
+                val request = okhttp3.Request.Builder().url(url).build()
+                val client = okhttp3.OkHttpClient()
+                client.newCall(request).execute().use { response ->
+                    if (response.isSuccessful) {
+                        val body = response.body?.string()
+                        if (!body.isNullOrBlank()) {
+                            val json = org.json.JSONObject(body)
+                            val rawTitle = json.optString("title")
+                            val rawAuthor = json.optString("author_name")
+                            val thumbUrl = json.optString("thumbnail_url").takeIf { it.isNotBlank() }
+                                ?: "https://i.ytimg.com/vi/${song.id}/hqdefault.jpg"
+                            if (rawTitle.isNotBlank()) {
+                                val (title, artist) = com.ivor.ivormusic.data.YouTubeTitleParser.parseTitleAndArtist(rawTitle, rawAuthor)
+                                val resolved = song.copy(
+                                    title = title,
+                                    artist = artist,
+                                    thumbnailUrl = song.thumbnailUrl ?: thumbUrl
+                                )
+                                kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.Main) {
+                                    if (_currentSong.value?.id == song.id) {
+                                        _currentSong.value = resolved
+                                    }
+                                    _currentQueue.value = _currentQueue.value.map { item ->
+                                        if (item.song.id == song.id) item.copy(song = resolved) else item
+                                    }
+                                    themePreferences.saveLastPlayedSong(resolved)
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (_: Exception) { }
         }
     }
 

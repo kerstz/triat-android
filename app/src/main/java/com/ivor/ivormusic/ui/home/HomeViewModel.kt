@@ -923,6 +923,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         observeSubscriptionFeedWarmup()
         checkYouTubeConnection()
         observeProfileSwitches()
+        viewModelScope.launch {
+            playlistRepository.autoRepairUnresolvedTitles()
+        }
     }
 
     /**
@@ -2058,27 +2061,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         recommendationsLoadJob = viewModelScope.launch {
             _isLoading.value = true
             try {
-                if (sessionManager.isLoggedIn()) {
-                    val recs = usableHomeRecommendations(
-                        listOf(youtubeRepository.getRecommendations())
-                    )
-                    if (recs.isNotEmpty()) {
-                        _youtubeSongs.value = recs
-                        homeRecommendationCache.save(recs)
-                        recommendationsLoadedAtMs = System.currentTimeMillis()
-                    }
-                } else {
-                    // Not logged in: personalize from the local taste profile
-                    // (play history, likes, searches). Falls back to trending
-                    // internally when there's no listening data yet.
-                    val recs = usableHomeRecommendations(
-                        listOf(recommendationEngine.getHomeRecommendations())
-                    )
-                    if (recs.isNotEmpty()) {
-                        _youtubeSongs.value = recs
-                        homeRecommendationCache.save(recs)
-                        recommendationsLoadedAtMs = System.currentTimeMillis()
-                    }
+                // Personalize strictly from local taste profile & user playlists
+                val recs = usableHomeRecommendations(
+                    listOf(recommendationEngine.getHomeRecommendations())
+                )
+                if (recs.isNotEmpty()) {
+                    homeRecommendationCache.clear()
+                    _youtubeSongs.value = recs
+                    homeRecommendationCache.save(recs)
+                    recommendationsLoadedAtMs = System.currentTimeMillis()
                 }
             } catch (e: Exception) {
                 // The feed keeps whatever it already had - both branches above
@@ -2329,6 +2320,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
     
+    fun saveSessionCookies(cookies: String) {
+        viewModelScope.launch {
+            sessionManager.startSession(cookies)
+            _isYouTubeConnected.value = sessionManager.isLoggedIn()
+            _userAvatar.value = sessionManager.getUserAvatar()
+            _userName.value = sessionManager.getUserName()
+            runCatching { youtubeRepository.fetchAccountInfo() }
+            loadYouTubeRecommendations(force = true)
+        }
+    }
+
     fun logout() {
         resetVideoLibraryPagination()
         clearShortsFeed()

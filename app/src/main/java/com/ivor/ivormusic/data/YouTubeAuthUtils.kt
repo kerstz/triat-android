@@ -31,17 +31,59 @@ object YouTubeAuthUtils {
         SAPISID_NAMES.firstNotNullOfOrNull { getCookieValue(cookieString, it) }
 
     /**
-     * Tidy a hand-pasted cookie header into the single-line `k=v; k=v` form the
-     * WebView jar produces. Handles the shapes people actually paste: a DevTools
-     * copy of the request header with the `Cookie:` name still attached, a
-     * wrapped multi-line copy, and stray surrounding quotes.
+     * Tidy a hand-pasted cookie header or cookies.txt/JSON export into the
+     * single-line `k=v; k=v` form required by InnerTube.
      */
     fun normalizeCookieString(raw: String): String {
-        return raw.trim()
+        val trimmed = raw.trim()
             .removeSurrounding("\"")
             .trim()
             .removePrefix("Cookie:")
             .removePrefix("cookie:")
+            .trim()
+
+        // 1. JSON Array format (e.g. EditThisCookie / Cookie-Editor)
+        if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+            try {
+                val jsonArray = org.json.JSONArray(trimmed)
+                val cookies = mutableListOf<String>()
+                for (i in 0 until jsonArray.length()) {
+                    val obj = jsonArray.optJSONObject(i) ?: continue
+                    val name = obj.optString("name").trim()
+                    val value = obj.optString("value").trim()
+                    if (name.isNotEmpty() && value.isNotEmpty()) {
+                        cookies.add("$name=$value")
+                    }
+                }
+                if (cookies.isNotEmpty()) {
+                    return cookies.joinToString("; ")
+                }
+            } catch (ignored: Exception) {}
+        }
+
+        // 2. Netscape cookies.txt format
+        if (trimmed.contains("\t") || trimmed.contains("# Netscape")) {
+            val cookies = mutableListOf<String>()
+            trimmed.lineSequence().forEach { line ->
+                val l = line.trim()
+                if (l.isNotEmpty() && !l.startsWith("#")) {
+                    val parts = l.split("\t")
+                    if (parts.size >= 7) {
+                        val name = parts[5].trim()
+                        val value = parts[6].trim()
+                        if (name.isNotEmpty() && value.isNotEmpty()) {
+                            cookies.add("$name=$value")
+                        }
+                    }
+                }
+            }
+            if (cookies.isNotEmpty()) {
+                return cookies.joinToString("; ")
+            }
+        }
+
+        // 3. Header string / standard k=v; k=v
+        return trimmed
             .replace(Regex("\\s*[\\r\\n]+\\s*"), " ")
             .trim()
             .trim(';')

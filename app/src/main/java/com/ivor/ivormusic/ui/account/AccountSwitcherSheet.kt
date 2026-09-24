@@ -81,18 +81,14 @@ import com.ivor.ivormusic.data.Profile
  * there is no confirm step and no blocking spinner. The sheet closes on tap and
  * the feeds refill behind it.
  */
+import androidx.compose.material.icons.rounded.Cookie
+
 @Composable
 fun AccountSwitcherSheet(
     onDismiss: () -> Unit,
     onAddYouTubeAccount: () -> Unit,
-    /**
-     * Sign back into the profile that is now active, rather than adding a new
-     * one. Separate from [onAddYouTubeAccount] because the two must not share
-     * a path: adding captures the session into a *new* profile, which for a
-     * row that already exists would strand that profile's subscriptions and
-     * blocklist on an id nothing is active on any more.
-     */
     onReconnectProfile: () -> Unit = onAddYouTubeAccount,
+    onImportCookies: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
@@ -184,6 +180,18 @@ fun AccountSwitcherSheet(
                 }
             )
             Spacer(Modifier.height(8.dp))
+            if (onImportCookies != null) {
+                AddRow(
+                    icon = Icons.Rounded.Cookie,
+                    title = "Importer mes cookies YouTube",
+                    subtitle = "Format texte, Netscape ou JSON pour tes recommandations perso",
+                    onClick = {
+                        onDismiss()
+                        onImportCookies()
+                    }
+                )
+                Spacer(Modifier.height(8.dp))
+            }
             AddRow(
                 icon = Icons.Rounded.PhoneAndroid,
                 title = stringResource(R.string.add_device_profile),

@@ -315,16 +315,13 @@ fun NowPlayingOptionsSheet(
                             else -> stringResource(R.string.np_tile_download)
                         },
                         selected = isDownloaded,
-                        // Already done or already working: the tile still reads
-                        // as the state it is in rather than going grey, which a
-                        // selected container says on its own.
-                        enabled = !isDownloaded && !isDownloading,
+                        enabled = !isDownloading,
                         loading = isDownloading,
                         modifier = Modifier.weight(1f),
                         onClick = {
                             haptics.performHapticFeedback(HapticFeedbackType.Confirm)
                             viewModel.toggleDownload(song)
-                            onDismiss()
+                            if (isDownloaded) onDismiss()
                         }
                     )
                 }

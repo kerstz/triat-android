@@ -15,6 +15,7 @@ import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Album
+import androidx.compose.material.icons.rounded.Delete
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
@@ -86,6 +87,10 @@ fun SongOptionsSheet(
     onDismiss: () -> Unit,
     /** Offered only where there is somewhere to go; null hides the row. */
     onArtistClick: ((String) -> Unit)? = null,
+    /** Called when user chooses to remove this song from the current playlist. */
+    onRemoveFromPlaylist: (() -> Unit)? = null,
+    /** Called when user chooses to remove this song from listening history. */
+    onRemoveFromHistory: (() -> Unit)? = null,
     /**
      * The two "don't recommend this" taps. Null on a surface with no
      * recommendation feed behind it - the same gate `VideoOptionsSheet` uses -
@@ -199,17 +204,45 @@ fun SongOptionsSheet(
                     }
                 )
 
-                // A song already on the device has nothing to download, and a
-                // row that would undo the download belongs on the downloads
-                // screen rather than one tap from a list of everything.
+                if (onRemoveFromPlaylist != null) {
+                    OptionRowDivider()
+                    OptionRow(
+                        icon = Icons.Rounded.Delete,
+                        title = stringResource(R.string.song_options_remove_from_playlist),
+                        iconTint = MaterialTheme.colorScheme.error,
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onDismiss()
+                            onRemoveFromPlaylist()
+                        }
+                    )
+                }
+
+                if (onRemoveFromHistory != null) {
+                    OptionRowDivider()
+                    OptionRow(
+                        icon = Icons.Rounded.Delete,
+                        title = stringResource(R.string.song_options_remove_from_history),
+                        iconTint = MaterialTheme.colorScheme.error,
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            onDismiss()
+                            onRemoveFromHistory()
+                        }
+                    )
+                }
+
                 if (isDownloaded) {
                     OptionRowDivider()
                     OptionRow(
-                        icon = Icons.Rounded.Download,
-                        title = stringResource(R.string.song_options_downloaded),
-                        trailing = OptionRowTrailing.CHECK,
-                        enabled = false,
-                        onClick = {}
+                        icon = Icons.Rounded.Delete,
+                        title = stringResource(R.string.song_options_delete_download),
+                        iconTint = MaterialTheme.colorScheme.error,
+                        onClick = {
+                            haptics.performHapticFeedback(HapticFeedbackType.Confirm)
+                            viewModel.toggleDownload(song)
+                            onDismiss()
+                        }
                     )
                 } else if (!viewModel.isLocalOriginal(song)) {
                     OptionRowDivider()
