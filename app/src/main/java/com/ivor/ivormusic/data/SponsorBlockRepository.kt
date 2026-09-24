@@ -100,7 +100,7 @@ class SponsorBlockRepository {
         private const val TAG = "SponsorBlock"
         const val API_BASE = "https://sponsor.ajay.app"
         const val API_HOST = "sponsor.ajay.app"
-        private const val USER_AGENT = "Koda Android (https://github.com/Ivorisnoob/Koda)"
+        private const val USER_AGENT = "Triat Android (based on Koda, https://github.com/Ivorisnoob/Koda)"
 
         /**
          * Four hex characters, which is what the API documents and what keeps

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Koda</string>
+    <string name="app_name">Triat</string>
 
     <!--
       Shared by the MediaStyle notification and the playback progress Live
@@ -101,7 +101,7 @@
     <string name="local_only_update_subtitle">Update checks need the internet. Turn off Local only in Settings to check for updates.</string>
 
     <!-- Crash report prompt (MainActivity) -->
-    <string name="crash_dialog_title">Koda crashed last time</string>
+    <string name="crash_dialog_title">Triat crashed last time</string>
     <string name="crash_dialog_message">Something went wrong on your previous session. You can send a bug report with the details - nothing leaves your device unless you choose to share it.</string>
     <string name="crash_dialog_view_report">View &amp; report</string>
     <string name="crash_dialog_not_now">Not now</string>
@@ -275,7 +275,7 @@
     <string name="sp_replace_session_cookies">Replace Session Cookies</string>
     <string name="sp_replace_session_cookies_sub">Paste a fresh cookie header if your session goes stale</string>
     <string name="sp_sign_out_sub">Disconnect your YouTube account</string>
-    <string name="sp_signed_out_info">Koda works signed out. Signing in adds your playlists, liked songs, subscriptions and watch history.</string>
+    <string name="sp_signed_out_info">Triat works signed out. Signing in adds your playlists, liked songs, subscriptions and watch history.</string>
     <string name="sp_connect_youtube_music">Connect YouTube Music</string>
     <string name="sp_connect_youtube_music_sub">Sign in to access your playlists and liked songs</string>
     <string name="sp_sign_in_cookies">Sign In With Cookies</string>
@@ -289,7 +289,7 @@
     <string name="about_developer">Developer</string>
     <string name="about_debug">Debug</string>
     <string name="about_release">Release</string>
-    <string name="about_title">About Koda</string>
+    <string name="about_title">About Triat</string>
     <string name="about_build_details">Build details</string>
     <string name="about_package">Package</string>
     <string name="about_device">Device</string>
@@ -297,11 +297,11 @@
     <string name="about_project">Project</string>
     <string name="about_update_subtitle">See the installed build, latest release and compatible APK</string>
     <string name="about_source_code">Source code</string>
-    <string name="about_source_subtitle">Read, inspect or contribute to Koda on GitHub</string>
+    <string name="about_source_subtitle">Read, inspect or contribute to Triat on GitHub</string>
     <string name="about_license">License</string>
     <string name="about_license_subtitle">GNU General Public License v3.0</string>
     <string name="about_report_issue_subtitle">Open a new issue on GitHub</string>
-    <string name="about_open_source_note">Koda is open source under GPL-3.0. The app mark and build details above are bundled with the app, so this page is complete before anything is fetched.</string>
+    <string name="about_open_source_note">Triat is based on Koda by Ivorisnoob and stays open source under GPL-3.0. The app mark and build details above are bundled with the app, so this page is complete before anything is fetched.</string>
     <string name="cd_profile_picture">Profile Picture</string>
     <string name="cd_developer_avatar">Developer Avatar</string>
     <string name="sp_connected">Connected</string>
@@ -324,7 +324,7 @@
     <string name="sb_hub_sub">Skip sponsored and off-topic parts of videos</string>
     <string name="sb_enable">Enable SponsorBlock</string>
     <string name="sb_enable_sub">Look up crowd-sourced segments for videos you watch</string>
-    <string name="sb_privacy_note">Koda never sends the video ID. It sends the first four characters of a hash of it and picks your video out of the results locally, so sponsor.ajay.app cannot tell what you are watching.</string>
+    <string name="sb_privacy_note">Triat never sends the video ID. It sends the first four characters of a hash of it and picks your video out of the results locally, so sponsor.ajay.app cannot tell what you are watching.</string>
     <string name="sb_categories">Categories</string>
     <string name="sb_categories_sub">Choose what happens for each kind of segment</string>
     <string name="sb_behaviour">Behaviour</string>
@@ -364,7 +364,7 @@
         <item quantity="one">%1$d category</item>
         <item quantity="other">%1$d categories</item>
     </plurals>
-    <string name="sp_display_size_sub">Make everything in Koda smaller or larger</string>
+    <string name="sp_display_size_sub">Make everything in Triat smaller or larger</string>
     <string name="sp_display_size_preview">Preview</string>
     <string name="sp_display_size_scale">Scale</string>
     <string name="sp_display_size_about">About this setting</string>
@@ -389,7 +389,7 @@
     <string name="sp_save_listening_history">Save Listening History</string>
     <string name="sp_streaming_quality">Streaming quality</string>
     <string name="sp_quality_per_network">Quality per network</string>
-    <string name="sp_quality_network_hint">Koda picks these based on the connection in use</string>
+    <string name="sp_quality_network_hint">Triat picks these based on the connection in use</string>
     <string name="sp_music_quality">Music quality</string>
     <string name="sp_video_quality">Video quality</string>
     <string name="sp_prefer_hdr">Prefer HDR video</string>
@@ -423,8 +423,8 @@
     <string name="qd_music_mobile_desc">Songs stream at this quality on mobile data.</string>
 
     <!-- Android Auto help -->
-    <string name="auto_help_subtitle">Why Koda may not appear in your car</string>
-    <string name="auto_help_intro">Android Auto hides media apps that were not installed from the Play Store. Koda ships as a download from GitHub, so it stays invisible until you allow it - this is Auto\'s rule, not a bug in Koda.</string>
+    <string name="auto_help_subtitle">Why Triat may not appear in your car</string>
+    <string name="auto_help_intro">Android Auto hides media apps that were not installed from the Play Store. Triat ships as a download from GitHub, so it stays invisible until you allow it - this is Auto\'s rule, not a bug in Triat.</string>
     <string name="auto_help_step1">Open the Android Auto app on your phone and tap its version info repeatedly until developer mode is offered</string>
     <string name="auto_help_step2">Open Developer settings from the menu</string>
     <string name="auto_help_step3">Turn on \u0022Unknown sources\u0022</string>
@@ -477,8 +477,8 @@
     <string name="sp_fast_refresh_off">Full details for every video - slow on a large subscription list</string>
     <string name="sp_downloads">Downloads</string>
     <string name="sp_private_downloads">Private downloads</string>
-    <string name="sp_private_downloads_on">New audio and video stay inside Koda and are removed on uninstall</string>
-    <string name="sp_private_downloads_off">New audio and video appear in Downloads/Koda</string>
+    <string name="sp_private_downloads_on">New audio and video stay inside Triat and are removed on uninstall</string>
+    <string name="sp_private_downloads_off">New audio and video appear in Downloads/Triat</string>
     <string name="sp_private_downloads_note">Album art stays hidden from Gallery in either mode. Existing downloads stay where they are.</string>
     <string name="sp_cache">Cache</string>
     <string name="sp_cache_videos">Cache videos</string>
@@ -496,7 +496,7 @@
     <string name="sp_cache_music_sub">Keep streamed songs for faster replay and offline listening</string>
     <string name="sp_local_cache">Music cache</string>
     <string name="sp_max_cache_size">Music cache limit</string>
-    <string name="sp_cache_size_large_warning">Koda only fills the cache as you listen, but it can grow to %1$s of device storage before it starts evicting older songs.</string>
+    <string name="sp_cache_size_large_warning">Triat only fills the cache as you listen, but it can grow to %1$s of device storage before it starts evicting older songs.</string>
     <string name="sp_cache_size_low_space">Only %1$s free on this device. The cache will stop growing when the space runs out, and other apps have to share it.</string>
     <string name="sp_clear_cache">Clear music cache</string>
     <string name="sp_clear_cache_sub">Remove temporarily stored songs; keep downloads</string>
@@ -506,11 +506,11 @@
     <string name="sp_live_playback_updates">Live playback updates</string>
     <string name="sp_live_playback_updates_sub">Show what\'s playing as a live status bar chip</string>
     <string name="sp_blocked_by_system">Blocked by system settings</string>
-    <string name="sp_blocked_by_system_sub">Allow live updates for Koda in Android settings</string>
+    <string name="sp_blocked_by_system_sub">Allow live updates for Triat in Android settings</string>
     <string name="sp_new_uploads">New uploads</string>
     <string name="sp_notify_new_uploads">Notify about new uploads</string>
     <string name="sp_notify_new_uploads_on">Checks channels you follow on this device</string>
-    <string name="sp_notify_new_uploads_off">Off: Koda only checks while you are using it</string>
+    <string name="sp_notify_new_uploads_off">Off: Triat only checks while you are using it</string>
     <string name="sp_channels">Channels</string>
     <string name="sp_choose_notifiers">Choose who may notify you</string>
     <string name="sp_muted">Muted</string>
@@ -521,7 +521,7 @@
     <string name="sp_xiaomi_notice">Xiaomi device detected. Enabling both of these is highly recommended.</string>
     <string name="sp_wellbeing">Wellbeing</string>
     <string name="sp_daily_time_limit">Daily time limit</string>
-    <string name="sp_daily_time_limit_sub">Lock Koda after a set amount of listening per day</string>
+    <string name="sp_daily_time_limit_sub">Lock Triat after a set amount of listening per day</string>
     <string name="sp_feedback">Feedback</string>
     <string name="sp_report_bug">Report a bug</string>
     <string name="sp_android_auto">Android Auto</string>
@@ -536,7 +536,7 @@
     <string name="ob_skip">Skip</string>
     <string name="ob_continue">Continue</string>
     <string name="ob_start_listening">Start listening</string>
-    <string name="ob_welcome_title">Welcome to Koda</string>
+    <string name="ob_welcome_title">Welcome to Triat</string>
     <string name="ob_welcome_body">Music and videos, your local files, and a player that adapts to you. A few quick choices and you are in.</string>
     <string name="ob_feat_stream_title">Stream anything</string>
     <string name="ob_feat_stream_sub">Music and videos powered by YouTube Music</string>
@@ -549,7 +549,7 @@
     <string name="ob_scan_device_audio">Scan device audio</string>
     <string name="ob_scan_device_audio_sub">Show local songs across the app</string>
     <string name="ob_music_access">Music access</string>
-    <string name="ob_audio_access_allowed">Koda can read your audio library.</string>
+    <string name="ob_audio_access_allowed">Triat can read your audio library.</string>
     <string name="ob_audio_access_needed">Needed to find songs on this device.</string>
     <string name="ob_allow">Allow</string>
     <string name="ob_hint_only_audio">Only your audio files are read. Nothing leaves the device.</string>
@@ -569,7 +569,7 @@
     <string name="ob_shorts_sub">Show a Home shelf and use the vertical swipe player</string>
     <string name="ob_shorts_warning">Endless short-form feeds are designed to keep you scrolling. With Shorts off, they stay out of Home and open in the standard video player elsewhere.</string>
     <string name="ob_page_look_and_feel">Look and feel</string>
-    <string name="ob_look_and_feel_body">Koda uses Material You dynamic color. Choose how it should behave on this device.</string>
+    <string name="ob_look_and_feel_body">Triat uses Material You dynamic color. Choose how it should behave on this device.</string>
     <string name="theme_system">System</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
@@ -603,9 +603,9 @@
     <string name="ob_high_compat_scan">High compatibility scan</string>
     <string name="ob_high_compat_scan_sub">Only for devices that hide music from the system index, like some HyperOS builds</string>
     <string name="ob_page_daily_limit">Daily time limit</string>
-    <string name="ob_page_daily_limit_body">Completely optional, and off by default. Decide how much Koda you get each day - when it\'s used up, the app locks until midnight.</string>
+    <string name="ob_page_daily_limit_body">Completely optional, and off by default. Decide how much Triat you get each day - when it\'s used up, the app locks until midnight.</string>
     <string name="ob_limit_my_listening">Limit my listening</string>
-    <string name="ob_limit_my_listening_sub">Locks Koda once today\'s budget runs out</string>
+    <string name="ob_limit_my_listening_sub">Locks Triat once today\'s budget runs out</string>
     <string name="ob_every_day">Every day:</string>
     <string name="ob_hint_weekday_hours">Different hours per weekday can be set later in Settings > Advanced.</string>
     <string name="cd_granted">Granted</string>
@@ -622,7 +622,7 @@
     <string name="vh_youre_offline">You\'re offline</string>
     <string name="vh_removed_from_history">Removed from watch history</string>
     <string name="vh_clear_history">Clear watch history</string>
-    <string name="vh_clear_history_body">This empties Koda\'s watch history on this device. It does not delete anything from your YouTube account.</string>
+    <string name="vh_clear_history_body">This empties Triat\'s watch history on this device. It does not delete anything from your YouTube account.</string>
     <string name="vh_clear_history_confirm">Clear</string>
     <string name="vh_no_videos_found">No videos found</string>
     <string name="vh_downloaded_hint">Downloaded videos will appear here</string>
@@ -785,7 +785,7 @@
 
     <!-- Backup and restore -->
     <string name="bk_write_failed">That file could not be written. Pick another folder and try again.</string>
-    <string name="bk_read_failed">That file could not be read as a Koda backup.</string>
+    <string name="bk_read_failed">That file could not be read as a Triat backup.</string>
     <string name="bk_this_install">This install</string>
     <string name="bk_create">Create a backup</string>
     <string name="bk_create_sub">Write everything to one file you can keep anywhere</string>
@@ -800,7 +800,7 @@
     <string name="bk_hold_6">Every setting in both modes, from palette and player style to per-network quality</string>
     <string name="bk_not_holds">What it does not</string>
     <string name="bk_not_1">Your Google sign-in. Accounts come back by name and ask to be signed into again, so the file is safe to keep in cloud storage or mail to yourself.</string>
-    <string name="bk_not_2">Downloaded audio and video. Those files live in Downloads/Koda and survive an uninstall on their own; putting them in here would make the backup gigabytes.</string>
+    <string name="bk_not_2">Downloaded audio and video. Those files live in Downloads/Triat and survive an uninstall on their own; putting them in here would make the backup gigabytes.</string>
     <string name="bk_not_3">Cached playback media, which rebuilds itself as you listen and watch.</string>
     <string name="bk_writing">Writing your backup</string>
     <string name="bk_reading">Reading that file</string>
@@ -809,10 +809,10 @@
     <string name="bk_confirm_title">Restore this backup?</string>
     <string name="bk_empty_warn">This backup is empty. Restoring it would clear what is on this device and put nothing back.</string>
     <string name="bk_replace_warn">Everything listed above replaces what is on this device. Playlists, liked songs, stats, history and settings that are here now and not in the backup will be gone.</string>
-    <string name="bk_restarts">Koda restarts when this finishes.</string>
+    <string name="bk_restarts">Triat restarts when this finishes.</string>
     <string name="bk_replace_restore">Replace and restore</string>
     <string name="bk_restored">Restored</string>
-    <string name="bk_restart_needed">Koda needs to restart to load everything back.</string>
+    <string name="bk_restart_needed">Triat needs to restart to load everything back.</string>
     <string name="bk_sign_in_again">Open Settings, Account when it comes back to sign in again.</string>
     <string name="bk_restart_now">Restart now</string>
     <string name="bk_failed_title">That didn\'t work</string>
@@ -878,10 +878,10 @@
     <string name="us_view_release">View Release on GitHub</string>
     <string name="us_all_variants">All Variants</string>
     <string name="us_all_good">All Good!</string>
-    <string name="us_latest_body">You\'re running the latest version of Koda.</string>
+    <string name="us_latest_body">You\'re running the latest version of Triat.</string>
     <string name="us_couldnt_check">Couldn\'t Check for Updates</string>
     <string name="us_check_again">Check again</string>
-    <string name="us_installed_visible_while_checking">Your installed build stays available while Koda checks GitHub.</string>
+    <string name="us_installed_visible_while_checking">Your installed build stays available while Triat checks GitHub.</string>
     <string name="us_check_failed_body">Your installed app is unaffected. You can retry whenever you are online.</string>
     <string name="us_installed_version">Installed %1$s</string>
     <string name="us_available_version">Available %1$s</string>
@@ -900,7 +900,7 @@
     <string name="us_release_name">Release</string>
     <string name="us_notes_on_github">Release notes are available on GitHub.</string>
     <string name="us_recommended">Recommended</string>
-    <string name="us_local_only_hero">Koda is not contacting GitHub.</string>
+    <string name="us_local_only_hero">Triat is not contacting GitHub.</string>
     <string name="us_local_only_body">Your installed build is listed above and needs no connection. Turn Local only off in Settings to see the latest release.</string>
     <string name="us_handoff_started">Download opened</string>
     <string name="us_handoff_started_body">%1$s is downloading in your browser. Android will ask you to install it when it finishes.</string>
@@ -936,14 +936,14 @@
     <string name="al_todays_listening">That\'s today\'s listening</string>
     <string name="al_youve_had">You\'ve had </string>
     <string name="al_resets_midnight">Resets every night at midnight</string>
-    <string name="tl_locked_until_midnight">Koda is locked until midnight</string>
-    <string name="tl_locks_when_budget">Koda locks when the day\'s budget runs out</string>
-    <string name="tl_off_subtitle">Off - Koda is always unlocked</string>
+    <string name="tl_locked_until_midnight">Triat is locked until midnight</string>
+    <string name="tl_locks_when_budget">Triat locks when the day\'s budget runs out</string>
+    <string name="tl_off_subtitle">Off - Triat is always unlocked</string>
     <string name="tl_enable">Enable daily time limit</string>
-    <string name="tl_enable_sub">Locks all of Koda once today\'s budget is used</string>
+    <string name="tl_enable_sub">Locks all of Triat once today\'s budget is used</string>
     <string name="tl_quick_set">Quick set - same budget every day</string>
     <string name="tl_per_day">Per-day budgets</string>
-    <string name="tl_counts_note">Counts only time Koda is open on screen, and resets at midnight. Setting a day to Unlimited leaves it untracked.</string>
+    <string name="tl_counts_note">Counts only time Triat is open on screen, and resets at midnight. Setting a day to Unlimited leaves it untracked.</string>
     <string name="tl_tracking_off">Tracking off</string>
     <string name="tl_unlimited_today">Unlimited today - no budget set</string>
     <string name="tl_turn_on_to_track">Turn on the limit below to start tracking</string>
@@ -1058,7 +1058,7 @@
     <string name="dv_many_videos">%1$d videos</string>
     <string name="dv_no_videos">No videos found on this device</string>
     <string name="dv_folder_empty">Nothing here any more</string>
-    <string name="dv_access_body">Play videos stored on your phone. Koda needs access to your video files.</string>
+    <string name="dv_access_body">Play videos stored on your phone. Triat needs access to your video files.</string>
     <string name="dv_allow_access">Allow access</string>
     <string name="dv_partial_access">Showing only the videos you selected.</string>
     <string name="dv_select_more">Select more</string>
@@ -1116,7 +1116,7 @@
     <string name="sm_empty_body">Import a list from another app, copy your YouTube account, or just tap Subscribe on any channel.</string>
     <string name="sm_import_failed">Import failed</string>
     <string name="sm_import_finished">Import finished</string>
-    <string name="sm_foreign_skipped">Channels from BiliBili, NicoNico and the like were skipped - Koda only plays YouTube.</string>
+    <string name="sm_foreign_skipped">Channels from BiliBili, NicoNico and the like were skipped - Triat only plays YouTube.</string>
 
     <!-- Player styles / home styles -->
     <string name="ps_style_classic">Classic</string>
@@ -1156,7 +1156,7 @@
     <string name="hvm_subs_feed_rate_limited_soon">YouTube is limiting requests from this network. Try again in a moment.</string>
     <string name="hvm_channel_feed_error">Couldn\'t load uploads from %1$s. Pull to try again.</string>
     <string name="hvm_import_empty">That file was empty or could not be opened.</string>
-    <string name="hvm_import_foreign">That file only had channels from services Koda can\'t play.</string>
+    <string name="hvm_import_foreign">That file only had channels from services Triat can\'t play.</string>
     <string name="hvm_import_no_channels">Couldn\'t find any channels in that file.</string>
     <string name="hvm_import_read">Couldn\'t read that file.</string>
     <string name="hvm_copy_empty">Your account has no subscriptions to copy.</string>
@@ -1225,12 +1225,12 @@
     <string name="lib_saved_to_library">Saved to your library</string>
     <string name="lib_copy_editable">Save as editable copy</string>
     <string name="lib_copy_editable_done">Copied to your library. Edit it there.</string>
-    <string name="lib_hide_playlist">Hide from Koda</string>
+    <string name="lib_hide_playlist">Hide from Triat</string>
     <string name="lib_hidden_playlists">Hidden playlists</string>
     <string name="lib_hidden_count">%1$d hidden</string>
     <string name="lib_unhide">Unhide</string>
-    <string name="lib_hidden_explainer">These stay on your account. Koda just stops listing them.</string>
-    <string name="lib_playlist_hidden">Hidden from Koda</string>
+    <string name="lib_hidden_explainer">These stay on your account. Triat just stops listing them.</string>
+    <string name="lib_playlist_hidden">Hidden from Triat</string>
     <string name="lib_removed_from_library">Removed from your library</string>
     <string name="lib_load_failed_title">Couldn\'t load tracks</string>
     <string name="lib_load_failed_body">This playlist came back empty. Check your connection and try again.</string>
@@ -1390,7 +1390,7 @@
     <!-- App Icon Customizer -->
     <string name="sp_app_icon">App icon</string>
     <string name="sp_app_icon_subtitle">Customize launcher icon style and colors</string>
-    <string name="app_icon_classic">Koda Classic</string>
+    <string name="app_icon_classic">Triat Classic</string>
     <string name="app_icon_classic_desc">Deep purple with cream note &amp; neon lime spark</string>
     <string name="app_icon_crimson">Crimson Beat</string>
     <string name="app_icon_crimson_desc">Ruby red with rose note &amp; golden amber spark</string>
@@ -1430,7 +1430,7 @@
     <string name="app_icon_shape_cookie">Cookie</string>
     <string name="app_icon_shape_clover">Clover</string>
     <string name="app_icon_custom_title">Custom style</string>
-    <string name="app_icon_launcher_note">Custom colors stay inside Koda. Your launcher shows the closest preset, %1$s.</string>
+    <string name="app_icon_launcher_note">Custom colors stay inside Triat. Your launcher shows the closest preset, %1$s.</string>
     <string name="app_icon_save_style">Save style</string>
     <string name="app_icon_save_style_title">Name this style</string>
     <string name="app_icon_save_style_hint">Style name</string>
@@ -1453,14 +1453,14 @@
     <string name="sp_nav_standard">Standard</string>
 
     <!-- Hub category explanations (long press) -->
-    <string name="si_hub_account">Connect a YouTube Music account to bring in your playlists, likes, history and subscriptions. Koda works fully signed out; signing in unlocks the personalised feeds.</string>
-    <string name="si_hub_appearance">Everything about how Koda looks and feels: theme, colors, app icon, display size, Home layout, navigation style and touch feedback.</string>
+    <string name="si_hub_account">Connect a YouTube Music account to bring in your playlists, likes, history and subscriptions. Triat works fully signed out; signing in unlocks the personalised feeds.</string>
+    <string name="si_hub_appearance">Everything about how Triat looks and feels: theme, colors, app icon, display size, Home layout, navigation style and touch feedback.</string>
     <string name="si_hub_player">Choose between eight now-playing designs and control how the player uses album artwork colors.</string>
     <string name="si_hub_playback">Song transitions, volume levelling, queue behavior, and streaming quality chosen per network.</string>
     <string name="si_hub_content">Switch between music and video mode, go fully offline, and tune Shorts, feeds and recommendations.</string>
     <string name="si_hub_subscriptions">Manage followed channels, choose whether they live on this device or your account, and how the feed refreshes.</string>
     <string name="si_hub_sponsorblock">Skips sponsor reads and other segments in videos automatically, using community-submitted timestamps. Off by default.</string>
-    <string name="si_hub_storage">Where downloads are kept, what gets cached for instant replays, and how much space Koda is allowed to use.</string>
+    <string name="si_hub_storage">Where downloads are kept, what gets cached for instant replays, and how much space Triat is allowed to use.</string>
     <string name="si_hub_notifications">Alerts for new uploads from channels you follow, and live status-bar progress for downloads and playback.</string>
     <string name="si_hub_local_library">Show music files already on this device alongside YouTube Music in your library.</string>
     <string name="si_hub_backup">Save settings, playlists, history and stats into one file you can restore on any device.</string>
@@ -1469,18 +1469,18 @@
     <!-- Individual setting explanations (long press) -->
     <string name="si_amoled">Uses pure black instead of dark gray in the dark theme. On OLED screens black pixels switch off entirely, which deepens contrast and saves battery.</string>
     <string name="si_ambient">Tints the app background with soft colors pulled from the album art of whatever is playing.</string>
-    <string name="si_app_icon">Pick a different look for Koda\'s icon on your home screen from a set of shape and color presets.</string>
+    <string name="si_app_icon">Pick a different look for Triat\'s icon on your home screen from a set of shape and color presets.</string>
     <string name="si_display_size">Scales the whole interface up or down without touching your system font size. You preview the change before it applies.</string>
     <string name="si_spotlight">Two Home designs showing the same content. Classic leads with a large hero and carousels; Spotlight is a denser grid of shortcuts, quick picks and artwork shelves.</string>
     <string name="si_nav_bar">The floating toolbar hides while you scroll down and returns when you scroll up. The standard bar is a fixed Material 3 navigation bar with labels.</string>
-    <string name="si_haptics">How strongly Koda vibrates in response to touch: drags, toggles, skips and taps. Rich uses the full vocabulary; Subtle keeps only the moments that matter.</string>
+    <string name="si_haptics">How strongly Triat vibrates in response to touch: drags, toggles, skips and taps. Rich uses the full vocabulary; Subtle keeps only the moments that matter.</string>
     <string name="si_artwork_colors">Tints the player\'s controls and background, and a playlist or album page, with colors pulled from the cover instead of the app theme.</string>
     <string name="si_crossfade">How one song hands over to the next. AutoMix analyses tempo and silence to blend compatible songs; Manual always overlaps by a fixed time; Off changes tracks cleanly.</string>
     <string name="si_normalize">Evens out loudness between songs, so a quiet acoustic track and a loudly mastered one play at a similar level.</string>
-    <string name="si_auto_queue">When your queue runs out, Koda keeps the music going with similar songs instead of stopping.</string>
+    <string name="si_auto_queue">When your queue runs out, Triat keeps the music going with similar songs instead of stopping.</string>
     <string name="si_music_history">Keeps a log on this device of the songs you play. It powers your stats and recently played. Separate from your YouTube account\'s history.</string>
-    <string name="si_hdr">When a video has an HDR version and your screen supports it, Koda plays the HDR one. Richer colors, but more data and battery.</string>
-    <string name="si_brightness">Koda remembers the brightness you drag to in fullscreen video and reapplies it next time, instead of resetting to the system level.</string>
+    <string name="si_hdr">When a video has an HDR version and your screen supports it, Triat plays the HDR one. Richer colors, but more data and battery.</string>
+    <string name="si_brightness">Triat remembers the brightness you drag to in fullscreen video and reapplies it next time, instead of resetting to the system level.</string>
     <string name="si_local_only">Cuts all internet use. Only downloads and files on this device play; search, streaming and every YouTube surface stay off until you switch back.</string>
     <string name="si_home_mode_toggle">Shows a music/video switch in the Home header so you can change modes without opening Settings.</string>
     <string name="si_timed_comments">Shows comments pinned to the moment they talk about, floating above the seek bar as the video plays.</string>
@@ -1489,8 +1489,8 @@
     <string name="si_compact_video_home">Smaller video cards in the video Home feed, so more fit on one screen.</string>
     <string name="si_related_videos">The suggestions under a playing video. Turning them off removes the distraction; playlists and queues keep working.</string>
     <string name="si_inline_previews">A card you stop on starts playing where it sits, without sound and without opening it. One preview at a time, and never on mobile data or with Data Saver on. Off by default, because a feed that moves on its own spends battery and data you did not ask it to.</string>
-    <string name="si_not_interested">Everything you have told Koda to stop recommending - hidden videos and blocked channels. Anything can be un-hidden here.</string>
-    <string name="si_private_downloads">Stores downloads inside Koda\'s private folder, invisible to other apps and the gallery, instead of the shared Downloads/Koda folder.</string>
+    <string name="si_not_interested">Everything you have told Triat to stop recommending - hidden videos and blocked channels. Anything can be un-hidden here.</string>
+    <string name="si_private_downloads">Stores downloads inside Triat\'s private folder, invisible to other apps and the gallery, instead of the shared Downloads/Triat folder.</string>
     <string name="si_cache_music">Keeps recently streamed songs on disk so replays start instantly and cost no data. The oldest entries are evicted when the limit below is reached.</string>
     <string name="si_cache_videos">Keeps recently streamed video temporarily for smooth scrubbing and instant replays. It clears itself a few minutes after you stop watching.</string>
     <string name="si_cache_shorts">Caches Shorts you watch so swiping back replays them instantly.</string>
@@ -1500,19 +1500,19 @@
     <string name="si_subs_target">Where the Subscribe button saves a new channel: on this device only, invisible to YouTube, or on your YouTube account.</string>
     <string name="si_load_local_songs">Scans this device for music files and shows them in your library next to YouTube Music. Needs the audio files permission.</string>
     <string name="si_compat_scan">Reads music files directly from storage instead of Android\'s media index. Fixes songs missing on HyperOS and MIUI, but needs the all-files permission.</string>
-    <string name="si_battery">Aggressive battery savers kill background playback. This asks Android to leave Koda running while music plays.</string>
-    <string name="si_upload_notifications">Koda periodically checks followed channels in the background and notifies you about new uploads. Uses a little battery and data.</string>
+    <string name="si_battery">Aggressive battery savers kill background playback. This asks Android to leave Triat running while music plays.</string>
+    <string name="si_upload_notifications">Triat periodically checks followed channels in the background and notifies you about new uploads. Uses a little battery and data.</string>
     <string name="si_live_download">Shows download progress as a Live Update chip in the status bar while a transfer runs.</string>
     <string name="si_live_playback">Shows the playing song as a Live Update chip in the status bar.</string>
-    <string name="si_time_limit">Set a daily usage budget for Koda. When it runs out, the app locks until the next day.</string>
-    <string name="si_watch_history_account">When on, videos you watch in Koda are added to your YouTube account\'s watch history, exactly as if you watched on youtube.com.</string>
+    <string name="si_time_limit">Set a daily usage budget for Triat. When it runs out, the app locks until the next day.</string>
+    <string name="si_watch_history_account">When on, videos you watch in Triat are added to your YouTube account\'s watch history, exactly as if you watched on youtube.com.</string>
     <string name="sp_motion_artwork">Motion artwork</string>
     <string name="sp_motion_artwork_sub">Animate supported album covers in the full player</string>
     <string name="sp_motion_artwork_wifi">Motion artwork on Wi-Fi only</string>
     <string name="sp_motion_artwork_wifi_sub">Use unmetered Wi-Fi for cover lookups and animation</string>
     <string name="sp_waveform">Waveform seek bar</string>
     <string name="sp_waveform_sub">Show the whole song\'s loudness along the progress bar</string>
-    <string name="si_waveform">Koda reads the song\'s own audio and draws the whole track, so you can see the quiet intro and the loud chorus before you reach them. The bars appear as the song loads and then stay put. Files on your device are measured instantly. A song streamed from YouTube is measured using the same audio it is about to play, so it costs no extra data unless you skip away from it. Turning off music caching stops that, and so does Local Only. Measurements are a cache rather than something backed up, and no permission is needed.</string>
+    <string name="si_waveform">Triat reads the song\'s own audio and draws the whole track, so you can see the quiet intro and the loud chorus before you reach them. The bars appear as the song loads and then stay put. Files on your device are measured instantly. A song streamed from YouTube is measured using the same audio it is about to play, so it costs no extra data unless you skip away from it. Turning off music caching stops that, and so does Local Only. Measurements are a cache rather than something backed up, and no permission is needed.</string>
     <string name="sp_motion_artwork_quality">Motion artwork quality</string>
     <string name="sp_motion_artwork_quality_sub_saver">Around 360px. Lowest data use.</string>
     <string name="sp_motion_artwork_quality_sub_balanced">Around 480px. Low data use.</string>
@@ -1533,7 +1533,7 @@
     <string name="sp_visualizer_density_hint">How many bars the strip draws</string>
     <string name="sp_visualizer_sensitivity">Sensitivity</string>
     <string name="sp_visualizer_sensitivity_hint">How strongly quiet passages move the strip</string>
-    <string name="si_visualizer">Shows an animated strip under the progress row in every expanded player style. It reads the audio Koda is already playing, so it needs no microphone permission and records nothing. It dances while music plays and settles when paused, follows the app colors, and stands still under reduced motion or Battery Saver.</string>
+    <string name="si_visualizer">Shows an animated strip under the progress row in every expanded player style. It reads the audio Triat is already playing, so it needs no microphone permission and records nothing. It dances while music plays and settles when paused, follows the app colors, and stands still under reduced motion or Battery Saver.</string>
     <string name="cd_visualizer">Audio visualizer</string>
     <string name="section_releases">Releases</string>
     <string name="lyrics_settings_title">Lyrics</string>
@@ -1576,9 +1576,9 @@
     <string name="lastfm_enable">Use Last.fm</string>
     <string name="lastfm_switch_detail">Sync music plays while enabled. Turning off stops requests and clears unsent plays.</string>
     <string name="lastfm_off_hero">Your music, your choice</string>
-    <string name="lastfm_off_detail">Off by default. Koda works fully without a Last.fm account. Incognito and Local Only also pause Last.fm.</string>
+    <string name="lastfm_off_detail">Off by default. Triat works fully without a Last.fm account. Incognito and Local Only also pause Last.fm.</string>
     <string name="lastfm_connect">Connect your account</string>
-    <string name="lastfm_login_detail">Sign in securely in your browser, approve access, then return to Koda. Your Last.fm password stays in the browser.</string>
+    <string name="lastfm_login_detail">Sign in securely in your browser, approve access, then return to Triat. Your Last.fm password stays in the browser.</string>
     <string name="lastfm_key">API key</string>
     <string name="lastfm_secret">Shared secret</string>
     <string name="lastfm_secret_detail">Scrobbling needs both your API key and shared secret, followed by account authorization. Credentials are stored encrypted on this device.</string>
@@ -1617,11 +1617,11 @@
     <string name="lastfm_error_code">Last.fm could not complete the request (code %1$d). Please retry.</string>
     <string name="lastfm_account_tab">Account</string>
     <string name="lastfm_welcome_title">A home for your listening</string>
-    <string name="lastfm_welcome_body">See your listening story take shape. Connect Last.fm to keep a record of the music you play in Koda.</string>
+    <string name="lastfm_welcome_body">See your listening story take shape. Connect Last.fm to keep a record of the music you play in Triat.</string>
     <string name="lastfm_get_started">Set up Last.fm</string>
     <string name="lastfm_loading_history">Loading your listening history</string>
     <string name="lastfm_history_empty_title">Your next listen starts here</string>
-    <string name="lastfm_history_empty_body">Your recent Last.fm plays will appear here after syncing. Play a song in Koda to start adding to your history.</string>
+    <string name="lastfm_history_empty_body">Your recent Last.fm plays will appear here after syncing. Play a song in Triat to start adding to your history.</string>
     <string name="lastfm_today">Today</string>
     <string name="lastfm_yesterday">Yesterday</string>
     <string name="lastfm_history_limit">Your 20 most recent Last.fm plays</string>
@@ -1634,7 +1634,7 @@
     <string name="lastfm_member_since">Member since</string>
     <string name="lastfm_how_it_works">Listening and privacy</string>
     <string name="lastfm_scrobble_definition">What is a scrobble?</string>
-    <string name="lastfm_scrobble_explanation">A record of a song you listened to. Koda sends one after half the song or four minutes, whichever comes first. Songs must be longer than 30 seconds. Videos are excluded.</string>
+    <string name="lastfm_scrobble_explanation">A record of a song you listened to. Triat sends one after half the song or four minutes, whichever comes first. Songs must be longer than 30 seconds. Videos are excluded.</string>
     <string name="lastfm_privacy_title">You stay in control</string>
     <string name="lastfm_privacy_body">Incognito and Local Only pause Last.fm. Turn it off to stop sending plays, or disconnect to erase the saved account from this device.</string>
     <string name="lastfm_pro">Last.fm Pro</string>

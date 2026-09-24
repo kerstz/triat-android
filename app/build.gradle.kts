@@ -23,7 +23,7 @@ android {
     compileSdk = 37
 
     defaultConfig {
-        applicationId = "com.ivor.ivormusic"
+        applicationId = "org.triat.mobile"
         // Android 11. Anything below 33 only works because core library
         // desugaring is enabled below - NewPipe Extractor calls Java 10/11
         // methods (URLEncoder.encode(String, Charset) and friends) that the
@@ -95,7 +95,7 @@ android {
             // widgets, media session and sign-in state during testing.
             applicationIdSuffix = ".debug"
             versionNameSuffix = "-debug"
-            manifestPlaceholders["appLabel"] = "Koda Debug"
+            manifestPlaceholders["appLabel"] = "Triat Debug"
         }
         release {
             signingConfig = signingConfigs.getByName("release")
@@ -167,7 +167,7 @@ kotlin {
 
 // Build info available via BuildConfig
 android.defaultConfig.apply {
-    buildConfigField("String", "GITHUB_REPO", "\"ivorisnoob/Koda\"")
+    buildConfigField("String", "GITHUB_REPO", "\"kerstz/triat\"")
     buildConfigField("String", "GITHUB_USERNAME", "\"ivorisnoob\"")
 }
 

@@ -52,7 +52,7 @@ internal class LyricsHttpClient {
         val request = Request.Builder()
             .url(builder.build().toString())
             .header("Accept", "application/json, application/xml, text/plain, */*")
-            .header("User-Agent", "Koda Android (https://github.com/Ivorisnoob/Koda)")
+            .header("User-Agent", "Triat Android (based on Koda, https://github.com/Ivorisnoob/Koda)")
             .build()
 
         return suspendCancellableCoroutine { continuation ->
