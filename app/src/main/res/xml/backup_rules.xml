@@ -11,6 +11,10 @@
     <exclude domain="sharedpref" path="yt_music_session.xml"/>
     <exclude domain="sharedpref" path="lastfm_private.xml"/>
     <exclude domain="sharedpref" path="lastfm_hint.xml"/>
+    <!-- The desktop sync key and device id. A credential: never leaves the phone.
+         The tombstones (triat_sync_tombstones.xml) are deliberately NOT excluded,
+         so a restore does not bring deleted items back. -->
+    <exclude domain="sharedpref" path="triat_sync_pairing.xml"/>
     <!--
    <include domain="sharedpref" path="."/>
    <exclude domain="sharedpref" path="device.xml"/>

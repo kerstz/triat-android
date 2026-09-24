@@ -88,6 +88,10 @@ class BackupRepository(context: Context) {
          *  - `koda_incognito` describes a session rather than a preference,
          *    and restoring one onto another device would silently stop it
          *    recording history for reasons its owner never asked for.
+         *  - `triat_sync_pairing` holds the key shared with the paired desktop,
+         *    a credential bound to this install. It must never travel in a
+         *    backup file: a restored phone pairs again. Do not add it here.
+         *    (`triat_sync_tombstones` is the opposite case, listed below.)
          */
         private val PREFERENCE_FILES = listOf(
             "ivor_music_theme_prefs",   // every setting, palette and player style
@@ -96,7 +100,8 @@ class BackupRepository(context: Context) {
             "hidden_playlists",         // playlists the user told Koda not to show
             "search_history",
             "ivor_track_loudness",      // measured per-track gain
-            "koda_icon_styles"          // icon looks the user mixed themselves
+            "koda_icon_styles",         // icon looks the user mixed themselves
+            "triat_sync_tombstones"     // deleted playlists and unliked songs, so a restore does not bring them back through the desktop sync
         )
 
         /**
