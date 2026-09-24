@@ -1651,6 +1651,68 @@
     <string name="lastfm_show_secret">Show shared secret</string>
     <string name="lastfm_hide_secret">Hide shared secret</string>
 
+    <!-- Desktop sync page (Settings > Computer) -->
+    <string name="ds_title">Computer (Triat)</string>
+    <string name="ds_category">Wi-Fi sync</string>
+    <string name="ds_welcome_title">Sync with your computer</string>
+    <string name="ds_intro">Sync your playlists, liked songs and listening history with Triat on your computer over Wi-Fi. Everything stays on your local network and is encrypted.</string>
+    <string name="ds_how_to_pair">On the computer, open Settings › Synchronization › Pair a phone. It shows a code. Choose the computer below and type the code.</string>
+    <string name="ds_not_paired">Not paired</string>
+    <string name="ds_hub_value">%1$s - %2$s</string>
+    <string name="ds_hub_problem">Sync problem</string>
+    <string name="ds_syncing">Syncing…</string>
+    <string name="ds_sync_now">Sync now</string>
+    <string name="ds_never_synced">Not synced yet</string>
+    <string name="ds_synced_just_now">Synced just now</string>
+    <plurals name="ds_synced_minutes_ago">
+        <item quantity="one">Synced %1$d min ago</item>
+        <item quantity="other">Synced %1$d min ago</item>
+    </plurals>
+    <plurals name="ds_synced_hours_ago">
+        <item quantity="one">Synced %1$d h ago</item>
+        <item quantity="other">Synced %1$d h ago</item>
+    </plurals>
+    <plurals name="ds_synced_days_ago">
+        <item quantity="one">Synced %1$d day ago</item>
+        <item quantity="other">Synced %1$d days ago</item>
+    </plurals>
+    <string name="ds_last_changes">Last sync: %1$s</string>
+    <string name="ds_found_title">Computers on your Wi-Fi</string>
+    <string name="ds_searching">Looking for computers on your Wi-Fi…</string>
+    <string name="ds_nothing_found_title">No computer found</string>
+    <string name="ds_nothing_found_help">Check that Triat is open on the computer with sync turned on, that both devices are on the same Wi-Fi, and that the firewall allows port %1$d. Or enter its address below.</string>
+    <string name="ds_pair_with">Pair with %1$s</string>
+    <string name="ds_code_label">Pairing code</string>
+    <string name="ds_code_hint">8 characters. Dashes and spaces are ignored.</string>
+    <string name="ds_pair">Pair</string>
+    <string name="ds_manual_open">Enter an address instead</string>
+    <string name="ds_manual_close">Choose from the list</string>
+    <string name="ds_manual_title">Pair by address</string>
+    <string name="ds_manual_label">Computer address</string>
+    <string name="ds_manual_hint">Shown in Triat\'s sync settings on the computer, like 192.168.1.20:47823</string>
+    <string name="ds_share_session_title">Receive the computer\'s YouTube session</string>
+    <string name="ds_share_session_sub">Signs this phone in to YouTube with the session the computer shares, if sharing is on there. It replaces the account signed in here.</string>
+    <string name="ds_what_syncs_title">What is synced</string>
+    <string name="ds_what_syncs_body">Playlists, liked songs and the listening history of YouTube tracks. Files stored on this phone are never sent, and listening history is not sent while Incognito is on. Everything is encrypted with a key only this phone and your computer share.</string>
+    <string name="ds_repair">Pair again</string>
+    <string name="ds_forget_title">Forget this computer</string>
+    <string name="ds_forget_sub">Stops syncing. Pairing again needs a new code.</string>
+    <string name="ds_forget_confirm_title">Forget %1$s?</string>
+    <string name="ds_forget_confirm_body">This phone stops syncing with it. Your playlists and likes stay on the phone. To sync again you will need a new code from the computer.</string>
+    <string name="ds_forget_action">Forget</string>
+    <string name="ds_error_wrong_code">That code isn\'t right. Check the code shown on your computer and try again.</string>
+    <string name="ds_error_code_expired">The computer isn\'t waiting for a code. It may have expired (they last two minutes) or been tried too many times. On the computer, choose Pair a phone again to get a new one.</string>
+    <string name="ds_error_not_found">No Triat computer answered at this address. Check the address and port shown in the sync settings on the computer, and that sync is turned on.</string>
+    <string name="ds_error_unreachable">Can\'t reach your computer. Check that Triat is open on it with sync turned on, that both devices are on the same Wi-Fi, and that its firewall allows the sync port (47823 by default).</string>
+    <string name="ds_error_forgotten">Your computer no longer knows this phone. Pair again to keep syncing.</string>
+    <string name="ds_error_bad_address">Enter the address of a computer on your local network, like 192.168.1.20:47823. Addresses on the internet are refused.</string>
+    <string name="ds_error_not_triat">The device at this address didn\'t answer like Triat. Make sure Triat is up to date on both sides.</string>
+    <string name="ds_error_unverified">The computer\'s answer couldn\'t be verified. Ask it for a new code and try again.</string>
+    <string name="ds_error_incompatible">Your computer uses another version of the sync. Update Triat on the phone and on the computer.</string>
+    <string name="ds_error_damaged">The saved pairing can\'t be used any more. Pair again to keep syncing.</string>
+    <string name="ds_error_too_large">Your library is too big to send in one go.</string>
+    <string name="ds_error_internal">Something went wrong on this phone while syncing. Try again.</string>
+
     <!-- Playlist studio (immersive creation flow) -->
     <string name="studio_title">New playlist</string>
     <string name="studio_name_hint">Name your playlist</string>

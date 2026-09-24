@@ -38,6 +38,7 @@ import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.AutoAwesome
+import androidx.compose.material.icons.rounded.Computer
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.FormatSize
 import androidx.compose.material.icons.rounded.MoneyOff
@@ -195,6 +196,12 @@ internal fun buildSettingsSearchIndex(
     entry("lastfm", stringResource(R.string.lastfm_title), "Last.fm", Icons.Rounded.History,
         listOf("lastfm", "last.fm", "scrobble", "scrobbling", "sync", "api key", "login", "listening history")) {
         onOpenPage(SettingsPage.LASTFM)
+    }
+
+    entry("desktop_sync", stringResource(R.string.ds_title), stringResource(R.string.ds_category), Icons.Rounded.Computer,
+        listOf("sync", "synchro", "synchronisation", "desktop", "ordinateur", "computer", "pc", "laptop", "wifi", "wi-fi",
+            "pair", "pairing", "associer", "code", "triat", "playlists", "likes", "favorites", "history")) {
+        onOpenPage(SettingsPage.DESKTOP_SYNC)
     }
 
     // Account

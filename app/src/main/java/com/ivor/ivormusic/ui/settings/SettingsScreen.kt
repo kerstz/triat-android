@@ -269,7 +269,8 @@ internal enum class SettingsPage {
     LYRICS,
     LASTFM,
     SPONSORBLOCK,
-    APP_ICON
+    APP_ICON,
+    DESKTOP_SYNC
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -810,6 +811,7 @@ fun SettingsScreen(
                 )
 
                 SettingsPage.LASTFM -> LastFmSettingsPage(onBack = { page = SettingsPage.HUB })
+                SettingsPage.DESKTOP_SYNC -> DesktopSyncSettingsPage(onBack = { page = SettingsPage.HUB })
                 SettingsPage.LYRICS -> LyricsSettingsPage(
                     configuration = lyricsConfiguration,
                     onChange = onLyricsConfigurationChange,
@@ -1422,6 +1424,8 @@ private fun SettingsHub(
                         )
                         SettingsDivider()
                         LastFmHubRow(onClick = { onOpenPage(SettingsPage.LASTFM) })
+                        SettingsDivider()
+                        DesktopSyncHubRow(onClick = { onOpenPage(SettingsPage.DESKTOP_SYNC) })
                         SettingsDivider()
                         SettingsHubRow(
                             icon = Icons.Rounded.MoneyOff,
