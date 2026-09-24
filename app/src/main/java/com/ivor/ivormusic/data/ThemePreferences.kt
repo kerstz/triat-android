@@ -473,8 +473,8 @@ class ThemePreferences(context: Context) {
         const val KEY_APP_ICON = "app_icon"
         const val DEFAULT_APP_ICON = "default"
         private const val KEY_PALETTE_STYLE = "palette_style"
-        /** Default palette id: wallpaper-based dynamic color (Android 12+). */
-        const val DEFAULT_COLOR_PALETTE = "dynamic"
+        /** Default palette id: Triat's Nothing palette (red on black). */
+        const val DEFAULT_COLOR_PALETTE = "nothing"
         private const val KEY_LOAD_LOCAL_SONGS = "load_local_songs"
         /** One-shot marker for [migrateLoadLocalSongsDefault]. */
         private const val KEY_LOAD_LOCAL_SONGS_DEFAULT_MIGRATED =
@@ -922,15 +922,16 @@ class ThemePreferences(context: Context) {
             val oldDarkMode = prefs.getBoolean(KEY_OLD_DARK_MODE, true)
             return if (oldDarkMode) ThemeMode.DARK else ThemeMode.LIGHT
         }
-        
-        return ThemeMode.SYSTEM
+
+        // Triat is black by default, like the desktop it comes from.
+        return ThemeMode.DARK
     }
 
     /**
-     * Get the stored AMOLED theme preference. Defaults to false.
+     * Get the stored AMOLED theme preference. Defaults to true: Triat is pure black by default.
      */
     private fun getAmoledThemePreference(): Boolean {
-        return prefs.getBoolean(KEY_AMOLED_THEME, false)
+        return prefs.getBoolean(KEY_AMOLED_THEME, true)
     }
 
     /**

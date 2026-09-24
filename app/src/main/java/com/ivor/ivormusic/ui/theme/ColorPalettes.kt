@@ -33,6 +33,10 @@ const val DYNAMIC_PALETTE_ID = "dynamic"
  * there is a genuinely distinct pick for every taste.
  */
 val APP_PALETTES: List<AppPalette> = listOf(
+    // Triat: the Nothing desktop it comes from. Red is the one accent
+    // (the active window border on that desktop), the rest stays grey.
+    AppPalette("nothing", "Nothing", "Triat", Color(0xFFD71921), Color(0xFF8A8A8A), Color(0xFFF2F2F2)),
+
     // Vibrant
     AppPalette("electric", "Electric", "Vibrant", Color(0xFF2F6BFF), Color(0xFF00C2FF), Color(0xFF7A5CFF)),
     AppPalette("magenta", "Magenta Pop", "Vibrant", Color(0xFFFF2D95), Color(0xFFFF5CA8), Color(0xFFB14BFF)),
