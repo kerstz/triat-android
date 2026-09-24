@@ -21,6 +21,9 @@ class IvorMusicApplication : Application(), ImageLoaderFactory {
         // The setting handler does the same immediately when the value changes.
         com.ivor.ivormusic.work.UploadCheckWorker.sync(this)
         com.ivor.ivormusic.work.ScheduledBackupWorker.sync(this)
+        // Wi-Fi sync with Triat desktop, on its own: at the foreground and after
+        // local edits. Started here, once; it registers itself for the lifecycle.
+        com.ivor.ivormusic.sync.AutoSync(this).start()
     }
 
     /**
