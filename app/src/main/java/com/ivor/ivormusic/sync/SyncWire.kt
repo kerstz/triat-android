@@ -204,7 +204,12 @@ object SyncWire {
                 artist = song.artist,
                 album = song.album,
                 timestamp = item.optLong("at", 0L),
-                duration = (item.optDouble("seconds", 0.0) * 1000).toLong(),
+                // PlayHistoryEntry.duration is the length of the song (the
+                // history rebuilds playable Songs from it, and the minutes
+                // listened add it up per play). The desktop's "seconds" is the
+                // time it was listened to, which can be a few seconds of a skip,
+                // so the track's own length wins and "seconds" is the fallback.
+                duration = if (song.duration > 0) song.duration else (item.optDouble("seconds", 0.0) * 1000).toLong(),
                 thumbnailUrl = song.thumbnailUrl,
                 source = SongSource.YOUTUBE,
             )

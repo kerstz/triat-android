@@ -45,6 +45,8 @@ Two more: **adding an account must clear the WebView cookie jar first** (Google'
 
 **Gated at each write, never at the call sites.** `VideoHistoryRepository.addVideo`, `SearchHistoryRepository.addQuery`, `StatsRepository.addPlayEvent` and both of `YouTubeRepository`'s playback reporters check it themselves, so a sixth surface that records something inherits the behaviour instead of having to remember. That is the whole reason it is process-wide state rather than a flag on a ViewModel.
 
+**One write is deliberately not gated: `StatsRepository.mergeSyncedHistory`.** It adds plays another device already recorded (the Wi-Fi sync with Triat desktop), not something being played now, so incognito has nothing to suppress there; what incognito does stop is the phone sending its own history the other way (`DesktopSyncRepository.historyToSend`). It keeps the original dates and bypasses `addPlayEvent` for that reason. [judgement September 2026]
+
 **It suppresses recording, not doing.** Playback, downloads, playlists, likes and subscriptions are untouched, and the row's subtitle says so. [judgement] Someone reading "incognito" as "nothing I do is saved" would be surprised by a download appearing later, and silently discarding a save the user asked for by name is a different feature wearing this one's label.
 
 **Persisted rather than held in memory, so it fails closed.** A service restarted after the app was evicted must not start recording again on its own. The preference is written before the in-memory flag for the same reason - the reverse order records nothing this session and everything after the next process death. It is excluded from backups because it describes a session.

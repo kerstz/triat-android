@@ -8,6 +8,7 @@ import com.ivor.ivormusic.data.LikedSongsRepository
 import com.ivor.ivormusic.data.PlayHistoryEntry
 import com.ivor.ivormusic.data.PlaylistRepository
 import com.ivor.ivormusic.data.SessionManager
+import com.ivor.ivormusic.data.StatsRepository
 import com.ivor.ivormusic.util.KLog
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineScope
@@ -75,6 +76,7 @@ class DesktopSyncRepository private constructor(context: Context) {
     // disk before every read (other instances write the same files).
     private val playlists by lazy { PlaylistRepository(appContext) }
     private val likes by lazy { LikedSongsRepository(appContext) }
+    private val stats by lazy { StatsRepository(appContext) }
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Default)
     private val mutex = Mutex()
@@ -227,9 +229,9 @@ class DesktopSyncRepository private constructor(context: Context) {
     }
 
     /** Listening history is never sent from an incognito session; everything else still is. */
-    private fun historyToSend(): List<PlayHistoryEntry> {
+    private suspend fun historyToSend(): List<PlayHistoryEntry> {
         if (IncognitoMode.isEnabled(appContext)) return emptyList()
-        return emptyList() // A8: StatsRepository(appContext).historyForSync()
+        return stats.historyForSync()
     }
 
     private suspend fun conclude(desktop: SyncStore.PairedDesktop, result: SyncResult): SyncResult {
@@ -271,9 +273,12 @@ class DesktopSyncRepository private constructor(context: Context) {
         for ((song, at) in plan.likesToAdd) likes.likeSongAt(song, at)
         // Leaves a tombstone, on purpose: the desktop must hear about the unlike too.
         for (id in plan.likesToRemove) likes.unlikeSong(id)
-        // A8: merge plan.history into the stats, unless IncognitoMode is on, and count it.
+        // The desktop's plays are another device's history: not held back by
+        // IncognitoMode, which only stops this phone from recording (or sending)
+        // its own. Deduplicated, capped and counted by StatsRepository.
+        val historyAdded = stats.mergeSyncedHistory(plan.history)
         applySession(merged)
-        return SyncChanges.of(plan)
+        return SyncChanges.of(plan, historyAdded)
     }
 
     /**
@@ -344,7 +349,7 @@ class DesktopSyncRepository private constructor(context: Context) {
 
 /**
  * What one sync changed on the phone, by kind. Pure, so the summary can be
- * tested without a device. [historyAdded] is filled in by the history step (A8).
+ * tested without a device. [historyAdded] is what the history merge kept.
  */
 internal data class SyncChanges(
     val playlistsWritten: Int = 0,
@@ -367,7 +372,10 @@ internal data class SyncChanges(
     ).filter { it.second > 0 }
 
     companion object {
-        /** [ApplyPlan.history] is deliberately not counted: it lists what was received, not what was new. */
+        /**
+         * [ApplyPlan.history] is deliberately not counted: it lists what was
+         * received, not what was new. [historyAdded] is what the merge reports.
+         */
         fun of(plan: ApplyPlan, historyAdded: Int = 0) = SyncChanges(
             playlistsWritten = plan.playlistsToWrite.size,
             playlistsDeleted = plan.playlistsToDelete.size,

@@ -279,6 +279,18 @@ class SyncWireTest {
     }
 
     @Test
+    fun `a received play keeps the length of the song, not the time it was listened to`() {
+        val skipped = JSONObject().put("id", "aaaaaaaaaaa").put("at", 5_000L)
+            .put("seconds", 12.0).put("track", wireTrack("aaaaaaaaaaa"))
+        val noLength = JSONObject().put("id", "bbbbbbbbbbb").put("at", 6_000L).put("seconds", 40.0)
+            .put("track", wireTrack("bbbbbbbbbbb").put("duration", 0.0))
+        val plan = SyncWire.plan(merged(history = listOf(skipped, noLength)), emptyList(), emptyList())
+
+        assertEquals(183_000L, plan.history[0].duration)
+        assertEquals(40_000L, plan.history[1].duration)
+    }
+
+    @Test
     fun `an empty or partial state changes nothing`() {
         val plan = SyncWire.plan(JSONObject().put("v", 1), emptyList(), emptyList())
         assertTrue(plan.playlistsToWrite.isEmpty())
