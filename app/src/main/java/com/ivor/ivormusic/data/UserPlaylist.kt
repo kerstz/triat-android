@@ -9,7 +9,9 @@ data class UserPlaylist(
     val description: String? = null,
     val coverUri: String? = null, // Custom cover art URI (file:// or content://)
     val createdAt: Long = System.currentTimeMillis(),
-    val songs: List<Song> = emptyList()
+    val songs: List<Song> = emptyList(),
+    /** Last edit, for the Wi-Fi sync with Triat desktop. 0 on files written before it. */
+    val updatedAt: Long = 0L
 ) {
     // Helper to convert to PlaylistDisplayItem for UI consistency
     fun toDisplayItem(): PlaylistDisplayItem {

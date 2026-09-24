@@ -61,7 +61,16 @@ class LikedSongsRepository(context: Context) {
         }
     }
 
+    private val tombstones = com.ivor.ivormusic.sync.SyncTombstones(appContext)
+
     private fun saveLikedIds(songIds: Set<String>) {
+        // Unlikes leave a tombstone for the Wi-Fi sync; a like clears it.
+        (_likedSongIds.value - songIds).forEach {
+            tombstones.record(com.ivor.ivormusic.sync.SyncTombstones.LIKE, it)
+        }
+        (songIds - _likedSongIds.value).forEach {
+            tombstones.clear(com.ivor.ivormusic.sync.SyncTombstones.LIKE, it)
+        }
         prefs.edit().putStringSet(KEY_LIKED_SONGS, songIds).apply()
         _likedSongIds.value = songIds
     }
@@ -154,6 +163,13 @@ class LikedSongsRepository(context: Context) {
     fun likeSong(song: Song) {
         saveLikedIds(_likedSongIds.value + song.id)
         saveSongMetadata(listOf(song.likedNow()) + _likedSongs.value.filter { it.id != song.id })
+    }
+
+    /** A like received from Triat desktop, keeping the date it was made. */
+    fun likeSongAt(song: Song, likedAt: Long) {
+        saveLikedIds(_likedSongIds.value + song.id)
+        saveSongMetadata(listOf(song.copy(dateAdded = likedAt)) +
+            _likedSongs.value.filter { it.id != song.id })
     }
 
     /**

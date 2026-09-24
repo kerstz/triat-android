@@ -278,6 +278,8 @@ class PlaylistRepository(private val context: Context) {
     }
     
     suspend fun deletePlaylist(playlistId: String) = withContext(Dispatchers.IO) {
+        com.ivor.ivormusic.sync.SyncTombstones(context)
+            .record(com.ivor.ivormusic.sync.SyncTombstones.PLAYLIST, playlistId)
         val file = File(playlistDir, "$playlistId.json")
         if (file.exists()) file.delete()
         
@@ -449,10 +451,38 @@ class PlaylistRepository(private val context: Context) {
     }
 
     private suspend fun savePlaylist(playlist: UserPlaylist) {
+        writePlaylist(playlist.copy(updatedAt = System.currentTimeMillis()))
+    }
+
+    /** Writes without touching [UserPlaylist.updatedAt]: the sync keeps the author's date. */
+    private fun writePlaylist(playlist: UserPlaylist) {
         val file = File(playlistDir, "${playlist.id}.json")
         val jsonString = json.encodeToString(playlist)
         file.writeText(jsonString)
         loadPlaylists() // Update cache
+    }
+
+    /**
+     * A playlist received from Triat desktop. Created with a generated cover
+     * when it is new here; an existing one keeps its cover and description.
+     */
+    suspend fun applySynced(id: String, name: String, songs: List<Song>, updatedAt: Long) =
+        withContext(Dispatchers.IO) {
+            val current = _userPlaylists.value.find { it.id == id }
+            val base = current ?: UserPlaylist(
+                id = id, name = name, description = null,
+                coverUri = "file://${generateCoverArt(name, id, null)}"
+            )
+            writePlaylist(base.copy(name = name, songs = songs, updatedAt = updatedAt))
+        }
+
+    /** A deletion received from Triat desktop: no new tombstone, it came from one. */
+    suspend fun deleteSynced(id: String) = withContext(Dispatchers.IO) {
+        File(playlistDir, "$id.json").takeIf { it.exists() }?.delete()
+        coversDir.listFiles { _, fileName ->
+            fileName.startsWith("cover_$id") || fileName.startsWith("custom_$id")
+        }?.forEach { it.delete() }
+        loadPlaylists()
     }
     
     /**
