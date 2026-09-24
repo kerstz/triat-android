@@ -20,6 +20,14 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Metered-network detection for the per-network stream quality settings -->
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!--
+        Desktop sync discovery (mDNS on the Wi-Fi). A normal permission, granted
+        at install with no prompt, and deliberately not a location one: NsdManager
+        does not need location. NsdManager itself does not require this one;
+        it is declared so a multicast lock can be taken on a device whose Wi-Fi
+        filter drops mDNS replies.
+    -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Android 16+ Live Updates (Live Activities) -->
@@ -34,6 +42,7 @@
         android:icon="@mipmap/ic_launcher"
         android:label="${appLabel}"
         android:localeConfig="@xml/locales_config"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:requestLegacyExternalStorage="true"

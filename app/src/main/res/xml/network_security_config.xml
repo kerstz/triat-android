@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Cleartext HTTP, decided in task A3 of the Triat sync work.
+
+    The desktop sync speaks plain HTTP to a private address on the Wi-Fi
+    (http://192.168.x.x:47823). Since Android 9 an app targeting API 28+ has
+    cleartext denied by default, and OkHttp asks this policy before it opens
+    the socket, so without an exception the client fails with
+    "CLEARTEXT communication not permitted" before sending a byte.
+
+    Why the exception is global and not scoped:
+    - A domain-config matches host names or exact addresses, never a range,
+      and the desktop is reached by whatever address the router handed out,
+      so "only private addresses" cannot be written here.
+    - Every other network call of the app uses an https:// URL, so allowing
+      cleartext changes nothing for them; it only stops a stray http:// URL
+      from being refused instead of served.
+
+    Why this is acceptable for the sync itself:
+    - The exchange payload is sealed (AES-GCM under a key derived by ECDH plus
+      the pairing code, see sync/SyncCrypto.kt) and the pairing handshake is
+      authenticated by that code, so a listener on the LAN sees ciphertext.
+    - The few clear endpoints (/v1/hello, /v1/pair/start) carry only public
+      values: the desktop's name, its identifier and a public key.
+
+    What keeps the exception honest: DesktopSyncClient (task A4) must refuse
+    any host that is not a loopback, link-local or private address, so the
+    permission cannot be turned into sending sync traffic over the internet.
+    Trust anchors are spelled out (system CAs only, which is also the default
+    at this target) so the file states the whole policy.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>
