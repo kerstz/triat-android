@@ -337,22 +337,6 @@ fun ReportBugScreen(onBack: () -> Unit) {
                             copyAnd(report) {
                                 runCatching {
                                     context.startActivity(
-                                        Intent(Intent.ACTION_VIEW, Uri.parse("https://t.me/ivorisnoob_chat"))
-                                    )
-                                }
-                            }
-                        },
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Icon(Icons.AutoMirrored.Rounded.Send, contentDescription = null)
-                        Spacer(Modifier.width(8.dp))
-                        Text(stringResource(R.string.rb_open_telegram))
-                    }
-                    FilledTonalButton(
-                        onClick = {
-                            copyAnd(report) {
-                                runCatching {
-                                    context.startActivity(
                                         Intent(
                                             Intent.ACTION_VIEW,
                                             Uri.parse("https://github.com/${BuildConfig.GITHUB_REPO}/issues/new")
