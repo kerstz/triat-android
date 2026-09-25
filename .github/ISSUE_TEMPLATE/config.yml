@@ -1,8 +1,5 @@
 blank_issues_enabled: false
 contact_links:
-  - name: Telegram chat
-    url: https://t.me/ivorisnoob_chat
-    about: Questions, help with a problem, beta builds and general discussion. Faster than an issue for anything that is not a bug report.
   - name: Roadmap
     url: https://github.com/Ivorisnoob/Koda/blob/main/ROADMAP.md
     about: What is planned, what is deliberately out of scope, and the known defects already being tracked.

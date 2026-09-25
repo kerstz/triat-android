@@ -21,7 +21,7 @@ Markers: **[verified <month year>]** probed live, trust until YouTube changes; *
 | `docs/player-ui.md` | Player styles, scrubber, waveform, motion artwork, queues, option sheets |
 | `docs/widgets.md` | Glance widgets |
 | `docs/ui-conventions.md` | Images, thumbnails, snackbars, motion, interface scale |
-| `docs/ci.md` | GitHub workflows, APK size, Telegram beta/release posts |
+| `docs/ci.md` | GitHub workflows, APK size, artifacts |
 
 `DESIGN.md` is the public design-system doc; `ROADMAP.md` holds planned work and **Known defects** (check there before re-diagnosing a bug).
 
@@ -169,7 +169,7 @@ One line each; the reasoning is in `docs/rules.md`.
 ./gradlew testDebugUnitTest
 ```
 
-- Non-packaging Gradle tasks need no permission; compile **per item**, not once at the end. No APKs or R8 locally - push an authorized PR branch and `build.yml` builds a signed APK that goes to Telegram beta testers (`docs/ci.md`).
+- Non-packaging Gradle tasks need no permission; compile **per item**, not once at the end. No APKs or R8 locally - push an authorized branch and `build.yml` uploads the APKs as workflow artifacts (`docs/ci.md`).
 - Tests are a small JVM suite under `app/src/test/` for pure logic. `isReturnDefaultValues = true` is needed for `KLog`, and it stubs `org.json` to parse everything to nothing - `testImplementation(libs.json.unit.test)` supplies a real one, and every parser test depends on it. [scar]
 - **minSdk 30 and desugaring is load-bearing** [scar]: keep `isCoreLibraryDesugaringEnabled` with the `_nio` flavour (`desugar.jdk.libs.nio`), or NewPipe's search throws `NoSuchMethodError` on API 30-32. Anything above API 30 needs a `SDK_INT` guard and fallback.
 - Versions: `versionCode`/`versionName` in `app/build.gradle.kts`; dependencies only in `gradle/libs.versions.toml`.
@@ -268,9 +268,9 @@ The rules most often needed in each area. Each is a summary; open the doc before
 - M3 Expressive first; springs for touch, `tween` for crossfades/progress. The interface scale is a `LocalDensity` override - never provide another one.
 
 ### CI -> `docs/ci.md`
-- Three workflows, all behind an `authorize` job; fork PRs from outsiders deliberately build nothing. A red run with no logs means no runner was acquired - re-run.
+- Two workflows (`build.yml`, `codeql.yml`), builds behind an `authorize` job; fork PRs from outsiders deliberately build nothing. A red run with no logs means no runner was acquired - re-run.
 - Judge APK size from the minified release. `localeFilters` must match `locales_config.xml`.
-- `telegram-notify.yml` never runs on push; test its script with stubs. Free text reaches scripts as env vars, never `${{ }}`.
+- Free text reaches scripts as env vars, never `${{ }}`.
 
 ---
 
