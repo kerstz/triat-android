@@ -22,6 +22,7 @@ Markers: **[verified <month year>]** probed live, trust until YouTube changes; *
 | `docs/widgets.md` | Glance widgets |
 | `docs/ui-conventions.md` | Images, thumbnails, snackbars, motion, interface scale |
 | `docs/ci.md` | GitHub workflows, APK size, artifacts |
+| `docs/sync.md` | Wi-Fi sync with Triat desktop: protocol, pairing, automatic sync |
 
 `DESIGN.md` is the public design-system doc; `ROADMAP.md` holds planned work and **Known defects** (check there before re-diagnosing a bug).
 
@@ -70,6 +71,8 @@ Changelog:
 
 **Koda** (package `com.ivor.ivormusic`, GitHub `ivorisnoob/Koda`): Android music and video player over YouTube Music. Kotlin + Compose + Material 3 Expressive. No official API keys - NewPipe Extractor plus direct InnerTube calls.
 
+**This repository is Triat for Android**, a fork of Koda (GPL-3.0) with application id `org.triat.mobile`. The Kotlin package keeps Koda's name on purpose. Triat adds a Wi-Fi sync with the Triat desktop app (`sync/`, `docs/sync.md`).
+
 MVVM with StateFlow and **no DI framework**: ViewModels build repositories directly, so several `YouTubeRepository` instances coexist and cross-instance freshness is a real concern. Repositories persist through SharedPreferences.
 
 | Question | Code | Doc |
@@ -85,6 +88,7 @@ MVVM with StateFlow and **no DI framework**: ViewModels build repositories direc
 | Channels | `ui/channel/` | `channels.md` |
 | Player look-and-feel, queue rows | `ui/player/`, `ui/components/QueueReorder.kt` | `player-ui.md` |
 | Widgets | `widget/` | `widgets.md` |
+| Wi-Fi sync with Triat desktop | `sync/DesktopSyncRepository.kt`, `sync/AutoSync.kt`, `ui/settings/DesktopSyncSettings.kt` | `sync.md` |
 | Colors, shapes, motion | `ui/theme/` | `ui-conventions.md`, `DESIGN.md` |
 
 ---
@@ -140,6 +144,7 @@ Compile-clean, fail-at-runtime traps. Each is a scar; the doc has the story.
 | The plain `ANDROID` client used as a resolver | `OK` with a full `adaptiveFormats` and no `url` on any entry | `youtube-data.md` |
 | An `<activity-alias>` addressed with `context.packageName` as its class package | Apply is a no-op on any build with an `applicationIdSuffix`, works on release | `settings.md` |
 | A preview drawable using a platform-styled widget | Draws in the device's accent, differs on every phone | `widgets.md` |
+| A screen holding its own `PlaylistRepository` that ignores `finishedSyncs()` | Keeps showing, then writes back, the playlists from before a sync | `sync.md` |
 | `coerceIn(low, high)` where `low` can pass `high` | Throws an empty-range `IllegalArgumentException` on a degenerate input | general |
 
 ---
@@ -266,6 +271,12 @@ The rules most often needed in each area. Each is a summary; open the doc before
 - Request Google images at the drawn size (`googleImageAtSize`), layered over the original. Every video frame goes through `VideoThumbnail`, and every duration/LIVE label over one through `ThumbnailBadge` (scrim role, never a theme container - a badge on a photo must not flip with the theme).
 - Every snackbar uses `DismissibleSnackbarHost`; `Dismissed` means the action stands.
 - M3 Expressive first; springs for touch, `tween` for crossfades/progress. The interface scale is a `LocalDensity` override - never provide another one.
+
+### Desktop sync -> `docs/sync.md`
+- The desktop is the server and does the merge; the phone sends a full snapshot and applies what comes back (`SyncWire.plan`). Never change the protocol on one side only.
+- Cleartext HTTP is allowed app-wide, so `DesktopSyncClient` refuses any non-private host (`isPrivateHost`) and every payload is sealed by `SyncCrypto`.
+- `DesktopSyncRepository` alone owns the pairing and the sync mutex (invariant 6); `AutoSync` only decides when, through `AutoSyncPolicy`.
+- Only YouTube tracks travel; local songs never do. `unlikeSong` writes a tombstone on purpose, and incognito sends no history.
 
 ### CI -> `docs/ci.md`
 - Two workflows (`build.yml`, `codeql.yml`), builds behind an `authorize` job; fork PRs from outsiders deliberately build nothing. A red run with no logs means no runner was acquired - re-run.

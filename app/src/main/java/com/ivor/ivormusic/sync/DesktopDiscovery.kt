@@ -34,7 +34,7 @@ data class FoundDesktop(
 /**
  * Finds Triat desktops on the Wi-Fi through mDNS / DNS-SD (`_triat._tcp`).
  * The TXT record carries `id` (the desktop's stable identifier) and `name`;
- * see section 1.1 of docs/TRIAT-TASKS.md for the protocol.
+ * see section 1.1 of docs/sync.md for the protocol.
  */
 object DesktopDiscovery {
 

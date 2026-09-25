@@ -25,7 +25,7 @@ import java.util.concurrent.CopyOnWriteArrayList
 /**
  * The HTTP client of the desktop sync. The exchange is tested against a
  * desktop simulated in this file, which speaks the protocol of section 1 of
- * docs/TRIAT-TASKS.md with the real [SyncCrypto] (the JDK's own HTTP server,
+ * docs/sync.md with the real [SyncCrypto] (the JDK's own HTTP server,
  * on the loopback address, so no dependency is added). The guard that keeps
  * the sync on the local network is tested both as a pure function and through
  * the client.

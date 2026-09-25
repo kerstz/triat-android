@@ -57,7 +57,7 @@ sealed interface SyncResult {
 
 /**
  * The phone's side of the Wi-Fi sync with Triat desktop: sections 1.2 to 1.4
- * of docs/TRIAT-TASKS.md, `triat/core/sync.py` on the desktop. Discovery is
+ * of docs/sync.md, `triat/core/sync.py` on the desktop. Discovery is
  * [DesktopDiscovery], the stored pairing is [SyncStore], the crypto is
  * [SyncCrypto], the payload is [SyncWire]; this class only speaks HTTP.
  *

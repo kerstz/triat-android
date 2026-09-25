@@ -16,7 +16,7 @@ import org.junit.Test
  * The pure decisions of the desktop sync page, on invented data: what the code
  * field keeps, how a hand-typed address is read, how old a sync is called, and
  * which message each failure gets. The screen itself needs a device and is
- * checked by hand (task E1 of docs/TRIAT-TASKS.md).
+ * checked by hand (task E1 of docs/sync.md).
  */
 class DesktopSyncSettingsTest {
 

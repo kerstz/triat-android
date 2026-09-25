@@ -16,7 +16,7 @@ import org.junit.Test
  * repositories, the session hand-over). It needs a Context, encrypted
  * preferences, NsdManager and a desktop on the network, none of which exist on
  * the JVM; it is checked by hand on a phone and a desktop (task E1 of
- * docs/TRIAT-TASKS.md). The decisions it takes are pulled out into the
+ * docs/sync.md). The decisions it takes are pulled out into the
  * functions below so that they can be held to their rules here.
  */
 class DesktopSyncRepositoryTest {

@@ -8,7 +8,7 @@ import org.junit.Test
 /**
  * The automatic sync's decision, on a clock the test moves by hand. The wiring
  * around it (lifecycle callbacks, file watching, the network query, the delays)
- * needs a device and is checked by hand (task E1 of docs/TRIAT-TASKS.md).
+ * needs a device and is checked by hand (task E1 of docs/sync.md).
  */
 class AutoSyncPolicyTest {
 

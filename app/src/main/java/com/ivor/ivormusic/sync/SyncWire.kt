@@ -28,7 +28,7 @@ data class ApplyPlan(
 
 /**
  * The exchange format of the Wi-Fi sync with Triat desktop (section 1.4 of
- * docs/TRIAT-TASKS.md, `triat/core/sync_state.py` on the desktop side).
+ * docs/sync.md, `triat/core/sync_state.py` on the desktop side).
  *
  * Pure functions over the app's models and `org.json`, so the whole format
  * is testable on the JVM. Timestamps are milliseconds, durations on the wire

@@ -17,7 +17,7 @@ import org.junit.Test
  * encrypted preferences) and a `PlaylistRepository` reading `filesDir`, neither
  * of which exists on the JVM; a synced playlist showing up in the Library
  * without a restart is checked by hand on a phone (task E1 of
- * docs/TRIAT-TASKS.md). The decision that matters is which state changes count
+ * docs/sync.md). The decision that matters is which state changes count
  * as a finished sync, and that is [finishedSyncs].
  */
 class SyncRefreshTest {
