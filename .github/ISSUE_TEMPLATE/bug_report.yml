@@ -1,11 +1,11 @@
 name: Bug report
-description: Something in Koda is broken or behaves unexpectedly
+description: Something in Triat is broken or behaves unexpectedly
 labels: ["bug"]
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to report this. The fields below exist because Koda behaves
+        Thanks for taking the time to report this. The fields below exist because Triat behaves
         differently depending on mode and sign-in state, so knowing which one you were in usually
         narrows the cause immediately.
 
@@ -22,7 +22,7 @@ body:
   - type: input
     id: version
     attributes:
-      label: Koda version
+      label: Triat version
       description: Settings, then About. Include the version code if it is shown.
       placeholder: "4.3"
     validations:
@@ -65,7 +65,7 @@ body:
     id: account
     attributes:
       label: Were you signed in
-      description: Koda works signed out, and a lot of behaviour differs between the two, so this matters.
+      description: Triat works signed out, and a lot of behaviour differs between the two, so this matters.
       options:
         - Signed in with a YouTube account
         - Signed out, using a local profile
@@ -116,7 +116,7 @@ body:
     attributes:
       label: Does the same content work on youtube.com in a browser
       description: >
-        This is the single most useful thing you can tell us. Koda reads YouTube's internal API,
+        This is the single most useful thing you can tell us. Triat reads YouTube's internal API,
         which changes without notice. If it is broken on YouTube's own site too, the cause is on
         their end. If it works there and not here, it is ours.
       options:

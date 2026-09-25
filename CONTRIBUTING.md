@@ -1,6 +1,6 @@
-# Contributing to Koda
+# Contributing to Triat
 
-Thank you for your interest in **Koda**.
+Thank you for your interest in **Triat**.
 
 > **External contributions are temporarily paused.** The project is not accepting new external pull requests until the author has completed the planned work in [ROADMAP.md](ROADMAP.md) in full. This gives the architecture and product direction time to settle before outside changes are reviewed. Bug reports, feature requests, discussion, and private security reports remain welcome.
 
@@ -24,7 +24,7 @@ Please do not open a new external pull request during the temporary pause above.
 
 ## Development Setup
 
-1. **Clone the repo**: `git clone https://github.com/Ivorisnoob/Koda.git`
+1. **Clone the repo**: `git clone https://github.com/kerstz/triat-android.git`
 2. **Open in Android Studio**: Use the latest stable version of Android Studio (Ladybug or newer).
 3. **Sync Gradle**: Let the dependencies download.
 4. **Run**: You're ready to start building!
@@ -33,4 +33,4 @@ Please do not open a new external pull request during the temporary pause above.
 This project and everyone participating in it is governed by the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). By participating, you are expected to uphold this code.
 
 ## License
-By contributing, you agree that your contributions will be licensed under the project's **GNU General Public License v3.0 (GPL-3.0)**, the same license as the rest of Koda. See [LICENSE](LICENSE) for the full text.
+By contributing, you agree that your contributions will be licensed under the project's **GNU General Public License v3.0 (GPL-3.0)**, the same license as the rest of Triat. See [LICENSE](LICENSE) for the full text.
