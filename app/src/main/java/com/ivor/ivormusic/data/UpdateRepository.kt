@@ -63,7 +63,7 @@ class UpdateRepository {
             val request = Request.Builder()
                 .url(url)
                 .header("Accept", "application/vnd.github.v3+json")
-                .header("User-Agent", "Koda-Android")
+                .header("User-Agent", "Triat-Android")
                 .build()
 
             return client.newCall(request).execute().use { response ->

@@ -30,8 +30,11 @@ android {
         // platform did not gain until API 33.
         minSdk = 30
         targetSdk = 36
-        versionCode = 28
-        versionName = "5.0"
+        // Triat Android numbers its own releases from 0.1. Koda's releases
+        // (5.0 and earlier) are another series and must never be compared
+        // with these by the updater.
+        versionCode = 1
+        versionName = "0.1"
         manifestPlaceholders["appLabel"] = "@string/app_name"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
@@ -167,7 +170,9 @@ kotlin {
 
 // Build info available via BuildConfig
 android.defaultConfig.apply {
-    buildConfigField("String", "GITHUB_REPO", "\"kerstz/triat\"")
+    // Updates, the source link and bug reports: the Triat Android repository,
+    // not the desktop one (kerstz/triat), whose releases are not APKs.
+    buildConfigField("String", "GITHUB_REPO", "\"kerstz/triat-android\"")
     buildConfigField("String", "GITHUB_USERNAME", "\"ivorisnoob\"")
 }
 
