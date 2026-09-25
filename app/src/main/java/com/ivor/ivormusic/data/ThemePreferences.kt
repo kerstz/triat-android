@@ -678,7 +678,7 @@ class ThemePreferences(context: Context) {
 
         /**
          * App-only download storage. Off preserves Koda's existing public
-         * Downloads/Koda behavior; callers fresh-read this when a transfer
+         * Downloads/Triat behavior; callers fresh-read this when a transfer
          * starts so separate ThemePreferences instances cannot go stale.
          */
         private const val KEY_PRIVATE_DOWNLOADS = "private_downloads"

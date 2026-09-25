@@ -12,7 +12,7 @@ import java.io.File
 
 /**
  * One-time move of downloads out of the app's private `filesDir/music` and into
- * shared storage under Downloads/Koda, so they are reachable from the Files app.
+ * shared storage under Downloads/Triat, so they are reachable from the Files app.
  *
  * Two properties matter more than speed here:
  *

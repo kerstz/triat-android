@@ -15,7 +15,7 @@ import java.io.OutputStream
  * Where a download lands in the user's shared storage.
  *
  * Both live under the public Downloads directory so they show up in the Files
- * app as Downloads > Koda > Music / Video. [Environment.DIRECTORY_DOWNLOADS] is
+ * app as Downloads > Triat > Music / Video. [Environment.DIRECTORY_DOWNLOADS] is
  * the string "Download" (singular) even though Files displays it as "Downloads"
  * - do not spell it out by hand.
  */
@@ -28,7 +28,20 @@ enum class DownloadMediaType(
     VIDEO("Video", "video/mp4", "mp4");
 
     val relativePath: String
+        get() = "${Environment.DIRECTORY_DOWNLOADS}/Triat/$folderName"
+
+    /**
+     * Where this app wrote before it had its own folder. Read only, so
+     * downloads made before the rename are still found; nothing new goes
+     * there. MediaStore only shows an app the files it created, so this never
+     * picks up Koda's own downloads.
+     */
+    val legacyRelativePath: String
         get() = "${Environment.DIRECTORY_DOWNLOADS}/Koda/$folderName"
+
+    /** Whether a MediaStore RELATIVE_PATH is one of this type's folders. */
+    fun isOwnFolder(path: String): Boolean =
+        path.startsWith(relativePath) || path.startsWith(legacyRelativePath)
 }
 
 /**
@@ -273,7 +286,7 @@ class DownloadStorage(private val context: Context) {
                 val path = cursor.getString(0).orEmpty()
                 val mimeType = cursor.getString(1).orEmpty()
                 val displayName = cursor.getString(2).orEmpty().lowercase()
-                path.startsWith(DownloadMediaType.MUSIC.relativePath) &&
+                DownloadMediaType.MUSIC.isOwnFolder(path) &&
                     (mimeType.startsWith("image/") ||
                         mimeType.startsWith("text/") ||
                         displayName.endsWith(".lrc") ||
@@ -307,8 +320,7 @@ class DownloadStorage(private val context: Context) {
                 null
             )?.use { cursor ->
                 cursor.moveToFirst() &&
-                    cursor.getString(0).orEmpty()
-                        .startsWith(DownloadMediaType.MUSIC.relativePath) &&
+                    DownloadMediaType.MUSIC.isOwnFolder(cursor.getString(0).orEmpty()) &&
                     cursor.getString(1).orEmpty().startsWith("image/")
             } ?: false
         } catch (e: Exception) {
@@ -341,7 +353,7 @@ class DownloadStorage(private val context: Context) {
     }
 
     /**
-     * Every published file this app owns under the given Koda folder, keyed by
+     * Every published file this app owns under the given Triat folder (and the old Koda one), keyed by
      * URI. Lets the repository reconcile in one query rather than probing each
      * stored entry individually.
      */
@@ -354,8 +366,9 @@ class DownloadStorage(private val context: Context) {
                     MediaStore.MediaColumns._ID,
                     MediaStore.MediaColumns.DISPLAY_NAME
                 ),
-                "${MediaStore.MediaColumns.RELATIVE_PATH} LIKE ?",
-                arrayOf("${type.relativePath}%"),
+                "${MediaStore.MediaColumns.RELATIVE_PATH} LIKE ? OR " +
+                    "${MediaStore.MediaColumns.RELATIVE_PATH} LIKE ?",
+                arrayOf("${type.relativePath}%", "${type.legacyRelativePath}%"),
                 null
             )?.use { cursor ->
                 val idColumn = cursor.getColumnIndexOrThrow(MediaStore.MediaColumns._ID)

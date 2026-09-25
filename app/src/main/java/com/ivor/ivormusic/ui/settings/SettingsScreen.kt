@@ -1194,7 +1194,7 @@ private fun SettingsHub(
     }
 
     val storageValue = buildString {
-        append(if (privateDownloadsEnabled) "Private downloads" else "Downloads/Koda")
+        append(if (privateDownloadsEnabled) "Private downloads" else "Downloads/Triat")
         append(" · ")
         append(
             if (cacheEnabled) {
