@@ -256,6 +256,7 @@ dependencies {
     // to nothing. Any parser in data/ is untestable without this.
     testImplementation(libs.json.unit.test)
     androidTestImplementation(libs.androidx.junit)
+    implementation(libs.zxing.android.embedded)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)

@@ -200,7 +200,7 @@ internal fun buildSettingsSearchIndex(
 
     entry("desktop_sync", stringResource(R.string.ds_title), stringResource(R.string.ds_category), Icons.Rounded.Computer,
         listOf("sync", "synchro", "synchronisation", "desktop", "ordinateur", "computer", "pc", "laptop", "wifi", "wi-fi",
-            "pair", "pairing", "associer", "code", "triat", "playlists", "likes", "favorites", "history")) {
+            "pair", "pairing", "associer", "code", "qr", "scan", "scanner", "triat", "playlists", "likes", "favorites", "history")) {
         onOpenPage(SettingsPage.DESKTOP_SYNC)
     }
 

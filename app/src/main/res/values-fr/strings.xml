@@ -408,6 +408,8 @@
     <string name="ds_code_label">Code d\'association</string>
     <string name="ds_code_hint">8 caractères. Les tirets et les espaces sont ignorés.</string>
     <string name="ds_pair">Associer</string>
+    <string name="ds_scan_qr">Scanner le QR code</string>
+    <string name="ds_scan_invalid">Ce QR code ne vient pas de Triat</string>
     <string name="ds_manual_open">Saisir une adresse à la place</string>
     <string name="ds_manual_close">Choisir dans la liste</string>
     <string name="ds_manual_title">Associer par adresse</string>

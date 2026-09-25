@@ -205,6 +205,9 @@ internal enum class SyncProblem {
     /** The address that was typed is not a local network address. */
     BAD_ADDRESS,
 
+    /** The scanned QR code is not a Triat pairing code. */
+    BAD_QR,
+
     /** The thing at that address does not answer like a Triat desktop. */
     NOT_TRIAT,
 
@@ -296,6 +299,11 @@ internal class DesktopSyncViewModel(application: Application) : AndroidViewModel
         problemFor(repository.pair(found, code))
     }
 
+    /** The QR entry: same path as the manual one, with what the code carried. */
+    fun pairWith(qr: com.ivor.ivormusic.sync.PairingUri) = pairAt("${qr.host}:${qr.port}", qr.code)
+
+    fun reportBadQr() { mutablePairing.value = PairingUi(problem = SyncProblem.BAD_QR) }
+
     fun dismissProblem() {
         if (mutablePairing.value.problem != null) mutablePairing.value = PairingUi()
     }
@@ -368,6 +376,13 @@ internal fun DesktopSyncSettingsPage(onBack: () -> Unit, model: DesktopSyncViewM
     val paired = state.paired
     val now = rememberClock(active = paired != null)
     val focus = LocalFocusManager.current
+    val scanner = androidx.activity.compose.rememberLauncherForActivityResult(
+        com.journeyapps.barcodescanner.ScanContract()
+    ) { result ->
+        val text = result.contents ?: return@rememberLauncherForActivityResult
+        val qr = com.ivor.ivormusic.sync.parsePairingUri(text)
+        if (qr == null) model.reportBadQr() else model.pairWith(qr)
+    }
 
     // The code is a secret of a couple of minutes: kept in memory only, never in saved state.
     var code by remember { mutableStateOf("") }
@@ -471,6 +486,19 @@ internal fun DesktopSyncSettingsPage(onBack: () -> Unit, model: DesktopSyncViewM
             } else {
                 item(key = "intro") { DesktopSyncIntro() }
                 pairing.problem?.let { problem -> item(key = "problem") { DesktopSyncNotice(problem) } }
+                item(key = "scan") {
+                    Button(
+                        onClick = {
+                            model.dismissProblem()
+                            scanner.launch(com.journeyapps.barcodescanner.ScanOptions()
+                                .setDesiredBarcodeFormats(com.journeyapps.barcodescanner.ScanOptions.QR_CODE)
+                                .setBeepEnabled(false).setOrientationLocked(false)
+                                .setPrompt(""))
+                        },
+                        enabled = !pairing.busy,
+                        modifier = Modifier.fillMaxWidth().heightIn(min = 48.dp)
+                    ) { Text(stringResource(R.string.ds_scan_qr)) }
+                }
 
                 if (!manualOpen) {
                     if (state.found.isNotEmpty()) {
@@ -593,6 +621,7 @@ private fun problemText(problem: SyncProblem): String = stringResource(
         SyncProblem.UNREACHABLE -> R.string.ds_error_unreachable
         SyncProblem.FORGOTTEN -> R.string.ds_error_forgotten
         SyncProblem.BAD_ADDRESS -> R.string.ds_error_bad_address
+        SyncProblem.BAD_QR -> R.string.ds_scan_invalid
         SyncProblem.NOT_TRIAT -> R.string.ds_error_not_triat
         SyncProblem.UNVERIFIED -> R.string.ds_error_unverified
         SyncProblem.INCOMPATIBLE -> R.string.ds_error_incompatible

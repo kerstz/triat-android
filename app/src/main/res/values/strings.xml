@@ -1684,6 +1684,8 @@
     <string name="ds_code_label">Pairing code</string>
     <string name="ds_code_hint">8 characters. Dashes and spaces are ignored.</string>
     <string name="ds_pair">Pair</string>
+    <string name="ds_scan_qr">Scan the QR code</string>
+    <string name="ds_scan_invalid">This QR code is not from Triat</string>
     <string name="ds_manual_open">Enter an address instead</string>
     <string name="ds_manual_close">Choose from the list</string>
     <string name="ds_manual_title">Pair by address</string>
