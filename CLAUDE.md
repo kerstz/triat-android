@@ -23,6 +23,7 @@ Markers: **[verified <month year>]** probed live, trust until YouTube changes; *
 | `docs/ui-conventions.md` | Images, thumbnails, snackbars, motion, interface scale |
 | `docs/ci.md` | GitHub workflows, APK size, artifacts |
 | `docs/sync.md` | Wi-Fi sync with Triat desktop: protocol, pairing, automatic sync |
+| `docs/build-apk.md` | The Triat signing key, local and CI release builds |
 
 `DESIGN.md` is the public design-system doc; `ROADMAP.md` holds planned work and **Known defects** (check there before re-diagnosing a bug).
 

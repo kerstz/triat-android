@@ -18,6 +18,22 @@ val localProps = Properties().apply {
 fun signingCredential(envName: String, propName: String): String? =
     System.getenv(envName) ?: localProps.getProperty(propName)
 
+// Release signing uses Triat's own key, keystore/triat.jks (gitignored, see
+// docs/build-apk.md). Koda's key never leaves its author, so when the Triat
+// key or one of its credentials is missing the release build is signed with
+// the debug key instead of failing. Such an APK installs, but cannot update
+// or be updated by one signed with the real key.
+val triatKeystore = rootProject.file("keystore/triat.jks")
+val releaseSigningReady = triatKeystore.isFile && triatKeystore.length() > 0 &&
+    listOf(
+        signingCredential("KEYSTORE_PASSWORD", "keystore.storePassword"),
+        signingCredential("KEY_ALIAS", "keystore.keyAlias"),
+        signingCredential("KEY_PASSWORD", "keystore.keyPassword"),
+    ).none { it.isNullOrBlank() }
+if (!releaseSigningReady) {
+    logger.lifecycle("Triat: keystore/triat.jks or its credentials are missing, release builds are signed with the debug key.")
+}
+
 android {
     namespace = "com.ivor.ivormusic"
     compileSdk = 37
@@ -84,11 +100,13 @@ android {
         }
     }
     signingConfigs {
-        create("release") {
-            storeFile = file("${project.rootDir}/keystore/ivormusic.jks")
-            storePassword = signingCredential("KEYSTORE_PASSWORD", "keystore.storePassword")
-            keyAlias = signingCredential("KEY_ALIAS", "keystore.keyAlias")
-            keyPassword = signingCredential("KEY_PASSWORD", "keystore.keyPassword")
+        if (releaseSigningReady) {
+            create("release") {
+                storeFile = triatKeystore
+                storePassword = signingCredential("KEYSTORE_PASSWORD", "keystore.storePassword")
+                keyAlias = signingCredential("KEY_ALIAS", "keystore.keyAlias")
+                keyPassword = signingCredential("KEY_PASSWORD", "keystore.keyPassword")
+            }
         }
     }
 
@@ -101,7 +119,7 @@ android {
             manifestPlaceholders["appLabel"] = "Triat Debug"
         }
         release {
-            signingConfig = signingConfigs.getByName("release")
+            signingConfig = signingConfigs.getByName(if (releaseSigningReady) "release" else "debug")
             isMinifyEnabled = true
             isShrinkResources = true
             proguardFiles(
