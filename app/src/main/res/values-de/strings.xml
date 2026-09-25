@@ -321,7 +321,7 @@
     <string name="vh_youre_offline">Du bist offline</string>
     <string name="vh_removed_from_history">Aus dem Verlauf entfernt</string>
     <string name="vh_clear_history">Verlauf löschen</string>
-    <string name="vh_clear_history_body">Das leert Kodas Wiedergabeverlauf auf diesem Gerät. Es löscht nichts aus deinem YouTube-Konto.</string>
+    <string name="vh_clear_history_body">Das leert Triats Wiedergabeverlauf auf diesem Gerät. Es löscht nichts aus deinem YouTube-Konto.</string>
     <string name="vh_clear_history_confirm">Löschen</string>
     <string name="vh_no_videos_found">Keine Videos gefunden</string>
     <string name="vh_downloaded_hint">Heruntergeladene Videos erscheinen hier</string>

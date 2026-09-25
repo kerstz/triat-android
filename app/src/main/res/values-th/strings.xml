@@ -38,7 +38,7 @@
     <string name="local_only_video_library_subtitle">คลังวิดีโอต้องใช้อินเทอร์เน็ต ปิดโหมดภายในเครื่องเท่านั้นในการตั้งค่าเพื่อดู</string>
     <string name="local_only_update_subtitle">การตรวจสอบอัปเดตต้องใช้อินเทอร์เน็ต ปิดโหมดภายในเครื่องเท่านั้นในการตั้งค่าเพื่อตรวจสอบ</string>
 
-    <string name="crash_dialog_title">Kodaหยุดทำงานเมื่อครั้งก่อน</string>
+    <string name="crash_dialog_title">Triatหยุดทำงานเมื่อครั้งก่อน</string>
     <string name="crash_dialog_message">เกิดข้อผิดพลาดในเซสชันก่อนหน้า คุณส่งรายงานบั๊กพร้อมรายละเอียดได้ - ไม่มีอะไรออกจากอุปกรณ์ของคุณเว้นแต่คุณจะเลือกแชร์</string>
     <string name="crash_dialog_view_report">ดูและรายงาน</string>
     <string name="crash_dialog_not_now">ไว้ก่อน</string>

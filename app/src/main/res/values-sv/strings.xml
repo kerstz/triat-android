@@ -322,7 +322,7 @@
     <string name="vh_youre_offline">Du är offline</string>
     <string name="vh_removed_from_history">Borttagen från visningshistorik</string>
     <string name="vh_clear_history">Rensa visningshistorik</string>
-    <string name="vh_clear_history_body">Detta tömmer Kodas visningshistorik på den här enheten. Det raderar inget från ditt YouTube-konto.</string>
+    <string name="vh_clear_history_body">Detta tömmer Triats visningshistorik på den här enheten. Det raderar inget från ditt YouTube-konto.</string>
     <string name="vh_clear_history_confirm">Rensa</string>
     <string name="vh_no_videos_found">Inga videor hittades</string>
     <string name="vh_downloaded_hint">Nedladdade videor visas här</string>
