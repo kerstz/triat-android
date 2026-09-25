@@ -12,15 +12,21 @@ What Triat changes so far:
 
 - New name, new icon, and a dark "Nothing" style palette by default.
 - Import a plain text list of songs into a playlist.
+- Wi-Fi sync with Triat desktop (see below).
+- Downloads are saved under Downloads/Triat.
 - The Kotlin package is still called `com.ivor.ivormusic`, on purpose, to keep it easy to follow Koda.
 
 ## Vibe coded, please read this
 
 A large part of this code was written by an AI. I did not read every line. I test the app by hand on my own phone, and I fix what breaks. If you want to use Triat, expect rough edges and things that may break after a YouTube change. Bug reports are welcome.
 
+## Wi-Fi sync with Triat desktop
+
+Your playlists, likes and listening history stay the same on the phone and on the computer, over your home network, with no cloud in between. Pair once with the short code shown by the desktop app (Settings, Synchronisation, Pair a phone), then the phone syncs by itself whenever it is on the same Wi-Fi. Everything is sent encrypted, and the YouTube session is only shared if you allow it on both sides.
+
 ## What is coming
 
-Wi-Fi sync with the Triat desktop app. Your playlists, likes and listening history will be kept the same on the phone and on the computer, over your home network, with no cloud in between. The phone pairs with the desktop app using a short code shown on the computer, and everything is sent encrypted. This is still being built.
+Pairing by QR code, and carrying on playback from one device to the other.
 
 ## Build it yourself
 

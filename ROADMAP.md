@@ -8,6 +8,23 @@ For how the app is built, see [`CLAUDE.md`](CLAUDE.md). For the design system an
 
 ---
 
+## Triat for Android
+
+This repository is Triat for Android, a fork of Koda. Everything after this section is Koda's own roadmap, kept as it was for reference.
+
+**Shipped in Triat**
+- New name, icon and application id (`org.triat.mobile`), and a dark "Nothing" palette by default.
+- Import a plain `.txt` list of songs into a playlist.
+- Wi-Fi sync with the Triat desktop app: pairing by code; playlists, likes and listening history; the YouTube session when both sides allow it; automatic on Wi-Fi. See `docs/sync.md`.
+- Downloads saved under Downloads/Triat.
+
+**Planned**
+- Pairing by QR code.
+- Syncing what is playing and where, to carry on from one device to the other.
+- Syncing the few settings the phone and the desktop share.
+
+---
+
 ## Where Koda is today
 
 Version **4.6** (`versionCode` 24), targeting Android 16 (API 36) with a floor at Android 11 (API 30). Roughly **96,000 lines** of Kotlin across **191 files**, all of it Compose, all of it rendered inside a single `MaterialExpressiveTheme`.
