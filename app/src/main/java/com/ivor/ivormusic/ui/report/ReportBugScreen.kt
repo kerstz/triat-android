@@ -76,7 +76,7 @@ import kotlinx.coroutines.launch
  *
  * Nothing leaves the device by itself. Every section has a visible switch,
  * the preview below is byte-for-byte what lands on the clipboard, and the
- * three actions all copy first and only then open Telegram or GitHub - so the
+ * actions all copy first and only then open GitHub - so the
  * report survives even when neither app is installed or the paste fails.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)

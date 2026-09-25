@@ -929,7 +929,6 @@
     <string name="rb_preview">Preview</string>
     <string name="rb_preview_hint">Exactly what will be copied:</string>
     <string name="rb_copy_report">Copy report</string>
-    <string name="rb_open_telegram">Open Telegram chat</string>
     <string name="rb_open_github">Open GitHub issue</string>
     <string name="rb_privacy_note">The report never sends anything by itself - you paste or attach it yourself.</string>
     <string name="rb_default_attachment">Stack trace and recent logs</string>

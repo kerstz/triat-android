@@ -625,7 +625,7 @@ internal fun buildSettingsSearchIndex(
         "report_bug", stringResource(R.string.sp_report_bug), "Advanced", Icons.Rounded.BugReport,
         listOf(
             "bug report", "crash", "logs", "logcat", "feedback", "problem",
-            "not working", "broken", "error", "diagnostics", "telegram"
+            "not working", "broken", "error", "diagnostics", "github"
         )
     ) { onNavigateToReportBug() }
     entry(
