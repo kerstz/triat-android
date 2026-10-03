@@ -1331,6 +1331,7 @@
     <string name="spin_empty_hint">Play or like a few songs and they will turn up here.</string>
     <string name="source_youtube_videos">YouTube Videos</string>
     <string name="source_youtube_music">YouTube Music</string>
+    <string name="source_soundcloud">SoundCloud</string>
     <string name="source_local_library">Local Library</string>
     <string name="search_no_results">No results found</string>
     <string name="search_no_results_hint">Try different keywords or filters</string>
@@ -1344,6 +1345,7 @@
     <string name="recent_searches">Recent searches</string>
     <string name="album_metadata">Album • %1$s</string>
     <string name="cat_songs">Songs</string>
+    <string name="cat_soundcloud">SoundCloud</string>
     <string name="cat_artists">Artists</string>
     <string name="cat_albums">Albums</string>
     <string name="cat_playlists">Playlists</string>

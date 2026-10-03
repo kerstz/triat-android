@@ -51,6 +51,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val app get() = getApplication<Application>()
     private val localRepository = SongRepository(application)
     private val youtubeRepository = YouTubeRepository(application)
+    private val soundCloudRepository = com.ivor.ivormusic.data.SoundCloudRepository(application)
     private val playlistRepository = com.ivor.ivormusic.data.PlaylistRepository(application)
     private val sessionManager = SessionManager(application)
     private val searchHistoryRepository = com.ivor.ivormusic.data.SearchHistoryRepository(application)
@@ -2172,6 +2173,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         songSearchCache.get(key)?.let { return it }
         return try {
             youtubeRepository.search(query).also { songSearchCache.put(key, it) }
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun searchSoundCloud(query: String): List<Song> {
+        if (query.isBlank()) return emptyList()
+        return try {
+            soundCloudRepository.search(query)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    suspend fun loadMoreSoundCloud(query: String): List<Song> {
+        if (query.isBlank()) return emptyList()
+        return try {
+            soundCloudRepository.searchNext(query)
         } catch (e: Exception) {
             emptyList()
         }

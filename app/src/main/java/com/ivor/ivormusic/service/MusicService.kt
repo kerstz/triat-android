@@ -54,6 +54,7 @@ import com.ivor.ivormusic.data.StatsRepository
 import com.ivor.ivormusic.data.ThemePreferences
 import com.ivor.ivormusic.data.WaveformAnalyzer
 import com.ivor.ivormusic.data.WaveformStore
+import com.ivor.ivormusic.data.SoundCloudRepository
 import com.ivor.ivormusic.data.YouTubeRepository
 import com.ivor.ivormusic.widget.PlayerWidgetStore
 import com.ivor.ivormusic.widget.PlayerWidgets
@@ -117,6 +118,7 @@ class MusicService : MediaLibraryService() {
     // attach to Koda's playback
     private var audioSessionId: Int = C.AUDIO_SESSION_ID_UNSET
     private lateinit var youtubeRepository: YouTubeRepository
+    private lateinit var soundCloudRepository: SoundCloudRepository
     private lateinit var downloadRepository: DownloadRepository
     private lateinit var themePreferences: ThemePreferences
     private lateinit var audioProfileStore: AudioProfileStore
@@ -443,6 +445,7 @@ class MusicService : MediaLibraryService() {
         CacheManager.initialize(this, themePreferences.maxCacheSizeMb.value)
         CacheManager.removeLegacyVideoEntries()
         youtubeRepository = YouTubeRepository(this)
+        soundCloudRepository = SoundCloudRepository(this)
         downloadRepository = DownloadRepository.getInstance(this)
         audioProfileStore = AudioProfileStore(this)
 
@@ -1282,7 +1285,31 @@ class MusicService : MediaLibraryService() {
     private suspend fun performResolution(originalItem: MediaItem): MediaItem {
         val videoId = originalItem.mediaId
         KLog.d(TAG, "Resolution: Starting for $videoId")
-        
+
+        // SoundCloud: the id is the track URL, resolved by SoundCloud's own
+        // extractor and streamed as a plain progressive URL. It never touches
+        // the googlevideo disk cache, so it has its own short-lived memory cache
+        // and skips the YouTube-specific steps below.
+        if (SoundCloudRepository.isSoundCloudId(videoId)) {
+            uriCache[videoId]?.let { cached ->
+                if (cached.expiresAtMs > System.currentTimeMillis()) {
+                    return buildMediaItemWithUri(originalItem, Uri.parse(cached.uri))
+                }
+                uriCache.remove(videoId)
+            }
+            val url = withTimeoutOrNull(RESOLVE_TIMEOUT_MS) {
+                soundCloudRepository.resolveStreamUrl(videoId)
+            }
+            return if (!url.isNullOrEmpty()) {
+                uriCache[videoId] = CachedUri(url, System.currentTimeMillis() + 10 * 60_000L)
+                KLog.d(TAG, "Resolution: SoundCloud success for $videoId")
+                buildMediaItemWithUri(originalItem, Uri.parse(url))
+            } else {
+                KLog.e(TAG, "Resolution: SoundCloud failed for $videoId")
+                buildMediaItemWithUri(originalItem, Uri.parse("error://resolution_failed/$videoId"))
+            }
+        }
+
         // 1. Downloads
         val downloaded = downloadRepository.downloadedSongs.value.find { it.id == videoId }
         if (downloaded != null && downloaded.uri != null) {

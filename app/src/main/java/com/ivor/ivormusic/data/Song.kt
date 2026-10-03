@@ -10,7 +10,8 @@ import java.util.Locale
 @Serializable
 enum class SongSource {
     LOCAL,
-    YOUTUBE
+    YOUTUBE,
+    SOUNDCLOUD
 }
 
 /**
@@ -112,6 +113,27 @@ data class Song(
             dateAdded = dateAdded,
             trackNumber = trackNumber,
             discNumber = discNumber
+        )
+
+        /**
+         * Creates a Song from a SoundCloud track. The id is SoundCloud's track
+         * URL, which NewPipe resolves to a stream; the thumbnail is the artwork
+         * URL. SoundCloud songs never sync (only 11-char YouTube ids travel).
+         */
+        fun fromSoundCloud(
+            trackUrl: String,
+            title: String,
+            artist: String,
+            duration: Long,
+            thumbnailUrl: String?
+        ): Song = Song(
+            id = trackUrl,
+            title = title,
+            artist = artist.ifBlank { UNKNOWN_ARTIST },
+            album = UNKNOWN_ALBUM,
+            duration = duration,
+            thumbnailUrl = thumbnailUrl,
+            source = SongSource.SOUNDCLOUD
         )
 
         /**

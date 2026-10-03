@@ -71,6 +71,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.KeyboardVoice
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.TravelExplore
@@ -123,6 +124,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.material3.TextButton
 import coil.compose.AsyncImage
 import com.ivor.ivormusic.data.Song
+import com.ivor.ivormusic.data.SongSource
 import com.ivor.ivormusic.ui.library.songRowClick
 import com.ivor.ivormusic.data.VideoItem
 import com.ivor.ivormusic.data.VideoSearchDateFilter
@@ -389,6 +391,7 @@ fun SearchScreen(
             } else {
                 when (selectedCategory) {
                     SearchCategory.SONGS -> youtubeResults = viewModel.searchYouTube(query)
+                    SearchCategory.SOUNDCLOUD -> youtubeResults = viewModel.searchSoundCloud(query)
                     SearchCategory.ARTISTS -> artistResults = viewModel.searchArtists(query)
                     SearchCategory.ALBUMS -> albumResults = viewModel.searchAlbums(query)
                     SearchCategory.PLAYLISTS -> playlistResults = viewModel.searchPlaylists(query)
@@ -420,6 +423,7 @@ fun SearchScreen(
 
         val loadingVideos = videoMode && selectedVideoCategory == VideoSearchCategory.VIDEOS
         val loadingSongs = !videoMode && selectedCategory == SearchCategory.SONGS
+        val loadingSoundCloud = !videoMode && selectedCategory == SearchCategory.SOUNDCLOUD
         try {
             when {
                 loadingVideos && videoResults.isNotEmpty() && !videoResultsExhausted -> {
@@ -439,6 +443,17 @@ fun SearchScreen(
                 loadingSongs && youtubeResults.isNotEmpty() && !songResultsExhausted -> {
                     isLoadingMore = true
                     val more = viewModel.loadMoreResults(query)
+                    if (more.isEmpty()) {
+                        songResultsExhausted = true
+                    } else {
+                        val merged = (youtubeResults + more).distinctBy { it.id }
+                        if (merged.size == youtubeResults.size) songResultsExhausted = true
+                        youtubeResults = merged
+                    }
+                }
+                loadingSoundCloud && youtubeResults.isNotEmpty() && !songResultsExhausted -> {
+                    isLoadingMore = true
+                    val more = viewModel.loadMoreSoundCloud(query)
                     if (more.isEmpty()) {
                         songResultsExhausted = true
                     } else {
@@ -1135,7 +1150,10 @@ fun SearchScreen(
                             }
                             Spacer(modifier = Modifier.size(12.dp))
                             Text(
-                                stringResource(R.string.source_youtube_music),
+                                if (selectedCategory == SearchCategory.SOUNDCLOUD)
+                                    stringResource(R.string.source_soundcloud)
+                                else
+                                    stringResource(R.string.source_youtube_music),
                                 style = MaterialTheme.typography.titleMedium,
                                 fontWeight = FontWeight.Bold,
                                 color = textColor
@@ -1152,15 +1170,23 @@ fun SearchScreen(
                     itemsIndexed(youtubeResults) { index, song ->
                         SearchSongCard(
                             song = song,
-                            // Radio, not the result list: the other hits are
-                            // usually the same track from other uploaders.
-                            onClick = { onPlayRadio(song) },
+                            // YouTube: radio from the hit, since the other hits
+                            // are usually the same track from other uploaders.
+                            // SoundCloud: play the results as a queue - these are
+                            // distinct tracks, not duplicates.
+                            onClick = {
+                                if (song.source == SongSource.SOUNDCLOUD)
+                                    onPlayQueue(youtubeResults, song)
+                                else
+                                    onPlayRadio(song)
+                            },
                             onLongClick = onSongLongPress?.let { press -> { press(song) } },
                             cardColor = cardColor,
                             textColor = textColor,
                             secondaryTextColor = secondaryTextColor,
                             accentColor = primaryColor,
-                            isYouTube = true,
+                            isYouTube = song.source != SongSource.SOUNDCLOUD,
+                            isSoundCloud = song.source == SongSource.SOUNDCLOUD,
                             shape = getSegmentedShape(index, youtubeResults.size, hasMore = true),
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )
@@ -1678,6 +1704,7 @@ private fun SearchSongCard(
     secondaryTextColor: Color,
     accentColor: Color,
     isYouTube: Boolean = false,
+    isSoundCloud: Boolean = false,
     shape: Shape = RoundedCornerShape(20.dp),
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null
@@ -1727,6 +1754,24 @@ private fun SearchSongCard(
                                 .clip(RoundedCornerShape(14.dp)),
                             contentScale = ContentScale.Crop
                         )
+                        if (isSoundCloud) {
+                            Box(
+                                modifier = Modifier
+                                    .align(Alignment.BottomEnd)
+                                    .padding(3.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black.copy(alpha = 0.55f))
+                                    .padding(2.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    Icons.Rounded.Cloud,
+                                    contentDescription = stringResource(R.string.source_soundcloud),
+                                    tint = Color.White,
+                                    modifier = Modifier.size(12.dp)
+                                )
+                            }
+                        }
                     } else {
                         Surface(
                             modifier = Modifier.fillMaxSize(),
@@ -1766,7 +1811,7 @@ private fun SearchSongCard(
 }
 
 enum class SearchCategory {
-    SONGS, ARTISTS, ALBUMS, PLAYLISTS
+    SONGS, SOUNDCLOUD, ARTISTS, ALBUMS, PLAYLISTS
 }
 
 enum class VideoSearchCategory {
@@ -1893,6 +1938,7 @@ fun SearchFilterChips(
                 Text(
                     when (category) {
                         SearchCategory.SONGS -> stringResource(R.string.cat_songs)
+                        SearchCategory.SOUNDCLOUD -> stringResource(R.string.cat_soundcloud)
                         SearchCategory.ARTISTS -> stringResource(R.string.cat_artists)
                         SearchCategory.ALBUMS -> stringResource(R.string.cat_albums)
                         SearchCategory.PLAYLISTS -> stringResource(R.string.cat_playlists)
