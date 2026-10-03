@@ -23,6 +23,7 @@ import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -94,6 +95,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Matrix
@@ -109,7 +111,6 @@ import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.LayoutDirection
 import androidx.compose.ui.unit.dp
-import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
 import com.ivor.ivormusic.data.PlayerStyle
@@ -215,20 +216,10 @@ fun OnboardingScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(34.dp)
-                            .clip(PolygonShape(MaterialShapes.Cookie9Sided))
-                            .background(MaterialTheme.colorScheme.primary),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.MusicNote,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                    TriatMark(
+                        modifier = Modifier.size(28.dp),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
                     Text(
                         text = "Triat",
                         style = MaterialTheme.typography.titleLarge,
@@ -407,7 +398,7 @@ private fun WelcomePage() {
     ) {
         Spacer(modifier = Modifier.height(8.dp))
 
-        MorphingHero(icon = Icons.Rounded.MusicNote)
+        WelcomeHero()
 
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -439,7 +430,7 @@ private fun WelcomePage() {
             ) {
                 FeatureRow(
                     icon = Icons.Rounded.CloudSync,
-                    shape = MaterialShapes.Flower,
+                    shape = MaterialShapes.Circle,
                     title = stringResource(R.string.ob_feat_stream_title),
                     subtitle = stringResource(R.string.ob_feat_stream_sub)
                 )
@@ -451,7 +442,7 @@ private fun WelcomePage() {
                 )
                 FeatureRow(
                     icon = Icons.Rounded.Palette,
-                    shape = MaterialShapes.SoftBurst,
+                    shape = MaterialShapes.Circle,
                     title = stringResource(R.string.ob_feat_custom_title),
                     subtitle = stringResource(R.string.ob_feat_custom_sub)
                 )
@@ -887,43 +878,40 @@ private fun OnboardingPageScaffold(
     }
 }
 
-/** Hero for the welcome page: a shape morphing between two expressive forms. */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
+/**
+ * The Triat mark: three dots arranged as a play triangle (tri = three, the
+ * shape of play). Monochrome, drawn in [color] so it reads the same in light,
+ * dark and dynamic themes. The same mark is the launcher icon.
+ */
 @Composable
-private fun MorphingHero(icon: ImageVector) {
-    val transition = rememberInfiniteTransition(label = "heroMorph")
-    val morphProgress by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(4200, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "morphProgress"
-    )
-    val rotation by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 360f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(45000, easing = LinearEasing)
-        ),
-        label = "heroRotation"
-    )
-    val morph = remember { Morph(MaterialShapes.Cookie9Sided, MaterialShapes.SoftBurst) }
+fun TriatMark(
+    modifier: Modifier = Modifier,
+    color: Color = MaterialTheme.colorScheme.onSurface
+) {
+    Canvas(modifier = modifier) {
+        val s = size.minDimension
+        val r = s * 0.135f
+        val leftX = s * 0.37f
+        val rightX = s * 0.63f
+        drawCircle(color, r, Offset(leftX, s * 0.37f))
+        drawCircle(color, r, Offset(leftX, s * 0.63f))
+        drawCircle(color, r, Offset(rightX, s * 0.50f))
+    }
+}
 
-    Box(contentAlignment = Alignment.Center) {
-        Box(
-            modifier = Modifier
-                .size(132.dp)
-                .graphicsLayer { rotationZ = rotation }
-                .clip(MorphShape(morph, morphProgress))
-                .background(MaterialTheme.colorScheme.primaryContainer)
-        )
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-            modifier = Modifier.size(56.dp)
+/** Hero for the welcome page: the Triat mark on a calm circle. */
+@Composable
+private fun WelcomeHero() {
+    Box(
+        modifier = Modifier
+            .size(132.dp)
+            .clip(CircleShape)
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest),
+        contentAlignment = Alignment.Center
+    ) {
+        TriatMark(
+            modifier = Modifier.size(64.dp),
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }
@@ -1197,41 +1185,14 @@ private fun HintText(text: String) {
 
 @Composable
 private fun OnboardingBackdrop() {
-    val transition = rememberInfiniteTransition(label = "onboardingBackdrop")
-    val driftA by transition.animateFloat(
-        initialValue = 0f,
-        targetValue = 1f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(11000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftA"
-    )
-    val driftB by transition.animateFloat(
-        initialValue = 1f,
-        targetValue = 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(15000, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "driftB"
-    )
-
     Box(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
-                .padding(start = (24 + driftA * 50).dp, top = (70 + driftB * 40).dp)
-                .size(190.dp)
-                .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.08f))
-        )
-        Box(
-            modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .padding(end = (12 + driftB * 40).dp, bottom = (170 + driftA * 50).dp)
-                .size(230.dp)
+                .padding(end = 24.dp, bottom = 200.dp)
+                .size(220.dp)
                 .clip(CircleShape)
-                .background(MaterialTheme.colorScheme.tertiary.copy(alpha = 0.08f))
+                .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.05f))
         )
     }
 }
@@ -1255,24 +1216,3 @@ private class PolygonShape(private val polygon: RoundedPolygon) : Shape {
     }
 }
 
-private class MorphShape(
-    private val morph: Morph,
-    private val progress: Float
-) : Shape {
-    override fun createOutline(
-        size: Size,
-        layoutDirection: LayoutDirection,
-        density: Density
-    ): Outline {
-        val path = morph.toPath(progress).asComposePath()
-        val matrix = Matrix()
-        val bounds = morph.calculateBounds()
-        val boundsWidth = bounds[2] - bounds[0]
-        val boundsHeight = bounds[3] - bounds[1]
-
-        matrix.scale(size.width / boundsWidth, size.height / boundsHeight)
-        matrix.translate(-bounds[0], -bounds[1])
-        path.transform(matrix)
-        return Outline.Generic(path)
-    }
-}

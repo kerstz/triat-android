@@ -12,7 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.googlefonts.Font
 import androidx.compose.ui.text.googlefonts.GoogleFont
 import androidx.compose.ui.text.googlefonts.R as GoogleFontsR
-import androidx.compose.ui.text.style.TextGeometricTransform
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 
@@ -68,12 +67,11 @@ val RobotoFlexMediumWidth = FontFamily(
 
 val Typography = Typography(
     displayLarge = TextStyle(
-        fontFamily = MontserratFamily,
+        fontFamily = RobotoFlex,
         fontWeight = FontWeight.SemiBold,
-        fontSize = 68.sp,
-        textGeometricTransform = TextGeometricTransform(scaleX = 1.5f), // Stretch horizontally
-        letterSpacing = (-0.05).em,
-        lineHeight = 0.8.em,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = (-0.02).em,
         platformStyle = PlatformTextStyle(includeFontPadding = false)
     ),
     headlineSmall = TextStyle(

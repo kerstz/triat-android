@@ -4,11 +4,11 @@
     android:height="108dp"
     android:viewportWidth="108"
     android:viewportHeight="108">
-    <!-- Triat : trois points en triangle de lecture, pointe rouge. -->
+    <!-- Triat : trois points en triangle de lecture, monochrome. -->
     <path android:fillColor="#FFF2F2F2"
         android:pathData="M32.83,41.00a7.20,7.20 0,1 1,14.40,0a7.20,7.20 0,1 1,-14.40,0z" />
     <path android:fillColor="#FFF2F2F2"
         android:pathData="M32.83,67.00a7.20,7.20 0,1 1,14.40,0a7.20,7.20 0,1 1,-14.40,0z" />
-    <path android:fillColor="#FFD71921"
+    <path android:fillColor="#FFF2F2F2"
         android:pathData="M55.35,54.00a7.20,7.20 0,1 1,14.40,0a7.20,7.20 0,1 1,-14.40,0z" />
 </vector>

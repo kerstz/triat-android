@@ -473,8 +473,8 @@ class ThemePreferences(context: Context) {
         const val KEY_APP_ICON = "app_icon"
         const val DEFAULT_APP_ICON = "default"
         private const val KEY_PALETTE_STYLE = "palette_style"
-        /** Default palette id: Triat's Nothing palette (red on black). */
-        const val DEFAULT_COLOR_PALETTE = "nothing"
+        /** Default palette: follow the system wallpaper (Material You). */
+        const val DEFAULT_COLOR_PALETTE = "dynamic"
         private const val KEY_LOAD_LOCAL_SONGS = "load_local_songs"
         /** One-shot marker for [migrateLoadLocalSongsDefault]. */
         private const val KEY_LOAD_LOCAL_SONGS_DEFAULT_MIGRATED =
@@ -923,8 +923,7 @@ class ThemePreferences(context: Context) {
             return if (oldDarkMode) ThemeMode.DARK else ThemeMode.LIGHT
         }
 
-        // Triat is black by default, like the desktop it comes from.
-        return ThemeMode.DARK
+        return ThemeMode.SYSTEM
     }
 
     /**
@@ -1195,18 +1194,18 @@ class ThemePreferences(context: Context) {
     }
 
     /**
-     * Get the stored player style preference. Defaults to EDITORIAL.
+     * Get the stored player style preference. Defaults to CLASSIC.
      *
      * The fallback in the catch is the same constant as the default on purpose:
      * an unreadable stored value should land where a fresh install does, not on
      * a different style than the one someone who never chose would get.
      */
     private fun getPlayerStylePreference(): PlayerStyle {
-        val styleName = prefs.getString(KEY_PLAYER_STYLE, PlayerStyle.EDITORIAL.name)
+        val styleName = prefs.getString(KEY_PLAYER_STYLE, PlayerStyle.CLASSIC.name)
         return try {
-            PlayerStyle.valueOf(styleName ?: PlayerStyle.EDITORIAL.name)
+            PlayerStyle.valueOf(styleName ?: PlayerStyle.CLASSIC.name)
         } catch (e: IllegalArgumentException) {
-            PlayerStyle.EDITORIAL
+            PlayerStyle.CLASSIC
         }
     }
     
