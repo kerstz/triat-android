@@ -113,6 +113,9 @@ class ThemePreferences(context: Context) {
 
     private val _playerStyle = MutableStateFlow(getPlayerStylePreference())
     val playerStyle: StateFlow<PlayerStyle> = _playerStyle.asStateFlow()
+
+    private val _contentSource = MutableStateFlow(getContentSourcePreference())
+    val contentSource: StateFlow<ContentSource> = _contentSource.asStateFlow()
     
     private val _saveVideoHistory = MutableStateFlow(getSaveVideoHistoryPreference())
     val saveVideoHistory: StateFlow<Boolean> = _saveVideoHistory.asStateFlow()
@@ -355,6 +358,7 @@ class ThemePreferences(context: Context) {
             KEY_VIDEO_HOME_VISIBLE_DESTINATIONS ->
                 _videoHomeConfiguration.value = getVideoHomeConfiguration()
             KEY_PLAYER_STYLE -> _playerStyle.value = getPlayerStylePreference()
+            KEY_CONTENT_SOURCE -> _contentSource.value = getContentSourcePreference()
             KEY_SAVE_VIDEO_HISTORY -> _saveVideoHistory.value = getSaveVideoHistoryPreference()
             KEY_SAVE_MUSIC_HISTORY -> _saveMusicHistory.value = getSaveMusicHistoryPreference()
             KEY_LIVE_DOWNLOAD_UPDATES -> _liveDownloadUpdates.value = getLiveDownloadUpdatesPreference()
@@ -496,6 +500,7 @@ class ThemePreferences(context: Context) {
         private const val KEY_VIDEO_HOME_VISIBLE_DESTINATIONS =
             "video_home_visible_destinations"
         private const val KEY_PLAYER_STYLE = "player_style"
+        private const val KEY_CONTENT_SOURCE = "content_source"
         private const val KEY_SAVE_VIDEO_HISTORY = "save_video_history"
         private const val KEY_SAVE_MUSIC_HISTORY = "save_music_history"
         private const val KEY_LIVE_DOWNLOAD_UPDATES = "live_download_updates"
@@ -1209,6 +1214,21 @@ class ThemePreferences(context: Context) {
         }
     }
     
+    private fun getContentSourcePreference(): ContentSource {
+        val name = prefs.getString(KEY_CONTENT_SOURCE, ContentSource.BOTH.name)
+        return try {
+            ContentSource.valueOf(name ?: ContentSource.BOTH.name)
+        } catch (e: IllegalArgumentException) {
+            ContentSource.BOTH
+        }
+    }
+
+    /** Save the content-source preference and update the flow. */
+    fun setContentSource(source: ContentSource) {
+        prefs.edit().putString(KEY_CONTENT_SOURCE, source.name).apply()
+        _contentSource.value = source
+    }
+
     /**
      * Save player style preference and update the flow.
      */
@@ -2301,6 +2321,20 @@ enum class CaptionBackground {
 /**
  * Player UI Style options
  */
+/**
+ * Which services feed search and the home feed. Persisted by name, so the
+ * constants are frozen. [BOTH] is the default - the point of a second source is
+ * to have more music, not to pick one.
+ */
+enum class ContentSource {
+    YOUTUBE,
+    SOUNDCLOUD,
+    BOTH;
+
+    val includesYouTube: Boolean get() = this != SOUNDCLOUD
+    val includesSoundCloud: Boolean get() = this != YOUTUBE
+}
+
 enum class PlayerStyle {
     /** Classic button-based player with play/pause/next/previous controls */
     CLASSIC,

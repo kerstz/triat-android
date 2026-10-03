@@ -250,6 +250,20 @@ fun SearchScreen(
     var albumResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var playlistResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var selectedCategory by rememberSaveable { mutableStateOf(SearchCategory.SONGS) }
+    val contentSource by viewModel.contentSource.collectAsState()
+    val visibleCategories = remember(contentSource) {
+        SearchCategory.entries.filter { cat ->
+            if (cat == SearchCategory.SOUNDCLOUD) contentSource.includesSoundCloud
+            else contentSource.includesYouTube
+        }
+    }
+    // Keep the selected chip inside what the source allows, so switching to
+    // SoundCloud-only does not leave a now-hidden YouTube category selected.
+    LaunchedEffect(visibleCategories) {
+        if (selectedCategory !in visibleCategories) {
+            selectedCategory = visibleCategories.firstOrNull() ?: SearchCategory.SONGS
+        }
+    }
     var selectedVideoCategory by rememberSaveable { mutableStateOf(VideoSearchCategory.VIDEOS) }
     var selectedDateFilter by rememberSaveable { mutableStateOf(VideoSearchDateFilter.ANY) }
     var selectedSort by rememberSaveable { mutableStateOf(VideoSearchSort.RELEVANCE) }
@@ -595,7 +609,8 @@ fun SearchScreen(
                         selectedCategory = selectedCategory,
                         onCategorySelected = { selectedCategory = it },
                         primaryColor = primaryColor,
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
+                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp),
+                        categories = visibleCategories
                     )
                 }
             }
@@ -1912,7 +1927,8 @@ fun SearchFilterChips(
     selectedCategory: SearchCategory,
     onCategorySelected: (SearchCategory) -> Unit,
     primaryColor: Color,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    categories: List<SearchCategory> = SearchCategory.entries
 ) {
     // M3 Expressive connected button group (replaces the FilterChip row) —
     // same pattern as the Library tabs, shape-morphs on select.
@@ -1920,7 +1936,7 @@ fun SearchFilterChips(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween)
     ) {
-        SearchCategory.entries.forEachIndexed { index, category ->
+        categories.forEachIndexed { index, category ->
             val selected = category == selectedCategory
             androidx.compose.material3.ToggleButton(
                 checked = selected,
@@ -1930,7 +1946,7 @@ fun SearchFilterChips(
                     .height(44.dp),
                 shapes = when (index) {
                     0 -> androidx.compose.material3.ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    SearchCategory.entries.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
+                    categories.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> androidx.compose.material3.ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
                 contentPadding = PaddingValues(horizontal = 8.dp)

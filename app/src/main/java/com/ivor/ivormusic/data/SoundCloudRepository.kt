@@ -116,6 +116,21 @@ class SoundCloudRepository(context: Context) {
             )
         }
 
+    /** SoundCloud's charts (its default kiosk), as a home shelf. */
+    suspend fun charts(): List<Song> = withContext(Dispatchers.IO) {
+        ensureNewPipe()
+        try {
+            val extractor = soundcloudService.kioskList.defaultKioskExtractor
+            extractor.fetchPage()
+            extractor.initialPage.items.toSongs()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            KLog.w("SoundCloudRepository", "Charts failed: ${e.message}")
+            emptyList()
+        }
+    }
+
     /**
      * Resolve a SoundCloud track URL to a playable audio stream URL. These
      * expire, so resolve right before playback, the same as YouTube.

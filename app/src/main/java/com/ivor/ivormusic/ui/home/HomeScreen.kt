@@ -272,8 +272,21 @@ fun HomeScreen(
     val youtubeSongs by viewModel.youtubeSongs.collectAsState()
     val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsState()
     
-    // Use local songs or YouTube songs (which includes fallback search results if not logged in)
-    val songs = if (loadLocalSongs) localSongs else youtubeSongs
+    val contentSource by viewModel.contentSource.collectAsState()
+    val soundCloudHome by viewModel.soundCloudHome.collectAsState()
+    LaunchedEffect(contentSource) { viewModel.refreshSoundCloudHome() }
+
+    // Use local songs or YouTube songs (which includes fallback search results if not logged in).
+    // When SoundCloud is a source, blend its charts into the home feed so both
+    // services share the page; interleaving keeps either source from dominating.
+    val baseSongs = if (loadLocalSongs) localSongs else youtubeSongs
+    val songs = remember(baseSongs, soundCloudHome, contentSource) {
+        if (!loadLocalSongs && contentSource.includesSoundCloud && soundCloudHome.isNotEmpty()) {
+            interleaveSources(baseSongs, soundCloudHome)
+        } else {
+            baseSongs
+        }
+    }
 
     // Local play history, for the "Jump back in" rail. Free (a file read, no
     // network), and refreshed whenever the Home tab comes back into view so a
@@ -2978,4 +2991,26 @@ fun JumpBackInSection(
             }
         }
     }
+}
+
+/**
+ * Interleave two source feeds (YouTube recommendations and SoundCloud charts)
+ * so neither owns the top of the home. De-duplicates by id, keeping first seen.
+ */
+private fun interleaveSources(a: List<Song>, b: List<Song>): List<Song> {
+    val out = ArrayList<Song>(a.size + b.size)
+    val seen = HashSet<String>()
+    var i = 0
+    var j = 0
+    while (i < a.size || j < b.size) {
+        if (i < a.size) {
+            val s = a[i++]
+            if (seen.add(s.id)) out.add(s)
+        }
+        if (j < b.size) {
+            val s = b[j++]
+            if (seen.add(s.id)) out.add(s)
+        }
+    }
+    return out
 }

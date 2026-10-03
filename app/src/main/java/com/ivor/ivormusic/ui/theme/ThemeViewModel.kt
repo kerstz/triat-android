@@ -43,6 +43,8 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     val videoHomeConfiguration: StateFlow<com.ivor.ivormusic.data.VideoHomeConfiguration> =
         themePreferences.videoHomeConfiguration
     val playerStyle: StateFlow<PlayerStyle> = themePreferences.playerStyle
+    val contentSource: StateFlow<com.ivor.ivormusic.data.ContentSource> =
+        themePreferences.contentSource
     val saveVideoHistory: StateFlow<Boolean> = themePreferences.saveVideoHistory
     val saveMusicHistory: StateFlow<Boolean> = themePreferences.saveMusicHistory
 
@@ -171,6 +173,10 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setPlayerStyle(style: PlayerStyle) {
         themePreferences.setPlayerStyle(style)
+    }
+
+    fun setContentSource(source: com.ivor.ivormusic.data.ContentSource) {
+        themePreferences.setContentSource(source)
     }
     
     fun setSaveVideoHistory(enabled: Boolean) {

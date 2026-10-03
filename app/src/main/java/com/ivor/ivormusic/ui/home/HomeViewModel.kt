@@ -2196,6 +2196,30 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    /** Which services search and the home feed draw from. */
+    val contentSource: StateFlow<com.ivor.ivormusic.data.ContentSource> =
+        themePreferences.contentSource
+
+    private val _soundCloudHome = MutableStateFlow<List<Song>>(emptyList())
+    /** SoundCloud charts blended into the home feed; empty unless the source allows it. */
+    val soundCloudHome: StateFlow<List<Song>> = _soundCloudHome.asStateFlow()
+
+    /** Load SoundCloud charts for the home once, when the source includes it. */
+    fun refreshSoundCloudHome() {
+        if (!themePreferences.contentSource.value.includesSoundCloud) {
+            _soundCloudHome.value = emptyList()
+            return
+        }
+        if (_soundCloudHome.value.isNotEmpty()) return
+        viewModelScope.launch {
+            _soundCloudHome.value = try {
+                soundCloudRepository.charts()
+            } catch (e: Exception) {
+                emptyList()
+            }
+        }
+    }
+
     suspend fun loadMoreResults(query: String): List<Song> {
         if (query.isBlank()) return emptyList()
         return try {

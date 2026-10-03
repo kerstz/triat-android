@@ -36,6 +36,7 @@ import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Computer
@@ -418,6 +419,10 @@ internal fun buildSettingsSearchIndex(
     entry(
         "content_mode", stringResource(R.string.sp_mode), stringResource(R.string.settings_content_and_feeds), Icons.Rounded.VideoLibrary,
         listOf("video mode", "music mode", "switch", "youtube videos")
+    ) { onOpenPage(SettingsPage.CONTENT) }
+    entry(
+        "content_source", stringResource(R.string.sp_sources), stringResource(R.string.settings_content_and_feeds), Icons.Rounded.Cloud,
+        listOf("soundcloud", "youtube", "both", "source", "where", "service")
     ) { onOpenPage(SettingsPage.CONTENT) }
     entry(
         "home_toggle", stringResource(R.string.sp_home_mode_toggle), stringResource(R.string.settings_content_and_feeds), Icons.Rounded.ToggleOn,

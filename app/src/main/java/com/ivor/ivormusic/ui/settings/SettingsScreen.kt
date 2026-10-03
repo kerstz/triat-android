@@ -316,6 +316,8 @@ fun SettingsScreen(
     onNonExpressiveNavigationBarToggle: (Boolean) -> Unit = {},
     playerStyle: PlayerStyle,
     onPlayerStyleChange: (PlayerStyle) -> Unit,
+    contentSource: com.ivor.ivormusic.data.ContentSource = com.ivor.ivormusic.data.ContentSource.BOTH,
+    onContentSourceChange: (com.ivor.ivormusic.data.ContentSource) -> Unit = {},
     saveVideoHistory: Boolean,
     onSaveVideoHistoryToggle: (Boolean) -> Unit,
     saveMusicHistory: Boolean,
@@ -889,6 +891,8 @@ fun SettingsScreen(
                 SettingsPage.CONTENT -> ContentSettingsPage(
                     localOnlyMode = localOnlyMode,
                     onLocalOnlyModeToggle = onLocalOnlyModeToggle,
+                    contentSource = contentSource,
+                    onContentSourceChange = onContentSourceChange,
                     videoMode = videoMode,
                     onVideoModeToggle = onVideoModeToggle,
                     homeModeToggleEnabled = homeModeToggleEnabled,

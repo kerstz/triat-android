@@ -399,6 +399,9 @@
     <string name="vpc_quality_hdr">HDR</string>
     <string name="vpc_quality_standard">Standard</string>
     <string name="sp_mode">Mode</string>
+    <string name="sp_sources">Sources</string>
+    <string name="sp_sources_hint">Where search and your home feed get music from.</string>
+    <string name="sp_source_both">Both</string>
     <string name="sp_local_only">Local Only</string>
     <string name="sp_home_mode_toggle">Home Screen Mode Toggle</string>
     <string name="sp_timed_comments">Timed Comments</string>

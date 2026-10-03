@@ -183,6 +183,7 @@ class MainActivity : ComponentActivity() {
             val homeModeToggleEnabled by themeViewModel.homeModeToggleEnabled.collectAsState()
             val videoHomeConfiguration by themeViewModel.videoHomeConfiguration.collectAsState()
             val playerStyle by themeViewModel.playerStyle.collectAsState()
+            val contentSource by themeViewModel.contentSource.collectAsState()
             val saveVideoHistory by themeViewModel.saveVideoHistory.collectAsState()
             val saveMusicHistory by themeViewModel.saveMusicHistory.collectAsState()
             val liveDownloadUpdates by themeViewModel.liveDownloadUpdates.collectAsState()
@@ -333,6 +334,8 @@ class MainActivity : ComponentActivity() {
                         },
                         playerStyle = playerStyle,
                         onPlayerStyleChange = { themeViewModel.setPlayerStyle(it) },
+                        contentSource = contentSource,
+                        onContentSourceChange = { themeViewModel.setContentSource(it) },
                         saveVideoHistory = saveVideoHistory,
                         onSaveVideoHistoryToggle = { themeViewModel.setSaveVideoHistory(it) },
                         saveMusicHistory = saveMusicHistory,
@@ -662,6 +665,8 @@ fun MusicApp(
     onNonExpressiveNavigationBarToggle: (Boolean) -> Unit,
     playerStyle: PlayerStyle,
     onPlayerStyleChange: (PlayerStyle) -> Unit,
+    contentSource: com.ivor.ivormusic.data.ContentSource,
+    onContentSourceChange: (com.ivor.ivormusic.data.ContentSource) -> Unit,
     saveVideoHistory: Boolean,
     onSaveVideoHistoryToggle: (Boolean) -> Unit,
     saveMusicHistory: Boolean,
@@ -1230,6 +1235,8 @@ fun MusicApp(
                         onNonExpressiveNavigationBarToggle,
                     playerStyle = playerStyle,
                     onPlayerStyleChange = onPlayerStyleChange,
+                    contentSource = contentSource,
+                    onContentSourceChange = onContentSourceChange,
                     saveVideoHistory = saveVideoHistory,
                     onSaveVideoHistoryToggle = onSaveVideoHistoryToggle,
                     saveMusicHistory = saveMusicHistory,

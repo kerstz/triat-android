@@ -1311,6 +1311,8 @@ internal fun PlaybackSettingsPage(
 internal fun ContentSettingsPage(
     localOnlyMode: Boolean,
     onLocalOnlyModeToggle: (Boolean) -> Unit,
+    contentSource: com.ivor.ivormusic.data.ContentSource,
+    onContentSourceChange: (com.ivor.ivormusic.data.ContentSource) -> Unit,
     videoMode: Boolean,
     onVideoModeToggle: (Boolean) -> Unit,
     homeModeToggleEnabled: Boolean,
@@ -1389,6 +1391,59 @@ internal fun ContentSettingsPage(
         }
 
         if (!localOnlyMode) {
+            item {
+                SettingsSection(title = stringResource(R.string.sp_sources)) {
+                    SettingsCard {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(
+                                text = stringResource(R.string.sp_sources_hint),
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Spacer(Modifier.height(12.dp))
+                            val sourceOptions = listOf(
+                                com.ivor.ivormusic.data.ContentSource.YOUTUBE,
+                                com.ivor.ivormusic.data.ContentSource.SOUNDCLOUD,
+                                com.ivor.ivormusic.data.ContentSource.BOTH
+                            )
+                            val sourceLabels = listOf(
+                                stringResource(R.string.source_youtube_music),
+                                stringResource(R.string.source_soundcloud),
+                                stringResource(R.string.sp_source_both)
+                            )
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.spacedBy(
+                                    androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween
+                                )
+                            ) {
+                                sourceOptions.forEachIndexed { index, option ->
+                                    androidx.compose.material3.ToggleButton(
+                                        checked = contentSource == option,
+                                        onCheckedChange = { onContentSourceChange(option) },
+                                        modifier = Modifier.weight(1f),
+                                        shapes = when (index) {
+                                            0 -> androidx.compose.material3.ButtonGroupDefaults.connectedLeadingButtonShapes()
+                                            sourceOptions.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
+                                            else -> androidx.compose.material3.ButtonGroupDefaults.connectedMiddleButtonShapes()
+                                        },
+                                        colors = androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
+                                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
+                                            checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                            contentColor = MaterialTheme.colorScheme.onSurface,
+                                            checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                                        ),
+                                        contentPadding = PaddingValues(horizontal = 8.dp)
+                                    ) {
+                                        Text(sourceLabels[index], fontSize = 13.sp, maxLines = 1)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
             item {
                 SettingsSection(title = stringResource(R.string.cat_videos)) {
                     SettingsCard {
