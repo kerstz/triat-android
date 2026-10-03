@@ -201,6 +201,14 @@ fun GesturePlayerSheetContent(
                         playerHaptics.playPause(!viewModel.isPlaying.value)
                         viewModel.togglePlayPause()
                     },
+                    onNext = {
+                        playerHaptics.skip()
+                        viewModel.skipToNext()
+                    },
+                    onPrevious = {
+                        playerHaptics.skip()
+                        viewModel.skipToPrevious()
+                    },
                     onQueueItemChange = { item ->
                         playerHaptics.skip()
                         viewModel.skipToQueueItem(item.id)
@@ -266,6 +274,8 @@ private fun GestureNowPlayingView(
     sleepTimerActive: Boolean,
     onSleepTimerClick: () -> Unit,
     onPlayPauseToggle: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
     onQueueItemChange: (MusicQueueItem) -> Unit,
     isDownloaded: Boolean,
     isDownloading: Boolean,
@@ -600,10 +610,25 @@ private fun GestureNowPlayingView(
             
             PlayerVisualizerSlot(modifier = Modifier.fillMaxWidth())
 
-            // ========== 6. FLOATING TOOLBAR (Action Buttons) ==========
+            // ========== 6. TRANSPORT ROW (coverflow) + secondary toolbar ==========
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
+                CoverflowTransportRow(
+                    isPlaying = isPlaying,
+                    isBuffering = isBuffering,
+                    onPlayPauseToggle = onPlayPauseToggle,
+                    onNext = onNext,
+                    onPrevious = onPrevious,
+                    onToggleShuffle = onToggleShuffle,
+                    onToggleRepeat = onToggleRepeat,
+                    shuffleModeEnabled = shuffleModeEnabled,
+                    repeatMode = repeatMode,
+                    primaryColor = primaryColor,
+                    onSurfaceColor = onSurfaceColor,
+                    onSurfaceVariantColor = onSurfaceVariantColor
+                )
+                Spacer(modifier = Modifier.height(10.dp))
                 GesturePlayerToolbar(
                     shuffleModeEnabled = shuffleModeEnabled,
                     repeatMode = repeatMode,
@@ -625,6 +650,90 @@ private fun GestureNowPlayingView(
                 Spacer(modifier = Modifier.height(56.dp))
             }
         }
+        }
+    }
+}
+
+/**
+ * Coverflow transport: shuffle, previous, a large play/pause disc, next, repeat.
+ * The disc is the one bold element; everything around it stays quiet.
+ */
+@Composable
+private fun CoverflowTransportRow(
+    isPlaying: Boolean,
+    isBuffering: Boolean,
+    onPlayPauseToggle: () -> Unit,
+    onNext: () -> Unit,
+    onPrevious: () -> Unit,
+    onToggleShuffle: () -> Unit,
+    onToggleRepeat: () -> Unit,
+    shuffleModeEnabled: Boolean,
+    repeatMode: Int,
+    primaryColor: Color,
+    onSurfaceColor: Color,
+    onSurfaceVariantColor: Color
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 30.dp),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        IconButton(onClick = onToggleShuffle) {
+            Icon(
+                imageVector = Icons.Rounded.Shuffle,
+                contentDescription = "Shuffle",
+                tint = if (shuffleModeEnabled) primaryColor else onSurfaceVariantColor,
+                modifier = Modifier.size(22.dp)
+            )
+        }
+        IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.SkipPrevious,
+                contentDescription = "Previous",
+                tint = onSurfaceColor,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        Surface(
+            onClick = onPlayPauseToggle,
+            shape = CircleShape,
+            color = primaryColor,
+            modifier = Modifier.size(68.dp),
+            shadowElevation = 10.dp
+        ) {
+            Box(contentAlignment = Alignment.Center) {
+                if (isBuffering) {
+                    CircularWavyProgressIndicator(
+                        modifier = Modifier.size(30.dp),
+                        color = MaterialTheme.colorScheme.onPrimary
+                    )
+                } else {
+                    Icon(
+                        imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
+                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        tint = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(32.dp)
+                    )
+                }
+            }
+        }
+        IconButton(onClick = onNext, modifier = Modifier.size(48.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.SkipNext,
+                contentDescription = "Next",
+                tint = onSurfaceColor,
+                modifier = Modifier.size(32.dp)
+            )
+        }
+        IconButton(onClick = onToggleRepeat) {
+            Icon(
+                imageVector = if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Rounded.RepeatOne else Icons.Rounded.Repeat,
+                contentDescription = "Repeat",
+                tint = if (repeatMode != Player.REPEAT_MODE_OFF) primaryColor else onSurfaceVariantColor,
+                modifier = Modifier.size(22.dp)
+            )
         }
     }
 }
