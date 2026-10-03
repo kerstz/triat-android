@@ -85,7 +85,7 @@ internal val playerStyleCatalog: List<PlayerStyleInfo> = listOf(
         Icons.Rounded.PlayCircle, MaterialShapes.Circle
     ),
     PlayerStyleInfo(
-        PlayerStyle.GESTURE, "Gesture", "Swipe album art to navigate",
+        PlayerStyle.GESTURE, "Coverflow", "Swipe through 3D album covers",
         Icons.Rounded.SwipeRight, MaterialShapes.Pill
     ),
     PlayerStyleInfo(

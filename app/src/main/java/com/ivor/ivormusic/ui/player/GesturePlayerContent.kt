@@ -811,9 +811,11 @@ private fun SwipeableAlbumCarousel(
         val albumSize = (minOf(maxWidth * 0.90f, maxHeight * 0.95f)).coerceAtLeast(1.dp)
         val cornerRadius = albumSize * 0.08f
         
-        // Spacing between album centers
-        val spacing = albumSize * 0.75f
+        // Spacing between album centers. Tight so the rotated side covers peek
+        // in at the edges, coverflow-style, rather than sitting apart.
+        val spacing = albumSize * 0.62f
         val spacingPx = with(LocalDensity.current) { spacing.toPx() }
+        val coverflowCameraDistance = with(LocalDensity.current) { 56.dp.toPx() }
         
         // Track starting position when drag begins
         var dragStartPosition by remember { mutableFloatStateOf(0f) }
@@ -870,25 +872,27 @@ private fun SwipeableAlbumCarousel(
                 // Skip rendering if too far off (optimization)
                 if (distanceFromCenter > 2.5f) return@forEach
                 
-                // Size: full at center, smaller at sides
-                val sizeMultiplier = (1f - distanceFromCenter * 0.30f).coerceIn(0.55f, 1f)
+                // Coverflow: center cover full and flat, side covers shrink to
+                // ~0.82 and rotate up to 42 degrees around Y for the 3D turn.
+                val sizeMultiplier = (1f - distanceFromCenter * 0.18f).coerceIn(0.82f, 1f)
                 val currentSize = albumSize * sizeMultiplier
                 val currentCornerRadius = cornerRadius * sizeMultiplier
-                
+
                 // Alpha: full at center, faded at sides
-                val alpha = (1f - distanceFromCenter * 0.45f).coerceIn(0.35f, 1f)
-                
-                // Rotation: tilted based on position
-                val rotation = relativePosition * 8f
-                
+                val alpha = (1f - distanceFromCenter * 0.35f).coerceIn(0.4f, 1f)
+
+                // Turn around the vertical axis: right covers face left, left
+                // covers face right. Clamped so a far cover does not over-rotate.
+                val rotationYValue = (-relativePosition * 42f).coerceIn(-42f, 42f)
+
                 // Z-index: center album on top
                 val zIndex = (10f - distanceFromCenter * 3f).coerceAtLeast(0f)
-                
+
                 // X position from center
                 val xOffset = spacing * relativePosition
-                
-                // Y offset for depth (side albums drop down)
-                val yOffset = 10.dp * distanceFromCenter
+
+                // Y offset for depth (side albums drop down slightly)
+                val yOffset = 6.dp * distanceFromCenter
                 
                 // Is this the "current" centered album?
                 val isCentered = distanceFromCenter < 0.5f
@@ -905,7 +909,10 @@ private fun SwipeableAlbumCarousel(
                             .offset(x = xOffset, y = yOffset)
                             .zIndex(zIndex)
                             .alpha(alpha)
-                            .graphicsLayer { rotationZ = rotation }
+                            .graphicsLayer {
+                                rotationY = rotationYValue
+                                cameraDistance = coverflowCameraDistance
+                            }
                             .then(
                                 if (isCentered) {
                                     Modifier

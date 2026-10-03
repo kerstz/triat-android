@@ -1199,18 +1199,18 @@ class ThemePreferences(context: Context) {
     }
 
     /**
-     * Get the stored player style preference. Defaults to CLASSIC.
+     * Get the stored player style preference. Defaults to GESTURE (coverflow).
      *
      * The fallback in the catch is the same constant as the default on purpose:
      * an unreadable stored value should land where a fresh install does, not on
      * a different style than the one someone who never chose would get.
      */
     private fun getPlayerStylePreference(): PlayerStyle {
-        val styleName = prefs.getString(KEY_PLAYER_STYLE, PlayerStyle.CLASSIC.name)
+        val styleName = prefs.getString(KEY_PLAYER_STYLE, PlayerStyle.GESTURE.name)
         return try {
-            PlayerStyle.valueOf(styleName ?: PlayerStyle.CLASSIC.name)
+            PlayerStyle.valueOf(styleName ?: PlayerStyle.GESTURE.name)
         } catch (e: IllegalArgumentException) {
-            PlayerStyle.CLASSIC
+            PlayerStyle.GESTURE
         }
     }
     
