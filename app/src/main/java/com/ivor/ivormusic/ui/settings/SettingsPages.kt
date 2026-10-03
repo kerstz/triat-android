@@ -42,7 +42,9 @@ import androidx.compose.material.icons.automirrored.rounded.QueueMusic
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.CheckCircle
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.CloudOff
+import androidx.compose.material.icons.rounded.Shuffle
 import androidx.compose.material.icons.rounded.Contrast
 import androidx.compose.material.icons.rounded.Dashboard
 import androidx.compose.material.icons.rounded.Cookie
@@ -1313,6 +1315,10 @@ internal fun ContentSettingsPage(
     onLocalOnlyModeToggle: (Boolean) -> Unit,
     contentSource: com.ivor.ivormusic.data.ContentSource,
     onContentSourceChange: (com.ivor.ivormusic.data.ContentSource) -> Unit,
+    mixSourcesOnHome: Boolean,
+    onMixSourcesOnHomeToggle: (Boolean) -> Unit,
+    showSourceBadge: Boolean,
+    onShowSourceBadgeToggle: (Boolean) -> Unit,
     videoMode: Boolean,
     onVideoModeToggle: (Boolean) -> Unit,
     homeModeToggleEnabled: Boolean,
@@ -1440,6 +1446,28 @@ internal fun ContentSettingsPage(
                                 }
                             }
                         }
+                    }
+                }
+            }
+
+            item {
+                SettingsSection(title = stringResource(R.string.sp_source_display)) {
+                    SettingsCard {
+                        SettingsToggleRow(
+                            icon = Icons.Rounded.Shuffle,
+                            title = stringResource(R.string.sp_mix_home),
+                            subtitle = stringResource(R.string.sp_mix_home_sub),
+                            enabled = mixSourcesOnHome,
+                            onToggle = onMixSourcesOnHomeToggle
+                        )
+                        SettingsDivider()
+                        SettingsToggleRow(
+                            icon = Icons.Rounded.Cloud,
+                            title = stringResource(R.string.sp_source_badge),
+                            subtitle = stringResource(R.string.sp_source_badge_sub),
+                            enabled = showSourceBadge,
+                            onToggle = onShowSourceBadgeToggle
+                        )
                     }
                 }
             }

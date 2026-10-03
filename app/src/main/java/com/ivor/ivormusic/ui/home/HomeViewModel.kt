@@ -2199,6 +2199,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** Which services search and the home feed draw from. */
     val contentSource: StateFlow<com.ivor.ivormusic.data.ContentSource> =
         themePreferences.contentSource
+    val mixSourcesOnHome: StateFlow<Boolean> = themePreferences.mixSourcesOnHome
+    val showSourceBadge: StateFlow<Boolean> = themePreferences.showSourceBadge
 
     private val _soundCloudHome = MutableStateFlow<List<Song>>(emptyList())
     /** SoundCloud charts blended into the home feed; empty unless the source allows it. */

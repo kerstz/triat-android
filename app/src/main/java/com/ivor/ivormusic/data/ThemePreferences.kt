@@ -116,6 +116,14 @@ class ThemePreferences(context: Context) {
 
     private val _contentSource = MutableStateFlow(getContentSourcePreference())
     val contentSource: StateFlow<ContentSource> = _contentSource.asStateFlow()
+
+    private val _mixSourcesOnHome = MutableStateFlow(prefs.getBoolean(KEY_MIX_ON_HOME, true))
+    /** Interleave YouTube and SoundCloud in the home carousels. */
+    val mixSourcesOnHome: StateFlow<Boolean> = _mixSourcesOnHome.asStateFlow()
+
+    private val _showSourceBadge = MutableStateFlow(prefs.getBoolean(KEY_SOURCE_BADGE, true))
+    /** Show the small source icon on each cover. */
+    val showSourceBadge: StateFlow<Boolean> = _showSourceBadge.asStateFlow()
     
     private val _saveVideoHistory = MutableStateFlow(getSaveVideoHistoryPreference())
     val saveVideoHistory: StateFlow<Boolean> = _saveVideoHistory.asStateFlow()
@@ -359,6 +367,8 @@ class ThemePreferences(context: Context) {
                 _videoHomeConfiguration.value = getVideoHomeConfiguration()
             KEY_PLAYER_STYLE -> _playerStyle.value = getPlayerStylePreference()
             KEY_CONTENT_SOURCE -> _contentSource.value = getContentSourcePreference()
+            KEY_MIX_ON_HOME -> _mixSourcesOnHome.value = prefs.getBoolean(KEY_MIX_ON_HOME, true)
+            KEY_SOURCE_BADGE -> _showSourceBadge.value = prefs.getBoolean(KEY_SOURCE_BADGE, true)
             KEY_SAVE_VIDEO_HISTORY -> _saveVideoHistory.value = getSaveVideoHistoryPreference()
             KEY_SAVE_MUSIC_HISTORY -> _saveMusicHistory.value = getSaveMusicHistoryPreference()
             KEY_LIVE_DOWNLOAD_UPDATES -> _liveDownloadUpdates.value = getLiveDownloadUpdatesPreference()
@@ -501,6 +511,8 @@ class ThemePreferences(context: Context) {
             "video_home_visible_destinations"
         private const val KEY_PLAYER_STYLE = "player_style"
         private const val KEY_CONTENT_SOURCE = "content_source"
+        private const val KEY_MIX_ON_HOME = "mix_sources_on_home"
+        private const val KEY_SOURCE_BADGE = "show_source_badge"
         private const val KEY_SAVE_VIDEO_HISTORY = "save_video_history"
         private const val KEY_SAVE_MUSIC_HISTORY = "save_music_history"
         private const val KEY_LIVE_DOWNLOAD_UPDATES = "live_download_updates"
@@ -1227,6 +1239,16 @@ class ThemePreferences(context: Context) {
     fun setContentSource(source: ContentSource) {
         prefs.edit().putString(KEY_CONTENT_SOURCE, source.name).apply()
         _contentSource.value = source
+    }
+
+    fun setMixSourcesOnHome(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_MIX_ON_HOME, enabled).apply()
+        _mixSourcesOnHome.value = enabled
+    }
+
+    fun setShowSourceBadge(enabled: Boolean) {
+        prefs.edit().putBoolean(KEY_SOURCE_BADGE, enabled).apply()
+        _showSourceBadge.value = enabled
     }
 
     /**

@@ -402,6 +402,11 @@
     <string name="sp_sources">Sources</string>
     <string name="sp_sources_hint">Where search and your home feed get music from.</string>
     <string name="sp_source_both">Both</string>
+    <string name="sp_source_display">Display</string>
+    <string name="sp_mix_home">Mix sources on home</string>
+    <string name="sp_mix_home_sub">Blend YouTube and SoundCloud in the home carousels</string>
+    <string name="sp_source_badge">Source badge</string>
+    <string name="sp_source_badge_sub">Show a small icon on each cover</string>
     <string name="sp_local_only">Local Only</string>
     <string name="sp_home_mode_toggle">Home Screen Mode Toggle</string>
     <string name="sp_timed_comments">Timed Comments</string>

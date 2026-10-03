@@ -251,6 +251,7 @@ fun SearchScreen(
     var playlistResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var selectedCategory by rememberSaveable { mutableStateOf(SearchCategory.SONGS) }
     val contentSource by viewModel.contentSource.collectAsState()
+    val showSourceBadge by viewModel.showSourceBadge.collectAsState()
     val visibleCategories = remember(contentSource) {
         SearchCategory.entries.filter { cat ->
             if (cat == SearchCategory.SOUNDCLOUD) contentSource.includesSoundCloud
@@ -1201,7 +1202,7 @@ fun SearchScreen(
                             secondaryTextColor = secondaryTextColor,
                             accentColor = primaryColor,
                             isYouTube = song.source != SongSource.SOUNDCLOUD,
-                            isSoundCloud = song.source == SongSource.SOUNDCLOUD,
+                            isSoundCloud = showSourceBadge && song.source == SongSource.SOUNDCLOUD,
                             shape = getSegmentedShape(index, youtubeResults.size, hasMore = true),
                             modifier = Modifier.padding(horizontal = 20.dp)
                         )

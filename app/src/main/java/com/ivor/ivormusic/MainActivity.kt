@@ -184,6 +184,8 @@ class MainActivity : ComponentActivity() {
             val videoHomeConfiguration by themeViewModel.videoHomeConfiguration.collectAsState()
             val playerStyle by themeViewModel.playerStyle.collectAsState()
             val contentSource by themeViewModel.contentSource.collectAsState()
+            val mixSourcesOnHome by themeViewModel.mixSourcesOnHome.collectAsState()
+            val showSourceBadge by themeViewModel.showSourceBadge.collectAsState()
             val saveVideoHistory by themeViewModel.saveVideoHistory.collectAsState()
             val saveMusicHistory by themeViewModel.saveMusicHistory.collectAsState()
             val liveDownloadUpdates by themeViewModel.liveDownloadUpdates.collectAsState()
@@ -336,6 +338,10 @@ class MainActivity : ComponentActivity() {
                         onPlayerStyleChange = { themeViewModel.setPlayerStyle(it) },
                         contentSource = contentSource,
                         onContentSourceChange = { themeViewModel.setContentSource(it) },
+                        mixSourcesOnHome = mixSourcesOnHome,
+                        onMixSourcesOnHomeToggle = { themeViewModel.setMixSourcesOnHome(it) },
+                        showSourceBadge = showSourceBadge,
+                        onShowSourceBadgeToggle = { themeViewModel.setShowSourceBadge(it) },
                         saveVideoHistory = saveVideoHistory,
                         onSaveVideoHistoryToggle = { themeViewModel.setSaveVideoHistory(it) },
                         saveMusicHistory = saveMusicHistory,
@@ -667,6 +673,10 @@ fun MusicApp(
     onPlayerStyleChange: (PlayerStyle) -> Unit,
     contentSource: com.ivor.ivormusic.data.ContentSource,
     onContentSourceChange: (com.ivor.ivormusic.data.ContentSource) -> Unit,
+    mixSourcesOnHome: Boolean,
+    onMixSourcesOnHomeToggle: (Boolean) -> Unit,
+    showSourceBadge: Boolean,
+    onShowSourceBadgeToggle: (Boolean) -> Unit,
     saveVideoHistory: Boolean,
     onSaveVideoHistoryToggle: (Boolean) -> Unit,
     saveMusicHistory: Boolean,
@@ -1237,6 +1247,10 @@ fun MusicApp(
                     onPlayerStyleChange = onPlayerStyleChange,
                     contentSource = contentSource,
                     onContentSourceChange = onContentSourceChange,
+                    mixSourcesOnHome = mixSourcesOnHome,
+                    onMixSourcesOnHomeToggle = onMixSourcesOnHomeToggle,
+                    showSourceBadge = showSourceBadge,
+                    onShowSourceBadgeToggle = onShowSourceBadgeToggle,
                     saveVideoHistory = saveVideoHistory,
                     onSaveVideoHistoryToggle = onSaveVideoHistoryToggle,
                     saveMusicHistory = saveMusicHistory,

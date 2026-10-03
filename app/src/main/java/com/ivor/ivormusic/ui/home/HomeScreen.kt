@@ -273,15 +273,17 @@ fun HomeScreen(
     val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsState()
     
     val contentSource by viewModel.contentSource.collectAsState()
+    val mixSourcesOnHome by viewModel.mixSourcesOnHome.collectAsState()
     val soundCloudHome by viewModel.soundCloudHome.collectAsState()
     LaunchedEffect(contentSource) { viewModel.refreshSoundCloudHome() }
 
     // Use local songs or YouTube songs (which includes fallback search results if not logged in).
-    // When SoundCloud is a source, blend its charts into the home feed so both
-    // services share the page; interleaving keeps either source from dominating.
+    // When SoundCloud is a source and "mix on home" is on, blend its charts into
+    // the home feed so both services share the page; interleaving keeps either
+    // source from dominating.
     val baseSongs = if (loadLocalSongs) localSongs else youtubeSongs
-    val songs = remember(baseSongs, soundCloudHome, contentSource) {
-        if (!loadLocalSongs && contentSource.includesSoundCloud && soundCloudHome.isNotEmpty()) {
+    val songs = remember(baseSongs, soundCloudHome, contentSource, mixSourcesOnHome) {
+        if (!loadLocalSongs && mixSourcesOnHome && contentSource.includesSoundCloud && soundCloudHome.isNotEmpty()) {
             interleaveSources(baseSongs, soundCloudHome)
         } else {
             baseSongs
