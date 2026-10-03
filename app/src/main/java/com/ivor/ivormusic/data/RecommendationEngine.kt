@@ -194,6 +194,22 @@ class RecommendationEngine(
     suspend fun getHomeRecommendations(limit: Int = 30): List<Song> = coroutineScope {
         val profile = buildTasteProfile()
 
+        // The account's own YouTube Music home feed (FEmusic_home). Google
+        // personalises it server-side from the signed-in cookies, so it is the
+        // strongest signal when signed in; signed out it returns trending as its
+        // own fallback. Fetched in parallel with the local-taste seeds below so
+        // it never slows the others down. Empty and harmless on failure.
+        val accountHomeJob = async {
+            runCatching { youTubeRepository.getRecommendations() }.getOrDefault(emptyList())
+        }
+
+        // No local taste signal yet (fresh install, or signed in but nothing
+        // played): lean entirely on the account feed, which is why the home is
+        // no longer empty before the first play.
+        if (profile.isEmpty()) {
+            return@coroutineScope accountHomeJob.await().take(limit)
+        }
+
         // 1. YouTube related-songs radios seeded by user's top played/liked tracks
         val radioJobs = profile.topSongs.take(4).map { seed ->
             async {
@@ -217,11 +233,20 @@ class RecommendationEngine(
 
         val radioBuckets = radioJobs.map { it.await() }
         val searchBuckets = searchJobs.map { it.await() }
-        val allBuckets = (radioBuckets + searchBuckets).filter { it.isNotEmpty() }
+        val accountHome = accountHomeJob.await()
+
+        // Lead with the account feed, then the local-taste buckets, so a signed-in
+        // user sees their real YouTube Music recommendations first and the local
+        // radios/searches widen the mix rather than replace it.
+        val allBuckets = (listOf(accountHome) + radioBuckets + searchBuckets)
+            .filter { it.isNotEmpty() }
 
         val mixed = interleave(allBuckets).distinctBy { it.id }.take(limit)
-        if (mixed.isNotEmpty()) mixed
-        else profile.topSongs.map { seed ->
+        if (mixed.isNotEmpty()) return@coroutineScope mixed
+
+        // Everything came back empty (rate limit, offline). Echo the user's own
+        // favourites rather than nothing.
+        profile.topSongs.map { seed ->
             Song.fromYouTube(
                 videoId = seed.songId,
                 title = seed.title,

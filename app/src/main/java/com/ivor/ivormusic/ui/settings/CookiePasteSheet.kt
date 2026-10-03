@@ -258,7 +258,7 @@ fun CookiePasteSheet(
                     )
                     Spacer(modifier = Modifier.width(8.dp))
                     Text(
-                        text = stringResource(R.string.profile_signed_out),
+                        text = stringResource(R.string.ck_sign_in),
                         style = MaterialTheme.typography.titleMedium
                     )
                 }

@@ -970,6 +970,7 @@
     <string name="ck_step_5">Under Request Headers, right-click \"cookie\" and Copy value</string>
     <string name="ck_step_6">Send it to this device and paste it above</string>
     <string name="ck_password_note">Treat this like a password</string>
+    <string name="ck_sign_in">Sign in</string>
 
     <!-- Auth dialog -->
     <string name="au_sign_in_title">Sign in to YouTube Music</string>
