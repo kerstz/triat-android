@@ -1998,6 +1998,11 @@ fun TopBarSection(
                 }
             }
 
+            com.ivor.ivormusic.ui.onboarding.TriatMark(
+                modifier = Modifier.size(22.dp),
+                color = MaterialTheme.colorScheme.onBackground
+            )
+
             Text(
                 text = greeting,
                 style = MaterialTheme.typography.titleLarge,
