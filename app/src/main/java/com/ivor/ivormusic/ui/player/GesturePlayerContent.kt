@@ -630,15 +630,11 @@ private fun GestureNowPlayingView(
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 GesturePlayerToolbar(
-                    shuffleModeEnabled = shuffleModeEnabled,
-                    repeatMode = repeatMode,
                     isFavorite = isFavorite,
                     isDownloaded = isDownloaded,
                     isDownloading = isDownloading,
                     isLocalOriginal = isLocalOriginal,
                     onShowOptions = onShowOptions,
-                    onToggleShuffle = onToggleShuffle,
-                    onToggleRepeat = onToggleRepeat,
                     onToggleFavorite = onToggleFavorite,
                     onToggleDownload = onToggleDownload,
                     sleepTimerActive = sleepTimerActive,
@@ -744,15 +740,11 @@ private fun CoverflowTransportRow(
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
 private fun GesturePlayerToolbar(
-    shuffleModeEnabled: Boolean,
-    repeatMode: Int,
     isFavorite: Boolean,
     isDownloaded: Boolean,
     isDownloading: Boolean,
     isLocalOriginal: Boolean,
     onShowOptions: () -> Unit,
-    onToggleShuffle: () -> Unit,
-    onToggleRepeat: () -> Unit,
     onToggleFavorite: () -> Unit,
     onToggleDownload: () -> Unit,
     sleepTimerActive: Boolean,
@@ -790,31 +782,9 @@ private fun GesturePlayerToolbar(
                 }
             },
             content = {
-                // Shuffle toggle
-                IconToggleButton(
-                    checked = shuffleModeEnabled,
-                    onCheckedChange = { onToggleShuffle() }
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Shuffle,
-                        contentDescription = "Shuffle"
-                    )
-                }
-                
-                // Repeat toggle
-                IconToggleButton(
-                    checked = repeatMode != Player.REPEAT_MODE_OFF,
-                    onCheckedChange = { onToggleRepeat() }
-                ) {
-                    Icon(
-                        imageVector = when (repeatMode) {
-                            Player.REPEAT_MODE_ONE -> Icons.Default.RepeatOne
-                            else -> Icons.Default.Repeat
-                        },
-                        contentDescription = "Repeat"
-                    )
-                }
-                
+                // Shuffle and repeat live in the transport row above, so the
+                // secondary toolbar carries only the less-used actions.
+
                 // Download button (or local indicator)
                 if (isLocalOriginal) {
                     IconButton(onClick = {}) {
