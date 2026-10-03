@@ -666,6 +666,14 @@ fun LibraryMainScreen(
 
     var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
 
+    if (showTxtImportSheet) {
+        TxtImportSheet(
+            viewModel = viewModel,
+            onDismiss = { showTxtImportSheet = false },
+            onImportSuccess = { _, _ -> showTxtImportSheet = false }
+        )
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -707,6 +715,18 @@ fun LibraryMainScreen(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )
+
+                FilledTonalIconButton(
+                    onClick = { showTxtImportSheet = true },
+                    modifier = Modifier.size(56.dp),
+                    shapes = IconButtonDefaults.shapes()
+                ) {
+                    Icon(
+                        Icons.Rounded.AddLink,
+                        contentDescription = stringResource(R.string.import_links_title),
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
 
                 FilledTonalIconButton(
                     onClick = onNavigateToStats,
