@@ -47,7 +47,9 @@
 
     <string name="home_section_recent_albums">Albums récents</string>
     <string name="home_section_jump_back_in">Reprendre</string>
-    <string name="home_see_all">Tout voir</string>
+    <string name="lib_tab_all">Tous</string>
+    <string name="lib_all_tracks">Tous les titres</string>
+    <string name="lib_all_tracks_count">Tous les titres • %1$d</string>
     <string name="your_mix_line1">Votre</string>
     <string name="your_mix_line2">mix</string>
     <string name="update_badge_version">v%1$s</string>

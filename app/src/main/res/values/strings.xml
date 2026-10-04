@@ -112,7 +112,9 @@
     <!-- Home screen -->
     <string name="home_section_recent_albums">Recent Albums</string>
     <string name="home_section_jump_back_in">Jump back in</string>
-    <string name="home_see_all">See all</string>
+    <string name="lib_tab_all">All</string>
+    <string name="lib_all_tracks">All tracks</string>
+    <string name="lib_all_tracks_count">All tracks • %1$d</string>
     <string name="your_mix_line1">Your</string>
     <string name="your_mix_line2">Mix</string>
     <string name="update_badge_version">v%1$s</string>

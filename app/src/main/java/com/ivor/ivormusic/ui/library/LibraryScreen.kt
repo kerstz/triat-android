@@ -544,11 +544,11 @@ enum class LibraryRoute {
     ImportSongs
 }
 
-enum class LibraryTab(val label: String) {
-    All("All"),
-    Playlists("Playlists"),
-    Artists("Artists"),
-    Albums("Albums")
+enum class LibraryTab(@androidx.annotation.StringRes val labelRes: Int) {
+    All(R.string.lib_tab_all),
+    Playlists(R.string.cat_playlists),
+    Artists(R.string.cat_artists),
+    Albums(R.string.cat_albums)
 }
 
 /**
@@ -766,7 +766,7 @@ fun LibraryMainScreen(
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
-                            text = tab.label,
+                            text = stringResource(tab.labelRes),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                             maxLines = 1
@@ -1025,7 +1025,8 @@ fun AllSongsList(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = if (songs.isEmpty()) "All tracks" else "All tracks • ${songs.size}",
+                    text = if (songs.isEmpty()) stringResource(R.string.lib_all_tracks)
+                    else stringResource(R.string.lib_all_tracks_count, songs.size),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onBackground

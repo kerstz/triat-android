@@ -2888,7 +2888,7 @@ private fun HomeSectionHeader(
             // a TextButton still carries its own 48dp touch target.
             TextButton(onClick = onShowAll) {
                 Text(
-                    text = stringResource(R.string.home_see_all),
+                    text = stringResource(R.string.action_see_all),
                     style = MaterialTheme.typography.labelLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
