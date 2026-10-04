@@ -1339,7 +1339,9 @@ fun HomeScreen(
             NavigationBar(
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
+                    .fillMaxWidth(),
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 0.dp
             ) {
                 navTabs.forEach { (index, label, icons) ->
                     val selected = selectedTab == index
@@ -1348,13 +1350,29 @@ fun HomeScreen(
                         modifier = Modifier.weight(1f),
                         selected = selected,
                         onClick = { selectNavTab(index) },
+                        // Apple Music / Spotify: no capsule behind the icon. The
+                        // current tab is simply bright, the rest are grey, and
+                        // every tab keeps its label.
+                        colors = androidx.compose.material3.NavigationBarItemDefaults.colors(
+                            indicatorColor = Color.Transparent,
+                            selectedIconColor = MaterialTheme.colorScheme.onSurface,
+                            selectedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
+                        ),
                         icon = {
                             Icon(
                                 imageVector = if (selected) filledIcon else outlinedIcon,
                                 contentDescription = label
                             )
                         },
-                        label = { Text(label) }
+                        label = {
+                            Text(
+                                label,
+                                style = MaterialTheme.typography.labelMedium,
+                                maxLines = 1
+                            )
+                        }
                     )
                 }
             }

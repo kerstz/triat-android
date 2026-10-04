@@ -98,16 +98,9 @@ fun MusicVideoToggle(
         ) {
             Icon(
                 imageVector = Icons.Rounded.MusicNote,
-                contentDescription = null,
+                contentDescription = stringResource(R.string.sp_mode_music),
                 tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(18.dp)
-            )
-            Spacer(modifier = androidx.compose.ui.Modifier.width(6.dp))
-            androidx.compose.material3.Text(
-                text = stringResource(R.string.sp_mode_music),
-                style = MaterialTheme.typography.labelMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                modifier = Modifier.size(20.dp)
             )
         }
     }

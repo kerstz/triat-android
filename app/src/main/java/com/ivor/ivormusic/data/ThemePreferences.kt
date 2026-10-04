@@ -1675,7 +1675,10 @@ class ThemePreferences(context: Context) {
     }
 
     private fun getNonExpressiveNavigationBarPreference(): Boolean {
-        return prefs.getBoolean(KEY_NON_EXPRESSIVE_NAVIGATION_BAR, false)
+        // Default to the pinned, flat bottom bar (Apple Music / Spotify shape)
+        // rather than the floating pill. The expressive toolbar is still one
+        // toggle away.
+        return prefs.getBoolean(KEY_NON_EXPRESSIVE_NAVIGATION_BAR, true)
     }
 
     /**
