@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.components
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -89,7 +90,7 @@ fun MusicVideoToggle(
     Surface(
         modifier = modifier.height(40.dp),
         shape = CircleShape,
-        color = MaterialTheme.colorScheme.surfaceContainerHigh
+        color = Color.Transparent
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -98,15 +99,15 @@ fun MusicVideoToggle(
             Icon(
                 imageVector = Icons.Rounded.MusicNote,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.primary,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = androidx.compose.ui.Modifier.width(6.dp))
             androidx.compose.material3.Text(
-                text = "Music",
+                text = stringResource(R.string.sp_mode_music),
                 style = MaterialTheme.typography.labelMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
