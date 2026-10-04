@@ -1886,7 +1886,9 @@ fun TopBarSection(
 ) {
     val surfaceColor = MaterialTheme.colorScheme.surfaceContainer
     val iconColor = MaterialTheme.colorScheme.onSurface
-    val containerColor = MaterialTheme.colorScheme.surfaceContainerHigh
+    // Ghost icons in the bar - no filled pill behind download/settings - so the
+    // greeting is the only weight up top.
+    val containerColor = Color.Transparent
     val context = androidx.compose.ui.platform.LocalContext.current
 
     val userAvatar by viewModel.userAvatar.collectAsState()

@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.home
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
@@ -220,7 +221,11 @@ fun SpotlightHomeContent(
                 }
             }
 
-            if (quickPicks.isNotEmpty()) {
+            // On "All" the artwork shelves below already answer "what do I
+            // play" - the quick-picks list only duplicates them there, so it is
+            // kept for the scoped tabs (Recommended / Liked / Recent) where it
+            // is the tab's actual content.
+            if (quickPicks.isNotEmpty() && filter != SpotlightFilter.All) {
                 item(key = "quick-header") {
                     SpotlightSectionHeader(
                         title = if (filter == SpotlightFilter.Recommended) {
@@ -494,11 +499,13 @@ private fun SpotlightFilterChips(
                     entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
+                // Quiet, monochrome: unselected chips are text only, the current
+                // one wears a soft neutral fill rather than a bright accent pill.
                 colors = ToggleButtonDefaults.toggleButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    checkedContainerColor = MaterialTheme.colorScheme.primary,
-                    contentColor = MaterialTheme.colorScheme.onSurface,
-                    checkedContentColor = MaterialTheme.colorScheme.onPrimary,
+                    containerColor = Color.Transparent,
+                    checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    checkedContentColor = MaterialTheme.colorScheme.onSurface,
                 ),
             ) {
                 Text(spotlightFilterLabel(entry))
