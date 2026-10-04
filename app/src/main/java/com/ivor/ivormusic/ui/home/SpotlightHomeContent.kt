@@ -993,8 +993,8 @@ private fun SpotlightSectionHeader(
         Column(Modifier.weight(1f)) {
             Text(
                 text = title,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onBackground,
             )
             if (subtitle != null) {
@@ -1006,33 +1006,21 @@ private fun SpotlightSectionHeader(
             }
         }
         if (onSpin != null) {
-            SpinButton(onClick = onSpin, size = 40.dp)
-            Spacer(Modifier.width(8.dp))
+            SpinButton(onClick = onSpin, size = 36.dp)
+            Spacer(Modifier.width(4.dp))
         }
         if (actionLabel != null && onAction != null) {
-            Surface(
-                onClick = onAction,
-                shape = CircleShape,
-                color = MaterialTheme.colorScheme.secondaryContainer,
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.PlayArrow,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                        modifier = Modifier.size(16.dp),
-                    )
-                    Spacer(Modifier.width(4.dp))
-                    Text(
-                        text = actionLabel,
-                        style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onSecondaryContainer,
-                    )
-                }
-            }
+            // A quiet text link, not a filled play pill: one calm affordance per
+            // section, the accent kept for playback itself.
+            Text(
+                text = actionLabel,
+                style = MaterialTheme.typography.labelLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .clickable(onClick = onAction)
+                    .padding(horizontal = 12.dp, vertical = 8.dp),
+            )
         }
     }
 }
