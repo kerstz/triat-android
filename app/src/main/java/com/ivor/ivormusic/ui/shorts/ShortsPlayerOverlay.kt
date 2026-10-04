@@ -717,7 +717,7 @@ fun ShortsPlayerOverlay(
                 if (ThemePreferences.SHORTS_ACTION_NOT_INTERESTED !in hiddenActions) {
                     ShortsAction(
                         icon = Icons.Rounded.NotInterested,
-                        label = "Not interested",
+                        label = stringResource(R.string.shorts_label_not_interested),
                         contentDescription = stringResource(R.string.video_options_not_interested),
                         // Opens a chooser rather than acting straight away: this
                         // button sits in a rail the thumb rests on while

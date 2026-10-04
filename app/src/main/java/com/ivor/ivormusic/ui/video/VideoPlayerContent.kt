@@ -1806,7 +1806,7 @@ private fun PlayerSettingsSections(
             )
             PickerRow(
                 icon = Icons.Rounded.Speed,
-                title = "Playback speed",
+                title = stringResource(R.string.vpc_playback_speed),
                 value = speedLabel(playbackSpeed),
                 loading = false,
                 expanded = expandedPicker == SettingsPicker.SPEED,
@@ -1936,7 +1936,7 @@ private fun PlayerSettingsSections(
         showTimedComments || showLiveChat || showVerticalLive || showZoomToFill
     if (hasSecondaryActions) {
         Spacer(modifier = Modifier.height(16.dp))
-        SettingsSectionLabel(icon = Icons.Rounded.Tune, label = "More controls")
+        SettingsSectionLabel(icon = Icons.Rounded.Tune, label = stringResource(R.string.vpc_more_controls))
         Spacer(modifier = Modifier.height(8.dp))
         Surface(
             shape = RoundedCornerShape(20.dp),
@@ -2382,7 +2382,7 @@ private fun CaptionsSheet(
             }
             item {
                 CaptionChoiceRow(
-                    label = "Text color",
+                    label = stringResource(R.string.vpc_text_color),
                     options = listOf(
                         CaptionTextColor.WHITE to stringResource(R.string.vpc_white),
                         CaptionTextColor.YELLOW to stringResource(R.string.vpc_yellow)

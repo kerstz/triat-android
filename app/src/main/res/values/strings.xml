@@ -1820,4 +1820,18 @@
         <item quantity="one">%1$d play added</item>
         <item quantity="other">%1$d plays added</item>
     </plurals>
+    <!-- Hardcoded labels lifted into resources -->
+    <string name="st_tile_songs_played">Songs played</string>
+    <string name="st_tile_artists_explored">Artists explored</string>
+    <string name="st_tile_liked_songs">Liked songs</string>
+    <string name="st_tile_top_artist">Top artist</string>
+    <string name="sp_android_auto_sub">Triat missing from your car? Start here</string>
+    <string name="shorts_label_not_interested">Not interested</string>
+    <string name="vpc_playback_speed">Playback speed</string>
+    <string name="vpc_more_controls">More controls</string>
+    <string name="vpc_text_color">Text color</string>
+    <plurals name="lib_downloads_offline">
+        <item quantity="one">%1$d song available offline</item>
+        <item quantity="other">%1$d songs available offline</item>
+    </plurals>
 </resources>

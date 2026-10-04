@@ -166,7 +166,7 @@ fun StatsScreen(
                 ) {
                     ExpressiveStatTile(
                         value = "${globalStats.uniqueSongs}",
-                        label = "Songs played",
+                        label = stringResource(R.string.st_tile_songs_played),
                         icon = Icons.Rounded.MusicNote,
                         badgeShape = MaterialShapes.Cookie9Sided.toShape(),
                         container = MaterialTheme.colorScheme.secondaryContainer,
@@ -177,7 +177,7 @@ fun StatsScreen(
                     )
                     ExpressiveStatTile(
                         value = "${globalStats.uniqueArtists}",
-                        label = "Artists explored",
+                        label = stringResource(R.string.st_tile_artists_explored),
                         icon = Icons.Rounded.Person,
                         badgeShape = MaterialShapes.Clover4Leaf.toShape(),
                         container = MaterialTheme.colorScheme.tertiaryContainer,
@@ -195,7 +195,7 @@ fun StatsScreen(
                 ) {
                     ExpressiveStatTile(
                         value = "${likedSongs.size}",
-                        label = "Liked songs",
+                        label = stringResource(R.string.st_tile_liked_songs),
                         icon = Icons.Rounded.Favorite,
                         badgeShape = MaterialShapes.Sunny.toShape(),
                         container = MaterialTheme.colorScheme.surfaceContainerHigh,
@@ -206,7 +206,7 @@ fun StatsScreen(
                     )
                     ExpressiveStatTile(
                         value = globalStats.topArtists.firstOrNull()?.name ?: "—",
-                        label = "Top artist",
+                        label = stringResource(R.string.st_tile_top_artist),
                         icon = Icons.Rounded.MusicNote,
                         badgeShape = MaterialShapes.Pill.toShape(),
                         container = MaterialTheme.colorScheme.surfaceContainerHigh,

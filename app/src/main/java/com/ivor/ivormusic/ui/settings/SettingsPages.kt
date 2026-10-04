@@ -2696,8 +2696,8 @@ internal fun AdvancedSettingsPage(
                     // solvable toggle.
                     SettingsRow(
                         icon = Icons.Rounded.DirectionsCar,
-                        title = "Android Auto",
-                        subtitle = "Triat missing from your car? Start here",
+                        title = stringResource(R.string.sp_android_auto),
+                        subtitle = stringResource(R.string.sp_android_auto_sub),
                         onClick = onOpenAutoHelp,
                         showChevron = true
                     )

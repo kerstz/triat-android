@@ -1190,7 +1190,11 @@ private fun LibraryShortcutsCard(
                     iconContainerColor = MaterialTheme.colorScheme.secondary,
                     iconContentColor = MaterialTheme.colorScheme.onSecondary,
                     title = stringResource(R.string.fab_downloads),
-                    subtitle = "$downloadCount songs available offline",
+                    subtitle = pluralStringResource(
+                        R.plurals.lib_downloads_offline,
+                        downloadCount,
+                        downloadCount
+                    ),
                     onClick = onDownloadsClick
                 )
                 needsDivider = true

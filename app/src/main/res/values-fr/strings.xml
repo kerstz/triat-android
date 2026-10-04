@@ -1700,4 +1700,18 @@
     <string name="shorts_refresh_failed">Impossible d\'actualiser les Shorts. Vérifie ta connexion ou ton compte et réessaie.</string>
     <string name="shorts_feed_empty">Aucun Short disponible. Essaie d\'actualiser.</string>
     <string name="video_page_load_failed">Impossible de charger cette page. Réessaie.</string>
+    <!-- Hardcoded labels lifted into resources -->
+    <string name="st_tile_songs_played">Titres écoutés</string>
+    <string name="st_tile_artists_explored">Artistes explorés</string>
+    <string name="st_tile_liked_songs">Titres aimés</string>
+    <string name="st_tile_top_artist">Artiste n°1</string>
+    <string name="sp_android_auto_sub">Triat absent de ta voiture ? Commence ici</string>
+    <string name="shorts_label_not_interested">Pas pour moi</string>
+    <string name="vpc_playback_speed">Vitesse de lecture</string>
+    <string name="vpc_more_controls">Plus de commandes</string>
+    <string name="vpc_text_color">Couleur du texte</string>
+    <plurals name="lib_downloads_offline">
+        <item quantity="one">%1$d titre dispo hors-ligne</item>
+        <item quantity="other">%1$d titres dispo hors-ligne</item>
+    </plurals>
 </resources>
