@@ -2878,21 +2878,19 @@ private fun HomeSectionHeader(
     ) {
         Text(
             text = title,
-            style = MaterialTheme.typography.headlineSmall,
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.SemiBold,
             color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f)
         )
         if (onShowAll != null) {
-            // Default size on purpose: M3's own 40dp container carries a 48dp
-            // touch target, and pinning it smaller would break that.
-            FilledTonalIconButton(
-                onClick = onShowAll,
-                shapes = IconButtonDefaults.shapes()
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                    contentDescription = stringResource(R.string.cd_show_all, title),
-                    modifier = Modifier.size(20.dp)
+            // The maquette's "Tout voir" text link rather than an arrow button:
+            // a TextButton still carries its own 48dp touch target.
+            TextButton(onClick = onShowAll) {
+                Text(
+                    text = stringResource(R.string.home_see_all),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }
