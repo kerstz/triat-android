@@ -402,6 +402,11 @@
     <string name="sp_sources">Sources</string>
     <string name="sp_sources_hint">Where search and your home feed get music from.</string>
     <string name="sp_source_both">Both</string>
+    <string name="sp_source_both_sub">Recommended</string>
+    <string name="sp_source_yt_only">YouTube only</string>
+    <string name="sp_source_yt_only_sub">The biggest catalogue</string>
+    <string name="sp_source_sc_only">SoundCloud only</string>
+    <string name="sp_source_sc_only_sub">Indie tracks, remixes, sets</string>
     <string name="sp_source_display">Display</string>
     <string name="sp_mix_home">Mix sources on home</string>
     <string name="sp_mix_home_sub">Blend YouTube and SoundCloud in the home carousels</string>

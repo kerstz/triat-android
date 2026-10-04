@@ -1309,6 +1309,80 @@ internal fun PlaybackSettingsPage(
 /* Content and feeds                                                   */
 /* ------------------------------------------------------------------ */
 
+/**
+ * A full-width radio card for the content-source choice: an icon tile, a title
+ * and a one-line subtitle, with a trailing radio dot. Selected gets the primary
+ * border and a tinted icon tile. Matches the Triat "Sources" design handoff.
+ */
+@Composable
+private fun SourceOptionCard(
+    title: String,
+    subtitle: String,
+    selected: Boolean,
+    onClick: () -> Unit,
+    icon: @Composable (Color) -> Unit
+) {
+    val iconTint = if (selected) {
+        MaterialTheme.colorScheme.primary
+    } else {
+        MaterialTheme.colorScheme.onSurfaceVariant
+    }
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clip(RoundedCornerShape(16.dp))
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        color = if (selected) {
+            MaterialTheme.colorScheme.surfaceContainerHigh
+        } else {
+            MaterialTheme.colorScheme.surfaceContainer
+        },
+        border = BorderStroke(
+            width = if (selected) 1.5.dp else 1.dp,
+            color = if (selected) {
+                MaterialTheme.colorScheme.primary
+            } else {
+                MaterialTheme.colorScheme.outlineVariant
+            }
+        )
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(38.dp)
+                    .clip(RoundedCornerShape(10.dp))
+                    .background(iconTint.copy(alpha = 0.15f)),
+                contentAlignment = Alignment.Center
+            ) {
+                icon(iconTint)
+            }
+            Spacer(Modifier.width(14.dp))
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = title,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(Modifier.height(2.dp))
+                Text(
+                    text = subtitle,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    fontSize = 12.5.sp
+                )
+            }
+            androidx.compose.material3.RadioButton(
+                selected = selected,
+                onClick = null
+            )
+        }
+    }
+}
+
 @Composable
 internal fun ContentSettingsPage(
     localOnlyMode: Boolean,
@@ -1399,51 +1473,56 @@ internal fun ContentSettingsPage(
         if (!localOnlyMode) {
             item {
                 SettingsSection(title = stringResource(R.string.sp_sources)) {
-                    SettingsCard {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = stringResource(R.string.sp_sources_hint),
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(Modifier.height(12.dp))
-                            val sourceOptions = listOf(
-                                com.ivor.ivormusic.data.ContentSource.YOUTUBE,
-                                com.ivor.ivormusic.data.ContentSource.SOUNDCLOUD,
-                                com.ivor.ivormusic.data.ContentSource.BOTH
-                            )
-                            val sourceLabels = listOf(
-                                stringResource(R.string.source_youtube_music),
-                                stringResource(R.string.source_soundcloud),
-                                stringResource(R.string.sp_source_both)
-                            )
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(
-                                    androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween
-                                )
-                            ) {
-                                sourceOptions.forEachIndexed { index, option ->
-                                    androidx.compose.material3.ToggleButton(
-                                        checked = contentSource == option,
-                                        onCheckedChange = { onContentSourceChange(option) },
-                                        modifier = Modifier.weight(1f),
-                                        shapes = when (index) {
-                                            0 -> androidx.compose.material3.ButtonGroupDefaults.connectedLeadingButtonShapes()
-                                            sourceOptions.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
-                                            else -> androidx.compose.material3.ButtonGroupDefaults.connectedMiddleButtonShapes()
-                                        },
-                                        colors = androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
-                                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f),
-                                            checkedContainerColor = MaterialTheme.colorScheme.primary,
-                                            contentColor = MaterialTheme.colorScheme.onSurface,
-                                            checkedContentColor = MaterialTheme.colorScheme.onPrimary
-                                        ),
-                                        contentPadding = PaddingValues(horizontal = 8.dp)
-                                    ) {
-                                        Text(sourceLabels[index], fontSize = 13.sp, maxLines = 1)
-                                    }
+                    Column {
+                        Text(
+                            text = stringResource(R.string.sp_sources_hint),
+                            style = MaterialTheme.typography.bodyMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(start = 4.dp, bottom = 12.dp)
+                        )
+                        Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                            SourceOptionCard(
+                                title = stringResource(R.string.sp_source_yt_only),
+                                subtitle = stringResource(R.string.sp_source_yt_only_sub),
+                                selected = contentSource == com.ivor.ivormusic.data.ContentSource.YOUTUBE,
+                                onClick = {
+                                    onContentSourceChange(com.ivor.ivormusic.data.ContentSource.YOUTUBE)
                                 }
+                            ) { tint ->
+                                Icon(
+                                    imageVector = Icons.Rounded.SmartDisplay,
+                                    contentDescription = null,
+                                    tint = tint,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            SourceOptionCard(
+                                title = stringResource(R.string.sp_source_sc_only),
+                                subtitle = stringResource(R.string.sp_source_sc_only_sub),
+                                selected = contentSource == com.ivor.ivormusic.data.ContentSource.SOUNDCLOUD,
+                                onClick = {
+                                    onContentSourceChange(com.ivor.ivormusic.data.ContentSource.SOUNDCLOUD)
+                                }
+                            ) { tint ->
+                                Icon(
+                                    imageVector = Icons.Rounded.Cloud,
+                                    contentDescription = null,
+                                    tint = tint,
+                                    modifier = Modifier.size(20.dp)
+                                )
+                            }
+                            SourceOptionCard(
+                                title = stringResource(R.string.sp_source_both),
+                                subtitle = stringResource(R.string.sp_source_both_sub),
+                                selected = contentSource == com.ivor.ivormusic.data.ContentSource.BOTH,
+                                onClick = {
+                                    onContentSourceChange(com.ivor.ivormusic.data.ContentSource.BOTH)
+                                }
+                            ) { tint ->
+                                com.ivor.ivormusic.ui.onboarding.TriatMark(
+                                    modifier = Modifier.size(20.dp),
+                                    color = tint
+                                )
                             }
                         }
                     }
