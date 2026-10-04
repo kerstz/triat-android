@@ -1371,67 +1371,34 @@ fun HomeScreen(
                         val selected = selectedTab == index
                         val (filledIcon, outlinedIcon) = icons
 
-                        // fastSpatialSpec: snappy expressive motion — StiffnessLow
-                        // springs took ~1s to settle and felt sluggish here.
-                        val animatedPadding by androidx.compose.animation.core.animateDpAsState(
-                            targetValue = if (selected) 20.dp else 12.dp,
-                            animationSpec = MaterialTheme.motionScheme.fastSpatialSpec(),
-                            label = "padding"
-                        )
-
-                        val animatedContainerColor by androidx.compose.animation.animateColorAsState(
-                            targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer else Color.Transparent,
-                            animationSpec = androidx.compose.animation.core.tween(durationMillis = 200),
-                            label = "containerColor"
-                        )
-
+                        // Quiet and icon-only: the current tab is just the bright
+                        // filled icon, the others are dimmed outlines. No accent
+                        // pill, no label that slides in - the bar reads as three
+                        // marks floating over the feed.
                         val animatedContentColor by androidx.compose.animation.animateColorAsState(
-                            targetValue = if (selected) MaterialTheme.colorScheme.onPrimaryContainer else MaterialTheme.colorScheme.onSurfaceVariant,
+                            targetValue = if (selected) MaterialTheme.colorScheme.onSurface
+                                else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
                             animationSpec = androidx.compose.animation.core.tween(durationMillis = 200),
-                            label = "contentColor"
+                            label = "navTint"
                         )
 
                         Surface(
                             selected = selected,
                             onClick = { selectNavTab(index) },
                             shape = CircleShape,
-                            color = animatedContainerColor,
+                            color = Color.Transparent,
                             contentColor = animatedContentColor,
                             modifier = Modifier.height(48.dp)
                         ) {
-                            Row(
-                                modifier = Modifier
-                                    .padding(horizontal = animatedPadding)
-                                    .animateContentSize(
-                                        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec()
-                                    ),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
+                            Box(
+                                modifier = Modifier.padding(horizontal = 16.dp),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Icon(
                                     imageVector = if (selected) filledIcon else outlinedIcon,
                                     contentDescription = label,
-                                    modifier = Modifier.size(24.dp)
+                                    modifier = Modifier.size(26.dp)
                                 )
-                                androidx.compose.animation.AnimatedVisibility(
-                                    visible = selected,
-                                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.expandHorizontally(
-                                        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec()
-                                    ),
-                                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.shrinkHorizontally(
-                                        animationSpec = MaterialTheme.motionScheme.fastSpatialSpec()
-                                    )
-                                ) {
-                                    Row(verticalAlignment = Alignment.CenterVertically) {
-                                        Spacer(modifier = Modifier.width(8.dp))
-                                        Text(
-                                            text = label,
-                                            style = MaterialTheme.typography.labelLarge,
-                                            fontWeight = FontWeight.Bold,
-                                            maxLines = 1
-                                        )
-                                    }
-                                }
                             }
                         }
                     }
