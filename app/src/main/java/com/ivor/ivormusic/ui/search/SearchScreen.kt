@@ -542,7 +542,7 @@ fun SearchScreen(
                 // coming back from the page must land on search, not reopen
                 // what was just backed out of.
                 query = ""
-                if (videoMode) onVideoPlaylistClick(page.toVideoPlaylist())
+                if (videoMode) onVideoPlaylistClick(page.toVideoPlaylist(searchScreenContext))
                 else onPlaylistClick(page.toDisplayItem())
                 return@LaunchedEffect
             }

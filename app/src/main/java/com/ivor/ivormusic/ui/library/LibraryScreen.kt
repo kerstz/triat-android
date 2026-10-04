@@ -488,9 +488,9 @@ fun LibraryContent(
                 // makes the list actionable - Download on a row promotes a song
                 // out of the evictable cache and into a permanent copy.
                 val readyOfflineItem = PlaylistDisplayItem(
-                    name = "Ready offline",
+                    name = stringResource(R.string.ready_offline),
                     url = READY_OFFLINE_ID,
-                    uploaderName = "On this device",
+                    uploaderName = stringResource(R.string.dv_on_this_device),
                     itemCount = readyOffline.songs.size,
                     thumbnailUrl = readyOffline.songs.firstOrNull()?.thumbnailUrl
                 )

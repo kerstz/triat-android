@@ -1395,8 +1395,11 @@ private fun SettingsHub(
                         SettingsHubRow(
                             icon = Icons.Rounded.GraphicEq,
                             title = stringResource(R.string.settings_playback_and_quality),
-                            value = "${musicQualityLabel(musicQualityWifi)} music, " +
-                                "${videoQualityLabel(videoQualityWifi)} video on Wi-Fi",
+                            value = stringResource(
+                                R.string.sp_playback_wifi_summary,
+                                musicQualityLabel(musicQualityWifi),
+                                videoQualityLabel(videoQualityWifi)
+                            ),
                             onClick = { onOpenPage(SettingsPage.PLAYBACK) },
                             tint = MaterialTheme.colorScheme.secondary,
                             iconShape = MaterialShapes.SoftBurst.toShape(),
@@ -1792,58 +1795,65 @@ internal fun ExpressiveVideoModeToggleItem(
 }
 
 /** Human-readable label for a stored default video quality value. */
+@Composable
 internal fun videoQualityLabel(value: String): String =
-    if (value == ThemePreferences.VIDEO_QUALITY_AUTO) "Auto (Highest)" else value
+    if (value == ThemePreferences.VIDEO_QUALITY_AUTO) stringResource(R.string.sp_quality_auto_highest) else value
 
 /** Human-readable label for a stored music quality value. */
+@Composable
 internal fun musicQualityLabel(value: String): String = when (value) {
-    ThemePreferences.MUSIC_QUALITY_LOW -> "Data Saver"
-    ThemePreferences.MUSIC_QUALITY_NORMAL -> "Normal"
-    else -> "High"
+    ThemePreferences.MUSIC_QUALITY_LOW -> stringResource(R.string.sp_music_quality_data_saver)
+    ThemePreferences.MUSIC_QUALITY_NORMAL -> stringResource(R.string.sp_music_quality_normal)
+    else -> stringResource(R.string.sp_music_quality_high)
 }
 
 /** Longer picker-row label carrying the approximate bitrate. */
+@Composable
 private fun musicQualityOptionLabel(value: String): String = when (value) {
-    ThemePreferences.MUSIC_QUALITY_LOW -> "Data Saver (~48 kbps)"
-    ThemePreferences.MUSIC_QUALITY_NORMAL -> "Normal (~128 kbps)"
-    else -> "High (best available)"
+    ThemePreferences.MUSIC_QUALITY_LOW -> stringResource(R.string.sp_music_quality_data_saver_opt)
+    ThemePreferences.MUSIC_QUALITY_NORMAL -> stringResource(R.string.sp_music_quality_normal_opt)
+    else -> stringResource(R.string.sp_music_quality_high_opt)
 }
 
 /** Short label for the stored "which subscriptions to show" value. */
+@Composable
 internal fun subscriptionSourceLabel(value: String): String = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL -> "On this device"
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> "YouTube account"
-    else -> "Everything you follow"
+    ThemePreferences.SUBSCRIPTIONS_LOCAL -> stringResource(R.string.sp_subs_src_local)
+    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> stringResource(R.string.sp_subs_src_youtube)
+    else -> stringResource(R.string.sp_subs_src_all)
 }
 
 /** Short label for the stored "where Subscribe writes" value. */
+@Composable
 internal fun subscribeTargetLabel(value: String): String = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL -> "This device only"
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> "YouTube account"
-    ThemePreferences.SUBSCRIPTIONS_BOTH -> "Device and YouTube"
-    else -> "YouTube when signed in"
+    ThemePreferences.SUBSCRIPTIONS_LOCAL -> stringResource(R.string.sp_subs_tgt_local)
+    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> stringResource(R.string.sp_subs_tgt_youtube)
+    ThemePreferences.SUBSCRIPTIONS_BOTH -> stringResource(R.string.sp_subs_tgt_both)
+    else -> stringResource(R.string.sp_subs_tgt_auto)
 }
 
 /** Longer picker-row description for a subscription source option. */
+@Composable
 private fun subscriptionSourceOptionLabel(value: String): Pair<String, String> = when (value) {
     ThemePreferences.SUBSCRIPTIONS_LOCAL ->
-        "On this device" to "Only channels you follow inside Triat"
+        stringResource(R.string.sp_subs_src_local) to stringResource(R.string.sp_subs_src_local_desc)
     ThemePreferences.SUBSCRIPTIONS_YOUTUBE ->
-        "YouTube account" to "Only channels your Google account is subscribed to"
+        stringResource(R.string.sp_subs_src_youtube) to stringResource(R.string.sp_subs_src_youtube_desc)
     else ->
-        "Everything you follow" to "Both lists merged, whichever of them exist"
+        stringResource(R.string.sp_subs_src_all) to stringResource(R.string.sp_subs_src_all_desc)
 }
 
 /** Longer picker-row description for a subscribe target option. */
+@Composable
 private fun subscribeTargetOptionLabel(value: String): Pair<String, String> = when (value) {
     ThemePreferences.SUBSCRIPTIONS_LOCAL ->
-        "This device only" to "Never touches your Google account"
+        stringResource(R.string.sp_subs_tgt_local) to stringResource(R.string.sp_subs_tgt_local_desc)
     ThemePreferences.SUBSCRIPTIONS_YOUTUBE ->
-        "YouTube account" to "Needs you to be signed in"
+        stringResource(R.string.sp_subs_tgt_youtube) to stringResource(R.string.sp_subs_tgt_youtube_desc)
     ThemePreferences.SUBSCRIPTIONS_BOTH ->
-        "Device and YouTube" to "Keeps a local copy that survives signing out"
+        stringResource(R.string.sp_subs_tgt_both) to stringResource(R.string.sp_subs_tgt_both_desc)
     else ->
-        "YouTube when signed in" to "Falls back to this device when signed out"
+        stringResource(R.string.sp_subs_tgt_auto) to stringResource(R.string.sp_subs_tgt_auto_desc)
 }
 
 /** One subscription-routing picker the Settings screen can open. */

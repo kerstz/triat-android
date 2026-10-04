@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.data
 
+import android.content.Context
+
 data class PlaylistDisplayItem(
     val name: String,
     val url: String,
@@ -51,13 +53,14 @@ data class PlaylistPageInfo(
         thumbnailUrl = thumbnailUrl
     )
 
-    fun toVideoPlaylist(): VideoPlaylist = VideoPlaylist(
+    fun toVideoPlaylist(context: Context): VideoPlaylist = VideoPlaylist(
         playlistId = playlistId,
         title = title,
         thumbnailUrl = thumbnailUrl,
         videoCountText = when {
-            itemCount == 1 -> "1 video"
-            itemCount > 1 -> "$itemCount videos"
+            itemCount >= 1 -> context.resources.getQuantityString(
+                com.ivor.ivormusic.R.plurals.vpl_video_count, itemCount, itemCount
+            )
             else -> null
         },
         subtitle = author.takeIf { it.isNotBlank() }

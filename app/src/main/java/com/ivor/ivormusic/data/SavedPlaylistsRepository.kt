@@ -53,13 +53,14 @@ data class SavedPlaylist(
      * the other way around. The two modes only disagree on how a count reads,
      * so that is the only thing this rebuilds.
      */
-    fun toVideoPlaylist(): VideoPlaylist = VideoPlaylist(
+    fun toVideoPlaylist(context: Context): VideoPlaylist = VideoPlaylist(
         playlistId = id,
         title = name,
         thumbnailUrl = thumbnailUrl,
         videoCountText = when {
-            itemCount == 1 -> "1 video"
-            itemCount > 1 -> "$itemCount videos"
+            itemCount >= 1 -> context.resources.getQuantityString(
+                com.ivor.ivormusic.R.plurals.vpl_video_count, itemCount, itemCount
+            )
             // -1 is "not counted yet", not "empty": saying "0 videos" would be
             // the card claiming something nobody measured.
             else -> null

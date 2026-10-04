@@ -30,10 +30,11 @@ data class LocalVideoPlaylist(
     /**
      * The same playlist as every video-mode surface takes it.
      *
-     * [VideoPlaylist.subtitle] carries "On this device", which is the only
-     * thing that tells a local row from an account one in the Library list.
+     * [VideoPlaylist.subtitle] carries the localized "On this device", which is
+     * the only thing that tells a local row from an account one in the Library
+     * list - so the strings come from resources, hence the [context].
      */
-    fun toVideoPlaylist(): VideoPlaylist = VideoPlaylist(
+    fun toVideoPlaylist(context: Context): VideoPlaylist = VideoPlaylist(
         playlistId = id,
         title = name,
         thumbnailUrl = videos.firstOrNull()?.thumbnailUrl,
@@ -42,15 +43,12 @@ data class LocalVideoPlaylist(
             // already reads as empty, and "0 videos" stamped over artwork that
             // is not there is noise.
             0 -> null
-            1 -> "1 video"
-            else -> "${videos.size} videos"
+            else -> context.resources.getQuantityString(
+                com.ivor.ivormusic.R.plurals.vpl_video_count, videos.size, videos.size
+            )
         },
-        subtitle = ON_DEVICE_SUBTITLE
+        subtitle = context.getString(com.ivor.ivormusic.R.string.dv_on_this_device)
     )
-
-    companion object {
-        const val ON_DEVICE_SUBTITLE = "On this device"
-    }
 }
 
 /**

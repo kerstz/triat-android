@@ -123,7 +123,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun requestVideoPlaylistPage(info: PlaylistPageInfo) {
-        _pendingVideoPlaylistPage.value = info.toVideoPlaylist()
+        _pendingVideoPlaylistPage.value = info.toVideoPlaylist(app)
     }
 
     fun consumeVideoPlaylistPageRequest() {
@@ -829,7 +829,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         // covers both - the alternative is a control whose label says Koda and
         // whose effect stops at one tab.
         val hiddenIds = hidden.map { it.playlistId }.toSet()
-        (local.map { it.toVideoPlaylist() } + account).filterNot { it.playlistId in hiddenIds }
+        (local.map { it.toVideoPlaylist(app) } + account).filterNot { it.playlistId in hiddenIds }
     }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _isVideoPlaylistsLoading = MutableStateFlow(false)
@@ -871,7 +871,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _videoPlaylists
     ) { saved, accountPlaylists ->
         val accountIds = accountPlaylists.map { it.playlistId }.toSet()
-        saved.filterNot { it.id in accountIds }.map { it.toVideoPlaylist() }
+        saved.filterNot { it.id in accountIds }.map { it.toVideoPlaylist(app) }
     }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
 
     /** Ids of [savedVideoPlaylists], for marking a row or a page as kept. */

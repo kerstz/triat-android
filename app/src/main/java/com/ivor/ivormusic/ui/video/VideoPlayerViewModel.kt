@@ -780,7 +780,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
         localVideoPlaylistsRepository.playlists,
         _videoPlaylists
     ) { local, account ->
-        local.map { it.toVideoPlaylist() } + account
+        local.map { it.toVideoPlaylist(context) } + account
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
     private val _isVideoPlaylistsLoading = MutableStateFlow(false)
@@ -1861,7 +1861,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
                     // Stands in only until the container has been read; the
                     // real label, HDR included, replaces it on the first
                     // onTracksChanged.
-                    label = video.resolutionLabel ?: "On this device",
+                    label = video.resolutionLabel ?: context.getString(com.ivor.ivormusic.R.string.dv_on_this_device),
                     allowsTrackSelection = true,
                     aspectRatio = video.aspectRatio,
                 )
@@ -1890,7 +1890,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
                     uri = uri,
                     // Replaced by the real label, HDR included, on the first
                     // onTracksChanged - the same placeholder the folder path uses.
-                    label = "On this device",
+                    label = context.getString(com.ivor.ivormusic.R.string.dv_on_this_device),
                     allowsTrackSelection = true,
                 )
             ),
@@ -1932,7 +1932,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
             sources = mapOf(
                 id to LocalPlaybackSource(
                     uri = uri,
-                    label = "On this device",
+                    label = context.getString(com.ivor.ivormusic.R.string.dv_on_this_device),
                     allowsTrackSelection = true,
                 )
             ),
