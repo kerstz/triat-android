@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.AddLink
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.automirrored.rounded.Comment
@@ -179,6 +180,7 @@ internal fun buildSettingsSearchIndex(
     onNavigateToBackup: () -> Unit,
     onNavigateToReportBug: () -> Unit,
     onNavigateToTimeLimit: () -> Unit,
+    onImportTxt: () -> Unit,
     supportsLiveUpdates: Boolean
 ): List<SettingsSearchEntry> = buildList {
     fun entry(
@@ -194,6 +196,11 @@ internal fun buildSettingsSearchIndex(
         "lyrics_providers", stringResource(R.string.lyrics_settings_title), "Lyrics", Icons.Rounded.MusicNote,
         listOf("lyrics", "providers", "priority", "order", "karaoke", "synced", "plain text", "offline", "YouLyPlus", "BetterLyrics", "NetEase", "SimpMusic", "LRCLIB", "KuGou", "Unison")
     ) { onOpenPage(SettingsPage.LYRICS) }
+
+    entry("import_links", stringResource(R.string.import_links_title), stringResource(R.string.settings_content_and_feeds), Icons.Rounded.AddLink,
+        listOf("import", "importer", "txt", "links", "liens", "youtube", "playlist", "paste", "coller", "file", "fichier")) {
+        onImportTxt()
+    }
 
     entry("lastfm", stringResource(R.string.lastfm_title), "Last.fm", Icons.Rounded.History,
         listOf("lastfm", "last.fm", "scrobble", "scrobbling", "sync", "api key", "login", "listening history")) {

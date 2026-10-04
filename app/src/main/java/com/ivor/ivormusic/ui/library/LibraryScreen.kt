@@ -339,9 +339,6 @@ fun LibraryContent(
                     selectedAlbumSongs = songs
                     currentRoute = LibraryRoute.Album
                 },
-                onNavigateToStats = {
-                    currentRoute = LibraryRoute.Stats
-                },
                 onNavigateToHistory = {
                     currentRoute = LibraryRoute.History
                 },
@@ -466,13 +463,6 @@ fun LibraryContent(
                     )
                 }
             }
-            LibraryRoute.Stats -> {
-                StatsScreen(
-                    onBack = { back() },
-                    viewModel = viewModel,
-                    contentPadding = contentPadding
-                )
-            }
             LibraryRoute.History -> {
                 ListeningHistoryScreen(
                     onBack = { back() },
@@ -537,7 +527,7 @@ fun LibraryContent(
 }
 
 enum class LibraryRoute {
-    Main, Playlist, Album, Artist, Stats, History, ReadyOffline,
+    Main, Playlist, Album, Artist, History, ReadyOffline,
     /** The immersive local-playlist creation flow (PlaylistStudioScreen). */
     CreatePlaylist,
     /** "Add from your playlists" into the open local playlist (PlaylistImportScreen). */
@@ -578,7 +568,6 @@ fun LibraryMainScreen(
     onNavigateToPlaylist: (PlaylistDisplayItem) -> Unit,
     onNavigateToArtist: (String) -> Unit,
     onNavigateToAlbum: (String, List<Song>) -> Unit,
-    onNavigateToStats: () -> Unit,
     onNavigateToHistory: () -> Unit,
     /** Songs cached in full; the entry point hides itself when nothing is. */
     readyOfflineCount: Int = 0,
@@ -628,7 +617,6 @@ fun LibraryMainScreen(
     }
 
     val scope = rememberCoroutineScope()
-    var showTxtImportSheet by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.refreshRecentlyPlayed()
@@ -665,14 +653,6 @@ fun LibraryMainScreen(
     }
 
     var fabMenuExpanded by rememberSaveable { mutableStateOf(false) }
-
-    if (showTxtImportSheet) {
-        TxtImportSheet(
-            viewModel = viewModel,
-            onDismiss = { showTxtImportSheet = false },
-            onImportSuccess = { _, _ -> showTxtImportSheet = false }
-        )
-    }
 
     Box(
         modifier = Modifier
@@ -715,26 +695,6 @@ fun LibraryMainScreen(
                     overflow = TextOverflow.Ellipsis,
                     modifier = Modifier.weight(1f, fill = false)
                 )
-
-                FilledTonalIconButton(
-                    onClick = { showTxtImportSheet = true },
-                    modifier = Modifier.size(56.dp),
-                    shapes = IconButtonDefaults.shapes()
-                ) {
-                    Icon(
-                        Icons.Rounded.AddLink,
-                        contentDescription = stringResource(R.string.import_links_title),
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-
-                FilledTonalIconButton(
-                    onClick = onNavigateToStats,
-                    modifier = Modifier.size(56.dp),
-                    shapes = IconButtonDefaults.shapes()
-                ) {
-                    Icon(Icons.Rounded.Insights, contentDescription = stringResource(R.string.cd_listening_stats), modifier = Modifier.size(24.dp))
-                }
             }
 
             Spacer(Modifier.height(28.dp))

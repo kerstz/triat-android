@@ -68,6 +68,7 @@ import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.FilterList
 import androidx.compose.material.icons.rounded.Subscriptions
 import androidx.compose.material.icons.rounded.Add
+import androidx.compose.material.icons.rounded.AddLink
 import androidx.compose.material.icons.rounded.Animation
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.ChevronRight
@@ -605,6 +606,9 @@ fun SettingsScreen(
     var showFolderExclusionDialog by remember { mutableStateOf(false) }
     var showShortsButtonsDialog by remember { mutableStateOf(false) }
     var showAutoHelpDialog by remember { mutableStateOf(false) }
+    // Importing playlists from TXT / YouTube links moved off the Library
+    // header to keep that page light; it is hosted here and opened from the hub.
+    var showTxtImportSheet by remember { mutableStateOf(false) }
     var availableFolders by remember { mutableStateOf<List<FolderInfo>>(emptyList()) }
     var isFoldersLoading by remember { mutableStateOf(false) }
 
@@ -633,6 +637,7 @@ fun SettingsScreen(
         onNavigateToBackup = onNavigateToBackup,
         onNavigateToReportBug = onNavigateToReportBug,
         onNavigateToTimeLimit = onNavigateToTimeLimit,
+        onImportTxt = { showTxtImportSheet = true },
         supportsLiveUpdates = ThemePreferences.SUPPORTS_LIVE_UPDATES
     )
 
@@ -705,6 +710,7 @@ fun SettingsScreen(
                 excludedFolderCount = excludedFolders.size,
                 onOpenPage = { page = it },
                 onNavigateToBackup = onNavigateToBackup,
+                onImportTxt = { showTxtImportSheet = true },
                 onShowAbout = { showAboutDialog = true },
                 onBackClick = onBackClick
             )
@@ -1056,6 +1062,14 @@ fun SettingsScreen(
         )
     }
 
+    if (showTxtImportSheet) {
+        com.ivor.ivormusic.ui.library.TxtImportSheet(
+            viewModel = homeViewModel,
+            onDismiss = { showTxtImportSheet = false },
+            onImportSuccess = { _, _ -> showTxtImportSheet = false }
+        )
+    }
+
     // Per-network stream quality pickers (video + music, Wi-Fi + mobile data)
     qualityDialogTarget?.let { target ->
         val currentQuality = when (target) {
@@ -1167,6 +1181,7 @@ private fun SettingsHub(
     excludedFolderCount: Int,
     onOpenPage: (SettingsPage) -> Unit,
     onNavigateToBackup: () -> Unit,
+    onImportTxt: () -> Unit,
     onShowAbout: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -1414,6 +1429,16 @@ private fun SettingsHub(
                             tint = MaterialTheme.colorScheme.secondary,
                             iconShape = MaterialShapes.Gem.toShape(),
                             explanation = stringResource(R.string.si_hub_content)
+                        )
+                        SettingsDivider()
+                        SettingsHubRow(
+                            icon = Icons.Rounded.AddLink,
+                            title = stringResource(R.string.import_links_title),
+                            value = stringResource(R.string.import_links_hub_value),
+                            onClick = onImportTxt,
+                            tint = MaterialTheme.colorScheme.secondary,
+                            iconShape = MaterialShapes.Pill.toShape(),
+                            explanation = stringResource(R.string.import_links_hub_value)
                         )
                         SettingsDivider()
                         SettingsHubRow(

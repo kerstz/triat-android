@@ -1393,6 +1393,7 @@
     <string name="album_metadata">Album • %1$s</string>
     <string name="cat_songs">Songs</string>
     <string name="import_links_title">Import YouTube links</string>
+    <string name="import_links_hub_value">From a .txt file or pasted links</string>
     <string name="cat_soundcloud">SoundCloud</string>
     <string name="cat_artists">Artists</string>
     <string name="cat_albums">Albums</string>
