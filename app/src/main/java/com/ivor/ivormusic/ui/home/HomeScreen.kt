@@ -1794,17 +1794,14 @@ fun YourMixContent(
             }
 
             item {
-                if (isInitialLoading) {
-                    OrganicSongLayoutSkeleton(skeletonAlpha = skeletonAlpha)
-                } else if (songs.isNotEmpty()) {
+                if (!isInitialLoading && songs.isNotEmpty()) {
                     var visible by remember { mutableStateOf(false) }
                     LaunchedEffect(Unit) { kotlinx.coroutines.delay(200); visible = true }
                     Box(Modifier.graphicsLayer {
                         alpha = if (visible) 1f else 0f
-                        scaleX = if (visible) 1f else 0.9f
-                        scaleY = if (visible) 1f else 0.9f
+                        translationY = if (visible) 0f else 20f
                     }) {
-                        OrganicSongLayout(
+                        MixTrackList(
                             songs = songs,
                             onSongClick = onSongClick,
                             onSongLongPress = onSongLongPress
@@ -2183,6 +2180,118 @@ fun HeroSection(
                 modifier = Modifier
                     .align(Alignment.BottomEnd)
                     .offset(x = 4.dp, y = 4.dp)
+            )
+        }
+    }
+}
+
+/**
+ * The mix as a plain, scannable track list: the first few songs as upright rows
+ * with square artwork, title and artist. Replaces the rotated collage so every
+ * cover is a clear, tappable target and nothing is cropped or sliced. A tap
+ * plays the song; a long press opens its options.
+ */
+@Composable
+fun MixTrackList(
+    songs: List<Song>,
+    onSongClick: (Song) -> Unit,
+    onSongLongPress: ((Song) -> Unit)? = null
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 8.dp)
+    ) {
+        songs.take(5).forEach { song ->
+            MixTrackRow(
+                song = song,
+                onClick = { onSongClick(song) },
+                onLongClick = onSongLongPress?.let { press -> { press(song) } }
+            )
+        }
+    }
+}
+
+@Composable
+private fun MixTrackRow(
+    song: Song,
+    onClick: () -> Unit,
+    onLongClick: (() -> Unit)?
+) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 12.dp, vertical = 4.dp)
+            .clip(RoundedCornerShape(14.dp))
+            .songRowClick(onClick = onClick, onLongClick = onLongClick)
+            .padding(horizontal = 8.dp, vertical = 6.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(56.dp)
+                .clip(RoundedCornerShape(12.dp))
+                .background(MaterialTheme.colorScheme.surfaceContainerHigh),
+            contentAlignment = Alignment.Center
+        ) {
+            val imageUrl = song.highResThumbnailUrl ?: song.thumbnailUrl
+            val localUri = song.albumArtUri
+            if (imageUrl != null || localUri != null) {
+                val request = remember(context, localUri, imageUrl) {
+                    coil.request.ImageRequest.Builder(context)
+                        .data(localUri ?: imageUrl)
+                        .crossfade(true)
+                        .build()
+                }
+                coil.compose.SubcomposeAsyncImage(
+                    model = request,
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                    loading = {
+                        Icon(
+                            imageVector = Icons.Rounded.MusicNote,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
+                        )
+                    },
+                    error = {
+                        Icon(
+                            imageVector = Icons.Rounded.MusicNote,
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                )
+            } else {
+                Icon(
+                    imageVector = Icons.Rounded.MusicNote,
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp),
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+        Spacer(modifier = Modifier.width(14.dp))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = song.title,
+                style = MaterialTheme.typography.bodyLarge,
+                fontWeight = FontWeight.SemiBold,
+                color = MaterialTheme.colorScheme.onSurface,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
+            )
+            Text(
+                text = song.artist.takeIf { !isUnknownArtist(it) }
+                    ?: stringResource(R.string.unknown_artist),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 1,
+                overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
             )
         }
     }
