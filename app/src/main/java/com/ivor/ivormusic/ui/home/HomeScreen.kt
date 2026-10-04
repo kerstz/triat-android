@@ -1876,10 +1876,6 @@ fun TopBarSection(
     val containerColor = Color.Transparent
     val context = androidx.compose.ui.platform.LocalContext.current
 
-    val userAvatar by viewModel.userAvatar.collectAsState()
-    val downloadingIds by viewModel.downloadingIds.collectAsState()
-    val incognito by com.ivor.ivormusic.data.IncognitoMode.enabled(context).collectAsState()
-    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -1887,12 +1883,6 @@ fun TopBarSection(
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-        val accountSwitcher = remember(context) {
-            com.ivor.ivormusic.data.AccountSwitcher(context)
-        }
-        val isSwitching by accountSwitcher.switching.collectAsState()
-
         val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
         val greeting = remember(hour) {
             when (hour) {
@@ -1906,82 +1896,6 @@ fun TopBarSection(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Box {
-                Box(
-                    modifier = Modifier
-                        .size(44.dp)
-                        .clip(CircleShape)
-                        .background(surfaceColor)
-                        .combinedClickable(
-                            onClick = onProfileClick,
-                            onLongClick = {
-                                if (accountSwitcher.quickSwitchTarget() != null) {
-                                    haptics.performHapticFeedback(
-                                        androidx.compose.ui.hapticfeedback.HapticFeedbackType.LongPress
-                                    )
-                                    accountSwitcher.quickSwitch()
-                                }
-                            }
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (userAvatar != null) {
-                        AsyncImage(
-                            model = userAvatar,
-                            contentDescription = stringResource(R.string.cd_profile),
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
-                        )
-                    } else {
-                        Icon(
-                            imageVector = Icons.Default.Person,
-                            contentDescription = stringResource(R.string.cd_profile),
-                            tint = iconColor,
-                            modifier = Modifier.size(26.dp)
-                        )
-                    }
-                    androidx.compose.animation.AnimatedVisibility(
-                        visible = isSwitching,
-                        enter = androidx.compose.animation.fadeIn(),
-                        exit = androidx.compose.animation.fadeOut()
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.fillMaxSize(),
-                            strokeWidth = 2.dp,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    }
-                }
-                androidx.compose.animation.AnimatedVisibility(
-                    visible = incognito,
-                    enter = androidx.compose.animation.fadeIn() + androidx.compose.animation.scaleIn(),
-                    exit = androidx.compose.animation.fadeOut() + androidx.compose.animation.scaleOut(),
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .offset(x = 2.dp, y = 2.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(20.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.secondaryContainer)
-                            .border(
-                                width = 2.dp,
-                                color = MaterialTheme.colorScheme.surface,
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.VisibilityOff,
-                            contentDescription = stringResource(R.string.incognito_active),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer,
-                            modifier = Modifier.size(11.dp)
-                        )
-                    }
-                }
-            }
-
             Text(
                 text = greeting,
                 style = MaterialTheme.typography.titleLarge,
@@ -1995,36 +1909,6 @@ fun TopBarSection(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Downloads Button with badge if downloading
-            Box {
-                IconButton(
-                    onClick = onDownloadsClick,
-                    shapes = IconButtonDefaults.shapes(),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = containerColor,
-                        contentColor = iconColor
-                    ),
-                    modifier = Modifier.size(44.dp)
-                ) {
-                    Icon(
-                        imageVector = androidx.compose.material.icons.Icons.Rounded.Download,
-                        contentDescription = stringResource(R.string.cd_downloads),
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-                // Show badge if downloads are active
-                if (downloadingIds.isNotEmpty()) {
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp)
-                            .align(Alignment.TopEnd)
-                            .offset(x = (-4).dp, y = 4.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                    )
-                }
-            }
-            
             IconButton(
                 onClick = onSettingsClick,
                 shapes = IconButtonDefaults.shapes(),
