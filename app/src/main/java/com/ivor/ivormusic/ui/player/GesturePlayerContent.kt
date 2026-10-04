@@ -355,35 +355,9 @@ private fun GestureNowPlayingView(
                 ) {
                     Icon(Icons.Default.KeyboardArrowDown, "Collapse", modifier = Modifier.size(28.dp))
                 }
-                
-                // Lyrics Toggle Button (center)
-                Surface(
-                    onClick = onToggleLyrics,
-                    shape = RoundedCornerShape(24.dp),
-                    color = if (showLyrics) MaterialTheme.colorScheme.primary 
-                           else MaterialTheme.colorScheme.surfaceContainerHigh
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Lyrics,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                            tint = if (showLyrics) MaterialTheme.colorScheme.onPrimary 
-                                   else MaterialTheme.colorScheme.onSurface
-                        )
-                        Spacer(modifier = Modifier.width(6.dp))
-                        Text(
-                            text = if (showLyrics) "Now Playing" else "Lyrics",
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (showLyrics) MaterialTheme.colorScheme.onPrimary 
-                                   else MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-                
+
+                // Lyrics toggle removed from the face to keep the player minimal.
+
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     FilledIconButton(
                         onClick = onShowQueue,
@@ -403,25 +377,8 @@ private fun GestureNowPlayingView(
                 }
             }
             
-            // ========== 2. "PLAYING FROM" HEADER (right below top bar) ==========
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "Playing From",
-                style = MaterialTheme.typography.labelMedium,
-                color = onSurfaceVariantColor,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            Text(
-                text = albumName,
-                style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
-                color = onSurfaceColor,
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 32.dp)
-            )
-            
+            // "Playing From / album" header removed to keep the player minimal.
+
             // ========== CENTER CONTENT (vertically centered) ==========
             Column(
                 modifier = Modifier
@@ -620,26 +577,14 @@ private fun GestureNowPlayingView(
                     onPlayPauseToggle = onPlayPauseToggle,
                     onNext = onNext,
                     onPrevious = onPrevious,
-                    onToggleShuffle = onToggleShuffle,
-                    onToggleRepeat = onToggleRepeat,
-                    shuffleModeEnabled = shuffleModeEnabled,
-                    repeatMode = repeatMode,
                     primaryColor = primaryColor,
-                    onSurfaceColor = onSurfaceColor,
-                    onSurfaceVariantColor = onSurfaceVariantColor
+                    onSurfaceColor = onSurfaceColor
                 )
                 Spacer(modifier = Modifier.height(10.dp))
                 GesturePlayerToolbar(
                     isFavorite = isFavorite,
-                    isDownloaded = isDownloaded,
-                    isDownloading = isDownloading,
-                    isLocalOriginal = isLocalOriginal,
                     onShowOptions = onShowOptions,
                     onToggleFavorite = onToggleFavorite,
-                    onToggleDownload = onToggleDownload,
-                    sleepTimerActive = sleepTimerActive,
-                    onSleepTimerClick = onSleepTimerClick,
-                    primaryColor = primaryColor,
                     onSurfaceVariantColor = onSurfaceVariantColor
                 )
 
@@ -651,8 +596,9 @@ private fun GestureNowPlayingView(
 }
 
 /**
- * Coverflow transport: shuffle, previous, a large play/pause disc, next, repeat.
- * The disc is the one bold element; everything around it stays quiet.
+ * Coverflow transport, pared back to the essentials: previous, a large
+ * play/pause disc, next. The disc is the one bold element; the two skips stay
+ * quiet beside it. Shuffle and repeat moved off the face for a minimal player.
  */
 @Composable
 private fun CoverflowTransportRow(
@@ -661,29 +607,16 @@ private fun CoverflowTransportRow(
     onPlayPauseToggle: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
-    onToggleShuffle: () -> Unit,
-    onToggleRepeat: () -> Unit,
-    shuffleModeEnabled: Boolean,
-    repeatMode: Int,
     primaryColor: Color,
-    onSurfaceColor: Color,
-    onSurfaceVariantColor: Color
+    onSurfaceColor: Color
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 30.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.spacedBy(28.dp, Alignment.CenterHorizontally),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onToggleShuffle) {
-            Icon(
-                imageVector = Icons.Rounded.Shuffle,
-                contentDescription = "Shuffle",
-                tint = if (shuffleModeEnabled) primaryColor else onSurfaceVariantColor,
-                modifier = Modifier.size(22.dp)
-            )
-        }
         IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) {
             Icon(
                 imageVector = Icons.Rounded.SkipPrevious,
@@ -723,14 +656,6 @@ private fun CoverflowTransportRow(
                 modifier = Modifier.size(32.dp)
             )
         }
-        IconButton(onClick = onToggleRepeat) {
-            Icon(
-                imageVector = if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Rounded.RepeatOne else Icons.Rounded.Repeat,
-                contentDescription = "Repeat",
-                tint = if (repeatMode != Player.REPEAT_MODE_OFF) primaryColor else onSurfaceVariantColor,
-                modifier = Modifier.size(22.dp)
-            )
-        }
     }
 }
 
@@ -741,15 +666,8 @@ private fun CoverflowTransportRow(
 @Composable
 private fun GesturePlayerToolbar(
     isFavorite: Boolean,
-    isDownloaded: Boolean,
-    isDownloading: Boolean,
-    isLocalOriginal: Boolean,
     onShowOptions: () -> Unit,
     onToggleFavorite: () -> Unit,
-    onToggleDownload: () -> Unit,
-    sleepTimerActive: Boolean,
-    onSleepTimerClick: () -> Unit,
-    primaryColor: Color,
     onSurfaceVariantColor: Color
 ) {
     Box(
@@ -782,46 +700,11 @@ private fun GesturePlayerToolbar(
                 }
             },
             content = {
-                // Shuffle and repeat live in the transport row above, so the
-                // secondary toolbar carries only the less-used actions.
-
-                // Download button (or local indicator)
-                if (isLocalOriginal) {
-                    IconButton(onClick = {}) {
-                        Icon(
-                            imageVector = Icons.Rounded.Smartphone,
-                            contentDescription = stringResource(R.string.cd_local_file)
-                        )
-                    }
-                } else {
-                    IconToggleButton(
-                        checked = isDownloaded,
-                        onCheckedChange = { onToggleDownload() }
-                    ) {
-                        if (isDownloading) {
-                            CircularWavyProgressIndicator(
-                                modifier = Modifier.size(20.dp),
-                                color = primaryColor
-                            )
-                        } else {
-                            Icon(
-                                imageVector = if (isDownloaded) Icons.Rounded.CheckCircle else Icons.Rounded.Download,
-                                contentDescription = if (isDownloaded) "Downloaded" else "Download"
-                            )
-                        }
-                    }
-                }
-                
-                // Sleep timer
-                IconButton(onClick = onSleepTimerClick) {
-                    Icon(
-                        imageVector = Icons.Rounded.Bedtime,
-                        contentDescription = stringResource(R.string.cd_sleep_timer),
-                        tint = if (sleepTimerActive) primaryColor else LocalContentColor.current
-                    )
-                }
-
-                // Overflow menu, last in the row as the convention has it
+                // Pared back to the minimum: the like action is the FAB, and
+                // everything else (download, add to playlist, radio, share,
+                // speed, volume) lives one tap away under the overflow. Download
+                // and sleep timer were removed from the face to keep it quiet;
+                // download still has its tile inside the overflow sheet.
                 IconButton(onClick = onShowOptions) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
