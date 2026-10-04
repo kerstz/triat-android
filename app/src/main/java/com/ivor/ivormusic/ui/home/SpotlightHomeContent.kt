@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.home
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -203,23 +204,6 @@ fun SpotlightHomeContent(
                 SpotlightFilterChips(selected = filter, onSelect = { filter = it })
             }
 
-            // The shortcut grid only makes sense unfiltered - a two-column grid
-            // of "your most reached-for things" is not a thing you scope.
-            if (filter == SpotlightFilter.All && shortcuts.isNotEmpty()) {
-                item(key = "shortcuts") {
-                    SpotlightShortcutGrid(
-                        shortcuts = shortcuts,
-                        onClick = { shortcut ->
-                            when (shortcut) {
-                                is Shortcut.Liked -> onOpenLiked()
-                                is Shortcut.Playlist -> onPlaylistClick(shortcut.playlist)
-                                is Shortcut.Track -> onRecentClick(shortcut.song)
-                            }
-                        },
-                    )
-                }
-            }
-
             // First load of the discovery tab: the grid below is empty and
             // will be for a second or two of network, and an empty page reads
             // as "nothing to suggest" rather than "still asking".
@@ -357,7 +341,7 @@ fun SpotlightHomeContent(
                                 ShelfItem(
                                     it.id,
                                     it.name,
-                                    if (it.itemCount >= 0) "${it.itemCount} songs" else it.uploaderName,
+                                    if (it.itemCount >= 0) pluralStringResource(R.plurals.n_songs, it.itemCount, it.itemCount) else it.uploaderName,
                                     it.thumbnailUrl,
                                     com.ivor.ivormusic.data.googleImageAtSize(it.thumbnailUrl, 512),
                                 )
@@ -432,7 +416,7 @@ internal fun isAutoMix(name: String): Boolean {
 }
 
 private const val QUICK_PICK_ROWS = 4
-private const val QUICK_PICK_PAGES = 3
+private const val QUICK_PICK_PAGES = 1
 private const val SHELF_ITEMS = 12
 private const val SHORTCUT_COUNT = 6
 
@@ -586,93 +570,7 @@ private fun buildShortcuts(
 }.take(SHORTCUT_COUNT)
 
 /**
- * Two columns of wide, short tiles. Built from Rows rather than a LazyGrid,
- * because a lazy grid nested in this LazyColumn has unbounded height - the same
- * constraint PlayerStylePicker works around.
- */
-@Composable
-private fun SpotlightShortcutGrid(
-    shortcuts: List<Shortcut>,
-    onClick: (Shortcut) -> Unit,
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-    ) {
-        shortcuts.chunked(2).forEach { pair ->
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                pair.forEach { shortcut ->
-                    SpotlightShortcutTile(
-                        shortcut = shortcut,
-                        onClick = { onClick(shortcut) },
-                        modifier = Modifier.weight(1f),
-                    )
-                }
-                // An odd count must not stretch the last tile across the row.
-                if (pair.size == 1) Spacer(Modifier.weight(1f))
-            }
-        }
-    }
-}
-
-@Composable
-private fun SpotlightShortcutTile(
-    shortcut: Shortcut,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        color = MaterialTheme.colorScheme.surfaceContainerHigh,
-        modifier = modifier.height(60.dp),
-    ) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            Box(
-                modifier = Modifier.size(60.dp),
-                contentAlignment = Alignment.Center,
-            ) {
-                when (shortcut) {
-                    is Shortcut.Liked -> Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(MaterialTheme.colorScheme.primaryContainer),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Favorite,
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                            modifier = Modifier.size(24.dp),
-                        )
-                    }
-                    is Shortcut.Playlist -> ShortcutImage(
-                        shortcut.playlist.thumbnailUrl,
-                        com.ivor.ivormusic.data.googleImageAtSize(shortcut.playlist.thumbnailUrl, 512),
-                    )
-                    is Shortcut.Track -> ShortcutImage(
-                        shortcut.song.albumArtUri?.toString() ?: shortcut.song.thumbnailUrl,
-                        shortcut.song.albumArtUri?.toString() ?: shortcut.song.highResThumbnailUrl,
-                    )
-                }
-            }
-            Text(
-                text = if (shortcut is Shortcut.Liked) stringResource(R.string.shortcut_liked_songs) else shortcut.title,
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onSurface,
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                modifier = Modifier.padding(horizontal = 10.dp),
-            )
-        }
-    }
-}
-
-/**
- * Artwork for a shortcut tile or a shelf card.
+ * Artwork for a shelf card or a quick-pick row.
  *
  * Goes through [VideoThumbnail] rather than a bare `AsyncImage` for the same
  * reasons the feed cards do: the sharper URL is layered over the one the feed

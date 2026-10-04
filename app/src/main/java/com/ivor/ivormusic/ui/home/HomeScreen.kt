@@ -1995,11 +1995,6 @@ fun TopBarSection(
                 }
             }
 
-            com.ivor.ivormusic.ui.onboarding.TriatMark(
-                modifier = Modifier.size(22.dp),
-                color = MaterialTheme.colorScheme.onBackground
-            )
-
             Text(
                 text = greeting,
                 style = MaterialTheme.typography.titleLarge,
@@ -2043,25 +2038,6 @@ fun TopBarSection(
                 }
             }
             
-            if (onImportCookiesClick != null) {
-                IconButton(
-                    onClick = onImportCookiesClick,
-                    shapes = IconButtonDefaults.shapes(),
-                    colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = containerColor,
-                        contentColor = iconColor
-                    ),
-                    modifier = Modifier.size(44.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Cookie,
-                        contentDescription = "Importer Cookies",
-                        tint = MaterialTheme.colorScheme.primary,
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
-            }
-
             IconButton(
                 onClick = onSettingsClick,
                 shapes = IconButtonDefaults.shapes(),
