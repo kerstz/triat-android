@@ -1869,42 +1869,17 @@ fun TopBarSection(
     showModeToggle: Boolean = true,
     modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode)
 ) {
-    val surfaceColor = MaterialTheme.colorScheme.surfaceContainer
     val iconColor = MaterialTheme.colorScheme.onSurface
-    // Ghost icons in the bar - no filled pill behind download/settings - so the
-    // greeting is the only weight up top.
+    // Ghost icons, no greeting - the bar is just the controls in the corner.
     val containerColor = Color.Transparent
-    val context = androidx.compose.ui.platform.LocalContext.current
 
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
+        horizontalArrangement = Arrangement.End,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        val hour = remember { java.util.Calendar.getInstance().get(java.util.Calendar.HOUR_OF_DAY) }
-        val greeting = remember(hour) {
-            when (hour) {
-                in 5..11 -> "Bonjour"
-                in 12..17 -> "Bon après-midi"
-                else -> "Bonsoir"
-            }
-        }
-
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Text(
-                text = greeting,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-        }
-        
-        // Right side icons with shape morphing
         Row(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
