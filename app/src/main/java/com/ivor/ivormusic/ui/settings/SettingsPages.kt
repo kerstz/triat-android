@@ -1423,9 +1423,9 @@ internal fun ContentSettingsPage(
                         icon = Icons.Rounded.CloudOff,
                         title = stringResource(R.string.sp_local_only),
                         subtitle = if (localOnlyMode) {
-                            "Offline: device library only, no internet"
+                            stringResource(R.string.sp_local_only_sub_on)
                         } else {
-                            "YouTube features enabled"
+                            stringResource(R.string.sp_local_only_sub_off)
                         },
                         enabled = localOnlyMode,
                         onToggle = onLocalOnlyModeToggle,
@@ -1456,9 +1456,9 @@ internal fun ContentSettingsPage(
                                 icon = Icons.Rounded.ToggleOn,
                                 title = stringResource(R.string.sp_home_mode_toggle),
                                 subtitle = if (homeModeToggleEnabled) {
-                                    "Switch music and video from the Home header"
+                                    stringResource(R.string.sp_home_mode_toggle_on)
                                 } else {
-                                    "Change the mode here in Settings only"
+                                    stringResource(R.string.sp_home_mode_toggle_off)
                                 },
                                 enabled = homeModeToggleEnabled,
                                 onToggle = onHomeModeToggleChange,
@@ -1568,9 +1568,9 @@ internal fun ContentSettingsPage(
                             icon = Icons.AutoMirrored.Rounded.Comment,
                             title = stringResource(R.string.sp_timed_comments),
                             subtitle = if (timedCommentsEnabled) {
-                                "Comments appear on the seek bar where they were posted"
+                                stringResource(R.string.sp_timed_comments_on)
                             } else {
-                                "Comments stay in the comment sheet"
+                                stringResource(R.string.sp_timed_comments_off)
                             },
                             enabled = timedCommentsEnabled,
                             onToggle = onTimedCommentsToggle,
@@ -1607,9 +1607,12 @@ internal fun ContentSettingsPage(
                                     icon = Icons.Rounded.Visibility,
                                     title = stringResource(R.string.sp_shorts_buttons),
                                     subtitle = if (shortsHiddenActions.isEmpty()) {
-                                        "All buttons shown"
+                                        stringResource(R.string.sp_shorts_buttons_all)
                                     } else {
-                                        "${shortsHiddenActions.size} hidden"
+                                        stringResource(
+                                            R.string.sp_shorts_buttons_hidden,
+                                            shortsHiddenActions.size
+                                        )
                                     },
                                     onClick = onShowShortsButtons,
                                     showChevron = true

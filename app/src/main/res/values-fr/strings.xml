@@ -477,4 +477,42 @@
         <item quantity="many">%1$d d\'écoutes ajoutées</item>
         <item quantity="other">%1$d écoutes ajoutées</item>
     </plurals>
+    <!-- Content and feeds settings screen -->
+    <string name="cat_videos">Vidéos</string>
+    <string name="sp_mode">Mode</string>
+    <string name="sp_local_only">Local uniquement</string>
+    <string name="sp_home_mode_toggle">Bascule de mode d\'accueil</string>
+    <string name="sp_timed_comments">Commentaires minutés</string>
+    <string name="sp_shorts">Shorts</string>
+    <string name="sp_local_only_sub_on">Hors-ligne : bibliothèque de l\'appareil uniquement, pas d\'internet</string>
+    <string name="sp_local_only_sub_off">Fonctions YouTube activées</string>
+    <string name="si_local_only">Coupe tout accès internet. Seuls les téléchargements et les fichiers de cet appareil se lisent ; la recherche, le streaming et toutes les surfaces YouTube restent éteints jusqu\'à ce que tu réactives.</string>
+    <string name="sp_home_mode_toggle_on">Bascule musique/vidéo depuis l\'en-tête de l\'accueil</string>
+    <string name="sp_home_mode_toggle_off">Change le mode seulement ici, dans les réglages</string>
+    <string name="si_home_mode_toggle">Affiche un sélecteur musique/vidéo dans l\'en-tête de l\'accueil pour changer de mode sans ouvrir les réglages.</string>
+    <string name="sp_recommendations">Recommandations</string>
+    <string name="sp_not_recommended">Non recommandé</string>
+    <string name="sp_not_recommended_sub">Vidéos et chaînes que tu as masquées de tes fils</string>
+    <string name="si_not_interested">Tout ce que tu as demandé à Triat de ne plus recommander — vidéos masquées et chaînes bloquées. Tout peut être réaffiché ici.</string>
+    <string name="sp_timed_comments_on">Les commentaires s\'affichent sur la barre de lecture, à l\'endroit où ils ont été postés</string>
+    <string name="sp_timed_comments_off">Les commentaires restent dans le volet des commentaires</string>
+    <string name="si_timed_comments">Affiche les commentaires épinglés au moment dont ils parlent, flottant au-dessus de la barre de lecture pendant la vidéo.</string>
+    <string name="sp_shorts_enabled_sub">Affichés sur l\'accueil et ouverts dans le lecteur à balayage</string>
+    <string name="sp_shorts_disabled_sub">Masqués de l\'accueil ; ouverts dans le lecteur vidéo ailleurs</string>
+    <string name="si_shorts">Affiche ou masque les Shorts dans toute l\'app. Les Shorts masqués ne sont pas seulement rangés — ils ne sont plus récupérés du tout.</string>
+    <string name="sp_shorts_buttons">Boutons des Shorts</string>
+    <string name="sp_shorts_buttons_all">Tous les boutons affichés</string>
+    <string name="sp_shorts_buttons_hidden">%1$d masqué(s)</string>
+    <string name="sp_show_recent_searches">Afficher les recherches récentes</string>
+    <string name="sp_show_recent_searches_sub">Tes recherches passées sous la barre de recherche</string>
+    <string name="si_recent_searches">Affiche tes recherches passées quand tu touches le champ de recherche. Les désactiver les masque sans les supprimer.</string>
+    <string name="sp_show_related_videos">Afficher les vidéos liées</string>
+    <string name="sp_show_related_videos_sub">Suggestions sous une vidéo pendant la lecture</string>
+    <string name="si_related_videos">Les suggestions sous une vidéo en lecture. Les désactiver enlève la distraction ; les playlists et les files continuent de fonctionner.</string>
+    <string name="sp_inline_previews">Aperçu des vidéos sur les cartes</string>
+    <string name="sp_inline_previews_sub">Reste sur une carte et elle joue en silence sur place</string>
+    <string name="si_inline_previews">Une carte sur laquelle tu t\'arrêtes se met à jouer sur place, sans son et sans l\'ouvrir. Un aperçu à la fois, jamais en données mobiles ni avec l\'économiseur de données. Désactivé par défaut, car un fil qui bouge tout seul consomme batterie et données sans que tu l\'aies demandé.</string>
+    <string name="sp_compact_video_home">Accueil vidéo compact</string>
+    <string name="sp_compact_video_home_sub">Afficher des vignettes plus petites avec le titre et la chaîne à côté</string>
+    <string name="si_compact_video_home">Des cartes vidéo plus petites dans le fil Accueil vidéo, pour en afficher plus à l\'écran.</string>
 </resources>

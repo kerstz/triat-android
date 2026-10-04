@@ -413,8 +413,16 @@
     <string name="sp_source_badge">Source badge</string>
     <string name="sp_source_badge_sub">Show a small icon on each cover</string>
     <string name="sp_local_only">Local Only</string>
+    <string name="sp_local_only_sub_on">Offline: device library only, no internet</string>
+    <string name="sp_local_only_sub_off">YouTube features enabled</string>
     <string name="sp_home_mode_toggle">Home Screen Mode Toggle</string>
+    <string name="sp_home_mode_toggle_on">Switch music and video from the Home header</string>
+    <string name="sp_home_mode_toggle_off">Change the mode here in Settings only</string>
     <string name="sp_timed_comments">Timed Comments</string>
+    <string name="sp_timed_comments_on">Comments appear on the seek bar where they were posted</string>
+    <string name="sp_timed_comments_off">Comments stay in the comment sheet</string>
+    <string name="sp_shorts_buttons_all">All buttons shown</string>
+    <string name="sp_shorts_buttons_hidden">%1$d hidden</string>
     <string name="sp_compact_video_home">Compact video home</string>
     <string name="sp_compact_video_home_sub">Show smaller thumbnails with titles and channels beside them</string>
     <string name="sp_shorts">Shorts</string>
