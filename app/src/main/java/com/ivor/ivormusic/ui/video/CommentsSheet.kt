@@ -445,7 +445,7 @@ private fun CommentComposer(
                     IconButton(onClick = onCancelReply) {
                         Icon(
                             Icons.Rounded.Close,
-                            contentDescription = "Cancel reply",
+                            contentDescription = stringResource(R.string.cd_cancel_reply),
                             modifier = Modifier.size(18.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -634,7 +634,7 @@ private fun CommentRow(
                         Spacer(Modifier.width(4.dp))
                         Icon(
                             Icons.Rounded.Favorite,
-                            contentDescription = "Hearted by creator",
+                            contentDescription = stringResource(R.string.cd_hearted_by_creator),
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.error
                         )
@@ -655,7 +655,7 @@ private fun CommentRow(
                     ) {
                         Icon(
                             Icons.Rounded.DeleteOutline,
-                            contentDescription = "Delete comment",
+                            contentDescription = stringResource(R.string.cd_delete_comment),
                             modifier = Modifier.size(14.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )

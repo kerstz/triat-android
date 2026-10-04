@@ -1701,6 +1701,16 @@
     <string name="shorts_feed_empty">Aucun Short disponible. Essaie d\'actualiser.</string>
     <string name="video_page_load_failed">Impossible de charger cette page. Réessaie.</string>
     <!-- Hardcoded labels lifted into resources -->
+    <string name="cd_close_search">Fermer la recherche</string>
+    <string name="cd_close_photos">Fermer les photos</string>
+    <string name="cd_sleep_timer">Minuteur de veille</string>
+    <string name="cd_play_all">Tout lire</string>
+    <string name="cd_cancel_reply">Annuler la réponse</string>
+    <string name="cd_hearted_by_creator">Aimé par le créateur</string>
+    <string name="cd_delete_comment">Supprimer le commentaire</string>
+    <string name="cd_finish_editing">Terminer l\'édition</string>
+    <string name="sm_rename_group">Renommer le groupe</string>
+    <string name="channel_search_hint">Rechercher %1$s</string>
     <string name="st_tile_songs_played">Titres écoutés</string>
     <string name="st_tile_artists_explored">Artistes explorés</string>
     <string name="st_tile_liked_songs">Titres aimés</string>

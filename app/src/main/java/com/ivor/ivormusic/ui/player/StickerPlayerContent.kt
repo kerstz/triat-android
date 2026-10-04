@@ -714,7 +714,7 @@ private fun DraggableSticker(
             if (artSong != null) {
                 PlayerArtwork(
                     song = artSong,
-                    contentDescription = "Album Art",
+                    contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_album_art),
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )

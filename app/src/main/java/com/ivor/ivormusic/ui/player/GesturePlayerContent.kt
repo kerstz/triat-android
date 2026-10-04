@@ -790,7 +790,7 @@ private fun GesturePlayerToolbar(
                     IconButton(onClick = {}) {
                         Icon(
                             imageVector = Icons.Rounded.Smartphone,
-                            contentDescription = "Local File"
+                            contentDescription = stringResource(R.string.cd_local_file)
                         )
                     }
                 } else {
@@ -816,7 +816,7 @@ private fun GesturePlayerToolbar(
                 IconButton(onClick = onSleepTimerClick) {
                     Icon(
                         imageVector = Icons.Rounded.Bedtime,
-                        contentDescription = "Sleep timer",
+                        contentDescription = stringResource(R.string.cd_sleep_timer),
                         tint = if (sleepTimerActive) primaryColor else LocalContentColor.current
                     )
                 }
@@ -825,7 +825,7 @@ private fun GesturePlayerToolbar(
                 IconButton(onClick = onShowOptions) {
                     Icon(
                         imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = "More options"
+                        contentDescription = stringResource(R.string.cd_more_options)
                     )
                 }
             }
@@ -1384,7 +1384,7 @@ private fun GestureQueueView(
                                         if (hasArt) {
                                             SongArtwork(
                                                 song = song,
-                                                contentDescription = "Now Playing",
+                                                contentDescription = stringResource(R.string.cd_now_playing),
                                                 modifier = Modifier
                                                     .fillMaxSize()
                                                     .clip(RoundedCornerShape(28.dp)),
@@ -1607,7 +1607,7 @@ private fun GestureQueueView(
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.Close,
-                                        contentDescription = "Remove from queue",
+                                        contentDescription = stringResource(R.string.cd_remove_from_queue),
                                         tint = onSurfaceVariantColor
                                     )
                                 }

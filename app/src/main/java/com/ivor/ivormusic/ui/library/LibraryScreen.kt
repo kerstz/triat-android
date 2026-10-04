@@ -1977,7 +1977,7 @@ fun ExpressivePlaylistCard(
             if (isEditable || isSaved || onHide != null) {
                 Box {
                     IconButton(onClick = { showMenu = true }) {
-                        Icon(Icons.Rounded.MoreVert, contentDescription = "Playlist options", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.cd_playlist_options), tint = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     DropdownMenu(expanded = showMenu, onDismissRequest = { showMenu = false }) {
                         // Hiding is offered on every card, including the ones
@@ -2312,7 +2312,7 @@ private fun ManageModeToolbar(
         colors = FloatingToolbarDefaults.vibrantFloatingToolbarColors(),
         floatingActionButton = {
             FloatingToolbarDefaults.VibrantFloatingActionButton(onClick = onDone) {
-                Icon(Icons.Rounded.Done, contentDescription = "Finish editing")
+                Icon(Icons.Rounded.Done, contentDescription = stringResource(R.string.cd_finish_editing))
             }
         }
     ) {

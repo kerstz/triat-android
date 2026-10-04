@@ -197,7 +197,7 @@ fun QueueDragHandle(
     ) {
         Icon(
             imageVector = Icons.Rounded.DragHandle,
-            contentDescription = "Drag to reorder",
+            contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_drag_to_reorder),
             tint = tint,
             modifier = Modifier.size(20.dp)
         )

@@ -233,7 +233,7 @@ fun HeroPlayerSheetContent(
                                         if (artSong != null) {
                                             PlayerArtwork(
                                                 song = artSong,
-                                                contentDescription = "Album Art",
+                                                contentDescription = stringResource(R.string.cd_album_art),
                                                 modifier = Modifier.fillMaxSize(),
                                                 contentScale = ContentScale.Crop
                                             )

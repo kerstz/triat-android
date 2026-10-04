@@ -853,7 +853,7 @@ private fun GroupChannelsDialog(
     if (showRename) {
         GroupNameDialog(
             initialName = groupName,
-            title = "Rename group",
+            title = stringResource(R.string.sm_rename_group),
             onConfirm = {
                 onRename(it)
                 showRename = false
@@ -871,7 +871,7 @@ private fun GroupChannelsDialog(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(groupName, fontWeight = FontWeight.Bold, modifier = Modifier.weight(1f))
                 IconButton(onClick = { showRename = true }) {
-                    Icon(Icons.Rounded.Edit, contentDescription = "Rename group")
+                    Icon(Icons.Rounded.Edit, contentDescription = stringResource(R.string.sm_rename_group))
                 }
             }
         },

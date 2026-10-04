@@ -1129,13 +1129,13 @@ internal fun ChannelSearchPane(
                 modifier = Modifier.size(44.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.Close, contentDescription = "Close search")
+                    Icon(Icons.Rounded.Close, contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_close_search))
                 }
             }
             SearchField(
                 query = query,
                 onQueryChange = onQueryChange,
-                placeholder = "Search $channelName",
+                placeholder = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.channel_search_hint, channelName),
                 modifier = Modifier.weight(1f)
             )
         }
@@ -1286,7 +1286,7 @@ internal fun ChannelPhotoViewer(
                     Box(contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Rounded.Close,
-                            contentDescription = "Close photos",
+                            contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_close_photos),
                             modifier = Modifier.size(24.dp)
                         )
                     }

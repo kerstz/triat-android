@@ -2751,7 +2751,7 @@ private fun LinkPlaylistHeader(
                     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Icon(
                             Icons.Rounded.PlayArrow,
-                            contentDescription = "Play all",
+                            contentDescription = stringResource(R.string.cd_play_all),
                             tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(24.dp)
                         )

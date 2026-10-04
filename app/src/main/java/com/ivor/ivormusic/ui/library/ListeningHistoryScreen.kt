@@ -270,7 +270,7 @@ fun ListeningHistoryScreen(
                     }
                     Box {
                         IconButton(onClick = { menuOpen = true }) {
-                            Icon(Icons.Rounded.MoreVert, contentDescription = "More options")
+                            Icon(Icons.Rounded.MoreVert, contentDescription = stringResource(R.string.cd_more_options))
                         }
                         DropdownMenu(
                             expanded = menuOpen,
@@ -1017,7 +1017,7 @@ private fun HistorySearchField(
         trailingIcon = {
             if (query.isNotEmpty()) {
                 IconButton(onClick = onClear) {
-                    Icon(Icons.Rounded.Close, contentDescription = "Clear search")
+                    Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.cd_clear_search))
                 }
             }
         },

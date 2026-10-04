@@ -1821,6 +1821,16 @@
         <item quantity="other">%1$d plays added</item>
     </plurals>
     <!-- Hardcoded labels lifted into resources -->
+    <string name="cd_close_search">Close search</string>
+    <string name="cd_close_photos">Close photos</string>
+    <string name="cd_sleep_timer">Sleep timer</string>
+    <string name="cd_play_all">Play all</string>
+    <string name="cd_cancel_reply">Cancel reply</string>
+    <string name="cd_hearted_by_creator">Hearted by creator</string>
+    <string name="cd_delete_comment">Delete comment</string>
+    <string name="cd_finish_editing">Finish editing</string>
+    <string name="sm_rename_group">Rename group</string>
+    <string name="channel_search_hint">Search %1$s</string>
     <string name="st_tile_songs_played">Songs played</string>
     <string name="st_tile_artists_explored">Artists explored</string>
     <string name="st_tile_liked_songs">Liked songs</string>
