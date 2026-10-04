@@ -50,6 +50,7 @@ import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.People
 import androidx.compose.material.icons.rounded.Home
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.SystemUpdate
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -1293,6 +1294,10 @@ fun HomeScreen(
         // Both navigation variants use the same destinations and interaction
         // contract. Only their Material container and item presentation differ.
         val navBarHaptics = com.ivor.ivormusic.util.rememberKodaHaptics()
+        // Settings is a NavHost route, not a Home tab. It rides in the bottom
+        // bar as an action under this sentinel id: tapping it opens Settings
+        // instead of selecting a tab, so it never shows as the current tab.
+        val settingsNavId = -99
         val navTabs = if (videoMode) {
             videoHomeConfiguration.orderedVisibleDestinations.map { destination ->
                 when (destination) {
@@ -1321,10 +1326,14 @@ fun HomeScreen(
         } else listOf(
             Triple(0, stringResource(R.string.tab_home), Pair(Icons.Rounded.Home, Icons.Outlined.Home)),
             Triple(1, stringResource(R.string.tab_search), Pair(Icons.Filled.Search, Icons.Outlined.Search)),
-            Triple(2, stringResource(R.string.tab_library), Pair(Icons.Filled.LibraryMusic, Icons.Outlined.LibraryMusic))
+            Triple(2, stringResource(R.string.tab_library), Pair(Icons.Filled.LibraryMusic, Icons.Outlined.LibraryMusic)),
+            Triple(settingsNavId, stringResource(R.string.settings_title), Pair(Icons.Filled.Settings, Icons.Outlined.Settings))
         )
         val selectNavTab: (Int) -> Unit = { index ->
-            if (selectedTab == index) {
+            if (index == settingsNavId) {
+                navBarHaptics.performHapticFeedback(HapticFeedbackType.ContextClick)
+                onNavigateToSettings()
+            } else if (selectedTab == index) {
                 if (currentTabScrollState.canScrollBackward) {
                     navBarHaptics.performHapticFeedback(HapticFeedbackType.ContextClick)
                     scope.launch { currentTabScrollState.scrollToTop() }
@@ -1391,8 +1400,8 @@ fun HomeScreen(
 
                         // Quiet and icon-only: the current tab is just the bright
                         // filled icon, the others are dimmed outlines. No accent
-                        // pill, no label that slides in - the bar reads as three
-                        // marks floating over the feed.
+                        // pill, no label that slides in - the bar reads as a row
+                        // of marks floating over the feed.
                         val animatedContentColor by androidx.compose.animation.animateColorAsState(
                             targetValue = if (selected) MaterialTheme.colorScheme.onSurface
                                 else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
@@ -1869,49 +1878,11 @@ fun TopBarSection(
     showModeToggle: Boolean = true,
     modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode)
 ) {
-    val iconColor = MaterialTheme.colorScheme.onSurface
-    // Ghost icons, no greeting - the bar is just the controls in the corner.
-    val containerColor = Color.Transparent
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 16.dp),
-        horizontalArrangement = Arrangement.End,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = onSettingsClick,
-                shapes = IconButtonDefaults.shapes(),
-                colors = IconButtonDefaults.iconButtonColors(
-                    containerColor = containerColor,
-                    contentColor = iconColor
-                ),
-                modifier = Modifier.size(44.dp)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Settings,
-                    contentDescription = stringResource(R.string.cd_settings),
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-
-            // Music/Video mode switch, anchored in the corner so it stays put
-            // when the home content swaps between modes. Can be hidden from
-            // Settings (Home Screen Mode Toggle).
-            if (showModeToggle) {
-                MusicVideoToggle(
-                    videoMode = videoMode,
-                    onVideoModeChange = onVideoModeToggle,
-                    state = modeToggleState
-                )
-            }
-        }
-    }
+    // The Home corner bar is intentionally empty now. Settings moved to the
+    // bottom navigation (Reglages tab), and the music/video switch lives in
+    // Settings > Content, so nothing floats in the top-right: the header is
+    // just the feed. A small spacer keeps the first row clear of the status bar.
+    Spacer(modifier = Modifier.height(8.dp))
 }
 
 
