@@ -1382,6 +1382,8 @@
     <string name="thats_everything">C\'est tout</string>
     <string name="cd_clear">Effacer</string>
     <string name="cd_voice_search">Recherche vocale</string>
+    <string name="voice_search_prompt">Qu\'avez-vous envie d\'écouter ?</string>
+    <string name="voice_search_unavailable">La recherche vocale n\'est pas disponible sur cet appareil</string>
     <string name="cd_verified">Vérifié</string>
     <string name="cd_remove">Retirer</string>
     <string name="cd_save_to_library">Enregistrer dans la bibliothèque</string>

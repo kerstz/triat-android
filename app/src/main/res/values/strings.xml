@@ -1385,6 +1385,8 @@
     <string name="thats_everything">That\'s everything</string>
     <string name="cd_clear">Clear</string>
     <string name="cd_voice_search">Search by voice</string>
+    <string name="voice_search_prompt">What do you want to listen to?</string>
+    <string name="voice_search_unavailable">Voice search is not available on this device</string>
     <string name="cd_verified">Verified</string>
     <string name="cd_remove">Remove</string>
     <string name="cd_save_to_library">Save to library</string>

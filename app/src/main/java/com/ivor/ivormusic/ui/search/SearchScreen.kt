@@ -327,13 +327,10 @@ fun SearchScreen(
     
     // Theme colors from MaterialTheme
     val backgroundColor = MaterialTheme.colorScheme.background
-    val surfaceColor = MaterialTheme.colorScheme.surface
     val cardColor = MaterialTheme.colorScheme.surfaceContainer
     val textColor = MaterialTheme.colorScheme.onBackground
     val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
     val primaryColor = MaterialTheme.colorScheme.primary
-    val primaryContainerColor = MaterialTheme.colorScheme.primaryContainer
-    val tertiaryContainerColor = MaterialTheme.colorScheme.tertiaryContainer
     // Filter local songs based on query
     val filteredLocalSongs = remember(query, songs) {
         if (query.isEmpty()) songs
@@ -593,9 +590,6 @@ fun SearchScreen(
                     else stringResource(R.string.search_placeholder_music),
                     isLinkDetected = parsedLink != null,
                     primaryColor = primaryColor,
-                    primaryContainerColor = primaryContainerColor,
-                    tertiaryContainerColor = tertiaryContainerColor,
-                    surfaceColor = surfaceColor,
                     textColor = textColor,
                     secondaryTextColor = secondaryTextColor,
                     requestInitialFocus = requestInitialFocus
@@ -1421,9 +1415,6 @@ private fun SearchHeroHeader(
     placeholderText: String,
     isLinkDetected: Boolean,
     primaryColor: Color,
-    primaryContainerColor: Color,
-    tertiaryContainerColor: Color,
-    surfaceColor: Color,
     textColor: Color,
     secondaryTextColor: Color,
     requestInitialFocus: Boolean
@@ -1459,14 +1450,18 @@ private fun SearchHeroHeader(
                 RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM
             )
-            putExtra(RecognizerIntent.EXTRA_PROMPT, "What do you want to listen to?")
+            putExtra(RecognizerIntent.EXTRA_PROMPT, context.getString(R.string.voice_search_prompt))
         }
         try {
             speechLauncher.launch(intent)
         } catch (e: ActivityNotFoundException) {
             // No recognizer on the device. A toast beats a silent dead button,
             // and this is the one voice-search failure that is a device fact.
-            Toast.makeText(context, "Voice search is not available on this device", Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                context,
+                context.getString(R.string.voice_search_unavailable),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 
@@ -1485,58 +1480,32 @@ private fun SearchHeroHeader(
                 .padding(horizontal = 20.dp)
         ) {
             Spacer(modifier = Modifier.height(16.dp))
-            
-            // Title
+
+            // Title. Quiet, like the Home shelf headers: the screen announces
+            // itself once and then gets out of the way of the field below.
             Text(
                 stringResource(R.string.search_title),
-                style = MaterialTheme.typography.headlineLarge,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.SemiBold,
                 color = textColor
             )
-            
+
             Spacer(modifier = Modifier.height(20.dp))
 
-            // Flat expressive search field: no elevation, no shadow. The shape
-            // is the design - a pill container on surfaceContainerHigh with a
-            // hairline outlineVariant border that becomes a 1.5dp primary ring
-            // on focus - instead of depth. PixelPlayer's DockedSearchBar this
-            // is measured against tints everything primaryContainer and paints
-            // its placeholder in primary; this stays neutral until focus, then
-            // answers with the primary border and leading icon.
+            // Flat search field: no elevation, no shadow, no border. The shape
+            // alone is the design - a pill on surfaceContainerHigh that does
+            // not change colour or grow a primary ring on focus. The caret and
+            // the keyboard already say the field is focused; a lavender ring
+            // around the loudest element on the screen only adds noise.
             val searchInteraction = remember { MutableInteractionSource() }
             val isFieldFocused by searchInteraction.collectIsFocusedAsState()
             LaunchedEffect(isFieldFocused) { onFocusChanged(isFieldFocused) }
-            val fieldContainer by animateColorAsState(
-                targetValue = if (isFieldFocused || query.isNotEmpty()) {
-                    MaterialTheme.colorScheme.surfaceContainerHighest
-                } else {
-                    MaterialTheme.colorScheme.surfaceContainerHigh
-                },
-                label = "searchFieldContainer"
-            )
-            val fieldBorder by animateColorAsState(
-                targetValue = if (isFieldFocused) {
-                    primaryColor
-                } else {
-                    MaterialTheme.colorScheme.outlineVariant
-                },
-                label = "searchFieldBorder"
-            )
-            val fieldBorderWidth by animateFloatAsState(
-                targetValue = if (isFieldFocused) 1.5f else 1f,
-                label = "searchFieldBorderWidth"
-            )
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .heightIn(min = 60.dp)
+                    .heightIn(min = 56.dp)
                     .clip(RoundedCornerShape(28.dp))
-                    .background(fieldContainer)
-                    .border(
-                        width = fieldBorderWidth.dp,
-                        color = fieldBorder,
-                        shape = RoundedCornerShape(28.dp)
-                    )
+                    .background(MaterialTheme.colorScheme.surfaceContainerHigh)
                     .padding(start = 8.dp, end = 8.dp, top = 4.dp, bottom = 4.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -1559,8 +1528,10 @@ private fun SearchHeroHeader(
                     Icon(
                         if (linkDetected) Icons.Rounded.Link else Icons.Default.Search,
                         contentDescription = null,
-                        tint = if (linkDetected || isFieldFocused) primaryColor
-                        else secondaryTextColor,
+                        // Primary only for the link, which is a real signal
+                        // ("this is a URL, I will resolve it"). Focus is not:
+                        // the caret says that already.
+                        tint = if (linkDetected) primaryColor else secondaryTextColor,
                         modifier = Modifier
                             .size(40.dp)
                             .padding(9.dp)
@@ -1598,10 +1569,9 @@ private fun SearchHeroHeader(
 
                 // Mic while the field is empty - the one-tap voice
                 // entry point - morphing to a clear button the moment
-                // there is something to clear. The mic gets the tonal
-                // container so the voice target reads as its own button;
-                // the clear stays quiet because dismissing text is not
-                // the action to advertise.
+                // there is something to clear. Both stay quiet icons:
+                // the mic is a shortcut into the field, not a second
+                // primary action competing with the field itself.
                 AnimatedContent(
                     targetState = query.isNotEmpty(),
                     transitionSpec = {
@@ -1625,36 +1595,13 @@ private fun SearchHeroHeader(
                             )
                         }
                     } else {
-                        // 48dp touch target with a 40dp tonal cookie inside,
-                        // so the visible button stays compact while the tap
-                        // area meets the minimum.
-                        Box(
-                            modifier = Modifier.size(48.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Surface(
-                                onClick = { launchVoiceSearch() },
-                                shape = MaterialShapes.Cookie4Sided.toShape(),
-                                color = primaryContainerColor,
-                                // onPrimaryContainer, not primary: monochrome
-                                // palettes fix their containers per palette while
-                                // the ink follows the app mode, so primary can
-                                // coincide with its container (black on black,
-                                // white on light grey) and the icon vanishes.
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer,
-                                modifier = Modifier.size(40.dp)
-                            ) {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.KeyboardVoice,
-                                        contentDescription = stringResource(R.string.cd_voice_search),
-                                        modifier = Modifier.size(20.dp)
-                                    )
-                                }
-                            }
+                        IconButton(onClick = { launchVoiceSearch() }) {
+                            Icon(
+                                Icons.Rounded.KeyboardVoice,
+                                contentDescription = stringResource(R.string.cd_voice_search),
+                                tint = secondaryTextColor,
+                                modifier = Modifier.size(20.dp)
+                            )
                         }
                     }
                 }
@@ -2248,56 +2195,54 @@ fun SearchHistoryList(
                 fontWeight = FontWeight.Bold,
                 color = secondaryTextColor
             )
+            // A quiet text link, not a primary one: clearing history is a
+            // tidying action, never the thing to do on this screen.
             TextButton(onClick = onClearAll) {
                 Text(
                     stringResource(R.string.action_clear_all),
                     style = MaterialTheme.typography.labelLarge,
-                    color = MaterialTheme.colorScheme.primary
+                    color = secondaryTextColor
                 )
             }
         }
-        
-        history.forEachIndexed { index, query ->
-            val rowShape = getSegmentedShape(index, history.size, cornerSize = 22.dp)
-            Surface(
+
+        // Plain rows on the background. The segmented container turned five
+        // past queries into a block of chrome heavier than the results below
+        // it; the clock icon and the indent already group them.
+        history.forEach { query ->
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(vertical = 1.dp)
-                    .clip(rowShape)
-                    .clickable { onHistoryClick(query) },
-                color = MaterialTheme.colorScheme.surfaceContainer,
-                shape = rowShape
+                    .clip(RoundedCornerShape(12.dp))
+                    .clickable { onHistoryClick(query) }
+                    .padding(vertical = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 12.dp, vertical = 12.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                Icon(
+                    Icons.Rounded.History,
+                    contentDescription = null,
+                    tint = secondaryTextColor,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+                Text(
+                    text = query,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = textColor,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
+                    modifier = Modifier.weight(1f)
+                )
+                IconButton(
+                    onClick = { onRemoveClick(query) },
+                    modifier = Modifier.size(32.dp)
                 ) {
                     Icon(
-                        Icons.Rounded.History,
-                        contentDescription = null,
+                        Icons.Rounded.Close,
+                        contentDescription = stringResource(R.string.cd_remove),
                         tint = secondaryTextColor,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(18.dp)
                     )
-                    Spacer(modifier = Modifier.size(16.dp))
-                    Text(
-                        text = query,
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = textColor,
-                        modifier = Modifier.weight(1f)
-                    )
-                    IconButton(
-                        onClick = { onRemoveClick(query) },
-                        modifier = Modifier.size(32.dp)
-                    ) {
-                        Icon(
-                            Icons.Rounded.Close,
-                            contentDescription = stringResource(R.string.cd_remove),
-                            tint = secondaryTextColor,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
                 }
             }
         }
