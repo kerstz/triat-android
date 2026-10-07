@@ -545,12 +545,15 @@ enum class LibraryTab(@androidx.annotation.StringRes val labelRes: Int) {
  * Sort orders for the All tab's track list. Labels state their own direction
  * ("Most played", not "Play count") so the list needs no asc/desc toggle.
  */
-enum class LibrarySortOption(val label: String, val icon: ImageVector) {
-    Title("Title", Icons.Rounded.SortByAlpha),
-    Artist("Artist", Icons.Rounded.Person),
-    Album("Album", Icons.Rounded.Album),
-    MostPlayed("Most played", Icons.Rounded.TrendingUp),
-    RecentlyAdded("Recently added", Icons.Rounded.NewReleases)
+enum class LibrarySortOption(
+    @androidx.annotation.StringRes val labelRes: Int,
+    val icon: ImageVector
+) {
+    Title(R.string.lib_sort_title, Icons.Rounded.SortByAlpha),
+    Artist(R.string.lib_sort_artist, Icons.Rounded.Person),
+    Album(R.string.lib_sort_album, Icons.Rounded.Album),
+    MostPlayed(R.string.lib_sort_most_played, Icons.Rounded.TrendingUp),
+    RecentlyAdded(R.string.lib_sort_recently_added, Icons.Rounded.NewReleases)
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
@@ -945,18 +948,20 @@ fun AllSongsList(
                     Text(
                         stringResource(R.string.recently_played),
                         style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold,
+                        fontWeight = FontWeight.SemiBold,
                         color = MaterialTheme.colorScheme.onBackground
                     )
-                    TextButton(onClick = onNavigateToHistory) {
-                        Text(stringResource(R.string.action_see_all))
-                        Spacer(Modifier.width(4.dp))
-                        Icon(
-                            Icons.AutoMirrored.Rounded.ArrowForward,
-                            contentDescription = null,
-                            modifier = Modifier.size(16.dp)
-                        )
-                    }
+                    // The same quiet text link the home shelves use: the
+                    // accent stays reserved for playback.
+                    Text(
+                        text = stringResource(R.string.action_see_all),
+                        style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier
+                            .clip(CircleShape)
+                            .clickable(onClick = onNavigateToHistory)
+                            .padding(horizontal = 12.dp, vertical = 8.dp)
+                    )
                 }
             }
             item(key = "recent_row") {
@@ -988,7 +993,7 @@ fun AllSongsList(
                     text = if (songs.isEmpty()) stringResource(R.string.lib_all_tracks)
                     else stringResource(R.string.lib_all_tracks_count, songs.size),
                     style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1009,14 +1014,19 @@ fun AllSongsList(
                     }
                     Box {
                         var showSortMenu by remember { mutableStateOf(false) }
-                        FilledTonalIconButton(
+                        // Sorting is housekeeping, not an action to advertise
+                        // next to Shuffle: a quiet glyph, no tonal container.
+                        IconButton(
                             onClick = { showSortMenu = true },
-                            modifier = Modifier.size(40.dp),
-                            shapes = IconButtonDefaults.shapes()
+                            modifier = Modifier.size(40.dp)
                         ) {
                             Icon(
                                 Icons.Rounded.SwapVert,
-                                contentDescription = "Sort by ${sortOption.label}",
+                                contentDescription = stringResource(
+                                    R.string.cd_sort_by,
+                                    stringResource(sortOption.labelRes)
+                                ),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -1026,7 +1036,7 @@ fun AllSongsList(
                                 DropdownMenuItem(
                                     text = {
                                         Text(
-                                            option.label,
+                                            stringResource(option.labelRes),
                                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
                                         )
                                     },

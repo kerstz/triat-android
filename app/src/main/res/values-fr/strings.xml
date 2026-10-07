@@ -50,6 +50,12 @@
     <string name="lib_tab_all">Tous</string>
     <string name="lib_all_tracks">Tous les titres</string>
     <string name="lib_all_tracks_count">Tous les titres • %1$d</string>
+    <string name="lib_sort_title">Titre</string>
+    <string name="lib_sort_artist">Artiste</string>
+    <string name="lib_sort_album">Album</string>
+    <string name="lib_sort_most_played">Les plus écoutés</string>
+    <string name="lib_sort_recently_added">Ajoutés récemment</string>
+    <string name="cd_sort_by">Trier par %1$s</string>
     <string name="your_mix_line1">Votre</string>
     <string name="your_mix_line2">mix</string>
     <string name="update_badge_version">v%1$s</string>

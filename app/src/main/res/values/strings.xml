@@ -115,6 +115,12 @@
     <string name="lib_tab_all">All</string>
     <string name="lib_all_tracks">All tracks</string>
     <string name="lib_all_tracks_count">All tracks • %1$d</string>
+    <string name="lib_sort_title">Title</string>
+    <string name="lib_sort_artist">Artist</string>
+    <string name="lib_sort_album">Album</string>
+    <string name="lib_sort_most_played">Most played</string>
+    <string name="lib_sort_recently_added">Recently added</string>
+    <string name="cd_sort_by">Sort by %1$s</string>
     <string name="your_mix_line1">Your</string>
     <string name="your_mix_line2">Mix</string>
     <string name="update_badge_version">v%1$s</string>
