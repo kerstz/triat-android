@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -34,8 +35,8 @@ import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.LoadingIndicator
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -50,9 +51,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.semantics.Role
@@ -61,6 +62,12 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.ui.player.rememberPlayerHaptics
+
+/**
+ * Corner radius of the collapsed player. ExpandablePlayer clips its container
+ * to the same value, so the two outlines stay on top of each other.
+ */
+val MINI_PLAYER_CORNER = 20.dp
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -93,12 +100,13 @@ fun MiniPlayerContent(
         modifier = Modifier.fillMaxSize(),
         onClick = onClick,
         color = Color.Transparent,
-        shape = RoundedCornerShape(50) // Full pill shape
+        shape = RoundedCornerShape(MINI_PLAYER_CORNER)
     ) {
+      Box(modifier = Modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(8.dp),
+                .padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Album Art with Circular Progress Ring — doubles as the
@@ -117,8 +125,8 @@ fun MiniPlayerContent(
 
             Box(
                 modifier = Modifier
-                    .size(52.dp)
-                    .clip(CircleShape)
+                    .size(48.dp)
+                    .clip(RoundedCornerShape(12.dp))
                     .clickable(
                         interactionSource = artworkInteraction,
                         indication = null,
@@ -132,42 +140,11 @@ fun MiniPlayerContent(
                     ),
                 contentAlignment = Alignment.Center
             ) {
-                val trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.2f)
-                val progressColor = MaterialTheme.colorScheme.primary
-
-                // Progress ring behind the album art
-                Canvas(modifier = Modifier.size(52.dp)) {
-                    val strokeWidth = 3.dp.toPx()
-                    val radius = (size.minDimension - strokeWidth) / 2
-                    
-                    // Track (background ring)
-                    drawCircle(
-                        color = trackColor,
-                        radius = radius,
-                        style = Stroke(width = strokeWidth)
-                    )
-                    
-                    // Progress arc
-                    drawArc(
-                        color = progressColor,
-                        startAngle = -90f,
-                        sweepAngle = 360f * progress,
-                        useCenter = false,
-                        style = Stroke(
-                            width = strokeWidth,
-                            cap = StrokeCap.Round
-                        )
-                    )
-                }
-                
-                // Album art thumbnail (slightly smaller to fit inside ring).
-                // Only the cover springs on press — the ring is a progress
-                // readout and would read as a glitch if it scaled with it.
                 Box(
                     modifier = Modifier
-                        .size(44.dp)
+                        .size(48.dp)
                         .scale(artworkScale)
-                        .clip(CircleShape)
+                        .clip(RoundedCornerShape(12.dp))
                         .background(MaterialTheme.colorScheme.surfaceVariant),
                     contentAlignment = Alignment.Center
                 ) {
@@ -181,7 +158,7 @@ fun MiniPlayerContent(
                                 .crossfade(true)
                                 .build(),
                             contentDescription = stringResource(R.string.cd_album_art),
-                            modifier = Modifier.size(44.dp),
+                            modifier = Modifier.size(48.dp),
                             contentScale = ContentScale.Crop,
                             loading = {
                                 Icon(
@@ -252,45 +229,67 @@ fun MiniPlayerContent(
                     )
                 }
             } else {
-                FilledIconButton(
+                IconButton(
                     onClick = {
                         // Same action as the artwork tap, so same feedback.
                         playerHaptics.playPause(!isPlaying)
                         onPlayPauseClick()
                     },
-                    modifier = Modifier.size(44.dp),
-                    shapes = IconButtonDefaults.shapes(), // Bouncy shape morphing
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer,
-                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                    )
+                    modifier = Modifier.size(44.dp)
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
                         contentDescription = if (isPlaying) pauseLabel else playLabel,
-                        modifier = Modifier.size(24.dp)
+                        tint = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.size(26.dp)
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Next Button with shape morphing
-            FilledIconButton(
+            IconButton(
                 onClick = onNextClick,
-                modifier = Modifier.size(44.dp),
-                shapes = IconButtonDefaults.shapes(),
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant,
-                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
+                modifier = Modifier.size(44.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.SkipNext,
                     contentDescription = stringResource(R.string.cd_next),
+                    tint = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.size(24.dp)
                 )
             }
         }
+
+        // Progress as a hairline across the foot of the bar. Inset so it
+        // clears the rounded corners, and drawn on the surface roles rather
+        // than the accent: it is a readout, not a control.
+        val trackColor = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.25f)
+        val progressColor = MaterialTheme.colorScheme.onSurface
+        Canvas(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 8.dp)
+                .height(2.dp)
+        ) {
+            val stroke = size.height
+            val y = size.height / 2
+            drawLine(
+                color = trackColor,
+                start = Offset(0f, y),
+                end = Offset(size.width, y),
+                strokeWidth = stroke,
+                cap = StrokeCap.Round
+            )
+            if (progress > 0f) {
+                drawLine(
+                    color = progressColor,
+                    start = Offset(0f, y),
+                    end = Offset(size.width * progress.coerceIn(0f, 1f), y),
+                    strokeWidth = stroke,
+                    cap = StrokeCap.Round
+                )
+            }
+        }
+      }
     }
 }

@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.lerp
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.PlayerStyle
 import com.ivor.ivormusic.data.PlaylistDisplayItem
+import com.ivor.ivormusic.ui.components.MINI_PLAYER_CORNER
 import com.ivor.ivormusic.ui.components.MiniPlayerContent
 import com.ivor.ivormusic.ui.components.PLAYER_CONTAINER_SPRING
 import com.ivor.ivormusic.ui.components.containerBackdropAlpha
@@ -218,11 +219,10 @@ fun ExpandablePlayer(
     val collapsedHeight = 80.dp
     val collapsedWidthPadding = 16.dp
     val collapsedBottomPadding = collapsedBottomSpacing + bottomInset
-    // Exactly half the collapsed height: a radius larger than that (the old
-    // 50.dp) is illegal for the shape and rendered visibly distorted corners.
-    // It also now matches MiniPlayerContent's inner 50% pill, so the ripple
-    // and the container clip along the same outline.
-    val collapsedCornerRadius = collapsedHeight / 2
+    // Shared with MiniPlayerContent so the ripple and the container clip along
+    // the same outline. It must stay at or under half the collapsed height: a
+    // larger radius is illegal for the shape and renders distorted corners.
+    val collapsedCornerRadius = MINI_PLAYER_CORNER
 
     val expandedHeight = screenHeight
     val expandedWidthPadding = 0.dp
