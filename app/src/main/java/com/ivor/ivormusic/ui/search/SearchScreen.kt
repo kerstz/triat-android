@@ -920,7 +920,7 @@ fun SearchScreen(
                     if (channelResults.isNotEmpty()) {
                         item {
                             ResultHeader(
-                                title = "Channels",
+                                title = stringResource(R.string.section_channels),
                                 count = channelResults.size,
                                 icon = Icons.Rounded.AccountCircle,
                                 color = MaterialTheme.colorScheme.primary,
@@ -945,7 +945,7 @@ fun SearchScreen(
                     if (videoPlaylistResults.isNotEmpty()) {
                         item {
                             ResultHeader(
-                                title = "Playlists",
+                                title = stringResource(R.string.section_playlists),
                                 count = videoPlaylistResults.size,
                                 icon = Icons.Rounded.QueueMusic,
                                 color = Color(0xFF_FF9800), // Orange
@@ -1036,7 +1036,7 @@ fun SearchScreen(
                 artistResults.isNotEmpty() -> {
                     item {
                         ResultHeader(
-                            title = "Artists",
+                            title = stringResource(R.string.section_artists),
                             count = artistResults.size,
                             icon = Icons.Rounded.Person,
                             color = Color(0xFF9C27B0), // Purple
@@ -1078,7 +1078,7 @@ fun SearchScreen(
                 albumResults.isNotEmpty() -> {
                      item {
                         ResultHeader(
-                            title = "Albums",
+                            title = stringResource(R.string.section_albums),
                             count = albumResults.size,
                             icon = Icons.Rounded.Album,
                             color = Color(0xFF_009688), // Teal
@@ -1108,7 +1108,7 @@ fun SearchScreen(
                 playlistResults.isNotEmpty() -> {
                     item {
                         ResultHeader(
-                            title = "Playlists",
+                            title = stringResource(R.string.section_playlists),
                             count = playlistResults.size,
                             icon = Icons.Rounded.QueueMusic,
                             color = Color(0xFF_FF9800), // Orange

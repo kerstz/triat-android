@@ -750,7 +750,7 @@ internal fun SettingsSearchResultRow(
 @Composable
 internal fun SettingsSearchEmptyState(query: String) {
     SearchEmptyState(
-        title = "No settings match \"$query\"",
-        hint = "Try a shorter word, or what the setting does rather than its name."
+        title = stringResource(R.string.settings_search_no_match, query),
+        hint = stringResource(R.string.settings_search_no_match_hint)
     )
 }

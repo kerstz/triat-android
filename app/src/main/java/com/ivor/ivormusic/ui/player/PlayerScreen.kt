@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.player
 
+import com.ivor.ivormusic.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -93,12 +95,12 @@ fun PlayerScreen(
                 title = { },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = "Collapse")
+                        Icon(Icons.Default.KeyboardArrowDown, contentDescription = stringResource(R.string.cd_collapse))
                     }
                 },
                 actions = {
                     IconButton(onClick = { /* More options */ }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "More")
+                        Icon(Icons.Default.MoreVert, contentDescription = stringResource(R.string.cd_more_options))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -208,7 +210,7 @@ fun PlayerScreen(
                 ) {
                     Icon(
                         imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
-                        contentDescription = "Favorite",
+                        contentDescription = stringResource(R.string.cd_favorite),
                         tint = if (isFavorite) MaterialTheme.colorScheme.error else onSurfaceColor,
                         modifier = Modifier.size(32.dp)
                     )
@@ -292,7 +294,7 @@ fun PlayerScreen(
                         containerColor = secondaryContainerColor
                     )
                 ) {
-                    Icon(Icons.Default.SkipPrevious, contentDescription = "Previous", modifier = Modifier.size(32.dp))
+                    Icon(Icons.Default.SkipPrevious, contentDescription = stringResource(R.string.cd_previous), modifier = Modifier.size(32.dp))
                 }
 
                 FilledIconButton(
@@ -335,7 +337,7 @@ fun PlayerScreen(
                         containerColor = secondaryContainerColor
                     )
                 ) {
-                    Icon(Icons.Default.SkipNext, contentDescription = "Next", modifier = Modifier.size(32.dp))
+                    Icon(Icons.Default.SkipNext, contentDescription = stringResource(R.string.cd_next), modifier = Modifier.size(32.dp))
                 }
             }
 
@@ -353,7 +355,7 @@ fun PlayerScreen(
                 ) {
                     Icon(
                         Icons.Default.Shuffle,
-                        contentDescription = "Shuffle",
+                        contentDescription = stringResource(R.string.cd_shuffle),
                         modifier = Modifier.size(28.dp),
                         tint = if (isShuffleOn) primaryColor else onSurfaceVariantColor
                     )
@@ -366,7 +368,7 @@ fun PlayerScreen(
                 ) {
                     Icon(
                         Icons.Default.Repeat,
-                        contentDescription = "Repeat",
+                        contentDescription = stringResource(R.string.cd_repeat),
                         modifier = Modifier.size(28.dp),
                         tint = if (isRepeatOn) primaryColor else onSurfaceVariantColor
                     )

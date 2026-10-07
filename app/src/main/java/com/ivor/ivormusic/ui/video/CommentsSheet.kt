@@ -199,7 +199,7 @@ fun CommentsPanel(
                                     // Reply affordance (needs login + reply params)
                                     if (canComment && comment.replyParams != null) {
                                         Text(
-                                            text = "Reply",
+                                            text = stringResource(R.string.comments_reply),
                                             style = MaterialTheme.typography.labelLarge,
                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                             fontWeight = FontWeight.Bold,
@@ -251,7 +251,7 @@ fun CommentsPanel(
                                                     // same thread, addressed to its author
                                                     if (canComment && reply.replyParams != null) {
                                                         Text(
-                                                            text = "Reply",
+                                                            text = stringResource(R.string.comments_reply),
                                                             style = MaterialTheme.typography.labelLarge,
                                                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                                                             fontWeight = FontWeight.Bold,
@@ -435,7 +435,7 @@ private fun CommentComposer(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Replying to ${replyTarget.author}",
+                        text = stringResource(R.string.comments_replying_to, replyTarget.author),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.primary,
                         maxLines = 1,
@@ -489,7 +489,7 @@ private fun CommentComposer(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Rounded.Send,
-                            contentDescription = "Post",
+                            contentDescription = stringResource(R.string.cd_post),
                             tint = if (text.isNotBlank()) MaterialTheme.colorScheme.primary
                             else MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -547,7 +547,7 @@ private fun CommentRow(
                 if (comment.isPinned) {
                     Icon(
                         Icons.Rounded.PushPin,
-                        contentDescription = "Pinned",
+                        contentDescription = stringResource(R.string.cd_pinned),
                         modifier = Modifier.size(12.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -576,7 +576,7 @@ private fun CommentRow(
                 if (comment.isVerified) {
                     Icon(
                         Icons.Rounded.Verified,
-                        contentDescription = "Verified",
+                        contentDescription = stringResource(R.string.cd_verified),
                         modifier = Modifier.size(14.dp),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -660,7 +660,7 @@ private fun CommentRow(
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
-                            text = "Delete",
+                            text = stringResource(R.string.action_delete),
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

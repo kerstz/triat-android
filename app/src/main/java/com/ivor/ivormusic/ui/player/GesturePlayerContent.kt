@@ -620,7 +620,7 @@ private fun CoverflowTransportRow(
         IconButton(onClick = onPrevious, modifier = Modifier.size(48.dp)) {
             Icon(
                 imageVector = Icons.Rounded.SkipPrevious,
-                contentDescription = "Previous",
+                contentDescription = stringResource(R.string.cd_previous),
                 tint = onSurfaceColor,
                 modifier = Modifier.size(32.dp)
             )
@@ -651,7 +651,7 @@ private fun CoverflowTransportRow(
         IconButton(onClick = onNext, modifier = Modifier.size(48.dp)) {
             Icon(
                 imageVector = Icons.Rounded.SkipNext,
-                contentDescription = "Next",
+                contentDescription = stringResource(R.string.cd_next),
                 tint = onSurfaceColor,
                 modifier = Modifier.size(32.dp)
             )
@@ -949,7 +949,7 @@ private fun SwipeableAlbumCarousel(
                                     } else {
                                         Icon(
                                             imageVector = Icons.Default.PlayArrow,
-                                            contentDescription = "Play",
+                                            contentDescription = stringResource(R.string.cd_play),
                                             modifier = Modifier.size(68.dp),
                                             tint = Color.White.copy(alpha = 0.9f)
                                         )
@@ -1061,7 +1061,7 @@ private fun SingleAlbumArt(
                         } else {
                             Icon(
                                 imageVector = Icons.Default.PlayArrow,
-                                contentDescription = "Play",
+                                contentDescription = stringResource(R.string.cd_play),
                                 modifier = Modifier.size(72.dp),
                                 tint = Color.White.copy(alpha = 0.9f)
                             )
@@ -1166,7 +1166,7 @@ private fun GestureQueueView(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Up Next",
+                            text = stringResource(R.string.ps_up_next),
                             style = MaterialTheme.typography.labelLarge,
                             color = MaterialTheme.colorScheme.onSurface
                         )
@@ -1316,7 +1316,7 @@ private fun GestureQueueView(
                                         color = onSurfaceVariantColor.copy(alpha = 0.1f)
                                     )
                                     Text(
-                                        text = "QUEUE",
+                                        text = stringResource(R.string.ps_queue),
                                         style = MaterialTheme.typography.labelSmall,
                                         color = onSurfaceVariantColor,
                                         modifier = Modifier.padding(horizontal = 16.dp)
@@ -1379,7 +1379,7 @@ private fun GestureQueueView(
                                     if (isCurrent) {
                                         Icon(
                                             imageVector = Icons.Rounded.GraphicEq,
-                                            contentDescription = "Playing",
+                                            contentDescription = stringResource(R.string.cd_playing),
                                             tint = primaryColor,
                                             modifier = Modifier.size(20.dp)
                                         )
@@ -1459,7 +1459,7 @@ private fun GestureQueueView(
                                 } else if (isDownloaded(song.id)) {
                                     Icon(
                                         imageVector = Icons.Rounded.CheckCircle,
-                                        contentDescription = "Downloaded",
+                                        contentDescription = stringResource(R.string.song_options_downloaded),
                                         tint = if (isCurrent) primaryColor else onSurfaceVariantColor,
                                         modifier = Modifier.size(18.dp)
                                     )
@@ -1467,7 +1467,7 @@ private fun GestureQueueView(
                                 } else if (isLocalOriginal(song)) {
                                     Icon(
                                         imageVector = Icons.Rounded.Smartphone,
-                                        contentDescription = "Local",
+                                        contentDescription = stringResource(R.string.cd_local_file),
                                         tint = if (isCurrent) primaryColor.copy(alpha = 0.7f) else onSurfaceVariantColor.copy(alpha = 0.7f),
                                         modifier = Modifier.size(16.dp)
                                     )

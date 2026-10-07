@@ -1400,7 +1400,7 @@ fun PlaylistsGrid(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(
-                        text = "Your playlists • ${playlists.size}",
+                        text = stringResource(R.string.lib_your_playlists_count, playlists.size),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onBackground
@@ -2357,7 +2357,7 @@ private fun TrackSectionHeader(
     ) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = "Tracks",
+                text = stringResource(R.string.ab_tracks),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 // Stands on the page's ground, not on a theme surface.
@@ -2590,7 +2590,7 @@ private fun PlaylistTrackRow(
                         IconButton(onClick = onLongClick) {
                             Icon(
                                 imageVector = Icons.Rounded.MoreVert,
-                                contentDescription = "Options for ${song.title}",
+                                contentDescription = stringResource(R.string.lib_options_for, song.title),
                                 tint = playlistOnGround().copy(alpha = 0.7f)
                             )
                         }
@@ -2599,7 +2599,7 @@ private fun PlaylistTrackRow(
                         IconButton(onClick = onRemove, enabled = !isDragging) {
                             Icon(
                                 imageVector = Icons.Rounded.RemoveCircleOutline,
-                                contentDescription = "Remove ${song.title}",
+                                contentDescription = stringResource(R.string.lib_remove_item, song.title),
                                 tint = MaterialTheme.colorScheme.error
                             )
                         }
@@ -2610,7 +2610,7 @@ private fun PlaylistTrackRow(
                             ) {
                                 Icon(
                                     imageVector = Icons.Rounded.DragIndicator,
-                                    contentDescription = "Reorder ${song.title}",
+                                    contentDescription = stringResource(R.string.lib_reorder_item, song.title),
                                     tint = if (isDragging) {
                                         MaterialTheme.colorScheme.onSecondaryContainer
                                     } else {
@@ -3187,7 +3187,7 @@ fun PlaylistDetailScreen(
             reorderDirty = false
             scope.launch {
                 val result = snackbarHostState.showSnackbar(
-                    message = "Removed ${song.title}",
+                    message = shareContext.getString(R.string.lib_removed_item, song.title),
                     actionLabel = shareContext.getString(R.string.undo),
                     duration = SnackbarDuration.Short
                 )
@@ -3464,7 +3464,7 @@ fun PlaylistDetailScreen(
                         TextField(
                             value = searchQuery,
                             onValueChange = { searchQuery = it },
-                            placeholder = { Text("Find in ${if (isAlbum) "album" else "playlist"}") },
+                            placeholder = { Text(stringResource(if (isAlbum) R.string.lib_find_in_album else R.string.lib_find_in_playlist)) },
                             leadingIcon = { Icon(Icons.Rounded.Search, null) },
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
@@ -3922,7 +3922,7 @@ fun PlaylistDetailScreen(
                     EmptyLibraryState(
                         icon = Icons.Rounded.SearchOff,
                         title = stringResource(R.string.search_no_results),
-                        subtitle = "Nothing in this ${if (isAlbum) "album" else "playlist"} matches \"$searchQuery\""
+                        subtitle = stringResource(if (isAlbum) R.string.lib_no_match_album else R.string.lib_no_match_playlist, searchQuery)
                     )
                 }
 
@@ -3960,7 +3960,7 @@ fun PlaylistDetailScreen(
                     EmptyLibraryState(
                         icon = Icons.Rounded.MusicNote,
                         title = stringResource(R.string.vl_no_videos),
-                        subtitle = "Songs you add to this ${if (isAlbum) "album" else "playlist"} will show up here",
+                        subtitle = stringResource(if (isAlbum) R.string.lib_empty_album else R.string.lib_empty_playlist),
                         action = if (isLocalPlaylist && onAddSongsRequest != null) {
                             {
                                 Button(onClick = onAddSongsRequest) {
@@ -4192,6 +4192,7 @@ fun PlaylistDetailScreen(
     }
 
     songPendingRemoval?.let { song ->
+        val removedMessage = stringResource(R.string.lib_removed_item, song.title)
         // Same calm destructive idiom as the delete dialog above: no bounce,
         // no scale-in entrance, error-colored confirm.
         AlertDialog(
@@ -4202,9 +4203,9 @@ fun PlaylistDetailScreen(
             text = {
                 Text(
                     if (resolvedPlaylist.id == "LM") {
-                        "Removing \"${song.title}\" from Your Likes removes the like from your YouTube account, everywhere you use YouTube."
+                        stringResource(R.string.lib_remove_like_body, song.title)
                     } else {
-                        "This removes \"${song.title}\" from \"${resolvedPlaylist.name}\" on your YouTube account, everywhere you use YouTube."
+                        stringResource(R.string.lib_remove_from_yt_playlist_body, song.title, resolvedPlaylist.name)
                     }
                 )
             },
@@ -4214,7 +4215,7 @@ fun PlaylistDetailScreen(
                         viewModel.removeSongFromYouTubePlaylist(resolvedPlaylist.id, song)
                         scope.launch {
                             snackbarHostState.showSnackbar(
-                                message = "Removed ${song.title}",
+                                message = removedMessage,
                                 duration = SnackbarDuration.Short
                             )
                         }

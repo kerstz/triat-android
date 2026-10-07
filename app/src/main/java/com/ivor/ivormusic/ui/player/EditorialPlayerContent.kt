@@ -882,7 +882,7 @@ internal fun EditorialQueueView(
                 Icon(Icons.Default.KeyboardArrowDown, "Collapse", modifier = Modifier.size(26.dp))
             }
             Text(
-                text = "Up Next",
+                text = stringResource(R.string.ps_up_next),
                 style = MaterialTheme.typography.headlineMedium.copy(
                     fontFamily = FontFamily.Serif,
                     fontStyle = FontStyle.Italic,
@@ -921,7 +921,7 @@ internal fun EditorialQueueView(
         if (queue.isEmpty()) {
             Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 Text(
-                    text = "Queue is empty",
+                    text = stringResource(R.string.ps_queue_empty),
                     style = MaterialTheme.typography.titleMedium,
                     color = accent.copy(alpha = 0.7f)
                 )
@@ -1058,7 +1058,7 @@ internal fun EditorialQueueView(
                                     )
                                 } else {
                                     Text(
-                                        text = "MORE",
+                                        text = stringResource(R.string.player_more_caps),
                                         style = MaterialTheme.typography.labelLarge.copy(
                                             letterSpacing = 3.sp,
                                             fontWeight = FontWeight.Medium

@@ -213,8 +213,7 @@ fun CookiePasteSheet(
                     if (!isValid) {
                         Spacer(modifier = Modifier.height(10.dp))
                         Text(
-                            text = "Missing ${missing.joinToString(", ")}. Copy the whole " +
-                                "cookie value, and make sure that browser is signed in.",
+                            text = stringResource(R.string.cookie_missing, missing.joinToString(", ")),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.error
                         )
@@ -427,9 +426,7 @@ private fun SecurityNotice() {
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = "These cookies grant full access to your Google account and " +
-                        "bypass 2-step verification. Triat stores them encrypted on this " +
-                        "device and only sends them to YouTube. Never share them.",
+                    text = stringResource(R.string.cookie_warning),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onErrorContainer
                 )

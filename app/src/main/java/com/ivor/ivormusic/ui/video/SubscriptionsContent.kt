@@ -377,7 +377,7 @@ fun SubscriptionsContent(
             onDismissRequest = { channelToUnfollow = null },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             shape = RoundedCornerShape(32.dp),
-            title = { Text("Unfollow ${channel.name}?", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.sc_unfollow_title, channel.name), fontWeight = FontWeight.Bold) },
             text = {
                 Text(
                     stringResource(R.string.sc_unfollow_body)
@@ -515,7 +515,7 @@ fun SubscriptionsContent(
                                     .padding(horizontal = 20.dp)
                             ) {
                                 Text(
-                                    text = "Checking $done of $total channels",
+                                    text = stringResource(R.string.sc_checking_progress, done, total),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
@@ -850,7 +850,7 @@ fun SubscriptionsContent(
                     } else if (matchedChannels.isEmpty()) {
                         item(key = "no-channel-matches") {
                             SearchEmptyState(
-                                title = "No channels match \"$channelQuery\"",
+                                title = stringResource(R.string.sc_no_channels_match, channelQuery),
                                 hint = stringResource(R.string.sc_search_hint)
                             )
                         }
@@ -1062,7 +1062,7 @@ private fun ChannelRow(
                 IconButton(onClick = onUnfollow) {
                     Icon(
                         imageVector = Icons.Rounded.PersonRemove,
-                        contentDescription = "Unfollow ${channel.name}",
+                        contentDescription = stringResource(R.string.cd_unfollow_channel, channel.name),
                         tint = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }

@@ -425,7 +425,7 @@ fun ListeningHistoryScreen(
                                                 } else {
                                                     context.getString(R.string.lh_removed_from_history)
                                                 },
-                                                actionLabel = "Undo",
+                                                actionLabel = context.getString(R.string.undo),
                                                 withDismissAction = true
                                             )
                                             if (result == SnackbarResult.ActionPerformed) {
@@ -454,7 +454,7 @@ fun ListeningHistoryScreen(
                 scope.launch {
                     val result = snackbarHostState.showSnackbar(
                         message = context.getString(R.string.lh_history_cleared),
-                        actionLabel = "Undo",
+                        actionLabel = context.getString(R.string.undo),
                         withDismissAction = true
                     )
                     if (result == SnackbarResult.ActionPerformed) {
@@ -1085,7 +1085,7 @@ private fun HistoryEmptyState(
             body = stringResource(R.string.lh_no_matches_body)
         }
         hasAnyHistory -> {
-            title = "Nothing ${rangeLabel.lowercase()}"
+            title = stringResource(R.string.lh_nothing_range, rangeLabel.lowercase())
             body = stringResource(R.string.lh_range_empty_body)
         }
         isPaused -> {

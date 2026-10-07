@@ -1087,7 +1087,7 @@ internal fun PlaybackSettingsPage(
                         ) {
                             Column(modifier = Modifier.padding(top = 12.dp)) {
                                 Text(
-                                    text = "Duration: ${crossfadeDurationMs / 1000}s",
+                                    text = stringResource(R.string.sp_crossfade_duration_value, crossfadeDurationMs / 1000),
                                     color = MaterialTheme.colorScheme.onBackground,
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Medium

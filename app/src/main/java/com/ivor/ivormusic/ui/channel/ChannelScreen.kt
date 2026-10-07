@@ -727,7 +727,7 @@ private fun ChannelTopBar(
                 contentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
-            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+            Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.cd_back))
         }
         Text(
             text = title,

@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.data
 
+import com.ivor.ivormusic.R
 import com.ivor.ivormusic.util.KLog
 
 import android.content.Context
@@ -242,7 +243,7 @@ class NotInterestedRepository(context: Context) {
         saveHidden((listOf(entry) + hiddenState.value).take(MAX_HIDDEN_VIDEOS))
         sharedLastAction!!.value = UndoableAction(
             scope = NotInterestedScope.VIDEO,
-            message = "Video hidden",
+            message = appContext.getString(R.string.ni_video_hidden),
             videoId = video.videoId,
             undoToken = video.dismissal?.notInterestedUndo
         )
@@ -266,7 +267,7 @@ class NotInterestedRepository(context: Context) {
         saveHidden((listOf(entry) + hiddenState.value).take(MAX_HIDDEN_VIDEOS))
         sharedLastAction!!.value = UndoableAction(
             scope = NotInterestedScope.VIDEO,
-            message = "Song hidden",
+            message = appContext.getString(R.string.ni_song_hidden),
             videoId = song.id
         )
     }

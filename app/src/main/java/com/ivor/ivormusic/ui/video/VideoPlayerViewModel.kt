@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.video
 
+import com.ivor.ivormusic.R
 import com.ivor.ivormusic.util.KLog
 
 import android.content.Context
@@ -1830,11 +1831,11 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
             sources = videos.associate { download ->
                 download.id to LocalPlaybackSource(
                     uri = download.uri,
-                    label = download.quality?.let { "$it • Offline" } ?: "Offline",
+                    label = download.quality?.let { "$it • ${context.getString(R.string.vp_offline)}" } ?: context.getString(R.string.vp_offline),
                 )
             },
             index = index,
-            title = "Downloads",
+            title = context.getString(R.string.cd_downloads),
         )
     }
 

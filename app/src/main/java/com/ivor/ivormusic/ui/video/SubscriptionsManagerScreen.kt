@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.video
+import androidx.compose.ui.res.pluralStringResource
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
@@ -180,7 +181,7 @@ fun SubscriptionsManagerScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -277,13 +278,13 @@ fun SubscriptionsManagerScreen(
                             ManagerRow(
                                 icon = Icons.Rounded.Folder,
                                 title = group.name,
-                                subtitle = "${group.channelIds.size} channels",
+                                subtitle = pluralStringResource(R.plurals.n_channels, group.channelIds.size, group.channelIds.size),
                                 onClick = { groupBeingEdited = group.id },
                                 trailing = {
                                     IconButton(onClick = { groupToDelete = group }) {
                                         Icon(
                                             Icons.Rounded.Close,
-                                            contentDescription = "Delete ${group.name}",
+                                            contentDescription = stringResource(R.string.sm_delete_named_cd, group.name),
                                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                                         )
                                     }
@@ -330,7 +331,7 @@ fun SubscriptionsManagerScreen(
                 if (matchedSubscriptions.isEmpty()) {
                     item(key = "no-channel-matches") {
                         SearchEmptyState(
-                            title = "No channels match \"$channelQuery\"",
+                            title = stringResource(R.string.sc_no_channels_match, channelQuery),
                             hint = stringResource(R.string.sc_search_hint)
                         )
                     }
@@ -423,7 +424,7 @@ fun SubscriptionsManagerScreen(
             onDismissRequest = { groupToDelete = null },
             containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
             shape = RoundedCornerShape(32.dp),
-            title = { Text("Delete ${group.name}?", fontWeight = FontWeight.Bold) },
+            title = { Text(stringResource(R.string.sm_delete_title, group.name), fontWeight = FontWeight.Bold) },
             text = { Text(stringResource(R.string.sm_delete_group_body)) },
             confirmButton = {
                 TextButton(onClick = {
@@ -684,14 +685,14 @@ private fun ManagedChannelRow(
             IconButton(onClick = onEditGroups) {
                 Icon(
                     Icons.Rounded.Folder,
-                    contentDescription = "Groups for ${channel.name}",
+                    contentDescription = stringResource(R.string.sm_groups_for, channel.name),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
             IconButton(onClick = onRemove) {
                 Icon(
                     Icons.Rounded.Close,
-                    contentDescription = "Unfollow ${channel.name}",
+                    contentDescription = stringResource(R.string.cd_unfollow_channel, channel.name),
                     tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
@@ -894,7 +895,7 @@ private fun GroupChannelsDialog(
                     if (matched.isEmpty()) {
                         item(key = "no-matches") {
                             Text(
-                                text = "No channels match \"$query\"",
+                                text = stringResource(R.string.sc_no_channels_match, query),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier

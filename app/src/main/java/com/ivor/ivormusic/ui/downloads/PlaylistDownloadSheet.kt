@@ -592,7 +592,16 @@ private fun PlaylistDownloadSheet(
                             ThemePreferences.currentMusicQuality(context)
                         }
                         Text(
-                            text = "Music uses your ${musicQuality.replaceFirstChar { it.uppercase() }} quality setting for this network.",
+                            text = stringResource(
+                                R.string.dl_music_quality_note,
+                                stringResource(
+                                    when (musicQuality) {
+                                        ThemePreferences.MUSIC_QUALITY_NORMAL -> R.string.sp_music_quality_normal
+                                        ThemePreferences.MUSIC_QUALITY_LOW -> R.string.dl_music_quality_low
+                                        else -> R.string.sp_music_quality_high
+                                    }
+                                )
+                            ),
                             style = MaterialTheme.typography.bodyMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

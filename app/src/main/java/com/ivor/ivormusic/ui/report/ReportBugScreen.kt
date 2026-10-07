@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.report
+import androidx.compose.ui.res.pluralStringResource
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
@@ -155,7 +156,7 @@ fun ReportBugScreen(onBack: () -> Unit) {
                     Column {
                         Text(stringResource(R.string.sp_report_bug), fontWeight = FontWeight.Bold)
                         Text(
-                            text = "${logEntries.size} log lines recorded this session",
+                            text = pluralStringResource(R.plurals.report_log_lines, logEntries.size, logEntries.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -163,7 +164,7 @@ fun ReportBugScreen(onBack: () -> Unit) {
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(

@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.video
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -95,7 +96,7 @@ fun NotInterestedScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -129,7 +130,7 @@ fun NotInterestedScreen(
                 item(key = "channels-header") {
                     SectionHeader(
                         title = stringResource(R.string.ni_section_sources),
-                        subtitle = "${blockedChannels.size} won't appear in your feeds",
+                        subtitle = stringResource(R.string.ni_channels_blocked_sub, blockedChannels.size),
                         onClear = { confirmClear = ClearTarget.CHANNELS }
                     )
                 }
@@ -145,7 +146,7 @@ fun NotInterestedScreen(
                 item(key = "videos-header") {
                     SectionHeader(
                         title = stringResource(R.string.ni_section_items),
-                        subtitle = "${hiddenVideos.size} hidden",
+                        subtitle = pluralStringResource(R.plurals.ni_hidden_count, hiddenVideos.size, hiddenVideos.size),
                         onClear = { confirmClear = ClearTarget.VIDEOS }
                     )
                 }
@@ -275,7 +276,7 @@ private fun BlockedChannelRow(channel: BlockedChannel, onUnblock: () -> Unit) {
             IconButton(onClick = onUnblock) {
                 Icon(
                     Icons.Rounded.Undo,
-                    contentDescription = "Recommend ${channel.name} again",
+                    contentDescription = stringResource(R.string.ni_recommend_again_cd, channel.name),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
@@ -331,7 +332,7 @@ private fun HiddenVideoRow(
             IconButton(onClick = onUnhide) {
                 Icon(
                     Icons.Rounded.Undo,
-                    contentDescription = "Unhide ${video.title}",
+                    contentDescription = stringResource(R.string.ni_unhide_cd, video.title),
                     tint = MaterialTheme.colorScheme.primary
                 )
             }

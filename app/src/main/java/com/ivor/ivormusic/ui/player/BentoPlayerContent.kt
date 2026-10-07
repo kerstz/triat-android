@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.player
 
+import com.ivor.ivormusic.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.Crossfade
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.RepeatMode
@@ -215,7 +217,7 @@ fun BentoPlayerSheetContent(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
-                                    text = "NOW PLAYING",
+                                    text = stringResource(R.string.ps_now_playing).uppercase(),
                                     style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 3.sp),
                                     maxLines = 1,
                                     overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
@@ -500,7 +502,7 @@ fun BentoPlayerSheetContent(
                             ) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.QueueMusic,
-                                    contentDescription = "Queue",
+                                    contentDescription = stringResource(R.string.swipe_action_queue),
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(modifier = Modifier.width(8.dp))

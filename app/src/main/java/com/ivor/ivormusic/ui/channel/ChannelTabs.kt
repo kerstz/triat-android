@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.channel
 
+import com.ivor.ivormusic.R
+import androidx.compose.ui.res.stringResource
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -375,7 +377,7 @@ private fun FeaturedVideoCard(
                     color = MaterialTheme.colorScheme.primary
                 ) {
                     Text(
-                        text = "Featured",
+                        text = stringResource(R.string.ch_featured),
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onPrimary,
@@ -806,7 +808,7 @@ private fun LazyGridScope.aboutTab(about: ChannelAbout?, isLoading: Boolean) {
 
     if (!about.description.isNullOrBlank()) {
         item(key = "about_description", span = { GridItemSpan(maxLineSpan) }) {
-            AboutCard(title = "Description") {
+            AboutCard(title = stringResource(R.string.vp_description)) {
                 Text(
                     text = about.description,
                     style = MaterialTheme.typography.bodyMedium,
@@ -819,7 +821,7 @@ private fun LazyGridScope.aboutTab(about: ChannelAbout?, isLoading: Boolean) {
     if (about.links.isNotEmpty()) {
         item(key = "about_links", span = { GridItemSpan(maxLineSpan) }) {
             val uriHandler = LocalUriHandler.current
-            AboutCard(title = "Links") {
+            AboutCard(title = stringResource(R.string.ch_about_links)) {
                 Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
                     about.links.forEach { link ->
                         Row(
@@ -872,7 +874,7 @@ private fun LazyGridScope.aboutTab(about: ChannelAbout?, isLoading: Boolean) {
     )
     if (stats.isNotEmpty()) {
         item(key = "about_stats", span = { GridItemSpan(maxLineSpan) }) {
-            AboutCard(title = "Details") {
+            AboutCard(title = stringResource(R.string.ch_about_details)) {
                 Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
                     stats.forEach { (icon, text) ->
                         Row(
@@ -1163,7 +1165,7 @@ internal fun ChannelSearchPane(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Nothing in this channel matches \"$query\"",
+                    text = stringResource(R.string.ch_no_match_query, query),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
@@ -1185,7 +1187,7 @@ internal fun ChannelSearchPane(
                 )
                 Spacer(Modifier.height(12.dp))
                 Text(
-                    text = "Search everything $channelName has published",
+                    text = stringResource(R.string.ch_search_hint, channelName),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center

@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.share
 
+import com.ivor.ivormusic.R
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.runtime.Composable
@@ -96,11 +97,11 @@ fun SharedLinkHandler(
 
         val link = YouTubeLinkParser.parseFromSharedText(pending.text)
         if (link == null) {
-            toast("No YouTube link found in what you shared")
+            toast(context.getString(R.string.share_no_link))
             return@LaunchedEffect
         }
         if (localOnlyMode) {
-            toast("Local only mode is on. Turn it off in Settings to open YouTube links.")
+            toast(context.getString(R.string.share_local_only))
             return@LaunchedEffect
         }
 
@@ -131,7 +132,7 @@ fun SharedLinkHandler(
                     // failed lookup. Playing it is both the old behaviour and
                     // the right answer for a mix, which has no page to open.
                     val songs = homeViewModel.resolvePlaylistSongsFromLink(playlistId)
-                    if (songs.isEmpty()) toast("Couldn't open that playlist")
+                    if (songs.isEmpty()) toast(context.getString(R.string.share_open_failed))
                     else playerViewModel.playQueue(songs, songs.first())
                 }
             }
@@ -142,7 +143,7 @@ fun SharedLinkHandler(
             link.isMusicLink && playlistId != null -> {
                 val songs = homeViewModel.resolvePlaylistSongsFromLink(playlistId)
                 if (songs.isEmpty()) {
-                    toast("Couldn't open that playlist")
+                    toast(context.getString(R.string.share_open_failed))
                 } else {
                     val start = songs.firstOrNull { it.id == videoId } ?: songs.first()
                     playerViewModel.playQueue(songs, start)
@@ -152,7 +153,7 @@ fun SharedLinkHandler(
             link.isMusicLink && videoId != null -> {
                 val video = homeViewModel.resolveVideoFromLink(videoId)
                 if (video == null) {
-                    toast("Couldn't open that link")
+                    toast(context.getString(R.string.share_open_link_failed))
                 } else {
                     playerViewModel.playSong(video.toSong())
                 }
@@ -180,7 +181,7 @@ fun SharedLinkHandler(
                         VideoQueue(
                             videos = videos,
                             index = startIndex,
-                            title = "Shared playlist",
+                            title = context.getString(R.string.share_shared_playlist),
                             playlistId = playlistId
                         )
                     )
@@ -199,13 +200,13 @@ fun SharedLinkHandler(
                 } else {
                     val videos = homeViewModel.resolvePlaylistVideosFromLink(playlistId)
                     if (videos.isEmpty()) {
-                        toast("Couldn't open that playlist")
+                        toast(context.getString(R.string.share_open_failed))
                     } else {
                         videoPlayerViewModel.playQueue(
                             VideoQueue(
                                 videos = videos,
                                 index = 0,
-                                title = "Shared playlist",
+                                title = context.getString(R.string.share_shared_playlist),
                                 playlistId = playlistId
                             )
                         )

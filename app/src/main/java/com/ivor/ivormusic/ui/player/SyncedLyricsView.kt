@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.player
 
+import com.ivor.ivormusic.R
+import androidx.compose.ui.res.stringResource
 import android.database.ContentObserver
 import android.icu.text.BreakIterator
 import android.os.Handler
@@ -851,7 +853,7 @@ private fun LoadingState(primaryColor: Color) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Fetching lyrics...",
+            text = stringResource(R.string.lyrics_fetching),
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant
         )
@@ -873,13 +875,13 @@ private fun NoLyricsState(onSurfaceVariantColor: Color) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "No lyrics available",
+            text = stringResource(R.string.lyrics_none),
             style = MaterialTheme.typography.titleMedium,
             color = onSurfaceVariantColor
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
-            text = "Lyrics couldn't be found for this track",
+            text = stringResource(R.string.lyrics_not_found),
             style = MaterialTheme.typography.bodyMedium,
             color = onSurfaceVariantColor.copy(alpha = 0.7f),
             textAlign = TextAlign.Center
@@ -902,7 +904,7 @@ private fun ErrorState(message: String, onSurfaceVariantColor: Color) {
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            text = "Couldn't load lyrics",
+            text = stringResource(R.string.lyrics_load_failed),
             style = MaterialTheme.typography.titleMedium,
             color = onSurfaceVariantColor
         )

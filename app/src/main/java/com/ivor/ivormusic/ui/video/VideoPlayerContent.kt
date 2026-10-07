@@ -1526,7 +1526,7 @@ fun VideoPlayerContent(
                                 modifier = Modifier.weight(1f)
                             )
                             FilledTonalIconButton(onClick = { showPlaybackSettings = false }) {
-                                Icon(Icons.Rounded.Close, contentDescription = "Close")
+                                Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.cd_close))
                             }
                         }
                         Spacer(modifier = Modifier.height(16.dp))
@@ -1701,7 +1701,7 @@ private fun PlayerSettingsSections(
         else -> currentQuality?.displayLabel ?: stringResource(R.string.vpc_quality_auto)
     }
 
-    SettingsSectionLabel(icon = Icons.Rounded.PlayArrow, label = "Playback")
+    SettingsSectionLabel(icon = Icons.Rounded.PlayArrow, label = stringResource(R.string.sp_playback))
     Spacer(modifier = Modifier.height(8.dp))
     Surface(
         shape = RoundedCornerShape(20.dp),
@@ -1710,7 +1710,7 @@ private fun PlayerSettingsSections(
         Column {
             PickerRow(
                 icon = Icons.Rounded.Tune,
-                title = "Quality",
+                title = stringResource(R.string.vp_quality),
                 value = qualityValue,
                 loading = isLoading,
                 expanded = expandedPicker == SettingsPicker.QUALITY,

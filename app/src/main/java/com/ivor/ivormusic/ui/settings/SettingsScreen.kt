@@ -2890,7 +2890,7 @@ private fun FolderItem(
                     overflow = TextOverflow.Ellipsis
                 )
                 Text(
-                    text = "${folder.songCount} song${if (folder.songCount != 1) "s" else ""}",
+                    text = pluralStringResource(R.plurals.n_songs, folder.songCount, folder.songCount),
                     color = secondaryTextColor,
                     fontSize = 12.sp,
                     maxLines = 1,
@@ -3099,7 +3099,7 @@ private fun ShortsButtonShapeToggle(
             ) {
                 Icon(
                     imageVector = icon,
-                    contentDescription = "$label: ${if (shown) "shown" else "hidden"}",
+                    contentDescription = stringResource(if (shown) R.string.cd_label_shown else R.string.cd_label_hidden, label),
                     tint = iconColor,
                     modifier = Modifier.size(26.dp)
                 )

@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.settings
 
+import androidx.compose.ui.res.pluralStringResource
 import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -224,7 +225,7 @@ fun BackupScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBack, enabled = phase != BackupPhase.RESTORING) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.cd_back))
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -695,10 +696,7 @@ private fun RestoreConfirmDialog(
                 )
                 if (accounts > 0) {
                     Text(
-                        text = "Backups never carry a sign-in, so " +
-                            (if (accounts == 1) "the account in it" else "the $accounts accounts in it") +
-                            " will come back needing to be signed into again. Accounts " +
-                            "already signed in on this device stay signed in.",
+                        text = pluralStringResource(R.plurals.bk_accounts_signin_note, accounts, accounts),
                         fontSize = 13.sp,
                         lineHeight = 18.sp,
                         color = MaterialTheme.colorScheme.onSurfaceVariant

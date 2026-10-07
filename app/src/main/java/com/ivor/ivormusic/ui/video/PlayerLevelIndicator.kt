@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.video
 
+import com.ivor.ivormusic.R
+import androidx.compose.ui.res.stringResource
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
@@ -132,9 +134,10 @@ internal fun PlayerLevelIndicator(
     val slatHeight = (LADDER_LENGTH - LADDER_GAP * (slatCount - 1)) / slatCount
 
     val label = when (kind) {
-        LevelAdjustment.Brightness -> "Brightness"
-        LevelAdjustment.Volume -> "Volume"
+        LevelAdjustment.Brightness -> stringResource(R.string.cd_level_brightness)
+        LevelAdjustment.Volume -> stringResource(R.string.np_volume)
     }
+    val levelDescription = stringResource(R.string.cd_level_percent, label, percent)
 
     AnimatedVisibility(
         visible = visible,
@@ -168,7 +171,7 @@ internal fun PlayerLevelIndicator(
                 )
                 .padding(horizontal = 16.dp, vertical = 14.dp)
                 .semantics(mergeDescendants = true) {
-                    contentDescription = "$label $percent percent"
+                    contentDescription = levelDescription
                 }
         ) {
             Text(

@@ -2635,7 +2635,7 @@ private fun SeekFeedbackBadge(
                     modifier = Modifier.size(40.dp)
                 )
                 Text(
-                    text = "$seconds seconds",
+                    text = stringResource(R.string.vp_seconds, seconds),
                     color = Color.White,
                     style = MaterialTheme.typography.labelLarge
                 )
@@ -3215,7 +3215,7 @@ private fun PlayingFromPlaylistCard(
             )
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = "Playing from ${queue.title}",
+                    text = stringResource(R.string.vp_playing_from, queue.title),
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
@@ -3224,8 +3224,8 @@ private fun PlayingFromPlaylistCard(
                 )
                 Text(
                     text = queue.videos.getOrNull(queue.index + 1)
-                        ?.let { "${queue.positionLabel} • Next: ${it.title}" }
-                        ?: "${queue.positionLabel} • Last video",
+                        ?.let { stringResource(R.string.vp_queue_next, queue.positionLabel, it.title) }
+                        ?: stringResource(R.string.vp_queue_last, queue.positionLabel),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1,
