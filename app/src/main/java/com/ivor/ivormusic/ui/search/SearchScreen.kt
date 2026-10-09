@@ -73,6 +73,7 @@ import androidx.compose.material.icons.rounded.ExpandMore
 import androidx.compose.material.icons.rounded.KeyboardVoice
 import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.MusicNote
+import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.TravelExplore
 import androidx.compose.material.icons.rounded.Person
@@ -702,7 +703,6 @@ fun SearchScreen(
                                     song = song,
                                     onClick = { onPlayQueue(state.songs, song) },
                                     onLongClick = onSongLongPress?.let { press -> { press(song) } },
-                                    cardColor = cardColor,
                                     textColor = textColor,
                                     secondaryTextColor = secondaryTextColor,
                                     accentColor = primaryColor,
@@ -879,7 +879,6 @@ fun SearchScreen(
                             song = song,
                             onClick = { onPlayQueue(songs, song) },
                             onLongClick = onSongLongPress?.let { press -> { press(song) } },
-                            cardColor = cardColor,
                             textColor = textColor,
                             secondaryTextColor = secondaryTextColor,
                             accentColor = primaryColor,
@@ -1002,7 +1001,7 @@ fun SearchScreen(
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
-                                    "${videoResults.size} results",
+                                    pluralStringResource(R.plurals.n_results, videoResults.size, videoResults.size),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = secondaryTextColor
                                 )
@@ -1170,7 +1169,7 @@ fun SearchScreen(
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             Text(
-                                "${youtubeResults.size} results",
+                                pluralStringResource(R.plurals.n_results, youtubeResults.size, youtubeResults.size),
                                 style = MaterialTheme.typography.bodySmall,
                                 color = secondaryTextColor
                             )
@@ -1191,7 +1190,6 @@ fun SearchScreen(
                                     onPlayRadio(song)
                             },
                             onLongClick = onSongLongPress?.let { press -> { press(song) } },
-                            cardColor = cardColor,
                             textColor = textColor,
                             secondaryTextColor = secondaryTextColor,
                             accentColor = primaryColor,
@@ -1257,7 +1255,7 @@ fun SearchScreen(
                                 )
                                 Spacer(modifier = Modifier.weight(1f))
                                 Text(
-                                    "${filteredLocalSongs.size} matches",
+                                    pluralStringResource(R.plurals.search_n_matches, filteredLocalSongs.size, filteredLocalSongs.size),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = secondaryTextColor
                                 )
@@ -1272,7 +1270,6 @@ fun SearchScreen(
                                 song = song,
                                 onClick = { onPlayQueue(filteredLocalSongs, song) },
                                 onLongClick = onSongLongPress?.let { press -> { press(song) } },
-                                cardColor = cardColor,
                                 textColor = textColor,
                                 secondaryTextColor = secondaryTextColor,
                                 accentColor = primaryColor,
@@ -1352,7 +1349,7 @@ fun SearchScreen(
                     // Local search results only (when no YouTube results but have local matches)
                     item {
                         Text(
-                            "${filteredLocalSongs.size} results",
+                            pluralStringResource(R.plurals.n_results, filteredLocalSongs.size, filteredLocalSongs.size),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold,
                             color = secondaryTextColor,
@@ -1368,7 +1365,6 @@ fun SearchScreen(
                             song = song,
                             onClick = { onPlayQueue(filteredLocalSongs, song) },
                             onLongClick = onSongLongPress?.let { press -> { press(song) } },
-                            cardColor = cardColor,
                             textColor = textColor,
                             secondaryTextColor = secondaryTextColor,
                             accentColor = primaryColor,
@@ -1662,7 +1658,6 @@ private fun ShowMoreButton(
 private fun SearchSongCard(
     song: Song,
     onClick: () -> Unit,
-    cardColor: Color,
     textColor: Color,
     secondaryTextColor: Color,
     accentColor: Color,
@@ -1678,8 +1673,7 @@ private fun SearchSongCard(
             .clip(shape)
             .songRowClick(onClick = onClick, onLongClick = onLongClick),
         shape = shape,
-        color = cardColor,
-        tonalElevation = 1.dp
+        color = Color.Transparent
     ) {
         ListItem(
             headlineContent = {
@@ -1756,13 +1750,17 @@ private fun SearchSongCard(
                     }
                 }
             },
-            trailingContent = {
-                Icon(
-                    Icons.Rounded.PlayArrow,
-                    contentDescription = stringResource(R.string.cd_play),
-                    tint = accentColor,
-                    modifier = Modifier.size(24.dp)
-                )
+            trailingContent = onLongClick?.let { press ->
+                {
+                    IconButton(onClick = press) {
+                        Icon(
+                            Icons.Rounded.MoreVert,
+                            contentDescription = stringResource(R.string.cd_more_options),
+                            tint = secondaryTextColor,
+                            modifier = Modifier.size(20.dp)
+                        )
+                    }
+                }
             },
             colors = ListItemDefaults.colors(
                 containerColor = Color.Transparent,
@@ -1862,7 +1860,7 @@ fun ResultHeader(
         )
         Spacer(modifier = Modifier.weight(1f))
         Text(
-            "$count results",
+            pluralStringResource(R.plurals.n_results, count, count),
             style = MaterialTheme.typography.bodySmall,
             color = secondaryTextColor
         )
@@ -1897,7 +1895,15 @@ fun SearchFilterChips(
                     categories.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
                     else -> androidx.compose.material3.ButtonGroupDefaults.connectedMiddleButtonShapes()
                 },
-                contentPadding = PaddingValues(horizontal = 8.dp)
+                contentPadding = PaddingValues(horizontal = 8.dp),
+                // Quiet, monochrome: unselected categories are text only, the
+                // current one wears a soft neutral fill rather than an accent pill.
+                colors = androidx.compose.material3.ToggleButtonDefaults.toggleButtonColors(
+                    containerColor = Color.Transparent,
+                    checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    checkedContentColor = MaterialTheme.colorScheme.onSurface,
+                )
             ) {
                 Text(
                     when (category) {
