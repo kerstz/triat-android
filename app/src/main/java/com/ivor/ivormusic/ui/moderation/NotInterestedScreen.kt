@@ -1,4 +1,4 @@
-package com.ivor.ivormusic.ui.video
+package com.ivor.ivormusic.ui.moderation
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R

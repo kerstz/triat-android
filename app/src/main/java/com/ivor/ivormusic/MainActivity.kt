@@ -815,23 +815,6 @@ fun MusicApp(
                 )
             }
             composable(
-                route = "subscriptions",
-                enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
-                exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() },
-                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it / 3 }) + fadeIn() },
-                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
-            ) {
-                com.ivor.ivormusic.ui.video.SubscriptionsManagerScreen(
-                    viewModel = homeViewModel,
-                    onBack = { navController.popBackStack() },
-                    // The sign-in dialog lives on the home screen, so a login
-                    // ask from here has to go back for it rather than opening a
-                    // second WebView on top of a settings sub-screen.
-                    onLoginClick = { navController.popBackStack("home", inclusive = false) },
-                    onOpenChannel = openChannel
-                )
-            }
-            composable(
                 route = "backup",
                 enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
                 exitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() },
@@ -849,7 +832,7 @@ fun MusicApp(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it / 3 }) + fadeIn() },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
             ) {
-                com.ivor.ivormusic.ui.video.NotInterestedScreen(
+                com.ivor.ivormusic.ui.moderation.NotInterestedScreen(
                     viewModel = homeViewModel,
                     onBack = { navController.popBackStack() }
                 )
@@ -858,52 +841,6 @@ fun MusicApp(
             // @handle/full URL from a shared link, or a video:<id> fallback
             // when a modern feed card omitted its creator endpoint. The screen
             // resolves whichever it was given without starting that video.
-            composable(
-                route = "channel/{channelId}",
-                arguments = listOf(
-                    androidx.navigation.navArgument("channelId") {
-                        type = androidx.navigation.NavType.StringType
-                    }
-                ),
-                enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },
-                exitTransition = { slideOutHorizontally(targetOffsetX = { -it / 3 }) + fadeOut() },
-                popEnterTransition = { slideInHorizontally(initialOffsetX = { -it / 3 }) + fadeIn() },
-                popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
-            ) { entry ->
-                val channelArg = entry.arguments?.getString("channelId").orEmpty()
-                com.ivor.ivormusic.ui.channel.ChannelScreen(
-                    channelId = channelArg,
-                    homeViewModel = homeViewModel,
-                    onBack = { navController.popBackStack() },
-                    onPlayVideo = { video -> playerViewModel.playSong(video.toSong()) },
-                    onPlayQueue = { queue ->
-                        val songs = queue.videos.map { it.toSong() }
-                        val start = songs.getOrNull(queue.index) ?: songs.firstOrNull()
-                        if (start != null) playerViewModel.playQueue(songs, start)
-                    },
-                    onOpenShorts = { _, _ -> },
-                    // A channel opened from inside a channel is a new entry, so
-                    // back walks the trail of creators the user actually followed.
-                    onOpenChannel = openChannel,
-                    onEnqueueVideo = { video, playNext ->
-                        if (playNext) playerViewModel.playNext(video.toSong())
-                        else playerViewModel.addToQueue(video.toSong())
-                    },
-                    // The sign-in dialog lives on the home screen, so a login ask
-                    // from here goes back for it rather than opening a second
-                    // WebView on top of a detail screen - same rule as the
-                    // subscriptions manager above.
-                    onLoginClick = { navController.popBackStack("home", inclusive = false) },
-                    // The music artist page lives inside the Library tab rather
-                    // than on a route of its own, so the cross-link goes home
-                    // and asks for it; HomeScreen routes to the tab and clears
-                    // the request as it renders.
-                    onOpenMusicArtist = { _, name ->
-                        homeViewModel.requestArtistPage(name)
-                        navController.popBackStack("home", inclusive = false)
-                    }
-                )
-            }
             composable(
                 route = "downloads",
                 enterTransition = { slideInHorizontally(initialOffsetX = { it }) + fadeIn() },

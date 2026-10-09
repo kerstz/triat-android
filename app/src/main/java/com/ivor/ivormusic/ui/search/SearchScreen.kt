@@ -159,8 +159,6 @@ import androidx.compose.material.icons.rounded.PlaylistPlay
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material.icons.automirrored.rounded.PlaylistPlay
-import com.ivor.ivormusic.ui.video.VideoCard
-import com.ivor.ivormusic.ui.video.VideoOptionsSheetHost
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -195,25 +193,20 @@ fun SearchScreen(
     /** Long-press a song result: opens the shared song options sheet. */
     onSongLongPress: ((Song) -> Unit)? = null,
     /** Queue a video result, next or at the end. */
-    onEnqueueVideo: ((VideoItem, Boolean) -> Unit)? = null,
     /**
      * Play a single YouTube result and continue into its radio. Used instead of
      * [onPlayQueue] for loose result lists, where the neighbouring entries are
      * other uploads of the same title rather than a playlist worth queueing.
      */
     onPlayRadio: (Song) -> Unit = { song -> onPlayQueue(listOf(song), song) },
-    onVideoClick: (VideoItem) -> Unit = {},
     onArtistClick: (ArtistItem) -> Unit = {},
     onAlbumClick: (PlaylistDisplayItem) -> Unit = {},
     onPlaylistClick: (PlaylistDisplayItem) -> Unit = {},
-    onVideoPlaylistClick: (VideoPlaylist) -> Unit = {},
     /** Open a creator's page, from a Channels result or the long-press sheet. */
-    onOpenChannel: (String) -> Unit = {},
     onProfileClick: () -> Unit = {},
     contentPadding: PaddingValues,
     viewModel: HomeViewModel,
     isDarkMode: Boolean,
-    videoMode: Boolean = false,
     localOnly: Boolean = false,
     /** False while an expanded player covers this freshly composed screen. */
     requestInitialFocus: Boolean = true,
@@ -240,13 +233,7 @@ fun SearchScreen(
     // Set once a "load more" comes back empty, so scrolling at the bottom of
     // an exhausted result set stops firing requests forever.
     var songResultsExhausted by remember { mutableStateOf(false) }
-    var videoResultsExhausted by remember { mutableStateOf(false) }
     var youtubeResults by remember { mutableStateOf<List<Song>>(emptyList()) }
-    var videoResults by remember { mutableStateOf<List<VideoItem>>(emptyList()) }
-    var videoPlaylistResults by remember { mutableStateOf<List<VideoPlaylist>>(emptyList()) }
-    var channelResults by remember {
-        mutableStateOf<List<com.ivor.ivormusic.data.SubscribedChannel>>(emptyList())
-    }
     var artistResults by remember { mutableStateOf<List<ArtistItem>>(emptyList()) }
     var albumResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var playlistResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
@@ -266,9 +253,6 @@ fun SearchScreen(
             selectedCategory = visibleCategories.firstOrNull() ?: SearchCategory.SONGS
         }
     }
-    var selectedVideoCategory by rememberSaveable { mutableStateOf(VideoSearchCategory.VIDEOS) }
-    var selectedDateFilter by rememberSaveable { mutableStateOf(VideoSearchDateFilter.ANY) }
-    var selectedSort by rememberSaveable { mutableStateOf(VideoSearchSort.RELEVANCE) }
     
     var visibleLocalCount by remember { mutableIntStateOf(20) }
     val scope = rememberCoroutineScope()
@@ -293,14 +277,6 @@ fun SearchScreen(
     val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsState()
     val savedVideoPlaylistIds by viewModel.savedVideoPlaylistIds.collectAsState()
 
-    // Options sheet (long-press on a video search result), same wiring as the
-    // video home feed
-    var saveTargetVideo by remember { mutableStateOf<VideoItem?>(null) }
-
-    fun onVideoLongPress(video: VideoItem) {
-        saveTargetVideo = video
-    }
-
     // Pasted YouTube link handling: when the query is a URL, resolve it into
     // a directly playable result instead of running a text search.
     val parsedLink = remember(query) { YouTubeLinkParser.parse(query) }
@@ -318,14 +294,6 @@ fun SearchScreen(
         }
     }
 
-    // Video mode browse state: trending feed doubles as the explore list
-    val trendingVideos by viewModel.trendingVideos.collectAsState()
-    LaunchedEffect(videoMode) {
-        if (videoMode && trendingVideos.isEmpty()) {
-            viewModel.loadTrendingVideos()
-        }
-    }
-    
     // Theme colors from MaterialTheme
     val backgroundColor = MaterialTheme.colorScheme.background
     val cardColor = MaterialTheme.colorScheme.surfaceContainer
@@ -345,15 +313,12 @@ fun SearchScreen(
     // Search YouTube/Videos/Artists/Albums/Playlists when query changes.
     // Local-only mode never fetches: the local library filter below is
     // the entire search experience.
-    LaunchedEffect(query, videoMode, selectedCategory, selectedVideoCategory, selectedDateFilter, selectedSort) {
+    LaunchedEffect(query, selectedCategory) {
         if (parsedLink != null) {
             // A pasted link is resolved by its own effect below; make sure no
             // stale text-search results linger behind the link result card.
             isLoading = false
             youtubeResults = emptyList()
-            videoResults = emptyList()
-            videoPlaylistResults = emptyList()
-            channelResults = emptyList()
             artistResults = emptyList()
             albumResults = emptyList()
             playlistResults = emptyList()
@@ -368,14 +333,7 @@ fun SearchScreen(
             // result already in memory would show one for a single frame.
             val cached = viewModel.hasCachedSearch(
                 query = query,
-                videoMode = videoMode,
-                category = if (videoMode) {
-                    selectedVideoCategory.name
-                } else {
-                    selectedCategory.name
-                },
-                dateFilter = selectedDateFilter,
-                sort = selectedSort
+                category = selectedCategory.name
             )
             if (!cached) {
                 isLoading = true
@@ -384,39 +342,24 @@ fun SearchScreen(
 
             // Clear previous results of other types
             youtubeResults = emptyList()
-            videoResults = emptyList()
-            videoPlaylistResults = emptyList()
-            channelResults = emptyList()
             artistResults = emptyList()
             albumResults = emptyList()
             playlistResults = emptyList()
             // A new query gets a fresh pagination cursor in the repository,
             // so the exhausted flags have to come off with it.
             songResultsExhausted = false
-            videoResultsExhausted = false
 
-            if (videoMode) {
-                when (selectedVideoCategory) {
-                    VideoSearchCategory.VIDEOS -> videoResults = viewModel.searchVideos(query, selectedDateFilter, selectedSort)
-                    VideoSearchCategory.PLAYLISTS -> videoPlaylistResults = viewModel.searchVideoPlaylists(query)
-                    VideoSearchCategory.CHANNELS -> channelResults = viewModel.searchChannels(query)
-                }
-            } else {
-                when (selectedCategory) {
-                    SearchCategory.SONGS -> youtubeResults = viewModel.searchYouTube(query)
-                    SearchCategory.SOUNDCLOUD -> youtubeResults = viewModel.searchSoundCloud(query)
-                    SearchCategory.ARTISTS -> artistResults = viewModel.searchArtists(query)
-                    SearchCategory.ALBUMS -> albumResults = viewModel.searchAlbums(query)
-                    SearchCategory.PLAYLISTS -> playlistResults = viewModel.searchPlaylists(query)
-                }
+            when (selectedCategory) {
+                SearchCategory.SONGS -> youtubeResults = viewModel.searchYouTube(query)
+                SearchCategory.SOUNDCLOUD -> youtubeResults = viewModel.searchSoundCloud(query)
+                SearchCategory.ARTISTS -> artistResults = viewModel.searchArtists(query)
+                SearchCategory.ALBUMS -> albumResults = viewModel.searchAlbums(query)
+                SearchCategory.PLAYLISTS -> playlistResults = viewModel.searchPlaylists(query)
             }
             isLoading = false
         } else {
             isLoading = false
             youtubeResults = emptyList()
-            videoResults = emptyList()
-            videoPlaylistResults = emptyList()
-            channelResults = emptyList()
             artistResults = emptyList()
             albumResults = emptyList()
             playlistResults = emptyList()
@@ -428,31 +371,15 @@ fun SearchScreen(
     // immediately pulls the next one, instead of stalling until the user
     // nudges the list.
     LaunchedEffect(
-        isNearListEnd, isLoading, youtubeResults.size, videoResults.size,
-        query, videoMode, selectedCategory, selectedVideoCategory, selectedDateFilter, selectedSort
+        isNearListEnd, isLoading, youtubeResults.size, query, selectedCategory
     ) {
         if (!isNearListEnd || isLoading || isLoadingMore) return@LaunchedEffect
         if (localOnly || parsedLink != null || query.length < 2) return@LaunchedEffect
 
-        val loadingVideos = videoMode && selectedVideoCategory == VideoSearchCategory.VIDEOS
-        val loadingSongs = !videoMode && selectedCategory == SearchCategory.SONGS
-        val loadingSoundCloud = !videoMode && selectedCategory == SearchCategory.SOUNDCLOUD
+        val loadingSongs = selectedCategory == SearchCategory.SONGS
+        val loadingSoundCloud = selectedCategory == SearchCategory.SOUNDCLOUD
         try {
             when {
-                loadingVideos && videoResults.isNotEmpty() && !videoResultsExhausted -> {
-                    isLoadingMore = true
-                    val more = viewModel.loadMoreVideoResults(query, selectedDateFilter, selectedSort)
-                    if (more.isEmpty()) {
-                        videoResultsExhausted = true
-                    } else {
-                        // Adjacent pages can overlap; never show a video twice
-                        val merged = (videoResults + more).distinctBy { it.videoId }
-                        // Nothing new survived de-duplication, so the feed is
-                        // repeating itself - treat that as the end.
-                        if (merged.size == videoResults.size) videoResultsExhausted = true
-                        videoResults = merged
-                    }
-                }
                 loadingSongs && youtubeResults.isNotEmpty() && !songResultsExhausted -> {
                     isLoadingMore = true
                     val more = viewModel.loadMoreResults(query)
@@ -481,21 +408,6 @@ fun SearchScreen(
         }
     }
 
-    saveTargetVideo?.let { video ->
-        VideoOptionsSheetHost(
-            video = video,
-            viewModel = viewModel,
-            onDismiss = { saveTargetVideo = null },
-            onEnqueue = onEnqueueVideo?.let { enqueue -> { next -> enqueue(video, next) } },
-            // Search results are never filtered - searching is explicit
-            // intent - so "not interested" would visibly do nothing here and
-            // is left out. Blocking the channel still has a real effect on
-            // every feed, and the undo snackbar says so.
-            allowNotInterested = false,
-            onOpenChannel = onOpenChannel
-        )
-    }
-
     // Reset visible count when query changes
     LaunchedEffect(query) {
         visibleLocalCount = 20
@@ -504,19 +416,15 @@ fun SearchScreen(
     // Resolve a pasted YouTube link (video, playlist or channel) off the normal
     // search path. A watch link resolves through one watch-next call; a playlist
     // link loads its items. Retriggered by the retry button via linkRetryToken.
-    LaunchedEffect(parsedLink, videoMode, linkRetryToken) {
+    LaunchedEffect(parsedLink, linkRetryToken) {
         if (parsedLink == null) {
             linkState = LinkLookupState.Idle
             return@LaunchedEffect
         }
-        // A channel link has nothing to preview - there is no track to play and
-        // no list to show - so it opens the creator's page instead of resolving
-        // into a result card. The query is cleared on the way out so coming back
-        // to search does not immediately reopen it.
-        parsedLink.channelRef?.let { ref ->
+        // A channel link has nothing a music app can play, so it resolves to
+        // nothing rather than to a result card.
+        if (parsedLink.channelRef != null) {
             linkState = LinkLookupState.Idle
-            query = ""
-            onOpenChannel(ref)
             return@LaunchedEffect
         }
         linkState = LinkLookupState.Resolving
@@ -540,8 +448,7 @@ fun SearchScreen(
                 // coming back from the page must land on search, not reopen
                 // what was just backed out of.
                 query = ""
-                if (videoMode) onVideoPlaylistClick(page.toVideoPlaylist(searchScreenContext))
-                else onPlaylistClick(page.toDisplayItem())
+                onPlaylistClick(page.toDisplayItem())
                 return@LaunchedEffect
             }
         }
@@ -550,11 +457,6 @@ fun SearchScreen(
                 val video = viewModel.resolveVideoFromLink(parsedLink.videoId)
                 if (video == null) LinkLookupState.Error
                 else LinkLookupState.MediaResult(video)
-            }
-            parsedLink.playlistId != null && videoMode -> {
-                val videos = viewModel.resolvePlaylistVideosFromLink(parsedLink.playlistId)
-                if (videos.isEmpty()) LinkLookupState.Error
-                else LinkLookupState.PlaylistVideosResult(videos)
             }
             parsedLink.playlistId != null -> {
                 val playlistSongs = viewModel.resolvePlaylistSongsFromLink(parsedLink.playlistId)
@@ -587,8 +489,7 @@ fun SearchScreen(
                             focusManager.clearFocus()
                         }
                     },
-                    placeholderText = if (videoMode) stringResource(R.string.search_placeholder_videos)
-                    else stringResource(R.string.search_placeholder_music),
+                    placeholderText = stringResource(R.string.search_placeholder_music),
                     isLinkDetected = parsedLink != null,
                     primaryColor = primaryColor,
                     textColor = textColor,
@@ -597,9 +498,9 @@ fun SearchScreen(
                 )
             }
             
-            // Category Chips (music mode only; pointless in local-only and
-            // hidden while a pasted link resolves)
-            if (!videoMode && !localOnly && query.isNotEmpty() && parsedLink == null) {
+            // Category chips: pointless in local-only, and hidden while a
+            // pasted link resolves.
+            if (!localOnly && query.isNotEmpty() && parsedLink == null) {
                 item {
                     SearchFilterChips(
                         selectedCategory = selectedCategory,
@@ -611,37 +512,6 @@ fun SearchScreen(
                 }
             }
 
-            // Video Mode filters, hidden while a pasted link resolves: the
-            // Videos / Playlists toggle, plus upload-date + sort chips that
-            // only apply to video results
-            if (videoMode && query.isNotEmpty() && parsedLink == null) {
-                item {
-                    VideoSearchFilterChips(
-                        selectedCategory = selectedVideoCategory,
-                        onCategorySelected = { selectedVideoCategory = it },
-                        modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-                    )
-                }
-                if (selectedVideoCategory == VideoSearchCategory.VIDEOS) {
-                    item {
-                        VideoFilterChipRow(
-                            labels = VideoSearchDateFilter.entries.map { it.label },
-                            selectedIndex = selectedDateFilter.ordinal,
-                            onSelected = { selectedDateFilter = VideoSearchDateFilter.entries[it] },
-                            modifier = Modifier.padding(top = 8.dp)
-                        )
-                    }
-                    item {
-                        VideoFilterChipRow(
-                            labels = VideoSearchSort.entries.map { it.label },
-                            selectedIndex = selectedSort.ordinal,
-                            onSelected = { selectedSort = VideoSearchSort.entries[it] },
-                            modifier = Modifier.padding(top = 4.dp, bottom = 8.dp)
-                        )
-                    }
-                }
-            }
-            
             // ========== CONTENT ==========
             when {
                 // Pasted YouTube link: resolve it into a playable hero result
@@ -668,18 +538,12 @@ fun SearchScreen(
                                     subtitle = subtitle,
                                     thumbnailUrl = video.highResThumbnailUrl ?: video.thumbnailUrl,
                                     durationText = video.formattedDuration.takeIf { it.isNotBlank() },
-                                    badgeText = if (videoMode) stringResource(R.string.badge_video) else stringResource(R.string.badge_song),
+                                    badgeText = stringResource(R.string.badge_song),
                                     accentColor = primaryColor,
                                     cardColor = cardColor,
                                     textColor = textColor,
                                     secondaryTextColor = secondaryTextColor,
-                                    onPlay = {
-                                        if (videoMode) {
-                                            onVideoClick(video)
-                                        } else {
-                                            onPlayRadio(video.toSong())
-                                        }
-                                    }
+                                    onPlay = { onPlayRadio(video.toSong()) }
                                 )
                             }
                         }
@@ -729,13 +593,16 @@ fun SearchScreen(
                                     cardColor = cardColor,
                                     textColor = textColor,
                                     secondaryTextColor = secondaryTextColor,
-                                    onPlayAll = { onVideoClick(state.videos.first()) }
+                                    onPlayAll = {
+                                        val songs = state.videos.map { it.toSong() }
+                                        onPlayQueue(songs, songs.first())
+                                    }
                                 )
                             }
                             items(state.videos) { video ->
                                 CompactVideoRow(
                                     video = video,
-                                    onClick = { onVideoClick(video) },
+                                    onClick = { onPlayRadio(video.toSong()) },
                                     cardColor = cardColor,
                                     textColor = textColor,
                                     secondaryTextColor = secondaryTextColor
@@ -757,7 +624,6 @@ fun SearchScreen(
                         else -> {
                             item {
                                 LinkResolvingCard(
-                                    videoMode = videoMode,
                                     primaryColor = primaryColor,
                                     textColor = textColor,
                                     secondaryTextColor = secondaryTextColor
@@ -804,8 +670,6 @@ fun SearchScreen(
                                 Spacer(modifier = Modifier.height(16.dp))
                                 Text(
                                     when {
-                                        videoMode && selectedVideoCategory == VideoSearchCategory.PLAYLISTS -> stringResource(R.string.searching_playlists)
-                                        videoMode -> stringResource(R.string.searching_videos)
                                         selectedCategory == SearchCategory.ARTISTS -> stringResource(R.string.searching_artists)
                                         selectedCategory == SearchCategory.ALBUMS -> stringResource(R.string.searching_albums)
                                         selectedCategory == SearchCategory.PLAYLISTS -> stringResource(R.string.searching_playlists)
@@ -819,46 +683,6 @@ fun SearchScreen(
                     }
                 }
                 
-                // Video mode browse: trending instead of the music library.
-                // The old hard-coded category chips duplicated search and made
-                // this state read like an Explore page rather than history.
-                videoMode && query.isEmpty() -> {
-                    item {
-                        Text(
-                            stringResource(R.string.trending_now),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.Bold,
-                            color = textColor,
-                            modifier = Modifier.padding(horizontal = 20.dp)
-                                .padding(top = 20.dp, bottom = 4.dp)
-                        )
-                    }
-
-                    if (trendingVideos.isEmpty()) {
-                        item {
-                            Box(
-                                modifier = Modifier.fillMaxWidth().height(160.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                LoadingIndicator(
-                                    modifier = Modifier.size(40.dp),
-                                    color = primaryColor
-                                )
-                            }
-                        }
-                    } else {
-                        items(trendingVideos) { video ->
-                            CompactVideoRow(
-                                video = video,
-                                onClick = { onVideoClick(video) },
-                                cardColor = cardColor,
-                                textColor = textColor,
-                                secondaryTextColor = secondaryTextColor
-                            )
-                        }
-                    }
-                }
-
                 query.isEmpty() -> {
                     // Browse section when no search
                     item {
@@ -908,129 +732,6 @@ fun SearchScreen(
                         }
                     }
                 }
-                
-                // Video Mode Results: the Videos/Playlists toggle above decides
-                // which search ran, so only one of these lists is ever populated
-                videoMode && (
-                    videoResults.isNotEmpty() ||
-                        videoPlaylistResults.isNotEmpty() ||
-                        channelResults.isNotEmpty()
-                    ) -> {
-                    if (channelResults.isNotEmpty()) {
-                        item {
-                            ResultHeader(
-                                title = stringResource(R.string.section_channels),
-                                count = channelResults.size,
-                                icon = Icons.Rounded.AccountCircle,
-                                color = MaterialTheme.colorScheme.primary,
-                                textColor = textColor,
-                                secondaryTextColor = secondaryTextColor
-                            )
-                        }
-                        items(channelResults, key = { it.channelId }) { channel ->
-                            ChannelResultRow(
-                                channel = channel,
-                                onClick = {
-                                    viewModel.addToSearchHistory(query)
-                                    onOpenChannel(channel.channelId)
-                                },
-                                cardColor = cardColor,
-                                textColor = textColor,
-                                secondaryTextColor = secondaryTextColor
-                            )
-                        }
-                    }
-
-                    if (videoPlaylistResults.isNotEmpty()) {
-                        item {
-                            ResultHeader(
-                                title = stringResource(R.string.section_playlists),
-                                count = videoPlaylistResults.size,
-                                icon = Icons.Rounded.QueueMusic,
-                                color = Color(0xFF_FF9800), // Orange
-                                textColor = textColor,
-                                secondaryTextColor = secondaryTextColor
-                            )
-                        }
-                        items(videoPlaylistResults, key = { it.playlistId }) { playlist ->
-                            VideoPlaylistRow(
-                                playlist = playlist,
-                                onClick = {
-                                    viewModel.addToSearchHistory(query)
-                                    onVideoPlaylistClick(playlist)
-                                },
-                                cardColor = cardColor,
-                                textColor = textColor,
-                                secondaryTextColor = secondaryTextColor,
-                                isSaved = savedVideoPlaylistIds.contains(playlist.playlistId),
-                                onToggleSave = { viewModel.toggleSavedVideoPlaylist(playlist) }
-                            )
-                        }
-                    }
-
-                    // Video Search Results Section
-                    if (videoResults.isNotEmpty()) {
-                        item {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp)
-                            ) {
-                                Surface(
-                                    shape = CircleShape,
-                                    color = Color(0xFFFF0000).copy(alpha = 0.15f),
-                                    modifier = Modifier.size(32.dp)
-                                ) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            Icons.Rounded.TravelExplore,
-                                            contentDescription = null,
-                                            tint = Color(0xFFFF0000),
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                                Spacer(modifier = Modifier.size(12.dp))
-                                Text(
-                                    stringResource(R.string.source_youtube_videos),
-                                    style = MaterialTheme.typography.titleMedium,
-                                    fontWeight = FontWeight.Bold,
-                                    color = textColor
-                                )
-                                Spacer(modifier = Modifier.weight(1f))
-                                Text(
-                                    pluralStringResource(R.plurals.n_results, videoResults.size, videoResults.size),
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = secondaryTextColor
-                                )
-                            }
-                        }
-
-                        // Display video results; long-press opens the save sheet
-                        itemsIndexed(videoResults) { index, video ->
-                            VideoCard(
-                                video = video,
-                                onClick = { onVideoClick(video) },
-                                onLongClick = { onVideoLongPress(video) },
-                                onOpenChannel = onOpenChannel,
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                            )
-                        }
-
-                        item {
-                            SearchPagingFooter(
-                                isLoadingMore = isLoadingMore,
-                                isExhausted = videoResultsExhausted,
-                                cardColor = cardColor,
-                                accentColor = primaryColor,
-                                secondaryTextColor = secondaryTextColor
-                            )
-                        }
-                    }
-                }
-                
                 
                 artistResults.isNotEmpty() -> {
                     item {
@@ -2391,7 +2092,6 @@ private fun LinkDetectedBanner(
  */
 @Composable
 private fun LinkResolvingCard(
-    videoMode: Boolean,
     primaryColor: Color,
     textColor: Color,
     secondaryTextColor: Color
@@ -2456,7 +2156,7 @@ private fun LinkResolvingCard(
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                if (videoMode) stringResource(R.string.link_preparing_video) else stringResource(R.string.link_preparing_song),
+                stringResource(R.string.link_preparing_song),
                 style = MaterialTheme.typography.bodyMedium,
                 color = secondaryTextColor
             )
@@ -3032,68 +2732,3 @@ private fun SearchPagingFooter(
     }
 }
 
-
-/**
- * A channel in video-mode search results.
- *
- * Deliberately the only video-mode result row with no save or queue action:
- * a channel is not something to keep or play, it is somewhere to go, so the
- * whole row is one target and there is nothing else on it to miss.
- */
-@Composable
-private fun ChannelResultRow(
-    channel: com.ivor.ivormusic.data.SubscribedChannel,
-    onClick: () -> Unit,
-    cardColor: Color,
-    textColor: Color,
-    secondaryTextColor: Color
-) {
-    Surface(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp, vertical = 4.dp),
-        shape = RoundedCornerShape(16.dp),
-        color = cardColor
-    ) {
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            com.ivor.ivormusic.ui.channel.CreatorAvatar(
-                avatarUrl = channel.avatarUrl,
-                name = channel.name,
-                modifier = Modifier.size(52.dp)
-            )
-            Spacer(modifier = Modifier.size(14.dp))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = channel.name,
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                val subtitle = listOfNotNull(
-                    channel.handle?.takeIf { it.isNotBlank() },
-                    channel.subscriberCountText?.takeIf { it.isNotBlank() }
-                ).joinToString(" • ")
-                if (subtitle.isNotBlank()) {
-                    Text(
-                        text = subtitle,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = secondaryTextColor,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                }
-            }
-            Icon(
-                Icons.Rounded.ChevronRight,
-                contentDescription = null,
-                tint = secondaryTextColor
-            )
-        }
-    }
-}

@@ -2127,32 +2127,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * spinner: a category switch that resolves from memory should feel like a
      * tab, not like a new search.
      */
-    fun hasCachedSearch(
-        query: String,
-        videoMode: Boolean,
-        category: String,
-        dateFilter: com.ivor.ivormusic.data.VideoSearchDateFilter =
-            com.ivor.ivormusic.data.VideoSearchDateFilter.ANY,
-        sort: com.ivor.ivormusic.data.VideoSearchSort =
-            com.ivor.ivormusic.data.VideoSearchSort.RELEVANCE
-    ): Boolean {
+    fun hasCachedSearch(query: String, category: String): Boolean {
         if (query.isBlank()) return false
         val key = searchKey(query)
-        return if (videoMode) {
-            when (category) {
-                "VIDEOS" -> videoSearchCache.has(videoSearchKey(query, dateFilter, sort))
-                "PLAYLISTS" -> videoPlaylistSearchCache.has(key)
-                "CHANNELS" -> channelSearchCache.has(key)
-                else -> false
-            }
-        } else {
-            when (category) {
-                "SONGS" -> songSearchCache.has(key)
-                "ARTISTS" -> artistSearchCache.has(key)
-                "ALBUMS" -> albumSearchCache.has(key)
-                "PLAYLISTS" -> playlistSearchCache.has(key)
-                else -> false
-            }
+        return when (category) {
+            "SONGS" -> songSearchCache.has(key)
+            "ARTISTS" -> artistSearchCache.has(key)
+            "ALBUMS" -> albumSearchCache.has(key)
+            "PLAYLISTS" -> playlistSearchCache.has(key)
+            else -> false
         }
     }
 

@@ -47,8 +47,6 @@ import com.ivor.ivormusic.data.SPONSORBLOCK_MAX_MIN_DURATION_MS
 import com.ivor.ivormusic.data.SegmentAction
 import com.ivor.ivormusic.data.SponsorBlockRepository
 import com.ivor.ivormusic.data.SponsorCategory
-import com.ivor.ivormusic.ui.video.categoryDescription
-import com.ivor.ivormusic.ui.video.categoryLabel
 import com.ivor.ivormusic.util.rememberKodaHaptics
 
 /**

@@ -129,7 +129,6 @@ import com.ivor.ivormusic.data.isUnknownAlbum
 import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
 import com.ivor.ivormusic.data.sortedInAlbumOrder
-import com.ivor.ivormusic.ui.channel.creatorMetadata
 import com.ivor.ivormusic.ui.components.AvatarImage
 import com.ivor.ivormusic.ui.components.PredictiveBackStack
 import com.ivor.ivormusic.ui.components.SEARCH_FIELD_MIN_ITEMS
@@ -1924,3 +1923,7 @@ private fun ArtistSongCard(
         )
     }
 }
+
+/** The metadata line, dropping the parts an artist does not have. */
+private fun creatorMetadata(vararg parts: String?): List<String> =
+    parts.filterNotNull().map { it.trim() }.filter { it.isNotBlank() }

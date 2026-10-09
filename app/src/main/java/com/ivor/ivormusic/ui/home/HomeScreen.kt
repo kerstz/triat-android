@@ -145,7 +145,6 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.animation.with
 import kotlinx.coroutines.launch
 import com.ivor.ivormusic.data.VideoItem
-import com.ivor.ivormusic.ui.video.VideoHomeContent
 import com.ivor.ivormusic.data.VideoHomeConfiguration
 import com.ivor.ivormusic.ui.components.hiddenFraction
 import com.ivor.ivormusic.data.VideoHomeDestination
@@ -2079,10 +2078,8 @@ fun SearchContent(
 ) {
     var viewedPlaylist by remember { mutableStateOf<com.ivor.ivormusic.data.PlaylistDisplayItem?>(null) }
     var viewedArtist by remember { mutableStateOf<com.ivor.ivormusic.data.ArtistItem?>(null) }
-    var viewedVideoPlaylist by remember { mutableStateOf<com.ivor.ivormusic.data.VideoPlaylist?>(null) }
 
     val currentScreen = when {
-        viewedVideoPlaylist != null -> "videoPlaylist"
         viewedPlaylist != null -> "playlist"
         viewedArtist != null -> "artist"
         else -> "search"
@@ -2099,34 +2096,25 @@ fun SearchContent(
         childOpen = currentScreen != "search",
         onBack = {
             when {
-                viewedVideoPlaylist != null -> viewedVideoPlaylist = null
                 viewedPlaylist != null -> viewedPlaylist = null
                 viewedArtist != null -> viewedArtist = null
             }
         },
-        previewable = listOfNotNull(viewedVideoPlaylist, viewedPlaylist, viewedArtist).size == 1,
+        previewable = listOfNotNull(viewedPlaylist, viewedArtist).size == 1,
         background = {
             com.ivor.ivormusic.ui.search.SearchScreen(
                 songs = songs,
                 onSongClick = onSongClick,
                 onPlayQueue = onPlayQueue,
                 onPlayRadio = onPlayRadio,
-                onVideoClick = onVideoClick,
                 onArtistClick = { artistItem -> viewedArtist = artistItem },
                 onAlbumClick = { albumItem -> viewedPlaylist = albumItem },
                 onPlaylistClick = { playlistItem -> viewedPlaylist = playlistItem },
-                onVideoPlaylistClick = { videoPlaylist ->
-                    viewModel.loadPlaylistVideos(videoPlaylist.playlistId)
-                    viewedVideoPlaylist = videoPlaylist
-                },
                 onProfileClick = onProfileClick,
-                onEnqueueVideo = onEnqueueVideo,
-                onOpenChannel = onOpenChannel,
                 onSongLongPress = onSongLongPress,
                 contentPadding = contentPadding,
                 viewModel = viewModel,
                 isDarkMode = isDarkMode,
-                videoMode = videoMode,
                 localOnly = localOnly,
                 requestInitialFocus = requestInitialFocus,
                 listState = listState
@@ -2209,21 +2197,6 @@ fun SearchContent(
                 }
             }
 
-            "videoPlaylist" -> {
-                viewedVideoPlaylist?.let { playlist ->
-                    com.ivor.ivormusic.ui.video.VideoPlaylistDetail(
-                        playlist = playlist,
-                        viewModel = viewModel,
-                        onVideoClick = onVideoClick,
-                        onBack = { viewedVideoPlaylist = null },
-                        contentPadding = contentPadding,
-                        // Search results aren't the user's own playlists
-                        allowRemove = false,
-                        onPlayQueue = onPlayVideoQueue,
-                        onEnqueueVideo = onEnqueueVideo
-                    )
-                }
-            }
             // Search lives underneath now; this layer is empty over it, and
             // full size so both states measure the same.
             else -> Spacer(Modifier.fillMaxSize())
