@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">Spelas nu</string>
-    <string name="video_playback_channel_name">Videouppspelning</string>
 
     <string name="undo">Ångra</string>
     <string name="action_cancel">Avbryt</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">Spela upp allt</string>
     <string name="action_show_more">Visa mer</string>
     <string name="action_try_again">Försök igen</string>
-    <string name="action_open_settings">Öppna inställningar</string>
     <string name="action_clear_all">Rensa allt</string>
-    <string name="action_new_playlist">Ny spellista</string>
     <string name="action_grant_permission">Bevilja behörighet</string>
     <string name="unknown_artist">Okänd artist</string>
     <string name="untitled_song">Namnlös låt</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">Bibliotek</string>
 
     <string name="local_only_title">Läget Endast lokalt är på</string>
-    <string name="local_only_default_subtitle">Det här avsnittet kräver internet. Stäng av Endast lokalt i inställningarna för att använda det.</string>
-    <string name="local_only_video_mode_subtitle">Videoläget kräver internet. Stäng av Endast lokalt i inställningarna för att titta på videor.</string>
-    <string name="local_only_video_search_subtitle">Videosökning kräver internet. Stäng av Endast lokalt i inställningarna för att söka videor.</string>
-    <string name="local_only_subscriptions_subtitle">Prenumerationer kräver internet. Stäng av Endast lokalt i inställningarna för att se dem.</string>
-    <string name="local_only_video_library_subtitle">Videobiblioteket kräver internet. Stäng av Endast lokalt i inställningarna för att se det.</string>
     <string name="local_only_update_subtitle">Att söka efter uppdateringar kräver internet. Stäng av Endast lokalt i inställningarna för att söka efter uppdateringar.</string>
 
     <string name="crash_dialog_title">Triat kraschade förra gången</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">mix</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Profil</string>
-    <string name="cd_downloads">Nedladdningar</string>
-    <string name="cd_settings">Inställningar</string>
     <string name="cd_play">Spela upp</string>
     <string name="cd_pause">Pausa</string>
     <string name="cd_next">Nästa</string>
     <string name="cd_album_art">Albumomslag</string>
-    <string name="cd_show_all">Visa hela %1$s</string>
 
     <string name="spotlight_quick_picks">Snabbval</string>
     <string name="spotlight_your_playlists">Dina spellistor</string>
     <string name="spotlight_from_your_library">Från ditt bibliotek</string>
     <string name="spotlight_caption_liked">Från låtar du gillar</string>
     <string name="spotlight_caption_recent">Från vad du nyligen lyssnade på</string>
-    <string name="shortcut_liked_songs">Gillade låtar</string>
     <string name="filter_all">Allt</string>
     <string name="filter_liked">Gillade</string>
     <string name="filter_recent">Senaste</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">Slutet av detta spår</string>
     <string name="sleep_timer_turn_off">Stäng av</string>
 
-    <string name="cd_switch_to_music">Växla till musikläge</string>
-    <string name="cd_switch_to_video">Växla till videoläge</string>
     <string name="cd_drag_to_reorder">Dra för att ordna om</string>
     <string name="cd_favorite">Favorit</string>
     <string name="cd_clear_search">Rensa sökningen</string>
@@ -110,23 +95,10 @@
     <string name="name_label">Namn</string>
     <string name="description_optional_label">Beskrivning (valfritt)</string>
 
-    <string name="video_options_watch_later">Spara till senare</string>
-    <string name="video_options_kept_on_device">Sparad på enheten</string>
-    <string name="video_options_save_to_playlist">Spara i spellista</string>
-    <string name="video_options_download">Ladda ned</string>
-    <string name="video_options_go_to_channel">Gå till kanalen</string>
     <string name="video_options_share">Dela</string>
-    <string name="video_options_share_chooser">Dela video</string>
     <string name="video_options_not_interested">Inte intresserad</string>
-    <string name="video_options_dont_recommend_channel">Rekommendera inte kanalen</string>
-    <string name="video_options_dont_recommend_channel_name">Rekommendera inte %1$s</string>
     <string name="cd_back">Tillbaka</string>
-    <string name="search_playlists_placeholder">Sök spellistor</string>
-    <string name="no_playlist_matches">Ingen spellista matchar \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">Inga spellistor ännu. Skapa en och den här videon hamnar direkt i den.</string>
     <string name="cd_saved">Sparad</string>
-    <string name="cd_couldnt_save">Kunde inte spara</string>
-    <string name="cd_in_this_playlist">Finns i den här listan</string>
 
     <string name="settings_section_you">Du</string>
     <string name="settings_section_look_and_feel">Utseende</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">Spelare</string>
     <string name="settings_playback_and_quality">Uppspelning och kvalitet</string>
     <string name="settings_content_and_feeds">Innehåll och flöden</string>
-    <string name="settings_subscriptions">Prenumerationer</string>
     <string name="settings_storage_and_cache">Lagring och cache</string>
     <string name="settings_notifications">Aviseringar</string>
     <string name="settings_local_library">Lokalt bibliotek</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">Rekommenderas på den här enheten</string>
     <string name="settings_advanced_value_other">Skannings- och batterifix</string>
     <string name="settings_version_subtitle">Version %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">Föredra HDR-video</string>
-    <string name="sp_prefer_hdr_sub">Använd HDR endast när skärmen och avkodaren stöder det</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Standard</string>
 
     <string name="profiles_title">Profiler</string>
     <string name="profiles_description">Prenumerationer och dolda rekommendationer sparas per profil. Spellistor, gillade låtar och nedladdningar delas.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">Nedladdningar</string>
     <string name="fab_listening_history">Lyssningshistorik</string>
     <string name="fab_statistics">Statistik</string>
-    <string name="cd_listening_stats">Lyssningsstatistik</string>
     <string name="recently_played">Nyligen spelat</string>
     <string name="liked_songs">Gillade låtar</string>
     <string name="no_artists_yet">Inga artister ännu</string>
@@ -198,20 +164,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube begränsar förfrågningar från det här nätverket. Försök igen om en liten stund.</string>
 
-    <string name="vhc_title">Videostart</string>
-    <string name="vhc_summary">Flödet, målen och deras ordning</string>
-    <string name="vhc_feed_section">Startflöde</string>
-    <string name="vhc_recommendations">Rekommendationer och förslag</string>
-    <string name="vhc_recommendations_sub">Läs in föreslagna videor på Hem</string>
-    <string name="vhc_navigation_section">Mål</string>
-    <string name="vhc_navigation_hint">Dölj alla mål du inte använder. Minst ett förblir synligt.</string>
     <string name="vhc_move_up">Flytta %1$s uppåt</string>
     <string name="vhc_move_down">Flytta %1$s nedåt</string>
-    <string name="vh_recommendations_off">Rekommendationer är avstängda</string>
-    <string name="vh_recommendations_off_sub">Shorts kan fortfarande visas här när det är aktiverat.</string>
-    <string name="vp_resumed_from">Återupptogs från %1$s</string>
-    <string name="vp_play_from_start">Spela från början</string>
-    <string name="section_releases">Utgivningar</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Tryck för att lyssna</string>
@@ -240,16 +194,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">Nya uppladdningar</string>
-    <string name="upload_check_channel_description">Berättar när en kanal du följer på den här enheten laddar upp</string>
-    <string name="upload_notification_title">%1$s: %2$d nya uppladdningar</string>
-    <string name="video_cached_portion_ended">Du nådde slutet av den cachade videon. Anslut igen för att fortsätta.</string>
-    <string name="video_not_cached_offline">Den här delen av videon är inte cachad. Anslut igen för att fortsätta.</string>
     <string name="action_close">Stäng</string>
     <string name="action_check_updates">Sök efter uppdateringar</string>
     <string name="action_got_it">Uppfattat</string>
     <string name="action_like">Gilla</string>
-    <string name="action_refresh">Uppdatera</string>
     <string name="spotlight_new_for_you">Nytt för dig</string>
     <string name="spotlight_new_for_you_caption">Låtar du inte har spelat, från artister du lyssnar på</string>
     <string name="spotlight_discovery_empty">Inget nytt att föreslå ännu</string>
@@ -261,13 +209,11 @@
     <string name="spotlight_artists_for_you">Artister du kanske gillar</string>
     <string name="spotlight_artists_for_you_sub">Inte i ditt bibliotek ännu</string>
     <string name="filter_recommended">För dig</string>
-    <string name="search_channels">Sök kanaler</string>
     <string name="song_options_not_interested">Inte intresserad</string>
     <string name="song_options_not_interested_subtitle">Sluta rekommendera den här låten</string>
     <string name="song_options_block_artist">Rekommendera inte %1$s</string>
     <string name="song_options_speed">Uppspelningshastighet</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Normal hastighet</string>
     <string name="cd_speed_reset">Återställ till normal hastighet</string>
     <string name="np_tile_radio">Radio</string>
     <string name="np_tile_playlist">Spellista</string>
@@ -310,61 +256,11 @@
     <string name="ps_sub_morph">Levande form som andas</string>
     <string name="ps_sub_dial">Roterande ring, snurra för att spola</string>
     <string name="ps_sub_hero">Utfallande omslag, stor spelknapp</string>
-    <string name="video_options_mark_watched">Markera som visad</string>
-    <string name="video_options_mark_unwatched">Markera som ovisad</string>
-    <string name="video_options_remove_from_history">Ta bort från visningshistorik</string>
     <string name="vh_available_offline">Tillgänglig offline</string>
-    <string name="vh_recommended_for_you">Rekommenderat för dig</string>
-    <string name="vh_trending_videos">Trendvideor</string>
-    <string name="vh_from_subscriptions">Från dina prenumerationer</string>
-    <string name="vh_no_subscriptions">Inga prenumerationer ännu</string>
-    <string name="vh_no_subscriptions_sub">Prenumerera på kanaler för att se deras senaste videor på Hem</string>
-    <string name="vh_youre_offline">Du är offline</string>
-    <string name="vh_removed_from_history">Borttagen från visningshistorik</string>
-    <string name="vh_clear_history">Rensa visningshistorik</string>
-    <string name="vh_clear_history_body">Detta tömmer Triats visningshistorik på den här enheten. Det raderar inget från ditt YouTube-konto.</string>
-    <string name="vh_clear_history_confirm">Rensa</string>
-    <string name="vh_no_videos_found">Inga videor hittades</string>
-    <string name="vh_downloaded_hint">Nedladdade videor visas här</string>
-    <string name="vl_watch_history">Visningshistorik</string>
-    <string name="vl_library_sub">Dina spellistor, historik och sparade videor</string>
-    <string name="liked_videos">Gillade videor</string>
-    <string name="history">Historik</string>
-    <string name="view_all">Visa alla</string>
-    <string name="your_playlists">Dina spellistor</string>
-    <string name="action_new">Ny</string>
-    <string name="vl_no_playlists_hint">Inga spellistor ännu. Tryck på Ny för att skapa en.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">Den här enheten</string>
-    <string name="vl_local_playlist_note">Stannar på den här telefonen. Fungerar utloggad och syns inte på youtube.com.</string>
-    <string name="vl_account_playlist_note">Tillagd i ditt YouTube-konto, så den syns överallt där du är inloggad.</string>
-    <string name="rename_playlist">Byt namn på spellista</string>
     <string name="action_rename">Byt namn</string>
     <string name="delete_playlist_q">Ta bort spellista?</string>
     <string name="delete_playlist">Ta bort spellista</string>
-    <string name="vl_login_wall">Logga in för att se dina spellistor, Titta senare och gillade videor</string>
     <string name="vl_no_videos">Inga videor i den här spellistan</string>
-    <string name="sc_unfollow_body">Tar bort den från den här enheten. Ditt YouTube-konto rörs inte.</string>
-    <string name="sc_hide_watched">Dölj visade</string>
-    <string name="sc_no_uploads_match">Inga uppladdningar matchar dessa filter.</string>
-    <string name="sc_none_found">Inga prenumerationer hittades</string>
-    <string name="sc_search_hint">Prova en del av namnet, eller @handtaget.</string>
-    <string name="sc_empty_body">Följ kanaler på den här enheten, eller logga in för att ta med dina YouTube-prenumerationer.</string>
-    <string name="import_subscriptions">Importera prenumerationer</string>
-    <string name="sc_group_empty">Inga nya uppladdningar från den här gruppen.</string>
-    <string name="sc_not_following">Du följer inga kanaler ännu.</string>
-    <string name="sc_no_uploads">Inga nya uppladdningar från dina kanaler.</string>
-    <string name="show_all_channels">Visa alla kanaler</string>
-    <string name="sc_latest_from_channels">Senaste från kanaler du följer</string>
-    <string name="sc_any_time">När som helst</string>
     <string name="sc_today">I dag</string>
     <string name="sc_this_week">Den här veckan</string>
-    <string name="sc_newest_first">Nyast först</string>
-    <string name="sc_oldest_first">Äldst först</string>
-    <string name="sc_on_device">%1$d på den här enheten</string>
-    <string name="sc_channels_on_device">%1$d kanaler - %2$d på den här enheten</string>
-    <string name="sh_playback_failed">Uppspelning misslyckades</string>
-    <string name="subscribed">Prenumererar</string>
-    <string name="subscribe">Prenumerera</string>
-    <string name="like">Gilla</string>
 </resources>

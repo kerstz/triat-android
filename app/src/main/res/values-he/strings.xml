@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">מתנגן כעת</string>
-    <string name="video_playback_channel_name">הפעלת וידאו</string>
 
     <string name="undo">ביטול</string>
     <string name="action_cancel">ביטול</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">נגן הכול</string>
     <string name="action_show_more">הצג עוד</string>
     <string name="action_try_again">נסה שוב</string>
-    <string name="action_open_settings">פתח הגדרות</string>
     <string name="action_clear_all">נקה הכול</string>
-    <string name="action_new_playlist">רשימת השמעה חדשה</string>
     <string name="action_grant_permission">מתן הרשאה</string>
     <string name="unknown_artist">אמן לא מוכר</string>
     <string name="untitled_song">שיר ללא כותרת</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">ספרייה</string>
 
     <string name="local_only_title">מצב מקומי בלבד מופעל</string>
-    <string name="local_only_default_subtitle">האזור הזה דורש אינטרנט. כבה מקומי בלבד בהגדרות כדי להשתמש בו.</string>
-    <string name="local_only_video_mode_subtitle">מצב הווידאו דורש אינטרנט. כבה מקומי בלבד בהגדרות כדי לצפות בסרטונים.</string>
-    <string name="local_only_video_search_subtitle">חיפוש סרטונים דורש אינטרנט. כבה מקומי בלבד בהגדרות כדי לחפש סרטונים.</string>
-    <string name="local_only_subscriptions_subtitle">המינויים דורשים אינטרנט. כבה מקומי בלבד בהגדרות כדי לראות אותם.</string>
-    <string name="local_only_video_library_subtitle">ספריית הווידאו דורשת אינטרנט. כבה מקומי בלבד בהגדרות כדי לראות אותה.</string>
     <string name="local_only_update_subtitle">בדיקת עדכונים דורשת אינטרנט. כבה מקומי בלבד בהגדרות כדי לבדוק עדכונים.</string>
 
     <string name="crash_dialog_title">Triat קרס בפעם הקודמת</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">שלך</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">פרופיל</string>
-    <string name="cd_downloads">הורדות</string>
-    <string name="cd_settings">הגדרות</string>
     <string name="cd_play">נגן</string>
     <string name="cd_pause">השהה</string>
     <string name="cd_next">הבא</string>
     <string name="cd_album_art">עטיפת אלבום</string>
-    <string name="cd_show_all">הצג הכול: %1$s</string>
 
     <string name="spotlight_quick_picks">בחירות מהירות</string>
     <string name="spotlight_your_playlists">רשימות ההשמעה שלך</string>
     <string name="spotlight_from_your_library">מהספרייה שלך</string>
     <string name="spotlight_caption_liked">משירים שאהבת</string>
     <string name="spotlight_caption_recent">ממה שהאזנת לו לאחרונה</string>
-    <string name="shortcut_liked_songs">שירים שאהבת</string>
     <string name="filter_all">הכול</string>
     <string name="filter_liked">אהבתי</string>
     <string name="filter_recent">אחרונים</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">סוף הרצועה הזאת</string>
     <string name="sleep_timer_turn_off">כיבוי</string>
 
-    <string name="cd_switch_to_music">החלף למצב מוזיקה</string>
-    <string name="cd_switch_to_video">החלף למצב וידאו</string>
     <string name="cd_drag_to_reorder">גרור כדי לסדר מחדש</string>
     <string name="cd_favorite">מועדף</string>
     <string name="cd_clear_search">נקה חיפוש</string>
@@ -110,23 +95,10 @@
     <string name="name_label">שם</string>
     <string name="description_optional_label">תיאור (אופציונלי)</string>
 
-    <string name="video_options_watch_later">צפה מאוחר יותר</string>
-    <string name="video_options_kept_on_device">נשמר במכשיר הזה</string>
-    <string name="video_options_save_to_playlist">שמור ברשימת השמעה</string>
-    <string name="video_options_download">הורד</string>
-    <string name="video_options_go_to_channel">עבור לערוץ</string>
     <string name="video_options_share">שתף</string>
-    <string name="video_options_share_chooser">שיתוף סרטון</string>
     <string name="video_options_not_interested">לא מעוניין</string>
-    <string name="video_options_dont_recommend_channel">אל תמליץ על הערוץ הזה</string>
-    <string name="video_options_dont_recommend_channel_name">אל תמליץ על %1$s</string>
     <string name="cd_back">חזרה</string>
-    <string name="search_playlists_placeholder">חיפוש רשימות השמעה</string>
-    <string name="no_playlist_matches">אין רשימות השמעה שתואמות ל \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">עדיין אין רשימות השמעה. צור אחת והסרטון הזה ייכנס אליה ישירות.</string>
     <string name="cd_saved">נשמר</string>
-    <string name="cd_couldnt_save">לא ניתן היה לשמור</string>
-    <string name="cd_in_this_playlist">כבר ברשימה הזאת</string>
 
     <string name="settings_section_you">אתה</string>
     <string name="settings_section_look_and_feel">מראה ותחושה</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">נגן</string>
     <string name="settings_playback_and_quality">השמעה ואיכות</string>
     <string name="settings_content_and_feeds">תוכן ופידים</string>
-    <string name="settings_subscriptions">מינויים</string>
     <string name="settings_storage_and_cache">אחסון ומטמון</string>
     <string name="settings_notifications">התראות</string>
     <string name="settings_local_library">ספרייה מקומית</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">מומלץ במכשיר הזה</string>
     <string name="settings_advanced_value_other">תיקוני סריקה וסוללה</string>
     <string name="settings_version_subtitle">גרסה %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">העדפת וידאו HDR</string>
-    <string name="sp_prefer_hdr_sub">שימוש ב-HDR רק כשהצג והמפענח תומכים בו</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">רגיל</string>
 
     <string name="profiles_title">פרופילים</string>
     <string name="profiles_description">מינויים והמלצות מוסתרות נשמרים לכל פרופיל בנפרד. רשימות השמעה, שירים שאהבת והורדות משותפים.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">הורדות</string>
     <string name="fab_listening_history">היסטוריית האזנה</string>
     <string name="fab_statistics">סטטיסטיקות</string>
-    <string name="cd_listening_stats">סטטיסטיקות האזנה</string>
     <string name="recently_played">הושמעו לאחרונה</string>
     <string name="liked_songs">שירים שאהבת</string>
     <string name="no_artists_yet">עדיין אין אמנים</string>
@@ -203,20 +169,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube מגביל בקשות מהרשת הזו. נסה שוב בעוד רגע.</string>
 
-    <string name="vhc_title">בית הווידאו</string>
-    <string name="vhc_summary">הפיד, היעדים והסדר שלהם</string>
-    <string name="vhc_feed_section">פיד הבית</string>
-    <string name="vhc_recommendations">המלצות והצעות</string>
-    <string name="vhc_recommendations_sub">טען סרטונים מומלצים במסך הבית</string>
-    <string name="vhc_navigation_section">יעדים</string>
-    <string name="vhc_navigation_hint">הסתר כל יעד שאינך משתמש בו. לפחות יעד אחד יישאר גלוי.</string>
     <string name="vhc_move_up">הזז את %1$s למעלה</string>
     <string name="vhc_move_down">הזז את %1$s למטה</string>
-    <string name="vh_recommendations_off">ההמלצות כבויות</string>
-    <string name="vh_recommendations_off_sub">Shorts עדיין עשוי להופיע כאן כשהאפשרות מופעלת.</string>
-    <string name="vp_resumed_from">התחדש מ-%1$s</string>
-    <string name="vp_play_from_start">הפעל מההתחלה</string>
-    <string name="section_releases">הוצאות</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">הקש כדי להאזין</string>
@@ -245,16 +199,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">העלאות חדשות</string>
-    <string name="upload_check_channel_description">מודיע לך כשערוץ שאתה עוקב אחריו במכשיר הזה מעלה סרטון</string>
-    <string name="upload_notification_title">%1$s: %2$d העלאות חדשות</string>
-    <string name="video_cached_portion_ended">הגעת לסוף הסרטון השמור. התחבר מחדש כדי להמשיך.</string>
-    <string name="video_not_cached_offline">החלק הזה של הסרטון לא שמור. התחבר מחדש כדי להמשיך.</string>
     <string name="action_close">סגור</string>
     <string name="action_check_updates">בדוק עדכונים</string>
     <string name="action_got_it">הבנתי</string>
     <string name="action_like">אהבתי</string>
-    <string name="action_refresh">רענן</string>
     <string name="spotlight_new_for_you">חדש בשבילך</string>
     <string name="spotlight_new_for_you_caption">שירים שלא ניגנת, מאמנים שאתה כן מנגן</string>
     <string name="spotlight_discovery_empty">עדיין אין הצעות חדשות</string>
@@ -266,13 +214,11 @@
     <string name="spotlight_artists_for_you">אמנים שאולי תאהב</string>
     <string name="spotlight_artists_for_you_sub">עדיין לא בספרייה שלך</string>
     <string name="filter_recommended">בשבילך</string>
-    <string name="search_channels">חיפוש ערוצים</string>
     <string name="song_options_not_interested">לא מעוניין</string>
     <string name="song_options_not_interested_subtitle">הפסק להמליץ על השיר הזה</string>
     <string name="song_options_block_artist">אל תמליץ על %1$s</string>
     <string name="song_options_speed">מהירות ניגון</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">מהירות רגילה</string>
     <string name="cd_speed_reset">אפס למהירות רגילה</string>
     <string name="np_tile_radio">רדיו</string>
     <string name="np_tile_playlist">פלייליסט</string>
@@ -315,61 +261,11 @@
     <string name="ps_sub_morph">צורה חיה שנושמת</string>
     <string name="ps_sub_dial">טבעת סיבובית, סובב כדי לדלג</string>
     <string name="ps_sub_hero">עטיפה על כל המסך, כפתור ניגון גדול</string>
-    <string name="video_options_mark_watched">סמן כנצפה</string>
-    <string name="video_options_mark_unwatched">סמן כלא נצפה</string>
-    <string name="video_options_remove_from_history">הסר מהיסטוריית הצפייה</string>
     <string name="vh_available_offline">זמין ללא חיבור</string>
-    <string name="vh_recommended_for_you">מומלצים בשבילך</string>
-    <string name="vh_trending_videos">סרטונים טרנדיים</string>
-    <string name="vh_from_subscriptions">מהמינויים שלך</string>
-    <string name="vh_no_subscriptions">עדיין אין מינויים</string>
-    <string name="vh_no_subscriptions_sub">הירשם לערוצים כדי לראות את הסרטונים האחרונים שלהם בבית</string>
-    <string name="vh_youre_offline">אתה לא מחובר</string>
-    <string name="vh_removed_from_history">הוסר מהיסטוריית הצפייה</string>
-    <string name="vh_clear_history">נקה היסטוריית צפייה</string>
-    <string name="vh_clear_history_body">פעולה זו מרוקנת את היסטוריית הצפייה של Triat במכשיר הזה. היא לא מוחקת שום דבר מחשבון ה-YouTube שלך.</string>
-    <string name="vh_clear_history_confirm">נקה</string>
-    <string name="vh_no_videos_found">לא נמצאו סרטונים</string>
-    <string name="vh_downloaded_hint">סרטונים שהורדת יופיעו כאן</string>
-    <string name="vl_watch_history">היסטוריית צפייה</string>
-    <string name="vl_library_sub">רשימות ההשמעה, ההיסטוריה והסרטונים השמורים שלך</string>
-    <string name="liked_videos">סרטונים שאהבת</string>
-    <string name="history">היסטוריה</string>
-    <string name="view_all">הצג הכול</string>
-    <string name="your_playlists">רשימות ההשמעה שלך</string>
-    <string name="action_new">חדש</string>
-    <string name="vl_no_playlists_hint">עדיין אין רשימות השמעה. הקש על חדש כדי ליצור אחת.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">המכשיר הזה</string>
-    <string name="vl_local_playlist_note">נשאר בטלפון הזה. עובד גם בלי חיבור, ולא גלוי באתר youtube.com.</string>
-    <string name="vl_account_playlist_note">מתווסף לחשבון ה-YouTube שלך, אז מופיע בכל מקום שבו אתה מחובר.</string>
-    <string name="rename_playlist">שנה שם רשימת השמעה</string>
     <string name="action_rename">שנה שם</string>
     <string name="delete_playlist_q">למחוק את רשימת ההשמעה?</string>
     <string name="delete_playlist">מחק רשימת השמעה</string>
-    <string name="vl_login_wall">התחבר כדי לראות את רשימות ההשמעה, הצפייה מאוחר יותר והסרטונים שאהבת</string>
     <string name="vl_no_videos">אין סרטונים ברשימה הזאת</string>
-    <string name="sc_unfollow_body">מסיר אותו מהמכשיר הזה. חשבון ה-YouTube שלך לא נפגע.</string>
-    <string name="sc_hide_watched">הסתר נצפים</string>
-    <string name="sc_no_uploads_match">אין העלאות שתואמות למסננים האלה.</string>
-    <string name="sc_none_found">לא נמצאו מינויים</string>
-    <string name="sc_search_hint">נסה חלק מהשם, או את ה-@handle.</string>
-    <string name="sc_empty_body">עקוב אחרי ערוצים במכשיר הזה, או התחבר כדי להביא את מינויי ה-YouTube שלך.</string>
-    <string name="import_subscriptions">ייבא מינויים</string>
-    <string name="sc_group_empty">אין העלאות אחרונות מהקבוצה הזאת.</string>
-    <string name="sc_not_following">אתה עדיין לא עוקב אחרי אף ערוץ.</string>
-    <string name="sc_no_uploads">אין העלאות אחרונות מהערוצים שלך.</string>
-    <string name="show_all_channels">הצג את כל הערוצים</string>
-    <string name="sc_latest_from_channels">האחרונים מערוצים שאתה עוקב אחריהם</string>
-    <string name="sc_any_time">כל זמן</string>
     <string name="sc_today">היום</string>
     <string name="sc_this_week">השבוע</string>
-    <string name="sc_newest_first">החדש ביותר תחילה</string>
-    <string name="sc_oldest_first">הישן ביותר תחילה</string>
-    <string name="sc_on_device">%1$d במכשיר הזה</string>
-    <string name="sc_channels_on_device">%1$d ערוצים - %2$d במכשיר הזה</string>
-    <string name="sh_playback_failed">הניגון נכשל</string>
-    <string name="subscribed">רשום</string>
-    <string name="subscribe">הירשם</string>
-    <string name="like">אהבתי</string>
 </resources>

@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">قيد التشغيل الآن</string>
-    <string name="video_playback_channel_name">تشغيل الفيديو</string>
 
     <string name="undo">تراجع</string>
     <string name="action_cancel">إلغاء</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">تشغيل الكل</string>
     <string name="action_show_more">عرض المزيد</string>
     <string name="action_try_again">حاول مجددًا</string>
-    <string name="action_open_settings">فتح الإعدادات</string>
     <string name="action_clear_all">مسح الكل</string>
-    <string name="action_new_playlist">قائمة تشغيل جديدة</string>
     <string name="action_grant_permission">منح الإذن</string>
     <string name="unknown_artist">فنان غير معروف</string>
     <string name="untitled_song">أغنية بدون عنوان</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">المكتبة</string>
 
     <string name="local_only_title">وضع «محلي فقط» مفعّل</string>
-    <string name="local_only_default_subtitle">هذا القسم يحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات لاستخدامه.</string>
-    <string name="local_only_video_mode_subtitle">وضع الفيديو يحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات لمشاهدة الفيديوهات.</string>
-    <string name="local_only_video_search_subtitle">البحث عن الفيديوهات يحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات للبحث عن الفيديوهات.</string>
-    <string name="local_only_subscriptions_subtitle">الاشتراكات تحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات لمشاهدتها.</string>
-    <string name="local_only_video_library_subtitle">مكتبة الفيديو تحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات لمشاهدتها.</string>
     <string name="local_only_update_subtitle">التحقق من التحديثات يحتاج إلى الإنترنت. أوقف وضع «محلي فقط» من الإعدادات للتحقق من التحديثات.</string>
 
     <string name="crash_dialog_title">تعطّل Triat في المرة الأخيرة</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">الخاص</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s، %2$s</string>
-    <string name="cd_profile">الملف الشخصي</string>
-    <string name="cd_downloads">التنزيلات</string>
-    <string name="cd_settings">الإعدادات</string>
     <string name="cd_play">تشغيل</string>
     <string name="cd_pause">إيقاف مؤقت</string>
     <string name="cd_next">التالي</string>
     <string name="cd_album_art">صورة الألبوم</string>
-    <string name="cd_show_all">عرض الكل: %1$s</string>
 
     <string name="spotlight_quick_picks">اختيارات سريعة</string>
     <string name="spotlight_your_playlists">قوائم التشغيل الخاصة بك</string>
     <string name="spotlight_from_your_library">من مكتبتك</string>
     <string name="spotlight_caption_liked">من الأغاني التي أعجبتك</string>
     <string name="spotlight_caption_recent">من ما استمعت إليه مؤخرًا</string>
-    <string name="shortcut_liked_songs">الأغاني المفضلة</string>
     <string name="filter_all">الكل</string>
     <string name="filter_liked">المفضلة</string>
     <string name="filter_recent">الحديثة</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">نهاية هذا المقطع</string>
     <string name="sleep_timer_turn_off">إيقاف</string>
 
-    <string name="cd_switch_to_music">التبديل إلى وضع الموسيقى</string>
-    <string name="cd_switch_to_video">التبديل إلى وضع الفيديو</string>
     <string name="cd_drag_to_reorder">اسحب لإعادة الترتيب</string>
     <string name="cd_favorite">المفضلة</string>
     <string name="cd_clear_search">مسح البحث</string>
@@ -110,23 +95,10 @@
     <string name="name_label">الاسم</string>
     <string name="description_optional_label">الوصف (اختياري)</string>
 
-    <string name="video_options_watch_later">المشاهدة لاحقًا</string>
-    <string name="video_options_kept_on_device">محفوظ على هذا الجهاز</string>
-    <string name="video_options_save_to_playlist">الحفظ في قائمة تشغيل</string>
-    <string name="video_options_download">تنزيل</string>
-    <string name="video_options_go_to_channel">الانتقال إلى القناة</string>
     <string name="video_options_share">مشاركة</string>
-    <string name="video_options_share_chooser">مشاركة الفيديو</string>
     <string name="video_options_not_interested">غير مهتم</string>
-    <string name="video_options_dont_recommend_channel">عدم اقتراح هذه القناة</string>
-    <string name="video_options_dont_recommend_channel_name">عدم اقتراح %1$s</string>
     <string name="cd_back">رجوع</string>
-    <string name="search_playlists_placeholder">البحث في قوائم التشغيل</string>
-    <string name="no_playlist_matches">لا توجد قوائم تشغيل تطابق \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">لا توجد قوائم تشغيل بعد. أنشئ واحدة وسيذهب هذا الفيديو إليها مباشرة.</string>
     <string name="cd_saved">تم الحفظ</string>
-    <string name="cd_couldnt_save">تعذّر الحفظ</string>
-    <string name="cd_in_this_playlist">في قائمة التشغيل هذه</string>
 
     <string name="settings_section_you">حسابك</string>
     <string name="settings_section_look_and_feel">المظهر</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">المشغل</string>
     <string name="settings_playback_and_quality">التشغيل والجودة</string>
     <string name="settings_content_and_feeds">المحتوى والخلاصات</string>
-    <string name="settings_subscriptions">الاشتراكات</string>
     <string name="settings_storage_and_cache">التخزين وذاكرة التخزين المؤقت</string>
     <string name="settings_notifications">الإشعارات</string>
     <string name="settings_local_library">المكتبة المحلية</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">موصى به على هذا الجهاز</string>
     <string name="settings_advanced_value_other">إصلاحات المسح والبطارية</string>
     <string name="settings_version_subtitle">الإصدار %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">تفضيل فيديو HDR</string>
-    <string name="sp_prefer_hdr_sub">استخدم HDR فقط عندما تدعمه الشاشة ووحدة فك الترميز</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">قياسي</string>
 
     <string name="profiles_title">الملفات الشخصية</string>
     <string name="profiles_description">تُحفظ الاشتراكات والتوصيات المخفية لكل ملف شخصي. قوائم التشغيل والأغاني المفضلة والتنزيلات مشتركة.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">التنزيلات</string>
     <string name="fab_listening_history">سجل الاستماع</string>
     <string name="fab_statistics">الإحصاءات</string>
-    <string name="cd_listening_stats">إحصاءات الاستماع</string>
     <string name="recently_played">شوهدت حديثًا</string>
     <string name="liked_songs">الأغاني المفضلة</string>
     <string name="no_artists_yet">لا يوجد فنانون بعد</string>
@@ -210,20 +176,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى بعد قليل.</string>
 
-    <string name="vhc_title">الرئيسية للفيديو</string>
-    <string name="vhc_summary">الخلاصة والوجهات وترتيبها</string>
-    <string name="vhc_feed_section">خلاصة الرئيسية</string>
-    <string name="vhc_recommendations">التوصيات والاقتراحات</string>
-    <string name="vhc_recommendations_sub">تحميل الفيديوهات المقترحة في الرئيسية</string>
-    <string name="vhc_navigation_section">الوجهات</string>
-    <string name="vhc_navigation_hint">أخفِ أي وجهة لا تستخدمها. تبقى وجهة واحدة على الأقل ظاهرة.</string>
     <string name="vhc_move_up">نقل %1$s للأعلى</string>
     <string name="vhc_move_down">نقل %1$s للأسفل</string>
-    <string name="vh_recommendations_off">التوصيات متوقفة</string>
-    <string name="vh_recommendations_off_sub">يمكن أن تظهر Shorts هنا عند تفعيلها.</string>
-    <string name="vp_resumed_from">استؤنف من %1$s</string>
-    <string name="vp_play_from_start">تشغيل من البداية</string>
-    <string name="section_releases">الإصدارات</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">انقر للاستماع</string>
@@ -252,16 +206,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">عمليات الرفع الجديدة</string>
-    <string name="upload_check_channel_description">يخبرك عندما ترفع قناة تتابعها على هذا الجهاز محتوى جديدًا</string>
-    <string name="upload_notification_title">%1$s: %2$d من عمليات الرفع الجديدة</string>
-    <string name="video_cached_portion_ended">وصلت إلى نهاية الجزء المحفوظ من الفيديو. أعد الاتصال للمتابعة.</string>
-    <string name="video_not_cached_offline">هذا الجزء من الفيديو غير محفوظ. أعد الاتصال للمتابعة.</string>
     <string name="action_close">إغلاق</string>
     <string name="action_check_updates">التحقق من التحديثات</string>
     <string name="action_got_it">فهمت</string>
     <string name="action_like">أعجبني</string>
-    <string name="action_refresh">تحديث</string>
     <string name="spotlight_new_for_you">جديد لك</string>
     <string name="spotlight_new_for_you_caption">أغانٍ لم تشغّلها من فنانين تستمع إليهم</string>
     <string name="spotlight_discovery_empty">لا جديد لاقتراحه بعد</string>
@@ -273,13 +221,11 @@
     <string name="spotlight_artists_for_you">فنانون قد يعجبونك</string>
     <string name="spotlight_artists_for_you_sub">ليسوا في مكتبتك بعد</string>
     <string name="filter_recommended">لك</string>
-    <string name="search_channels">البحث عن القنوات</string>
     <string name="song_options_not_interested">غير مهتم</string>
     <string name="song_options_not_interested_subtitle">إيقاف اقتراح هذه الأغنية</string>
     <string name="song_options_block_artist">عدم اقتراح %1$s</string>
     <string name="song_options_speed">سرعة التشغيل</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">السرعة العادية</string>
     <string name="cd_speed_reset">إعادة السرعة إلى العادية</string>
     <string name="np_tile_radio">راديو</string>
     <string name="np_tile_playlist">قائمة</string>
@@ -322,61 +268,11 @@
     <string name="ps_sub_morph">شكل حي يتنفس</string>
     <string name="ps_sub_dial">حلقة دوارة، أدرها للتمرير</string>
     <string name="ps_sub_hero">صورة بملء الشاشة وزر تشغيل كبير</string>
-    <string name="video_options_mark_watched">وضع علامة «تمت مشاهدته»</string>
-    <string name="video_options_mark_unwatched">وضع علامة «لم تتم مشاهدته»</string>
-    <string name="video_options_remove_from_history">إزالة من سجل المشاهدة</string>
     <string name="vh_available_offline">متاح بلا إنترنت</string>
-    <string name="vh_recommended_for_you">مقترح لك</string>
-    <string name="vh_trending_videos">فيديوهات رائجة</string>
-    <string name="vh_from_subscriptions">من اشتراكاتك</string>
-    <string name="vh_no_subscriptions">لا توجد اشتراكات بعد</string>
-    <string name="vh_no_subscriptions_sub">اشترك في القنوات لرؤية أحدث فيديوهاتها في الرئيسية</string>
-    <string name="vh_youre_offline">أنت بلا اتصال</string>
-    <string name="vh_removed_from_history">تمت الإزالة من سجل المشاهدة</string>
-    <string name="vh_clear_history">مسح سجل المشاهدة</string>
-    <string name="vh_clear_history_body">يؤدي هذا إلى إفراغ سجل المشاهدة في Triat على هذا الجهاز دون حذف أي شيء من حسابك في YouTube.</string>
-    <string name="vh_clear_history_confirm">مسح</string>
-    <string name="vh_no_videos_found">لم يتم العثور على فيديوهات</string>
-    <string name="vh_downloaded_hint">ستظهر الفيديوهات المنزلة هنا</string>
-    <string name="vl_watch_history">سجل المشاهدة</string>
-    <string name="vl_library_sub">قوائم التشغيل والسجل والفيديوهات المحفوظة الخاصة بك</string>
-    <string name="liked_videos">الفيديوهات المفضلة</string>
-    <string name="history">السجل</string>
-    <string name="view_all">عرض الكل</string>
-    <string name="your_playlists">قوائم التشغيل الخاصة بك</string>
-    <string name="action_new">جديد</string>
-    <string name="vl_no_playlists_hint">لا توجد قوائم تشغيل بعد. انقر جديد لإنشاء واحدة.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">هذا الجهاز</string>
-    <string name="vl_local_playlist_note">تبقى على هذا الهاتف. تعمل دون تسجيل الدخول ولا تظهر على youtube.com.</string>
-    <string name="vl_account_playlist_note">تُضاف إلى حسابك في YouTube لتظهر في كل مكان سجّلت الدخول فيه.</string>
-    <string name="rename_playlist">إعادة تسمية قائمة التشغيل</string>
     <string name="action_rename">إعادة تسمية</string>
     <string name="delete_playlist_q">حذف قائمة التشغيل؟</string>
     <string name="delete_playlist">حذف قائمة التشغيل</string>
-    <string name="vl_login_wall">سجّل الدخول لرؤية قوائم التشغيل والمشاهدة لاحقًا والفيديوهات المفضلة</string>
     <string name="vl_no_videos">لا توجد فيديوهات في قائمة التشغيل هذه</string>
-    <string name="sc_unfollow_body">يزيلها من هذا الجهاز دون المساس بحسابك في YouTube.</string>
-    <string name="sc_hide_watched">إخفاء ما تمت مشاهدته</string>
-    <string name="sc_no_uploads_match">لا توجد عمليات رفع تطابق هذه المرشحات.</string>
-    <string name="sc_none_found">لم يتم العثور على اشتراكات</string>
-    <string name="sc_search_hint">جرّب جزءًا من الاسم أو @handle.</string>
-    <string name="sc_empty_body">تابع القنوات على هذا الجهاز أو سجّل الدخول لجلب اشتراكاتك في YouTube إلى هنا.</string>
-    <string name="import_subscriptions">استيراد الاشتراكات</string>
-    <string name="sc_group_empty">لا توجد عمليات رفع حديثة من هذه المجموعة.</string>
-    <string name="sc_not_following">أنت لا تتابع أي قنوات بعد.</string>
-    <string name="sc_no_uploads">لا توجد عمليات رفع حديثة من قنواتك.</string>
-    <string name="show_all_channels">عرض كل القنوات</string>
-    <string name="sc_latest_from_channels">الأحدث من القنوات التي تتابعها</string>
-    <string name="sc_any_time">أي وقت</string>
     <string name="sc_today">اليوم</string>
     <string name="sc_this_week">هذا الأسبوع</string>
-    <string name="sc_newest_first">الأحدث أولًا</string>
-    <string name="sc_oldest_first">الأقدم أولًا</string>
-    <string name="sc_on_device">%1$d على هذا الجهاز</string>
-    <string name="sc_channels_on_device">%1$d قناة - %2$d على هذا الجهاز</string>
-    <string name="sh_playback_failed">تعذّر التشغيل</string>
-    <string name="subscribed">مشترك</string>
-    <string name="subscribe">اشترك</string>
-    <string name="like">أعجبني</string>
 </resources>

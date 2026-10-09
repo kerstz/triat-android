@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">Reproduciendo</string>
-    <string name="video_playback_channel_name">Reproducción de vídeo</string>
 
     <string name="undo">Deshacer</string>
     <string name="action_cancel">Cancelar</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">Reproducir todo</string>
     <string name="action_show_more">Mostrar más</string>
     <string name="action_try_again">Inténtalo de nuevo</string>
-    <string name="action_open_settings">Abrir ajustes</string>
     <string name="action_clear_all">Borrar todo</string>
-    <string name="action_new_playlist">Nueva playlist</string>
     <string name="action_grant_permission">Conceder permiso</string>
     <string name="unknown_artist">Artista desconocido</string>
     <string name="untitled_song">Canción sin título</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">Biblioteca</string>
 
     <string name="local_only_title">El modo Solo local está activado</string>
-    <string name="local_only_default_subtitle">Esta sección necesita Internet. Desactiva el modo Solo local en Ajustes para usarla.</string>
-    <string name="local_only_video_mode_subtitle">El modo vídeo necesita Internet. Desactiva el modo Solo local en Ajustes para ver vídeos.</string>
-    <string name="local_only_video_search_subtitle">La búsqueda de vídeos necesita Internet. Desactiva el modo Solo local en Ajustes para buscar vídeos.</string>
-    <string name="local_only_subscriptions_subtitle">Las suscripciones necesitan Internet. Desactiva el modo Solo local en Ajustes para verlas.</string>
-    <string name="local_only_video_library_subtitle">La videoteca necesita Internet. Desactiva el modo Solo local en Ajustes para verla.</string>
     <string name="local_only_update_subtitle">La búsqueda de actualizaciones necesita Internet. Desactiva el modo Solo local en Ajustes para buscar actualizaciones.</string>
 
     <string name="crash_dialog_title">Triat se cerró inesperadamente la última vez</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">mezcla</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Perfil</string>
-    <string name="cd_downloads">Descargas</string>
-    <string name="cd_settings">Ajustes</string>
     <string name="cd_play">Reproducir</string>
     <string name="cd_pause">Pausar</string>
     <string name="cd_next">Siguiente</string>
     <string name="cd_album_art">Portada del álbum</string>
-    <string name="cd_show_all">Mostrar todo: %1$s</string>
 
     <string name="spotlight_quick_picks">Selecciones rápidas</string>
     <string name="spotlight_your_playlists">Tus playlists</string>
     <string name="spotlight_from_your_library">De tu biblioteca</string>
     <string name="spotlight_caption_liked">De canciones que te gustaron</string>
     <string name="spotlight_caption_recent">De lo que escuchaste últimamente</string>
-    <string name="shortcut_liked_songs">Canciones que te gustan</string>
     <string name="filter_all">Todo</string>
     <string name="filter_liked">Me gusta</string>
     <string name="filter_recent">Recientes</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">Al final de esta pista</string>
     <string name="sleep_timer_turn_off">Desactivar</string>
 
-    <string name="cd_switch_to_music">Cambiar al modo música</string>
-    <string name="cd_switch_to_video">Cambiar al modo vídeo</string>
     <string name="cd_drag_to_reorder">Arrastrar para reordenar</string>
     <string name="cd_favorite">Favorito</string>
     <string name="cd_clear_search">Limpar búsqueda</string>
@@ -110,23 +95,10 @@
     <string name="name_label">Nombre</string>
     <string name="description_optional_label">Descripción (opcional)</string>
 
-    <string name="video_options_watch_later">Ver más tarde</string>
-    <string name="video_options_kept_on_device">Guardado en este dispositivo</string>
-    <string name="video_options_save_to_playlist">Guardar en playlist</string>
-    <string name="video_options_download">Descargar</string>
-    <string name="video_options_go_to_channel">Ir al canal</string>
     <string name="video_options_share">Compartir</string>
-    <string name="video_options_share_chooser">Compartir vídeo</string>
     <string name="video_options_not_interested">No me interesa</string>
-    <string name="video_options_dont_recommend_channel">No recomendar este canal</string>
-    <string name="video_options_dont_recommend_channel_name">No recomendar %1$s</string>
     <string name="cd_back">Atrás</string>
-    <string name="search_playlists_placeholder">Buscar playlists</string>
-    <string name="no_playlist_matches">Ninguna playlist coincide con \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">Aún no hay playlists. Crea una y este vídeo irá directo a ella.</string>
     <string name="cd_saved">Guardado</string>
-    <string name="cd_couldnt_save">No se pudo guardar</string>
-    <string name="cd_in_this_playlist">Está en esta playlist</string>
 
     <string name="settings_section_you">Tú</string>
     <string name="settings_section_look_and_feel">Aspecto</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">Reproductor</string>
     <string name="settings_playback_and_quality">Reproducción y calidad</string>
     <string name="settings_content_and_feeds">Contenido y feeds</string>
-    <string name="settings_subscriptions">Suscripciones</string>
     <string name="settings_storage_and_cache">Almacenamiento y caché</string>
     <string name="settings_notifications">Notificaciones</string>
     <string name="settings_local_library">Biblioteca local</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">Recomendado en este dispositivo</string>
     <string name="settings_advanced_value_other">Correcciones de escaneo y batería</string>
     <string name="settings_version_subtitle">Versión %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">Preferir vídeos HDR</string>
-    <string name="sp_prefer_hdr_sub">Usar HDR solo cuando la pantalla y el decodificador sean compatibles</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Estándar</string>
 
     <string name="profiles_title">Perfiles</string>
     <string name="profiles_description">Las suscripciones y las recomendaciones ocultas se guardan por perfil. Las playlists, las canciones que te gustan y las descargas son compartidas.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">Descargas</string>
     <string name="fab_listening_history">Historial de reproducción</string>
     <string name="fab_statistics">Estadísticas</string>
-    <string name="cd_listening_stats">Estadísticas de escucha</string>
     <string name="recently_played">Reproducido recientemente</string>
     <string name="liked_songs">Canciones que te gustan</string>
     <string name="no_artists_yet">Aún no hay artistas</string>
@@ -200,20 +166,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube está limitando las solicitudes desde esta red. Inténtalo de nuevo en un momento.</string>
 
-    <string name="vhc_title">Inicio de vídeo</string>
-    <string name="vhc_summary">El feed, los destinos y su orden</string>
-    <string name="vhc_feed_section">Feed de inicio</string>
-    <string name="vhc_recommendations">Recomendaciones y sugerencias</string>
-    <string name="vhc_recommendations_sub">Cargar vídeos sugeridos en Inicio</string>
-    <string name="vhc_navigation_section">Destinos</string>
-    <string name="vhc_navigation_hint">Oculta cualquier destino que no uses. Al menos uno permanece visible.</string>
     <string name="vhc_move_up">Mover %1$s hacia arriba</string>
     <string name="vhc_move_down">Mover %1$s hacia abajo</string>
-    <string name="vh_recommendations_off">Las recomendaciones están desactivadas</string>
-    <string name="vh_recommendations_off_sub">Los Shorts aún pueden aparecer aquí si están activados.</string>
-    <string name="vp_resumed_from">Reanudado desde %1$s</string>
-    <string name="vp_play_from_start">Reproducir desde el inicio</string>
-    <string name="section_releases">Lanzamientos</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Toca para escuchar</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -241,16 +195,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">Nuevas subidas</string>
-    <string name="upload_check_channel_description">Te avisa cuando un canal que sigues en este dispositivo sube contenido</string>
-    <string name="upload_notification_title">%1$s: %2$d subidas nuevas</string>
-    <string name="video_cached_portion_ended">Llegaste al final del vídeo almacenado. Vuelve a conectarte para continuar.</string>
-    <string name="video_not_cached_offline">Esta parte del vídeo no está almacenada. Vuelve a conectarte para continuar.</string>
     <string name="action_close">Cerrar</string>
     <string name="action_check_updates">Buscar actualizaciones</string>
     <string name="action_got_it">Entendido</string>
     <string name="action_like">Me gusta</string>
-    <string name="action_refresh">Actualizar</string>
     <string name="spotlight_new_for_you">Nuevo para ti</string>
     <string name="spotlight_new_for_you_caption">Canciones que aún no has reproducido, de artistas que sí escuchas</string>
     <string name="spotlight_discovery_empty">Nada nuevo que sugerir todavía</string>
@@ -262,13 +210,11 @@
     <string name="spotlight_artists_for_you">Artistas que te pueden gustar</string>
     <string name="spotlight_artists_for_you_sub">Aún no están en tu biblioteca</string>
     <string name="filter_recommended">Para ti</string>
-    <string name="search_channels">Buscar canales</string>
     <string name="song_options_not_interested">No me interesa</string>
     <string name="song_options_not_interested_subtitle">Dejar de recomendar esta canción</string>
     <string name="song_options_block_artist">No recomendar %1$s</string>
     <string name="song_options_speed">Velocidad de reproducción</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Velocidad normal</string>
     <string name="cd_speed_reset">Restablecer a velocidad normal</string>
     <string name="np_tile_radio">Radio</string>
     <string name="np_tile_playlist">Playlist</string>
@@ -311,61 +257,11 @@
     <string name="ps_sub_morph">Forma viva que respira</string>
     <string name="ps_sub_dial">Anillo giratorio, gira para desplazarte</string>
     <string name="ps_sub_hero">Arte a pantalla completa, gran botón de reproducir</string>
-    <string name="video_options_mark_watched">Marcar como visto</string>
-    <string name="video_options_mark_unwatched">Marcar como no visto</string>
-    <string name="video_options_remove_from_history">Quitar del historial de reproducción</string>
     <string name="vh_available_offline">Disponible sin conexión</string>
-    <string name="vh_recommended_for_you">Recomendado para ti</string>
-    <string name="vh_trending_videos">Vídeos en tendencia</string>
-    <string name="vh_from_subscriptions">De tus suscripciones</string>
-    <string name="vh_no_subscriptions">Aún no hay suscripciones</string>
-    <string name="vh_no_subscriptions_sub">Suscríbete a canales para ver sus últimos vídeos en Inicio</string>
-    <string name="vh_youre_offline">No tienes conexión</string>
-    <string name="vh_removed_from_history">Eliminado del historial de reproducción</string>
-    <string name="vh_clear_history">Borrar el historial de reproducción</string>
-    <string name="vh_clear_history_body">Esto vacía el historial de reproducción de Triat en este dispositivo. No elimina nada de tu cuenta de YouTube.</string>
-    <string name="vh_clear_history_confirm">Borrar</string>
-    <string name="vh_no_videos_found">No se encontraron vídeos</string>
-    <string name="vh_downloaded_hint">Los vídeos descargados aparecerán aquí</string>
-    <string name="vl_watch_history">Historial de reproducción</string>
-    <string name="vl_library_sub">Tus playlists, historial y vídeos guardados</string>
-    <string name="liked_videos">Vídeos que te gustan</string>
-    <string name="history">Historial</string>
-    <string name="view_all">Ver todo</string>
-    <string name="your_playlists">Tus playlists</string>
-    <string name="action_new">Nueva</string>
-    <string name="vl_no_playlists_hint">Aún no hay playlists. Toca Nueva para crear una.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">Este dispositivo</string>
-    <string name="vl_local_playlist_note">Se queda en este teléfono. Funciona sin sesión iniciada y no es visible en youtube.com.</string>
-    <string name="vl_account_playlist_note">Añadida a tu cuenta de YouTube, así aparece en todos los lugares donde inicies sesión.</string>
-    <string name="rename_playlist">Cambiar el nombre de la playlist</string>
     <string name="action_rename">Cambiar nombre</string>
     <string name="delete_playlist_q">¿Eliminar playlist?</string>
     <string name="delete_playlist">Eliminar playlist</string>
-    <string name="vl_login_wall">Inicia sesión para ver tus playlists, Ver más tarde y los vídeos que te gustan</string>
     <string name="vl_no_videos">No hay vídeos en esta playlist</string>
-    <string name="sc_unfollow_body">La elimina de este dispositivo. Tu cuenta de YouTube no se modifica.</string>
-    <string name="sc_hide_watched">Ocultar vistos</string>
-    <string name="sc_no_uploads_match">Ninguna subida coincide con estos filtros.</string>
-    <string name="sc_none_found">No se encontraron suscripciones</string>
-    <string name="sc_search_hint">Prueba con parte del nombre o el @identificador.</string>
-    <string name="sc_empty_body">Sigue canales en este dispositivo o inicia sesión para traer tus suscripciones de YouTube.</string>
-    <string name="import_subscriptions">Importar suscripciones</string>
-    <string name="sc_group_empty">No hay subidas recientes de este grupo.</string>
-    <string name="sc_not_following">Aún no sigues ningún canal.</string>
-    <string name="sc_no_uploads">No hay subidas recientes de tus canales.</string>
-    <string name="show_all_channels">Mostrar todos los canales</string>
-    <string name="sc_latest_from_channels">Lo último de los canales que sigues</string>
-    <string name="sc_any_time">Cualquier fecha</string>
     <string name="sc_today">Hoy</string>
     <string name="sc_this_week">Esta semana</string>
-    <string name="sc_newest_first">Más recientes primero</string>
-    <string name="sc_oldest_first">Más antiguos primero</string>
-    <string name="sc_on_device">%1$d en este dispositivo</string>
-    <string name="sc_channels_on_device">%1$d canales - %2$d en este dispositivo</string>
-    <string name="sh_playback_failed">Falló la reproducción</string>
-    <string name="subscribed">Suscrito</string>
-    <string name="subscribe">Suscribirse</string>
-    <string name="like">Me gusta</string>
 </resources>

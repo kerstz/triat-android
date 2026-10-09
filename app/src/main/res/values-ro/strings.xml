@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">Redă acum</string>
-    <string name="video_playback_channel_name">Redare video</string>
 
     <string name="undo">Anulare</string>
     <string name="action_cancel">Anulează</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">Redă tot</string>
     <string name="action_show_more">Afișează mai mult</string>
     <string name="action_try_again">Încearcă din nou</string>
-    <string name="action_open_settings">Deschide setările</string>
     <string name="action_clear_all">Șterge tot</string>
-    <string name="action_new_playlist">Playlist nou</string>
     <string name="action_grant_permission">Acordă permisiunea</string>
     <string name="unknown_artist">Artist necunoscut</string>
     <string name="untitled_song">Piesă fără titlu</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">Bibliotecă</string>
 
     <string name="local_only_title">Modul Doar local este activat</string>
-    <string name="local_only_default_subtitle">Această secțiune are nevoie de internet. Dezactivează modul Doar local din Setări pentru a o folosi.</string>
-    <string name="local_only_video_mode_subtitle">Modul video are nevoie de internet. Dezactivează modul Doar local din Setări pentru a viziona videoclipuri.</string>
-    <string name="local_only_video_search_subtitle">Căutarea de videoclipuri are nevoie de internet. Dezactivează modul Doar local din Setări pentru a căuta videoclipuri.</string>
-    <string name="local_only_subscriptions_subtitle">Abonamentele au nevoie de internet. Dezactivează modul Doar local din Setări pentru a le vedea.</string>
-    <string name="local_only_video_library_subtitle">Videoteca are nevoie de internet. Dezactivează modul Doar local din Setări pentru a o vedea.</string>
     <string name="local_only_update_subtitle">Verificarea actualizărilor are nevoie de internet. Dezactivează modul Doar local din Setări pentru a verifica actualizările.</string>
 
     <string name="crash_dialog_title">Triat s-a oprit neașteptat data trecută</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">tău</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Profil</string>
-    <string name="cd_downloads">Descărcări</string>
-    <string name="cd_settings">Setări</string>
     <string name="cd_play">Redă</string>
     <string name="cd_pause">Pauză</string>
     <string name="cd_next">Următoarea</string>
     <string name="cd_album_art">Coperta albumului</string>
-    <string name="cd_show_all">Afișează tot: %1$s</string>
 
     <string name="spotlight_quick_picks">Selecții rapide</string>
     <string name="spotlight_your_playlists">Playlisturile tale</string>
     <string name="spotlight_from_your_library">Din biblioteca ta</string>
     <string name="spotlight_caption_liked">Din melodiile care îți plac</string>
     <string name="spotlight_caption_recent">Din ce ai ascultat recent</string>
-    <string name="shortcut_liked_songs">Melodiile preferate</string>
     <string name="filter_all">Toate</string>
     <string name="filter_liked">Cu plăcere</string>
     <string name="filter_recent">Recente</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">Sfârșitul acestei piese</string>
     <string name="sleep_timer_turn_off">Dezactivează</string>
 
-    <string name="cd_switch_to_music">Comută la modul muzică</string>
-    <string name="cd_switch_to_video">Comută la modul video</string>
     <string name="cd_drag_to_reorder">Trage pentru a reordona</string>
     <string name="cd_favorite">Favorit</string>
     <string name="cd_clear_search">Golește căutarea</string>
@@ -110,23 +95,10 @@
     <string name="name_label">Nume</string>
     <string name="description_optional_label">Descriere (opțional)</string>
 
-    <string name="video_options_watch_later">Vizionează mai târziu</string>
-    <string name="video_options_kept_on_device">Păstrat pe acest dispozitiv</string>
-    <string name="video_options_save_to_playlist">Salvează în playlist</string>
-    <string name="video_options_download">Descarcă</string>
-    <string name="video_options_go_to_channel">Mergi la canal</string>
     <string name="video_options_share">Distribuie</string>
-    <string name="video_options_share_chooser">Distribuie videoclipul</string>
     <string name="video_options_not_interested">Nu mă interesează</string>
-    <string name="video_options_dont_recommend_channel">Nu recomanda acest canal</string>
-    <string name="video_options_dont_recommend_channel_name">Nu recomanda %1$s</string>
     <string name="cd_back">Înapoi</string>
-    <string name="search_playlists_placeholder">Caută playlisturi</string>
-    <string name="no_playlist_matches">Niciun playlist nu se potrivește cu „%1$s”</string>
-    <string name="no_playlists_yet_hint">Încă niciun playlist. Creează unul și acest videoclip va ajunge direct în el.</string>
     <string name="cd_saved">Salvat</string>
-    <string name="cd_couldnt_save">Nu s-a putut salva</string>
-    <string name="cd_in_this_playlist">E deja în playlistul acesta</string>
 
     <string name="settings_section_you">Tu</string>
     <string name="settings_section_look_and_feel">Aspect</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">Player</string>
     <string name="settings_playback_and_quality">Redare și calitate</string>
     <string name="settings_content_and_feeds">Conținut și fluxuri</string>
-    <string name="settings_subscriptions">Abonamente</string>
     <string name="settings_storage_and_cache">Stocare și cache</string>
     <string name="settings_notifications">Notificări</string>
     <string name="settings_local_library">Bibliotecă locală</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">Recomandate pe acest dispozitiv</string>
     <string name="settings_advanced_value_other">Corecții de scanare și baterie</string>
     <string name="settings_version_subtitle">Versiunea %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">Preferă videoclipurile HDR</string>
-    <string name="sp_prefer_hdr_sub">Folosește HDR numai dacă ecranul și decodorul îl acceptă</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Standard</string>
 
     <string name="profiles_title">Profile</string>
     <string name="profiles_description">Abonamentele și recomandările ascunse sunt păstrate per profil. Playlisturile, melodiile favorite și descărcările sunt comune.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">Descărcări</string>
     <string name="fab_listening_history">Istoricul ascultării</string>
     <string name="fab_statistics">Statistici</string>
-    <string name="cd_listening_stats">Statistici de ascultare</string>
     <string name="recently_played">Redate recent</string>
     <string name="liked_songs">Melodii cu plăcere</string>
     <string name="no_artists_yet">Niciun artist încă</string>
@@ -201,20 +167,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube limitează cererile de pe această rețea. Încearcă din nou peste puțin timp.</string>
 
-    <string name="vhc_title">Acasă video</string>
-    <string name="vhc_summary">Fluxul, destinațiile și ordinea lor</string>
-    <string name="vhc_feed_section">Flux de pe Acasă</string>
-    <string name="vhc_recommendations">Recomandări și sugestii</string>
-    <string name="vhc_recommendations_sub">Încarcă videoclipuri sugerate pe Acasă</string>
-    <string name="vhc_navigation_section">Destinații</string>
-    <string name="vhc_navigation_hint">Ascunde orice destinație pe care nu o folosești. Cel puțin una rămâne vizibilă.</string>
     <string name="vhc_move_up">Mută %1$s în sus</string>
     <string name="vhc_move_down">Mută %1$s în jos</string>
-    <string name="vh_recommendations_off">Recomandările sunt dezactivate</string>
-    <string name="vh_recommendations_off_sub">Shorts poate încă apărea aici atunci când este activat.</string>
-    <string name="vp_resumed_from">Reluat de la %1$s</string>
-    <string name="vp_play_from_start">Redă de la început</string>
-    <string name="section_releases">Lansări</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Atinge pentru a asculta</string>
@@ -243,16 +197,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">Încărcări noi</string>
-    <string name="upload_check_channel_description">Îți spune când un canal pe care îl urmărești pe acest dispozitiv încarcă ceva</string>
-    <string name="upload_notification_title">%1$s: %2$d încărcări noi</string>
-    <string name="video_cached_portion_ended">Ai ajuns la sfârșitul videoclipului stocat în cache. Reconectează-te pentru a continua.</string>
-    <string name="video_not_cached_offline">Această parte a videoclipului nu este în cache. Reconectează-te pentru a continua.</string>
     <string name="action_close">Închide</string>
     <string name="action_check_updates">Verifică actualizări</string>
     <string name="action_got_it">Am înțeles</string>
     <string name="action_like">Îmi place</string>
-    <string name="action_refresh">Reîmprospătează</string>
     <string name="spotlight_new_for_you">Nou pentru tine</string>
     <string name="spotlight_new_for_you_caption">Melodii pe care nu le-ai redat, de la artiști pe care îi asculți</string>
     <string name="spotlight_discovery_empty">Nimic nou de sugerat încă</string>
@@ -264,13 +212,11 @@
     <string name="spotlight_artists_for_you">Artiști care ți-ar putea plăcea</string>
     <string name="spotlight_artists_for_you_sub">Nu sunt încă în biblioteca ta</string>
     <string name="filter_recommended">Pentru tine</string>
-    <string name="search_channels">Caută canale</string>
     <string name="song_options_not_interested">Nu mă interesează</string>
     <string name="song_options_not_interested_subtitle">Nu mai recomanda această melodie</string>
     <string name="song_options_block_artist">Nu recomanda %1$s</string>
     <string name="song_options_speed">Viteză de redare</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Viteză normală</string>
     <string name="cd_speed_reset">Resetează la viteza normală</string>
     <string name="np_tile_radio">Radio</string>
     <string name="np_tile_playlist">Playlist</string>
@@ -313,61 +259,11 @@
     <string name="ps_sub_morph">Formă vie care respiră</string>
     <string name="ps_sub_dial">Inel rotativ, rotește pentru derulare</string>
     <string name="ps_sub_hero">Copertă pe tot ecranul, buton mare de redare</string>
-    <string name="video_options_mark_watched">Marchează ca vizionat</string>
-    <string name="video_options_mark_unwatched">Marchează ca nevizionat</string>
-    <string name="video_options_remove_from_history">Elimină din istoricul vizionărilor</string>
     <string name="vh_available_offline">Disponibil offline</string>
-    <string name="vh_recommended_for_you">Recomandat pentru tine</string>
-    <string name="vh_trending_videos">Videoclipuri în tendințe</string>
-    <string name="vh_from_subscriptions">Din abonamentele tale</string>
-    <string name="vh_no_subscriptions">Niciun abonament încă</string>
-    <string name="vh_no_subscriptions_sub">Abonează-te la canale pentru a vedea cele mai noi videoclipuri pe Acasă</string>
-    <string name="vh_youre_offline">Ești offline</string>
-    <string name="vh_removed_from_history">Eliminat din istoricul vizionărilor</string>
-    <string name="vh_clear_history">Șterge istoricul vizionărilor</string>
-    <string name="vh_clear_history_body">Golește istoricul vizionărilor Triat de pe acest dispozitiv. Nu șterge nimic din contul tău YouTube.</string>
-    <string name="vh_clear_history_confirm">Șterge</string>
-    <string name="vh_no_videos_found">Niciun videoclip găsit</string>
-    <string name="vh_downloaded_hint">Videoclipurile descărcate vor apărea aici</string>
-    <string name="vl_watch_history">Istoricul vizionărilor</string>
-    <string name="vl_library_sub">Playlisturile, istoricul și videoclipurile tale salvate</string>
-    <string name="liked_videos">Videoclipuri cu plăcere</string>
-    <string name="history">Istoric</string>
-    <string name="view_all">Vezi tot</string>
-    <string name="your_playlists">Playlisturile tale</string>
-    <string name="action_new">Nou</string>
-    <string name="vl_no_playlists_hint">Niciun playlist încă. Atinge Nou pentru a crea unul.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">Acest dispozitiv</string>
-    <string name="vl_local_playlist_note">Rămâne pe acest telefon. Funcționează delogat și nu e vizibil pe youtube.com.</string>
-    <string name="vl_account_playlist_note">Adăugat în contul tău YouTube, deci apare peste tot unde ești autentificat.</string>
-    <string name="rename_playlist">Redenumește playlistul</string>
     <string name="action_rename">Redenumește</string>
     <string name="delete_playlist_q">Ștergi playlistul?</string>
     <string name="delete_playlist">Șterge playlistul</string>
-    <string name="vl_login_wall">Autentifică-te pentru a vedea playlisturile, Vizionează mai târziu și videoclipurile cu plăcere</string>
     <string name="vl_no_videos">Niciun videoclip în acest playlist</string>
-    <string name="sc_unfollow_body">Îl elimină de pe acest dispozitiv. Contul tău YouTube nu e atins.</string>
-    <string name="sc_hide_watched">Ascunde vizionatele</string>
-    <string name="sc_no_uploads_match">Nicio încărcare nu se potrivește cu aceste filtre.</string>
-    <string name="sc_none_found">Niciun abonament găsit</string>
-    <string name="sc_search_hint">Încearcă o parte din nume sau @handle-ul.</string>
-    <string name="sc_empty_body">Urmărește canale pe acest dispozitiv sau autentifică-te pentru a-ți aduce abonamentele YouTube.</string>
-    <string name="import_subscriptions">Importă abonamente</string>
-    <string name="sc_group_empty">Nicio încărcare recentă din acest grup.</string>
-    <string name="sc_not_following">Nu urmărești încă niciun canal.</string>
-    <string name="sc_no_uploads">Nicio încărcare recentă de la canalele tale.</string>
-    <string name="show_all_channels">Afișează toate canalele</string>
-    <string name="sc_latest_from_channels">Cele mai noi de la canalele pe care le urmărești</string>
-    <string name="sc_any_time">Oricând</string>
     <string name="sc_today">Azi</string>
     <string name="sc_this_week">Săptămâna aceasta</string>
-    <string name="sc_newest_first">Cele mai noi primele</string>
-    <string name="sc_oldest_first">Cele mai vechi primele</string>
-    <string name="sc_on_device">%1$d pe acest dispozitiv</string>
-    <string name="sc_channels_on_device">%1$d canale - %2$d pe acest dispozitiv</string>
-    <string name="sh_playback_failed">Redarea a eșuat</string>
-    <string name="subscribed">Abonat</string>
-    <string name="subscribe">Abonează-te</string>
-    <string name="like">Îmi place</string>
 </resources>

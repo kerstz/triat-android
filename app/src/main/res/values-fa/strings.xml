@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">در حال پخش</string>
-    <string name="video_playback_channel_name">پخش ویدیو</string>
 
     <string name="undo">واگرد</string>
     <string name="action_cancel">لغو</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">پخش همه</string>
     <string name="action_show_more">نمایش بیشتر</string>
     <string name="action_try_again">دوباره تلاش کنید</string>
-    <string name="action_open_settings">باز کردن تنظیمات</string>
     <string name="action_clear_all">پاک کردن همه</string>
-    <string name="action_new_playlist">فهرست پخش جدید</string>
     <string name="action_grant_permission">اعطای مجوز</string>
     <string name="unknown_artist">هنرمند ناشناس</string>
     <string name="untitled_song">آهنگ بدون عنوان</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">کتابخانه</string>
 
     <string name="local_only_title">حالت «فقط محلی» روشن است</string>
-    <string name="local_only_default_subtitle">این بخش به اینترنت نیاز دارد. برای استفاده، «فقط محلی» را در تنظیمات خاموش کنید.</string>
-    <string name="local_only_video_mode_subtitle">حالت ویدیو به اینترنت نیاز دارد. برای تماشای ویدیوها، «فقط محلی» را در تنظیمات خاموش کنید.</string>
-    <string name="local_only_video_search_subtitle">جستجوی ویدیو به اینترنت نیاز دارد. برای جستجو، «فقط محلی» را در تنظیمات خاموش کنید.</string>
-    <string name="local_only_subscriptions_subtitle">اشتراک‌ها به اینترنت نیاز دارند. برای دیدن آن‌ها، «فقط محلی» را در تنظیمات خاموش کنید.</string>
-    <string name="local_only_video_library_subtitle">کتابخانه ویدیو به اینترنت نیاز دارد. برای دیدن آن، «فقط محلی» را در تنظیمات خاموش کنید.</string>
     <string name="local_only_update_subtitle">بررسی به‌روزرسانی به اینترنت نیاز دارد. برای بررسی، «فقط محلی» را در تنظیمات خاموش کنید.</string>
 
     <string name="crash_dialog_title">Triat بار گذشته کرش کرد</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">شما</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s، %2$s</string>
-    <string name="cd_profile">نمایه</string>
-    <string name="cd_downloads">دانلودها</string>
-    <string name="cd_settings">تنظیمات</string>
     <string name="cd_play">پخش</string>
     <string name="cd_pause">مکث</string>
     <string name="cd_next">بعدی</string>
     <string name="cd_album_art">جلد آلبوم</string>
-    <string name="cd_show_all">نمایش همه: %1$s</string>
 
     <string name="spotlight_quick_picks">انتخاب‌های سریع</string>
     <string name="spotlight_your_playlists">فهرست‌های پخش شما</string>
     <string name="spotlight_from_your_library">از کتابخانه شما</string>
     <string name="spotlight_caption_liked">از آهنگ‌هایی که پسندیده‌اید</string>
     <string name="spotlight_caption_recent">از آنچه اخیراً گوش داده‌اید</string>
-    <string name="shortcut_liked_songs">آهنگ‌های مورد علاقه</string>
     <string name="filter_all">همه</string>
     <string name="filter_liked">پسندیده‌شده‌ها</string>
     <string name="filter_recent">اخیر</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">پایان این قطعه</string>
     <string name="sleep_timer_turn_off">خاموش کردن</string>
 
-    <string name="cd_switch_to_music">رفتن به حالت موسیقی</string>
-    <string name="cd_switch_to_video">رفتن به حالت ویدیو</string>
     <string name="cd_drag_to_reorder">برای تغییر ترتیب بکشید</string>
     <string name="cd_favorite">مورد علاقه</string>
     <string name="cd_clear_search">پاک کردن جستجو</string>
@@ -110,23 +95,10 @@
     <string name="name_label">نام</string>
     <string name="description_optional_label">توضیحات (اختیاری)</string>
 
-    <string name="video_options_watch_later">تماشا بعداً</string>
-    <string name="video_options_kept_on_device">روی این دستگاه ذخیره شد</string>
-    <string name="video_options_save_to_playlist">ذخیره در فهرست پخش</string>
-    <string name="video_options_download">دانلود</string>
-    <string name="video_options_go_to_channel">رفتن به کانال</string>
     <string name="video_options_share">اشتراک‌گذاری</string>
-    <string name="video_options_share_chooser">اشتراک‌گذاری ویدیو</string>
     <string name="video_options_not_interested">علاقه‌ای ندارم</string>
-    <string name="video_options_dont_recommend_channel">این کانال توصیه نشود</string>
-    <string name="video_options_dont_recommend_channel_name">%1$s توصیه نشود</string>
     <string name="cd_back">بازگشت</string>
-    <string name="search_playlists_placeholder">جستجوی فهرست‌های پخش</string>
-    <string name="no_playlist_matches">هیچ فهرست پخشی با \"%1$s\" مطابقت ندارد</string>
-    <string name="no_playlists_yet_hint">هنوز فهرست پخشی نیست. یکی بسازید تا این ویدیو مستقیم داخلش قرار بگیرد.</string>
     <string name="cd_saved">ذخیره شد</string>
-    <string name="cd_couldnt_save">ذخیره نشد</string>
-    <string name="cd_in_this_playlist">قبلاً در این فهرست است</string>
 
     <string name="settings_section_you">شما</string>
     <string name="settings_section_look_and_feel">ظاهر</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">پخش‌کننده</string>
     <string name="settings_playback_and_quality">پخش و کیفیت</string>
     <string name="settings_content_and_feeds">محتوا و خوراک‌ها</string>
-    <string name="settings_subscriptions">اشتراک‌ها</string>
     <string name="settings_storage_and_cache">فضای ذخیره‌سازی و حافظه پنهان</string>
     <string name="settings_notifications">اعلان‌ها</string>
     <string name="settings_local_library">کتابخانه محلی</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">روی این دستگاه توصیه می‌شود</string>
     <string name="settings_advanced_value_other">اصلاحات اسکن و باتری</string>
     <string name="settings_version_subtitle">نسخه %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">ترجیح ویدیوی HDR</string>
-    <string name="sp_prefer_hdr_sub">استفاده از HDR فقط زمانی که نمایشگر و رمزگشا از آن پشتیبانی می‌کنند</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">استاندارد</string>
 
     <string name="profiles_title">نمایه‌ها</string>
     <string name="profiles_description">اشتراک‌ها و پیشنهادهای پنهان برای هر نمایه جداگانه نگهداری می‌شوند. فهرست‌های پخش، آهنگ‌های مورد علاقه و دانلودها مشترک‌اند.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">دانلودها</string>
     <string name="fab_listening_history">تاریخچه شنیدار</string>
     <string name="fab_statistics">آمار</string>
-    <string name="cd_listening_stats">آمار شنیدار</string>
     <string name="recently_played">اخیراً پخش‌شده</string>
     <string name="liked_songs">آهنگ‌های مورد علاقه</string>
     <string name="no_artists_yet">هنوز هنرمندی نیست</string>
@@ -200,20 +166,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">یوتیوب درخواست‌های این شبکه را محدود کرده است. لطفاً کمی بعد دوباره امتحان کنید.</string>
 
-    <string name="vhc_title">خانه ویدیو</string>
-    <string name="vhc_summary">فید، مقصدها و ترتیب آن‌ها</string>
-    <string name="vhc_feed_section">فید خانه</string>
-    <string name="vhc_recommendations">توصیه‌ها و پیشنهادها</string>
-    <string name="vhc_recommendations_sub">بارگذاری ویدیوهای پیشنهادی در خانه</string>
-    <string name="vhc_navigation_section">مقصدها</string>
-    <string name="vhc_navigation_hint">هر مقصدی را که استفاده نمی‌کنید پنهان کنید. حداقل یکی همیشه نمایان می‌ماند.</string>
     <string name="vhc_move_up">انتقال %1$s به بالا</string>
     <string name="vhc_move_down">انتقال %1$s به پایین</string>
-    <string name="vh_recommendations_off">توصیه‌ها خاموش است</string>
-    <string name="vh_recommendations_off_sub">Shorts در صورت فعال بودن، همچنان می‌تواند اینجا نمایش داده شود.</string>
-    <string name="vp_resumed_from">ادامه از %1$s</string>
-    <string name="vp_play_from_start">پخش از ابتدا</string>
-    <string name="section_releases">آثار منتشرشده</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">برای گوش دادن ضربه بزنید</string>
@@ -242,16 +196,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">آپلودهای جدید</string>
-    <string name="upload_check_channel_description">وقتی کانالی که در این دستگاه دنبال می‌کنید آپلود کند به شما خبر می‌دهد</string>
-    <string name="upload_notification_title">%1$s: %2$d آپلود جدید</string>
-    <string name="video_cached_portion_ended">به پایان ویدیوی ذخیره‌شده رسیدید. برای ادامه دوباره وصل شوید.</string>
-    <string name="video_not_cached_offline">این بخش ویدیو ذخیره نشده است. برای ادامه دوباره وصل شوید.</string>
     <string name="action_close">بستن</string>
     <string name="action_check_updates">بررسی به‌روزرسانی‌ها</string>
     <string name="action_got_it">فهمیدم</string>
     <string name="action_like">پسندیدم</string>
-    <string name="action_refresh">تازه‌سازی</string>
     <string name="spotlight_new_for_you">تازه برای شما</string>
     <string name="spotlight_new_for_you_caption">آهنگ‌هایی که پخش نکرده‌اید، از هنرمندانی که گوش می‌دهید</string>
     <string name="spotlight_discovery_empty">هنوز پیشنهاد تازه‌ای نیست</string>
@@ -263,13 +211,11 @@
     <string name="spotlight_artists_for_you">هنرمندانی که شاید بپسندید</string>
     <string name="spotlight_artists_for_you_sub">هنوز در کتابخانه شما نیست</string>
     <string name="filter_recommended">برای شما</string>
-    <string name="search_channels">جستجوی کانال‌ها</string>
     <string name="song_options_not_interested">علاقه‌ای ندارم</string>
     <string name="song_options_not_interested_subtitle">توصیه این آهنگ متوقف شود</string>
     <string name="song_options_block_artist">%1$s توصیه نشود</string>
     <string name="song_options_speed">سرعت پخش</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">سرعت عادی</string>
     <string name="cd_speed_reset">بازنشانی به سرعت عادی</string>
     <string name="np_tile_radio">رادیو</string>
     <string name="np_tile_playlist">پلی‌لیست</string>
@@ -312,61 +258,11 @@
     <string name="ps_sub_morph">شکلی زنده که نفس می‌کشد</string>
     <string name="ps_sub_dial">حلقه چرخان، برای جستجو بچرخانید</string>
     <string name="ps_sub_hero">جلد تمام‌صفحه با دکمه پخش بزرگ</string>
-    <string name="video_options_mark_watched">علامت‌گذاری به‌عنوان دیده‌شده</string>
-    <string name="video_options_mark_unwatched">علامت‌گذاری به‌عنوان دیده‌نشده</string>
-    <string name="video_options_remove_from_history">حذف از تاریخچه تماشا</string>
     <string name="vh_available_offline">آفلاین در دسترس است</string>
-    <string name="vh_recommended_for_you">پیشنهادشده برای شما</string>
-    <string name="vh_trending_videos">ویدیوهای داغ</string>
-    <string name="vh_from_subscriptions">از اشتراک‌های شما</string>
-    <string name="vh_no_subscriptions">هنوز اشتراکی نیست</string>
-    <string name="vh_no_subscriptions_sub">در کانال‌ها عضو شوید تا تازه‌ترین ویدیوهایشان را در خانه ببینید</string>
-    <string name="vh_youre_offline">شما آفلاین هستید</string>
-    <string name="vh_removed_from_history">از تاریخچه تماشا حذف شد</string>
-    <string name="vh_clear_history">پاک کردن تاریخچه تماشا</string>
-    <string name="vh_clear_history_body">این کار تاریخچه تماشای Triat را در این دستگاه خالی می‌کند. چیزی از حساب YouTube شما حذف نمی‌شود.</string>
-    <string name="vh_clear_history_confirm">پاک کردن</string>
-    <string name="vh_no_videos_found">ویدیویی پیدا نشد</string>
-    <string name="vh_downloaded_hint">ویدیوهای دانلودشده اینجا ظاهر می‌شوند</string>
-    <string name="vl_watch_history">تاریخچه تماشا</string>
-    <string name="vl_library_sub">فهرست‌های پخش، تاریخچه و ویدیوهای ذخیره‌شده شما</string>
-    <string name="liked_videos">ویدیوهای پسندیده‌شده</string>
-    <string name="history">تاریخچه</string>
-    <string name="view_all">مشاهده همه</string>
-    <string name="your_playlists">فهرست‌های پخش شما</string>
-    <string name="action_new">جدید</string>
-    <string name="vl_no_playlists_hint">هنوز فهرست پخشی نیست. روی جدید بزنید تا یکی بسازید.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">این دستگاه</string>
-    <string name="vl_local_playlist_note">روی این گوشی می‌ماند. بدون ورود کار می‌کند و در youtube.com دیده نمی‌شود.</string>
-    <string name="vl_account_playlist_note">به حساب YouTube شما اضافه می‌شود، پس هرجا وارد باشید نمایش داده می‌شود.</string>
-    <string name="rename_playlist">تغییر نام فهرست پخش</string>
     <string name="action_rename">تغییر نام</string>
     <string name="delete_playlist_q">فهرست پخش حذف شود؟</string>
     <string name="delete_playlist">حذف فهرست پخش</string>
-    <string name="vl_login_wall">برای دیدن فهرست‌های پخش، تماشا بعداً و ویدیوهای پسندیده وارد شوید</string>
     <string name="vl_no_videos">در این فهرست پخش ویدیویی نیست</string>
-    <string name="sc_unfollow_body">آن را از این دستگاه حذف می‌کند. حساب YouTube شما دست‌نخورده می‌ماند.</string>
-    <string name="sc_hide_watched">پنهان کردن دیده‌شده‌ها</string>
-    <string name="sc_no_uploads_match">هیچ آپلودی با این پالایه‌ها مطابق نیست.</string>
-    <string name="sc_none_found">اشتراکی پیدا نشد</string>
-    <string name="sc_search_hint">بخشی از نام یا @handle را امتحان کنید.</string>
-    <string name="sc_empty_body">کانال‌ها را در این دستگاه دنبال کنید یا وارد شوید تا اشتراک‌های YouTube شما منتقل شود.</string>
-    <string name="import_subscriptions">درون‌ریزی اشتراک‌ها</string>
-    <string name="sc_group_empty">آپلود تازه‌ای از این گروه نیست.</string>
-    <string name="sc_not_following">هنوز هیچ کانالی را دنبال نمی‌کنید.</string>
-    <string name="sc_no_uploads">آپلود تازه‌ای از کانال‌های شما نیست.</string>
-    <string name="show_all_channels">نمایش همه کانال‌ها</string>
-    <string name="sc_latest_from_channels">تازه‌ترین از کانال‌هایی که دنبال می‌کنید</string>
-    <string name="sc_any_time">هر زمان</string>
     <string name="sc_today">امروز</string>
     <string name="sc_this_week">این هفته</string>
-    <string name="sc_newest_first">جدیدترین اول</string>
-    <string name="sc_oldest_first">قدیمی‌ترین اول</string>
-    <string name="sc_on_device">%1$d در این دستگاه</string>
-    <string name="sc_channels_on_device">%1$d کانال - %2$d در این دستگاه</string>
-    <string name="sh_playback_failed">پخش ناموفق بود</string>
-    <string name="subscribed">عضو شده</string>
-    <string name="subscribe">عضویت</string>
-    <string name="like">پسند</string>
 </resources>

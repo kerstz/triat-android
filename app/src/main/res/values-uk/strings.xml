@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">Зараз грає</string>
-    <string name="video_playback_channel_name">Відтворення відео</string>
 
     <string name="undo">Скасувати</string>
     <string name="action_cancel">Скасувати</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">Грати все</string>
     <string name="action_show_more">Показати більше</string>
     <string name="action_try_again">Спробувати ще раз</string>
-    <string name="action_open_settings">Відкрити налаштування</string>
     <string name="action_clear_all">Очистити все</string>
-    <string name="action_new_playlist">Новий плейліст</string>
     <string name="action_grant_permission">Надати дозвіл</string>
     <string name="unknown_artist">Невідомий виконавець</string>
     <string name="untitled_song">Трек без назви</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">Медіатека</string>
 
     <string name="local_only_title">Увімкнено режим «Лише локально»</string>
-    <string name="local_only_default_subtitle">Цьому розділу потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб скористатися ним.</string>
-    <string name="local_only_video_mode_subtitle">Відеорежиму потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб дивитися відео.</string>
-    <string name="local_only_video_search_subtitle">Пошуку відео потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб шукати відео.</string>
-    <string name="local_only_subscriptions_subtitle">Підпискам потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб побачити їх.</string>
-    <string name="local_only_video_library_subtitle">Відеомедіатеці потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб побачити її.</string>
     <string name="local_only_update_subtitle">Перевірці оновлень потрібен інтернет. Вимкніть режим «Лише локально» у налаштуваннях, щоб перевірити оновлення.</string>
 
     <string name="crash_dialog_title">Минулого разу Triat аварійно завершився</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">добірка</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Профіль</string>
-    <string name="cd_downloads">Завантаження</string>
-    <string name="cd_settings">Налаштування</string>
     <string name="cd_play">Грати</string>
     <string name="cd_pause">Пауза</string>
     <string name="cd_next">Далі</string>
     <string name="cd_album_art">Обкладинка альбому</string>
-    <string name="cd_show_all">Показати всі: %1$s</string>
 
     <string name="spotlight_quick_picks">Швидкий вибір</string>
     <string name="spotlight_your_playlists">Ваші плейлісти</string>
     <string name="spotlight_from_your_library">З вашої медіатеки</string>
     <string name="spotlight_caption_liked">З треків, які вам сподобалися</string>
     <string name="spotlight_caption_recent">З того, що ви нещодавно слухали</string>
-    <string name="shortcut_liked_songs">Сподобані треки</string>
     <string name="filter_all">Усі</string>
     <string name="filter_liked">Сподобані</string>
     <string name="filter_recent">Недавні</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">Кінець цього треку</string>
     <string name="sleep_timer_turn_off">Вимкнути</string>
 
-    <string name="cd_switch_to_music">Перейти в музичний режим</string>
-    <string name="cd_switch_to_video">Перейти в відеорежим</string>
     <string name="cd_drag_to_reorder">Потягніть, щоб змінити порядок</string>
     <string name="cd_favorite">Обране</string>
     <string name="cd_clear_search">Очистити пошук</string>
@@ -110,23 +95,10 @@
     <string name="name_label">Назва</string>
     <string name="description_optional_label">Опис (необов\'язково)</string>
 
-    <string name="video_options_watch_later">Дивитися пізніше</string>
-    <string name="video_options_kept_on_device">Збережено на пристрої</string>
-    <string name="video_options_save_to_playlist">Зберегти в плейліст</string>
-    <string name="video_options_download">Завантажити</string>
-    <string name="video_options_go_to_channel">Перейти на канал</string>
     <string name="video_options_share">Поділитися</string>
-    <string name="video_options_share_chooser">Поділитися відео</string>
     <string name="video_options_not_interested">Не цікавить</string>
-    <string name="video_options_dont_recommend_channel">Не рекомендувати канал</string>
-    <string name="video_options_dont_recommend_channel_name">Не рекомендувати %1$s</string>
     <string name="cd_back">Назад</string>
-    <string name="search_playlists_placeholder">Пошук плейлістів</string>
-    <string name="no_playlist_matches">Немає плейлістів за запитом \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">Ще немає плейлістів. Створіть один, і це відео одразу потрапить до нього.</string>
     <string name="cd_saved">Збережено</string>
-    <string name="cd_couldnt_save">Не вдалося зберегти</string>
-    <string name="cd_in_this_playlist">Вже в цьому плейлісті</string>
 
     <string name="settings_section_you">Профіль</string>
     <string name="settings_section_look_and_feel">Оформлення</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">Програвач</string>
     <string name="settings_playback_and_quality">Відтворення і якість</string>
     <string name="settings_content_and_feeds">Контент і стрічки</string>
-    <string name="settings_subscriptions">Підписки</string>
     <string name="settings_storage_and_cache">Сховище і кеш</string>
     <string name="settings_notifications">Сповіщення</string>
     <string name="settings_local_library">Локальна медіатека</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">Рекомендується на цьому пристрої</string>
     <string name="settings_advanced_value_other">Виправлення сканування і батареї</string>
     <string name="settings_version_subtitle">Версія %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">Надавати перевагу HDR-відео</string>
-    <string name="sp_prefer_hdr_sub">Використовувати HDR, лише якщо дисплей і декодер його підтримують</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Стандартна</string>
 
     <string name="profiles_title">Профілі</string>
     <string name="profiles_description">Підписки та приховані рекомендації зберігаються окремо для кожного профілю. Плейлісти, сподобані пісні та завантаження спільні.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">Завантаження</string>
     <string name="fab_listening_history">Історія прослуховувань</string>
     <string name="fab_statistics">Статистика</string>
-    <string name="cd_listening_stats">Статистика прослуховувань</string>
     <string name="recently_played">Нещодавно прослухані</string>
     <string name="liked_songs">Сподобані треки</string>
     <string name="no_artists_yet">Ще немає виконавців</string>
@@ -204,20 +170,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз за мить.</string>
 
-    <string name="vhc_title">Головна відео</string>
-    <string name="vhc_summary">Стрічка, розділи та їхній порядок</string>
-    <string name="vhc_feed_section">Стрічка головної</string>
-    <string name="vhc_recommendations">Рекомендації та пропозиції</string>
-    <string name="vhc_recommendations_sub">Завантажувати рекомендовані відео на Головній</string>
-    <string name="vhc_navigation_section">Розділи</string>
-    <string name="vhc_navigation_hint">Приховайте будь-який розділ, яким ви не користуєтеся. Принаймні один залишиться видимим.</string>
     <string name="vhc_move_up">Перемістити %1$s вгору</string>
     <string name="vhc_move_down">Перемістити %1$s вниз</string>
-    <string name="vh_recommendations_off">Рекомендації вимкнено</string>
-    <string name="vh_recommendations_off_sub">Shorts усе ще можуть з\'являтися тут, якщо їх увімкнено.</string>
-    <string name="vp_resumed_from">Відновлено з %1$s</string>
-    <string name="vp_play_from_start">Відтворити спочатку</string>
-    <string name="section_releases">Релізи</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Торкніться, щоб слухати</string>
@@ -246,16 +200,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">Нові завантаження</string>
-    <string name="upload_check_channel_description">Сповіщає, коли канал, за яким ви стежите на цьому пристрої, завантажує нове</string>
-    <string name="upload_notification_title">%1$s: %2$d нових відео</string>
-    <string name="video_cached_portion_ended">Ви дійшли до кінця кешованої частини відео. Підключіться до інтернету, щоб продовжити.</string>
-    <string name="video_not_cached_offline">Ця частина відео не закешована. Підключіться до інтернету, щоб продовжити.</string>
     <string name="action_close">Закрити</string>
     <string name="action_check_updates">Перевірити оновлення</string>
     <string name="action_got_it">Зрозуміло</string>
     <string name="action_like">Подобається</string>
-    <string name="action_refresh">Оновити</string>
     <string name="spotlight_new_for_you">Нове для вас</string>
     <string name="spotlight_new_for_you_caption">Пісні, які ви ще не слухали, від виконавців, яких слухаєте</string>
     <string name="spotlight_discovery_empty">Поки нічого запропонувати</string>
@@ -267,13 +215,11 @@
     <string name="spotlight_artists_for_you">Виконавці, які можуть вам сподобатися</string>
     <string name="spotlight_artists_for_you_sub">Їх ще немає у вашій медіатеці</string>
     <string name="filter_recommended">Для вас</string>
-    <string name="search_channels">Пошук каналів</string>
     <string name="song_options_not_interested">Не цікавить</string>
     <string name="song_options_not_interested_subtitle">Більше не рекомендувати цю пісню</string>
     <string name="song_options_block_artist">Не рекомендувати: %1$s</string>
     <string name="song_options_speed">Швидкість відтворення</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Звичайна швидкість</string>
     <string name="cd_speed_reset">Скинути швидкість</string>
     <string name="np_tile_radio">Радіо</string>
     <string name="np_tile_playlist">Плейліст</string>
@@ -316,61 +262,11 @@
     <string name="ps_sub_morph">Жива форма, що дихає</string>
     <string name="ps_sub_dial">Кільце-регулятор: крутіть для перемотування</string>
     <string name="ps_sub_hero">Арт на весь екран і велика кнопка відтворення</string>
-    <string name="video_options_mark_watched">Позначити як переглянуте</string>
-    <string name="video_options_mark_unwatched">Позначити як непереглянуте</string>
-    <string name="video_options_remove_from_history">Прибрати з історії переглядів</string>
     <string name="vh_available_offline">Доступно офлайн</string>
-    <string name="vh_recommended_for_you">Рекомендовано вам</string>
-    <string name="vh_trending_videos">Популярні відео</string>
-    <string name="vh_from_subscriptions">З ваших підписок</string>
-    <string name="vh_no_subscriptions">Ще немає підписок</string>
-    <string name="vh_no_subscriptions_sub">Підпишіться на канали, щоб бачити їхні нові відео на головній</string>
-    <string name="vh_youre_offline">Ви офлайн</string>
-    <string name="vh_removed_from_history">Прибрано з історії переглядів</string>
-    <string name="vh_clear_history">Очистити історію переглядів</string>
-    <string name="vh_clear_history_body">Це очистить історію переглядів Triat на цьому пристрої. З вашого акаунта YouTube нічого не видалиться.</string>
-    <string name="vh_clear_history_confirm">Очистити</string>
-    <string name="vh_no_videos_found">Відео не знайдено</string>
-    <string name="vh_downloaded_hint">Завантажені відео з\'являться тут</string>
-    <string name="vl_watch_history">Історія переглядів</string>
-    <string name="vl_library_sub">Ваші плейлісти, історія та збережені відео</string>
-    <string name="liked_videos">Сподобані відео</string>
-    <string name="history">Історія</string>
-    <string name="view_all">Переглянути все</string>
-    <string name="your_playlists">Ваші плейлісти</string>
-    <string name="action_new">Новий</string>
-    <string name="vl_no_playlists_hint">Ще немає плейлістів. Торкніть «Новий», щоб створити.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">Цей пристрій</string>
-    <string name="vl_local_playlist_note">Залишається на цьому телефоні. Працює без входу в акаунт і не відображається на youtube.com.</string>
-    <string name="vl_account_playlist_note">Додається до вашого акаунта YouTube, тому видно скрізь, де ви увійшли.</string>
-    <string name="rename_playlist">Перейменувати плейліст</string>
     <string name="action_rename">Перейменувати</string>
     <string name="delete_playlist_q">Видалити плейліст?</string>
     <string name="delete_playlist">Видалити плейліст</string>
-    <string name="vl_login_wall">Увійдіть, щоб побачити свої плейлісти, «Дивитися пізніше» та сподобані відео</string>
     <string name="vl_no_videos">У цьому плейлісті немає відео</string>
-    <string name="sc_unfollow_body">Прибирає підписку з цього пристрою. Ваш акаунт YouTube не зачіпається.</string>
-    <string name="sc_hide_watched">Приховати переглянуті</string>
-    <string name="sc_no_uploads_match">Жодне завантаження не відповідає цим фільтрам.</string>
-    <string name="sc_none_found">Підписки не знайдено</string>
-    <string name="sc_search_hint">Спробуйте частину назви або @handle.</string>
-    <string name="sc_empty_body">Стежте за каналами на цьому пристрої або увійдіть, щоб перенести сюди свої підписки YouTube.</string>
-    <string name="import_subscriptions">Імпортувати підписки</string>
-    <string name="sc_group_empty">У цій групі немає нових завантажень.</string>
-    <string name="sc_not_following">Ви ще не стежите за жодним каналом.</string>
-    <string name="sc_no_uploads">Немає нових завантажень із ваших каналів.</string>
-    <string name="show_all_channels">Показати всі канали</string>
-    <string name="sc_latest_from_channels">Нове з ваших каналів</string>
-    <string name="sc_any_time">За весь час</string>
     <string name="sc_today">Сьогодні</string>
     <string name="sc_this_week">Цього тижня</string>
-    <string name="sc_newest_first">Спочатку нові</string>
-    <string name="sc_oldest_first">Спочатку старі</string>
-    <string name="sc_on_device">%1$d на цьому пристрої</string>
-    <string name="sc_channels_on_device">%1$d каналів: %2$d на цьому пристрої</string>
-    <string name="sh_playback_failed">Не вдалося відтворити</string>
-    <string name="subscribed">Ви підписані</string>
-    <string name="subscribe">Підписатися</string>
-    <string name="like">Подобається</string>
 </resources>

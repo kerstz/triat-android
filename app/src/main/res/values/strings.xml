@@ -15,7 +15,6 @@
       video are separate players here, and a user who wants one of them out of
       their shade should not have to silence both.
     -->
-    <string name="video_playback_channel_name">Video playback</string>
 
 
     <!-- Home screen widgets: picker labels and descriptions. -->
@@ -52,9 +51,6 @@
     <string name="widget_preview_next_2">Ultraviolet</string>
 
     <!-- Background upload check (#137): its notification channel and grouped title. -->
-    <string name="upload_check_channel_name">New uploads</string>
-    <string name="upload_check_channel_description">Tells you when a channel you follow on this device uploads</string>
-    <string name="upload_notification_title">%1$s: %2$d new uploads</string>
 
     <!-- ============ Common actions ============ -->
     <string name="undo">Undo</string>
@@ -62,20 +58,15 @@
     <string name="action_done">Done</string>
     <string name="action_create">Create</string>
     <string name="action_save">Save</string>
-    <string name="action_listen_as_music">Music</string>
     <string name="action_delete">Delete</string>
     <string name="action_edit">Edit</string>
     <string name="action_share">Share</string>
     <string name="action_retry">Retry</string>
-    <string name="video_cached_portion_ended">You reached the end of the cached video. Reconnect to continue.</string>
-    <string name="video_not_cached_offline">This part of the video is not cached. Reconnect to continue.</string>
     <string name="action_see_all">See all</string>
     <string name="action_play_all">Play all</string>
     <string name="action_show_more">Show More</string>
     <string name="action_try_again">Try again</string>
-    <string name="action_open_settings">Open Settings</string>
     <string name="action_clear_all">Clear all</string>
-    <string name="action_new_playlist">New playlist</string>
     <string name="action_grant_permission">Grant Permission</string>
     <string name="action_close">Close</string>
     <string name="action_check_updates">Check Updates</string>
@@ -93,11 +84,6 @@
 
     <!-- Local only mode notices -->
     <string name="local_only_title">Local only mode is on</string>
-    <string name="local_only_default_subtitle">This section needs the internet. Turn off Local only in Settings to use it.</string>
-    <string name="local_only_video_mode_subtitle">Video mode needs the internet. Turn off Local only in Settings to watch videos.</string>
-    <string name="local_only_video_search_subtitle">Video search needs the internet. Turn off Local only in Settings to search videos.</string>
-    <string name="local_only_subscriptions_subtitle">Subscriptions need the internet. Turn off Local only in Settings to see them.</string>
-    <string name="local_only_video_library_subtitle">The video library needs the internet. Turn off Local only in Settings to see it.</string>
     <string name="local_only_update_subtitle">Update checks need the internet. Turn off Local only in Settings to check for updates.</string>
 
     <!-- Crash report prompt (MainActivity) -->
@@ -125,14 +111,10 @@
     <string name="your_mix_line2">Mix</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Profile</string>
-    <string name="cd_downloads">Downloads</string>
-    <string name="cd_settings">Settings</string>
     <string name="cd_play">Play</string>
     <string name="cd_pause">Pause</string>
     <string name="cd_next">Next</string>
     <string name="cd_album_art">Album Art</string>
-    <string name="cd_show_all">Show all %1$s</string>
 
     <!-- Spotlight home -->
     <string name="spotlight_quick_picks">Quick picks</string>
@@ -140,7 +122,6 @@
     <string name="spotlight_new_for_you_caption">Songs you have not played, from artists you do</string>
     <string name="spotlight_discovery_empty">Nothing new to suggest yet</string>
     <string name="spotlight_discovery_empty_sub">Play and like a few more songs and this fills up.</string>
-    <string name="action_refresh">Refresh</string>
     <string name="spotlight_albums_to_explore">Albums to explore</string>
     <string name="spotlight_albums_to_explore_sub">Full records from the artists you play</string>
     <string name="spotlight_playlists_to_try">Playlists to try</string>
@@ -151,7 +132,6 @@
     <string name="spotlight_from_your_library">From your library</string>
     <string name="spotlight_caption_liked">From songs you liked</string>
     <string name="spotlight_caption_recent">From what you played lately</string>
-    <string name="shortcut_liked_songs">Liked songs</string>
     <string name="filter_all">All</string>
     <string name="filter_recommended">For you</string>
     <string name="filter_liked">Liked</string>
@@ -167,21 +147,14 @@
 
     <!-- Sleep timer -->
     <string name="sleep_timer_title">Sleep timer</string>
-    <string name="sleep_timer_off">Off</string>
     <string name="sleep_timer_status_track">This track</string>
     <string name="sleep_timer_detail_track">Playback stops when the song playing now finishes</string>
     <string name="sleep_timer_detail_duration">Playback fades out and pauses when the timer ends</string>
     <string name="minutes_short">%1$d min</string>
     <string name="sleep_timer_end_of_track">End of this track</string>
-    <string name="sleep_timer_end_of_video">End of this video</string>
-    <string name="sleep_timer_status_video">This video</string>
-    <string name="sleep_timer_detail_video">Playback stops when the video playing now ends</string>
-    <string name="sleep_timer_detail_duration_video">Playback pauses when the timer ends</string>
     <string name="sleep_timer_turn_off">Turn off</string>
 
     <!-- Mini player / shared component content descriptions -->
-    <string name="cd_switch_to_music">Switch to music mode</string>
-    <string name="cd_switch_to_video">Switch to video mode</string>
     <string name="cd_drag_to_reorder">Drag to reorder</string>
     <string name="cd_favorite">Favorite</string>
     <string name="cd_clear_search">Clear search</string>
@@ -209,7 +182,6 @@
     <!-- Playback speed control in the now-playing overflow sheet -->
     <string name="song_options_speed">Playback speed</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Normal speed</string>
     <string name="cd_speed_reset">Reset to normal speed</string>
 
     <!-- Now-playing overflow sheet: tile labels, pills and the volume control.
@@ -222,7 +194,6 @@
     <string name="np_tile_download">Download</string>
     <string name="np_tile_downloading">Saving</string>
     <string name="np_tile_downloaded">Saved</string>
-    <string name="np_pill_watch_video">Watch video</string>
     <string name="np_pill_block">Don\'t recommend</string>
     <string name="np_volume">Volume</string>
     <string name="np_volume_value">%1$d%%</string>
@@ -236,26 +207,10 @@
     <string name="description_optional_label">Description (Optional)</string>
 
     <!-- Video options sheet (video long-press) -->
-    <string name="video_options_watch_later">Watch later</string>
-    <string name="video_options_kept_on_device">Kept on this device</string>
-    <string name="video_options_save_to_playlist">Save to playlist</string>
-    <string name="video_options_download">Download</string>
-    <string name="video_options_go_to_channel">Go to channel</string>
     <string name="video_options_share">Share</string>
-    <string name="video_options_share_chooser">Share video</string>
     <string name="video_options_not_interested">Not interested</string>
-    <string name="video_options_mark_watched">Mark as watched</string>
-    <string name="video_options_mark_unwatched">Mark as unwatched</string>
-    <string name="video_options_remove_from_history">Remove from watch history</string>
-    <string name="video_options_dont_recommend_channel">Don\'t recommend channel</string>
-    <string name="video_options_dont_recommend_channel_name">Don\'t recommend %1$s</string>
     <string name="cd_back">Back</string>
-    <string name="search_playlists_placeholder">Search playlists</string>
-    <string name="no_playlist_matches">No playlist matches \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">No playlists yet. Make one and this video goes straight into it.</string>
     <string name="cd_saved">Saved</string>
-    <string name="cd_couldnt_save">Couldn\'t save</string>
-    <string name="cd_in_this_playlist">In this playlist</string>
 
     <!-- Settings hub -->
     <string name="settings_section_you">You</string>
@@ -268,7 +223,6 @@
     <string name="settings_player">Player</string>
     <string name="settings_playback_and_quality">Playback and quality</string>
     <string name="settings_content_and_feeds">Content and feeds</string>
-    <string name="settings_subscriptions">Subscriptions</string>
     <string name="settings_storage_and_cache">Storage and cache</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_local_library">Local library</string>
@@ -280,7 +234,6 @@
 
     <!-- Settings detail pages -->
     <string name="settings_section_youtube_music">YouTube Music</string>
-    <string name="sp_save_watch_history">Save Watch History</string>
     <string name="sp_replace_session_cookies">Replace Session Cookies</string>
     <string name="sp_replace_session_cookies_sub">Paste a fresh cookie header if your session goes stale</string>
     <string name="sp_sign_out_sub">Disconnect your YouTube account</string>
@@ -314,25 +267,17 @@
     <string name="about_report_issue_subtitle">Open a new issue on GitHub</string>
     <string name="about_open_source_note">Triat is based on Koda by Ivorisnoob and stays open source under GPL-3.0. The app mark and build details above are bundled with the app, so this page is complete before anything is fetched.</string>
     <string name="cd_profile_picture">Profile Picture</string>
-    <string name="cd_developer_avatar">Developer Avatar</string>
     <string name="sp_connected">Connected</string>
     <string name="sp_mode_music">Music</string>
-    <string name="sp_mode_video">Video</string>
-    <string name="sp_content_mode">Content Mode</string>
-    <string name="sp_content_mode_music">Showing music content</string>
-    <string name="sp_content_mode_video">Showing YouTube videos</string>
     <string name="sp_color_palette">Color palette</string>
     <string name="sp_amoled_black">AMOLED Black</string>
-    <string name="sp_backgrounds">Backgrounds</string>
     <string name="sp_ambient_background">Ambient Background</string>
-    <string name="sp_navigation">Navigation</string>
     <string name="sp_non_expressive_nav">Non-expressive navigation bar</string>
     <string name="sp_spotlight_home">Spotlight Home</string>
     <string name="sp_display_size">Display size</string>
 
     <!-- SponsorBlock -->
     <string name="sb_title">SponsorBlock</string>
-    <string name="sb_hub_sub">Skip sponsored and off-topic parts of videos</string>
     <string name="sb_enable">Enable SponsorBlock</string>
     <string name="sb_enable_sub">Look up crowd-sourced segments for videos you watch</string>
     <string name="sb_privacy_note">Triat never sends the video ID. It sends the first four characters of a hash of it and picks your video out of the results locally, so sponsor.ajay.app cannot tell what you are watching.</string>
@@ -351,10 +296,6 @@
     <string name="sb_action_skip">Skip</string>
     <string name="sb_action_manual">Ask</string>
     <string name="sb_action_ignore">Off</string>
-    <string name="sb_skipped">Skipped %1$s</string>
-    <string name="sb_skip">Skip %1$s</string>
-    <string name="sb_segments_found">%1$d in this video</string>
-    <string name="sb_no_segments">Nothing submitted for this video</string>
     <string name="sb_cat_sponsor">sponsor</string>
     <string name="sb_cat_sponsor_sub">Paid promotion, paid referrals and direct advertisements</string>
     <string name="sb_cat_selfpromo">self-promo</string>
@@ -375,7 +316,6 @@
         <item quantity="one">%1$d category</item>
         <item quantity="other">%1$d categories</item>
     </plurals>
-    <string name="sp_display_size_sub">Make everything in Triat smaller or larger</string>
     <string name="sp_display_size_preview">Preview</string>
     <string name="sp_display_size_scale">Scale</string>
     <string name="sp_display_size_about">About this setting</string>
@@ -410,11 +350,6 @@
     <string name="sp_music_quality_data_saver_opt">Data Saver (~48 kbps)</string>
     <string name="sp_music_quality_normal_opt">Normal (~128 kbps)</string>
     <string name="sp_music_quality_high_opt">High (best available)</string>
-    <string name="sp_playback_wifi_summary">%1$s music, %2$s video on Wi-Fi</string>
-    <string name="sp_prefer_hdr">Prefer HDR video</string>
-    <string name="sp_prefer_hdr_sub">Use HDR only when the display and decoder support it</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Standard</string>
     <string name="sp_mode">Mode</string>
     <string name="sp_sources">Sources</string>
     <string name="sp_sources_hint">Where search and your home feed get music from.</string>
@@ -432,20 +367,6 @@
     <string name="sp_local_only">Local Only</string>
     <string name="sp_local_only_sub_on">Offline: device library only, no internet</string>
     <string name="sp_local_only_sub_off">YouTube features enabled</string>
-    <string name="sp_home_mode_toggle">Home Screen Mode Toggle</string>
-    <string name="sp_home_mode_toggle_on">Switch music and video from the Home header</string>
-    <string name="sp_home_mode_toggle_off">Change the mode here in Settings only</string>
-    <string name="sp_timed_comments">Timed Comments</string>
-    <string name="sp_timed_comments_on">Comments appear on the seek bar where they were posted</string>
-    <string name="sp_timed_comments_off">Comments stay in the comment sheet</string>
-    <string name="sp_shorts_buttons_all">All buttons shown</string>
-    <string name="sp_shorts_buttons_hidden">%1$d hidden</string>
-    <string name="sp_compact_video_home">Compact video home</string>
-    <string name="sp_compact_video_home_sub">Show smaller thumbnails with titles and channels beside them</string>
-    <string name="sp_shorts">Shorts</string>
-    <string name="sp_no_description">No description</string>
-    <string name="sp_shorts_enabled_sub">Shown on Home and opened in the swipe player</string>
-    <string name="sp_shorts_disabled_sub">Hidden from Home; opened in the video player elsewhere</string>
     <string name="sp_shorts_buttons">Shorts Buttons</string>
     <string name="sp_shorts_buttons_sub">Tap a button to show or hide it in Shorts</string>
     <string name="sp_excluded_folders_sub">Songs from selected folders won\'t appear in your library</string>
@@ -453,10 +374,6 @@
     <string name="sp_no_music_folders">No music folders found</string>
 
     <!-- Per-network quality pickers -->
-    <string name="qd_video_wifi">Video Quality on Wi-Fi</string>
-    <string name="qd_video_wifi_desc">Videos start at this quality on Wi-Fi when available, falling back to the closest lower one.</string>
-    <string name="qd_video_mobile">Video Quality on Mobile Data</string>
-    <string name="qd_video_mobile_desc">Videos start at this quality on mobile data when available, falling back to the closest lower one.</string>
     <string name="qd_music_wifi">Music Quality on Wi-Fi</string>
     <string name="qd_music_wifi_desc">Songs stream at this quality on Wi-Fi.</string>
     <string name="qd_music_mobile">Music Quality on Mobile Data</string>
@@ -471,25 +388,10 @@
     <string name="auto_help_step4">Re-check the app launcher in your car</string>
     <string name="auto_help_note">The exact wording and location of these options varies between phone brands and Auto versions.</string>
     <string name="sp_recommendations">Recommendations</string>
-    <string name="vhc_title">Video Home</string>
-    <string name="vhc_summary">The feed, the destinations and their order</string>
-    <string name="vhc_feed_section">Home feed</string>
-    <string name="vhc_recommendations">Recommendations and suggestions</string>
-    <string name="vhc_recommendations_sub">Load suggested videos in Home</string>
-    <string name="vhc_navigation_section">Destinations</string>
-    <string name="vhc_navigation_hint">Hide any destination you do not use. At least one stays visible.</string>
     <string name="vhc_move_up">Move %1$s up</string>
     <string name="vhc_move_down">Move %1$s down</string>
-    <string name="vh_recommendations_off">Recommendations are off</string>
-    <string name="vh_recommendations_off_sub">Shorts can still appear here when enabled.</string>
-    <string name="vp_resumed_from">Resumed from %1$s</string>
-    <string name="vp_play_from_start">Play from start</string>
     <string name="sp_show_recent_searches">Show recent searches</string>
     <string name="sp_show_recent_searches_sub">Your past queries under the search bar</string>
-    <string name="sp_show_related_videos">Show related videos</string>
-    <string name="sp_show_related_videos_sub">Suggestions under a video while it plays</string>
-    <string name="sp_inline_previews">Preview videos on cards</string>
-    <string name="sp_inline_previews_sub">Rest on a card and it plays silently in place</string>
     <string name="sp_playlist_songs">Playlist songs</string>
     <string name="sp_playlist_swipe">Swipe actions</string>
     <string name="sp_playlist_swipe_sub_on">Swipe a song for its quick action</string>
@@ -504,9 +406,6 @@
     <string name="si_playlist_swipe">Quick actions when you swipe a song in a playlist. Queue appends it to the playing queue. Remove only swipes where the playlist can be edited, and a YouTube list that is not yours only ever offers Play and Queue.</string>
     <string name="sp_not_recommended">Not Recommended</string>
     <string name="sp_not_recommended_sub">Videos and channels you\'ve hidden from your feeds</string>
-    <string name="sp_manage_subscriptions">Manage Subscriptions</string>
-    <string name="sp_manage_subscriptions_sub">Import, export and group the channels you follow</string>
-    <string name="sp_where_they_live">Where they live</string>
     <string name="sp_subscriptions_shown">Subscriptions Shown</string>
     <string name="sp_subs_source_desc">Which list the Subscriptions tab builds its feed from.</string>
     <string name="sp_subscribe_saves_to">Subscribe Saves To</string>
@@ -525,26 +424,14 @@
     <string name="sp_subs_tgt_youtube_desc">Needs you to be signed in</string>
     <string name="sp_subs_tgt_both_desc">Keeps a local copy that survives signing out</string>
     <string name="sp_subs_tgt_auto_desc">Falls back to this device when signed out</string>
-    <string name="sp_feed">Feed</string>
-    <string name="sp_fast_refresh">Fast Subscription Refresh</string>
-    <string name="sp_fast_refresh_on">Much less data and exact upload times, but no duration badges</string>
-    <string name="sp_fast_refresh_off">Full details for every video - slow on a large subscription list</string>
     <string name="sp_downloads">Downloads</string>
     <string name="sp_private_downloads">Private downloads</string>
     <string name="sp_private_downloads_on">New audio and video stay inside Triat and are removed on uninstall</string>
     <string name="sp_private_downloads_off">New audio and video appear in Downloads/Triat</string>
     <string name="sp_private_downloads_note">Album art stays hidden from Gallery in either mode. Existing downloads stay where they are.</string>
     <string name="sp_cache">Cache</string>
-    <string name="sp_cache_videos">Cache videos</string>
-    <string name="sp_cache_videos_sub">Keep temporary video data for seeking and replay</string>
-    <string name="sp_cache_shorts">Cache Shorts</string>
-    <string name="sp_cache_shorts_sub">Keep temporary Shorts data for swipe-back and replay</string>
     <string name="sp_playback_preload">Preload upcoming media</string>
     <string name="sp_playback_preload_sub">Prepare upcoming music and Shorts before you play them</string>
-    <string name="sp_clear_video_cache">Clear video cache</string>
-    <string name="sp_clear_video_cache_sub">Remove temporary video data; keep downloads</string>
-    <string name="sp_clear_shorts_cache">Clear Shorts cache</string>
-    <string name="sp_clear_shorts_cache_sub">Remove temporary Shorts data; keep downloads</string>
     <string name="sp_playback_cache_note">Music uses the storage limit above. Video and Shorts data clears five minutes after both players close. Turning caching off stops new writes on the next load. Downloads are kept separately. Crossfade may still prepare the next song when enabled.</string>
     <string name="sp_cache_music">Cache music</string>
     <string name="sp_cache_music_sub">Keep streamed songs for faster replay and offline listening</string>
@@ -561,14 +448,6 @@
     <string name="sp_live_playback_updates_sub">Show what\'s playing as a live status bar chip</string>
     <string name="sp_blocked_by_system">Blocked by system settings</string>
     <string name="sp_blocked_by_system_sub">Allow live updates for Triat in Android settings</string>
-    <string name="sp_new_uploads">New uploads</string>
-    <string name="sp_notify_new_uploads">Notify about new uploads</string>
-    <string name="sp_notify_new_uploads_on">Checks channels you follow on this device</string>
-    <string name="sp_notify_new_uploads_off">Off: Triat only checks while you are using it</string>
-    <string name="sp_channels">Channels</string>
-    <string name="sp_choose_notifiers">Choose who may notify you</string>
-    <string name="sp_muted">Muted</string>
-    <string name="sp_notifying">Notifying</string>
     <string name="sp_device_music">Device music</string>
     <string name="sp_load_local_songs">Load Local Songs</string>
     <string name="sp_excluded_folders">Excluded Folders</string>
@@ -607,27 +486,18 @@
     <string name="ob_audio_access_needed">Needed to find songs on this device.</string>
     <string name="ob_allow">Allow</string>
     <string name="ob_hint_only_audio">Only your audio files are read. Nothing leaves the device.</string>
-    <string name="ob_page_ytmusic">YouTube Music</string>
     <string name="ob_page_ytmusic_body">Connect your account for personalized recommendations, liked songs and playlists. Search and streaming work without it.</string>
     <string name="ob_account_connected">Account connected</string>
     <string name="ob_not_connected">Not connected</string>
     <string name="ob_recs_ready">Personalized recommendations are ready.</string>
     <string name="ob_optional_sign_in_later">Optional, and you can sign in later from Settings.</string>
     <string name="ob_hint_session_secure">Your session is stored securely on this device only.</string>
-    <string name="ob_page_video_mode">Video mode</string>
-    <string name="ob_page_video_mode_body">Turn the Home tab into a video feed with an in-app player, mini player and picture-in-picture. You can flip between music and video any time.</string>
-    <string name="ob_enable_video_mode">Enable video mode</string>
-    <string name="ob_enable_video_mode_sub">Video home, video search and watch history</string>
-    <string name="ob_home_switch">Home screen switch</string>
-    <string name="ob_home_switch_sub">Quick music/video toggle in the Home top bar</string>
-    <string name="ob_shorts_sub">Show a Home shelf and use the vertical swipe player</string>
     <string name="ob_shorts_warning">Endless short-form feeds are designed to keep you scrolling. With Shorts off, they stay out of Home and open in the standard video player elsewhere.</string>
     <string name="ob_page_look_and_feel">Look and feel</string>
     <string name="ob_look_and_feel_body">Triat uses Material You dynamic color. Choose how it should behave on this device.</string>
     <string name="theme_system">System</string>
     <string name="theme_dark">Dark</string>
     <string name="theme_light">Light</string>
-    <string name="ob_theme_card">Theme</string>
     <string name="ob_ambient_artwork">Ambient artwork</string>
     <string name="ob_ambient_artwork_sub">Let album art color the player background</string>
     <string name="ob_home_screen_card">Home screen</string>
@@ -666,41 +536,12 @@
 
     <!-- Video home -->
     <string name="vh_available_offline">Available offline</string>
-    <string name="vh_recommended_for_you">Recommended For You</string>
-    <string name="vh_trending_videos">Trending Videos</string>
-    <string name="vh_from_subscriptions">From your subscriptions</string>
-    <string name="vh_subscription_mix">Shuffled from your subscriptions</string>
-    <string name="vh_subscription_mix_empty">Couldn\'t find videos from the channels you follow. Pull down to try again.</string>
-    <string name="vh_no_subscriptions">No subscriptions yet</string>
-    <string name="vh_no_subscriptions_sub">Subscribe to channels to see their latest videos on Home</string>
-    <string name="vh_youre_offline">You\'re offline</string>
-    <string name="vh_removed_from_history">Removed from watch history</string>
-    <string name="vh_clear_history">Clear watch history</string>
-    <string name="vh_clear_history_body">This empties Triat\'s watch history on this device. It does not delete anything from your YouTube account.</string>
-    <string name="vh_clear_history_confirm">Clear</string>
-    <string name="vh_no_videos_found">No videos found</string>
-    <string name="vh_downloaded_hint">Downloaded videos will appear here</string>
 
     <!-- Video library -->
-    <string name="vl_watch_history">Watch History</string>
-    <string name="vl_library_sub">Your playlists, history and saved videos</string>
-    <string name="liked_videos">Liked Videos</string>
-    <string name="history">History</string>
-    <string name="view_all">View all</string>
-    <string name="your_playlists">Your Playlists</string>
-    <string name="action_new">New</string>
-    <string name="vl_no_playlists_hint">No playlists yet. Tap New to make one.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">This device</string>
-    <string name="vl_local_playlist_note">Stays on this phone. Works signed out, and is not visible on youtube.com.</string>
-    <string name="vl_account_playlist_note">Added to your YouTube account, so it shows up everywhere you are signed in.</string>
-    <string name="rename_playlist">Rename playlist</string>
     <string name="action_rename">Rename</string>
     <string name="delete_playlist_q">Delete playlist?</string>
     <string name="delete_playlist">Delete playlist</string>
     <string name="cd_playlist_options">Playlist options</string>
-    <string name="vl_login_wall">Log in to see your playlists, Watch Later and liked videos</string>
-    <string name="log_in_youtube">Log in to YouTube</string>
     <string name="remove_from_account_q">Remove from your YouTube account?</string>
     <string name="share_playlist_chooser">Share playlist</string>
     <string name="vl_no_videos">No videos in this playlist</string>
@@ -709,38 +550,10 @@
         <item quantity="other">%d videos</item>
     </plurals>
     <string name="vpl_video_count_partial">%d+ videos</string>
-    <string name="vpl_section_videos">Videos</string>
-    <string name="vpl_load_failed_title">Couldn\'t load videos</string>
-    <string name="vpl_load_failed_body">This playlist didn\'t load. Check your connection and try again.</string>
-    <string name="vpl_empty_body">Videos saved to this playlist will show up here.</string>
-    <string name="remove_from_watch_later">Remove from Watch Later</string>
-    <string name="remove_from_liked_videos">Remove from Liked videos</string>
-    <string name="remove_from_playlist">Remove from playlist</string>
-    <string name="cd_video_options">Video options</string>
 
     <!-- Subscriptions -->
-    <string name="sc_unfollow_body">Removes it from this device. Your YouTube account isn\'t touched.</string>
-    <string name="unfollow">Unfollow</string>
-    <string name="cd_all_channels">All channels</string>
-    <string name="sc_hide_watched">Hide watched</string>
-    <string name="sc_no_uploads_match">No uploads match these filters.</string>
-    <string name="search_channels">Search channels</string>
-    <string name="sc_none_found">No subscriptions found</string>
-    <string name="sc_search_hint">Try part of the name, or the @handle.</string>
-    <string name="sc_empty_body">Follow channels on this device, or sign in to bring your YouTube subscriptions across.</string>
-    <string name="import_subscriptions">Import subscriptions</string>
-    <string name="sc_group_empty">No recent uploads from this group.</string>
-    <string name="sc_not_following">You aren\'t following any channels yet.</string>
-    <string name="sc_no_uploads">No recent uploads from your channels.</string>
-    <string name="show_all_channels">Show all channels</string>
-    <string name="sc_latest_from_channels">Latest from channels you follow</string>
-    <string name="sc_any_time">Any time</string>
     <string name="sc_today">Today</string>
     <string name="sc_this_week">This week</string>
-    <string name="sc_newest_first">Newest first</string>
-    <string name="sc_oldest_first">Oldest first</string>
-    <string name="sc_on_device">%1$d on this device</string>
-    <string name="sc_channels_on_device">%1$d channels - %2$d on this device</string>
 
     <!-- Player sheet -->
     <string name="ps_now_playing">Now Playing</string>
@@ -765,17 +578,8 @@
     <string name="load_more">Load More</string>
 
     <!-- Shorts -->
-    <string name="sh_playback_failed">Playback failed</string>
-    <string name="cd_close_shorts">Close Shorts</string>
-    <string name="subscribed">Subscribed</string>
-    <string name="subscribe">Subscribe</string>
-    <string name="like">Like</string>
     <string name="cd_dislike">Dislike</string>
     <string name="cd_comments">Comments</string>
-    <string name="share_short">Share Short</string>
-    <string name="stop_recommending">Stop recommending</string>
-    <string name="sh_hide_short_sub">Hide this Short and move on</string>
-    <string name="sh_hide_channel_sub">Hide everything from this channel</string>
 
     <!-- Downloads -->
     <string name="stop_all">Stop all</string>
@@ -830,12 +634,8 @@
     <string name="ni_section_items">Videos and songs</string>
     <string name="ni_section_sources">Channels and artists</string>
     <string name="ni_empty_body">Long-press any video or song and choose \"Not interested\" or \"Don\'t recommend\" to keep it out of your feeds.</string>
-    <string name="cd_close_comments">Close comments</string>
 
     <!-- Watch history -->
-    <string name="vhs_empty_body">Videos you watch will show up here. Log in to also sync your YouTube history.</string>
-    <string name="vhs_none_found">No history found</string>
-    <string name="vhs_pick_up">Pick up where you left off</string>
 
     <!-- Backup and restore -->
     <string name="bk_write_failed">That file could not be written. Pick another folder and try again.</string>
@@ -877,7 +677,6 @@
     <string name="bk_folder_title">Backup folder</string>
     <string name="bk_folder_none">No folder selected</string>
     <string name="bk_folder_pick">Choose folder</string>
-    <string name="bk_folder_change">Change folder</string>
     <string name="bk_folder_permission_lost">Storage access was revoked. Tap to choose the folder again.</string>
     <string name="bk_folder_not_found">The backup folder is unavailable or missing. Tap to choose a new folder.</string>
     <string name="bk_freq_title">Frequency</string>
@@ -916,7 +715,6 @@
 
     <!-- Update screen -->
     <string name="us_title">Software Update</string>
-    <string name="us_checking">Checking for updates...</string>
     <string name="us_checking_short">Checking...</string>
     <string name="us_no_releases">No releases available yet.</string>
     <string name="us_no_releases_short">No Releases</string>
@@ -924,14 +722,10 @@
     <string name="us_up_to_date">You\'re Up to Date</string>
     <string name="us_error">Something Went Wrong</string>
     <string name="us_whats_new">What\'s New</string>
-    <string name="us_release_image">Release Image</string>
-    <string name="us_your_device">Your Device</string>
     <string name="us_architecture">Architecture</string>
     <string name="us_apk">APK</string>
-    <string name="us_size">Size</string>
     <string name="us_view_release">View Release on GitHub</string>
     <string name="us_all_variants">All Variants</string>
-    <string name="us_all_good">All Good!</string>
     <string name="us_latest_body">You\'re running the latest version of Triat.</string>
     <string name="us_couldnt_check">Couldn\'t Check for Updates</string>
     <string name="us_check_again">Check again</string>
@@ -987,7 +781,6 @@
 
     <!-- App lock / time limit -->
     <string name="al_todays_listening">That\'s today\'s listening</string>
-    <string name="al_youve_had">You\'ve had </string>
     <string name="al_resets_midnight">Resets every night at midnight</string>
     <string name="tl_locked_until_midnight">Triat is locked until midnight</string>
     <string name="tl_locks_when_budget">Triat locks when the day\'s budget runs out</string>
@@ -1027,20 +820,12 @@
     <string name="cd_close">Close</string>
 
     <!-- Channel / artist / album -->
-    <string name="ch_search_channel">Search this channel</string>
-    <string name="ch_share_channel">Share channel</string>
-    <string name="ch_share_chooser">Share channel</string>
     <string name="cd_more_options">More options</string>
-    <string name="ch_open_artist_page">Open music artist page</string>
-    <string name="ch_recommend_again">Recommend this channel again</string>
-    <string name="ch_unavailable_title">This channel isn\'t available</string>
-    <string name="ch_unavailable_body">It may have been renamed, removed, or restricted in your region.</string>
     <string name="ar_open_youtube_channel">Open YouTube channel</string>
     <string name="ar_sort_suggested">Suggested</string>
     <string name="ar_sort_title">A-Z</string>
     <string name="ar_sort_album">Album</string>
     <string name="ar_sort_longest">Longest</string>
-    <string name="ar_filter_songs">Filter these songs</string>
     <string name="ar_filter_hint">Song or album name</string>
     <string name="ar_no_matching_songs">No songs match that</string>
     <string name="ar_matching_count">%1$d of %2$d</string>
@@ -1050,127 +835,22 @@
     <string name="unknown_album">Unknown Album</string>
     <string name="various_artists">Various Artists</string>
     <string name="ab_tracks">Tracks</string>
-    <string name="ab_download_all">Download all</string>
 
     <!-- Video player -->
-    <string name="vp_captions">Captions</string>
-    <string name="vp_collaborators">Collaborators</string>
-    <string name="vp_rewind">Rewind 10 seconds</string>
-    <string name="vp_forward">Forward 10 seconds</string>
-    <string name="vp_chapters">Chapters</string>
-    <string name="vp_live_chat">Live chat</string>
-    <string name="vp_open_live_chat">Open live chat</string>
-    <string name="vp_description">Description</string>
-    <string name="vp_show_less">Show less</string>
-    <string name="vp_related_videos">Related videos</string>
-    <string name="vp_open_queue">Open the playlist queue</string>
-    <string name="vp_remove_like">Remove like</string>
-    <string name="vp_remove_dislike">Remove dislike</string>
 
     <!-- Playback settings / captions sheets -->
-    <string name="vpc_playback_settings">Playback settings</string>
-    <string name="vpc_quality_auto">Auto</string>
-    <string name="vpc_listen_as_music">Listen as music</string>
-    <string name="vpc_listen_as_music_sub">Move this video to the music player</string>
-    <string name="vpc_autoplay">Autoplay</string>
-    <string name="vpc_autoplay_on">Play the next playlist or related video</string>
-    <string name="vpc_autoplay_off">Stop and stay on this video</string>
-    <string name="vpc_loop">Loop video</string>
-    <string name="vpc_loop_note">Turning this on also enables Autoplay</string>
-    <string name="vpc_loop_off">Repeat this video instead of moving on</string>
-    <string name="vpc_loop_on">Repeat this video when it ends</string>
-    <string name="vpc_no_qualities">No qualities available</string>
-    <string name="vpc_normal">Normal</string>
-    <string name="vpc_pip">Picture in picture</string>
-    <string name="vpc_pip_sub">Keep watching over other apps</string>
-    <string name="vpc_return_to_video">Return to the full video</string>
-    <string name="vpc_browse_conversation">Browse the conversation</string>
-    <string name="vpc_queue_sub">See and choose what plays next</string>
-    <string name="vpc_timed_comments_sub">Show comments at their video moments</string>
-    <string name="vpc_live_chat_sub">Show the conversation beside the stream</string>
-    <string name="vpc_vertical_live">Vertical live view</string>
-    <string name="vpc_vertical_live_sub">Return to the full-height stream</string>
-    <string name="vpc_zoom_to_fill">Zoom to fill</string>
-    <string name="vpc_zoom_to_fill_sub">Crop the video to fill the screen</string>
-    <string name="vpc_zoomed_to_fill">Zoomed to fill</string>
-    <string name="vpc_zoom_original">Original</string>
-    <string name="vpc_language">Language</string>
-    <string name="vpc_no_captions">No captions available for this video</string>
-    <string name="vpc_off">Off</string>
-    <string name="vpc_no_embedded_subtitles">This video has no subtitle tracks</string>
-    <string name="vpc_audio_track">Audio track</string>
 
     <!-- Device videos in the video-mode Library -->
     <string name="dv_on_this_device">On this device</string>
-    <string name="dv_open_with">Open with</string>
-    <string name="dv_open_with_subtitle">Rename, move or delete it in another app</string>
-    <string name="dv_open_with_none">No app on this device can open this video</string>
-    <string name="dv_opened_externally">Opened from another app</string>
-    <string name="dv_card_subtitle">Videos stored on your phone</string>
-    <string name="dv_all_videos">All videos</string>
-    <string name="dv_one_video">1 video</string>
-    <string name="dv_many_videos">%1$d videos</string>
-    <string name="dv_no_videos">No videos found on this device</string>
-    <string name="dv_folder_empty">Nothing here any more</string>
-    <string name="dv_access_body">Play videos stored on your phone. Triat needs access to your video files.</string>
-    <string name="dv_allow_access">Allow access</string>
-    <string name="dv_partial_access">Showing only the videos you selected.</string>
-    <string name="dv_select_more">Select more</string>
-    <string name="dv_select_videos">Select videos</string>
-    <string name="dv_sort">Sort</string>
-    <string name="dv_sort_recent">Recently added</string>
-    <string name="dv_sort_name">Name</string>
-    <string name="dv_sort_duration">Longest first</string>
-    <string name="dv_sort_size">Largest first</string>
-    <string name="vpc_white">White</string>
-    <string name="vpc_yellow">Yellow</string>
-    <string name="vpc_none">None</string>
-    <string name="vpc_soft">Soft</string>
-    <string name="vpc_solid">Solid</string>
-    <string name="vpc_text_size">Text size</string>
 
     <!-- Mini video player -->
-    <string name="mv_close_player">Close video player</string>
 
     <!-- Vertical live -->
-    <string name="vl_show_details">Show video details</string>
 
     <!-- Live chat -->
-    <string name="lc_close_chat">Close live chat</string>
-    <string name="lc_turned_off">Live chat is turned off for this stream</string>
-    <string name="lc_waiting">Waiting for messages</string>
-    <string name="lc_say_something">Say something...</string>
-    <string name="lc_latest">Latest</string>
-    <string name="lc_super_sticker">Super Sticker</string>
-    <string name="lc_chat_hint">Chat...</string>
-    <string name="lc_sign_in_to_chat">Sign in to chat</string>
-    <string name="lc_send">Send message</string>
 
     <!-- Subscriptions manager -->
     <string name="sm_write_failed">Couldn\'t write that file</string>
-    <string name="sm_nothing_followed">Nothing followed on this device</string>
-    <string name="sm_transfer">Transfer</string>
-    <string name="sm_import_file">Import from a file</string>
-    <string name="sm_import_file_sub">A NewPipe, PipePipe or Tubular export or backup, or a Google Takeout file</string>
-    <string name="sm_copy_account">Copy from YouTube account</string>
-    <string name="sm_copy_sub">Keeps following these channels after you sign out</string>
-    <string name="sm_sign_in_first">Sign in to YouTube first</string>
-    <string name="sm_export">Export to a file</string>
-    <string name="sm_nothing_to_export">Nothing to export yet</string>
-    <string name="sm_readable_by_newpipe">Readable by NewPipe and its forks</string>
-    <string name="sp_groups">Groups</string>
-    <string name="sm_groups_note">Groups let you narrow the Subscriptions feed to a slice of your channels.</string>
-    <string name="sm_new_group">New group</string>
-    <string name="sm_remove_all">Remove all local subscriptions</string>
-    <string name="sm_delete_group_body">The channels in it stay subscribed - only the group goes.</string>
-    <string name="sm_remove_all_q">Remove all?</string>
-    <string name="sm_remove_all_body">This clears every channel and group stored on this device. Subscriptions on your YouTube account are not touched.</string>
-    <string name="sm_importing">Importing subscriptions</string>
-    <string name="sm_none_yet">No channels on this device yet</string>
-    <string name="sm_empty_body">Import a list from another app, copy your YouTube account, or just tap Subscribe on any channel.</string>
-    <string name="sm_import_failed">Import failed</string>
-    <string name="sm_import_finished">Import finished</string>
-    <string name="sm_foreign_skipped">Channels from BiliBili, NicoNico and the like were skipped - Triat only plays YouTube.</string>
 
     <!-- Player styles / home styles -->
     <string name="ps_style_classic">Classic</string>
@@ -1198,42 +878,19 @@
     <!-- Settings search / quality dialogs -->
     <string name="sp_music_quality_wifi">Music quality on Wi-Fi</string>
     <string name="sp_music_quality_mobile">Music quality on mobile data</string>
-    <string name="sp_video_quality_wifi">Video quality on Wi-Fi</string>
-    <string name="sp_video_quality_mobile">Video quality on mobile data</string>
     <string name="ss_search_settings">Search settings</string>
-    <string name="hvm_subs_feed_empty">No recent uploads from the channels you follow.</string>
-    <string name="hvm_subs_feed_error">Couldn\'t load recent uploads. Check your connection and try again.</string>
     <plurals name="hvm_subs_feed_rate_limited">
         <item quantity="one">YouTube is limiting requests from this network. Try again in about %1$d minute.</item>
         <item quantity="other">YouTube is limiting requests from this network. Try again in about %1$d minutes.</item>
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube is limiting requests from this network. Try again in a moment.</string>
-    <string name="hvm_channel_feed_error">Couldn\'t load uploads from %1$s. Pull to try again.</string>
-    <string name="hvm_import_empty">That file was empty or could not be opened.</string>
-    <string name="hvm_import_foreign">That file only had channels from services Triat can\'t play.</string>
-    <string name="hvm_import_no_channels">Couldn\'t find any channels in that file.</string>
-    <string name="hvm_import_read">Couldn\'t read that file.</string>
-    <string name="hvm_copy_empty">Your account has no subscriptions to copy.</string>
-    <string name="hvm_network">Couldn\'t reach YouTube.</string>
-    <string name="sm_exported">Exported %1$d channels</string>
     <string name="wifi">Wi-Fi</string>
     <string name="mobile_data">Mobile data</string>
-    <string name="cm_delete_q">Delete comment?</string>
-    <string name="cm_delete_body">Your comment will be permanently deleted.</string>
-    <string name="ob_off_hint">Off keeps a cleaner, music-first layout. The video player stays available either way.</string>
 
     <!-- Queue / notifications / download sheets -->
-    <string name="vq_playing_from">Playing from</string>
-    <string name="ns_none_yet">No notifications yet</string>
-    <string name="vd_title">Download video</string>
-    <string name="vd_load_failed">Couldn\'t load qualities. Check your connection.</string>
-    <string name="vd_no_stream">No downloadable stream for this video</string>
     <string name="vd_estimated">Estimated download</string>
-    <string name="vd_calculating">Calculating size…</string>
     <string name="vd_size_unavailable">Size unavailable</string>
     <string name="vd_remember_quality">Remember this quality</string>
-    <string name="vd_remember_sub">Use it as the default for future downloads</string>
-    <string name="vd_already">Already downloaded</string>
     <string name="vd_added">Added to downloads</string>
     <string name="sd_title">Download song</string>
     <string name="sd_artwork_note">Artwork and lyrics may add a little to the final size.</string>
@@ -1261,8 +918,6 @@
     <string name="pd_download_full">Download full playlist</string>
 
     <!-- Library detail -->
-    <string name="cd_close_menu">Close menu</string>
-    <string name="cd_library_actions">Library actions</string>
     <string name="ready_offline">Ready offline</string>
     <string name="lib_everything_in_order">Everything you play, in order</string>
     <string name="lib_edit_playlist">Edit playlist</string>
@@ -1284,7 +939,6 @@
     <string name="lib_hidden_count">%1$d hidden</string>
     <string name="lib_unhide">Unhide</string>
     <string name="lib_hidden_explainer">These stay on your account. Triat just stops listing them.</string>
-    <string name="lib_playlist_hidden">Hidden from Triat</string>
     <string name="lib_removed_from_library">Removed from your library</string>
     <string name="lib_load_failed_title">Couldn\'t load tracks</string>
     <string name="lib_load_failed_body">This playlist came back empty. Check your connection and try again.</string>
@@ -1296,10 +950,6 @@
         <item quantity="one">%1$d channel</item>
         <item quantity="other">%1$d channels</item>
     </plurals>
-    <plurals name="vp_collaborators_count">
-        <item quantity="one">%1$d channel shares this video</item>
-        <item quantity="other">%1$d channels share this video</item>
-    </plurals>
 
     <!-- Profile switcher -->
     <string name="profiles_title">Profiles</string>
@@ -1310,7 +960,6 @@
     <string name="add_device_profile_subtitle">Separate subscriptions, no account needed</string>
     <string name="incognito_title">Incognito</string>
     <string name="incognito_subtitle">Pause watch, search and listening history. Downloads, playlists and likes still save.</string>
-    <string name="incognito_active">Incognito is on</string>
     <string name="profile_signed_out">Signed out - tap to sign in</string>
     <string name="profile_session_expired">Session expired - tap to reconnect</string>
     <string name="profile_on_this_device">On this device</string>
@@ -1330,7 +979,6 @@
     <string name="fab_downloads">Downloads</string>
     <string name="fab_listening_history">Listening history</string>
     <string name="fab_statistics">Statistics</string>
-    <string name="cd_listening_stats">Listening stats</string>
     <string name="recently_played">Recently played</string>
     <string name="liked_songs">Liked Songs</string>
     <string name="no_artists_yet">No artists yet</string>
@@ -1341,28 +989,13 @@
     <!-- Search -->
     <string name="search_title">Search</string>
     <string name="search_placeholder_music">Search songs, artists, albums...</string>
-    <string name="search_placeholder_videos">Search videos, channels...</string>
     <string name="badge_song">Song</string>
-    <string name="badge_video">Video</string>
     <string name="badge_live">LIVE</string>
     <string name="searching_music">Searching Music...</string>
     <string name="searching_artists">Searching Artists...</string>
     <string name="searching_albums">Searching Albums...</string>
     <string name="searching_playlists">Searching Playlists...</string>
-    <string name="searching_videos">Searching Videos...</string>
-    <string name="topic_gaming">Gaming</string>
-    <string name="topic_music">Music</string>
-    <string name="topic_news">News</string>
-    <string name="topic_live">Live</string>
-    <string name="topic_podcasts">Podcasts</string>
-    <string name="topic_movies">Movies</string>
-    <string name="topic_tech">Tech</string>
-    <string name="topic_sports">Sports</string>
-    <string name="topic_learning">Learning</string>
-    <string name="search_explore_title">Explore</string>
-    <string name="trending_now">Trending now</string>
     <string name="browse_your_library">Browse Your Library</string>
-    <string name="section_channels">Channels</string>
     <string name="section_playlists">Playlists</string>
     <string name="section_artists">Artists</string>
     <string name="section_albums">Albums</string>
@@ -1382,7 +1015,6 @@
     <string name="spin_source_recent">Recent</string>
     <string name="spin_empty">Nothing on the wheel yet</string>
     <string name="spin_empty_hint">Play or like a few songs and they will turn up here.</string>
-    <string name="source_youtube_videos">YouTube Videos</string>
     <string name="source_youtube_music">YouTube Music</string>
     <string name="source_soundcloud">SoundCloud</string>
     <string name="source_local_library">Local Library</string>
@@ -1406,14 +1038,11 @@
     <string name="cat_artists">Artists</string>
     <string name="cat_albums">Albums</string>
     <string name="cat_playlists">Playlists</string>
-    <string name="cat_videos">Videos</string>
-    <string name="cat_channels">Channels</string>
     <string name="link_detected">YouTube link detected</string>
     <string name="link_ready_to_play">Ready to play</string>
     <string name="link_playlist_loaded">Playlist loaded</string>
     <string name="link_error_banner">Couldn\'t load link</string>
     <string name="link_fetching">Fetching from YouTube</string>
-    <string name="link_preparing_video">Getting the video ready</string>
     <string name="link_preparing_song">Getting the song ready</string>
     <string name="link_header_playlist">YouTube Playlist</string>
     <string name="link_tap_to_play_songs">%1$d songs • Tap to play</string>
@@ -1444,12 +1073,9 @@
     <string name="palette_style_monochrome">Monochrome</string>
     <string name="dl_paused">Paused · resume when you’re ready</string>
     <string name="dl_resume">Resume download</string>
-    <string name="vl_downloaded_content">Downloaded content</string>
-    <string name="vl_downloaded_content_sub">Watch saved videos and manage downloads</string>
 
     <!-- App Icon Customizer -->
     <string name="sp_app_icon">App icon</string>
-    <string name="sp_app_icon_subtitle">Customize launcher icon style and colors</string>
     <string name="app_icon_classic">Triat Classic</string>
     <string name="app_icon_classic_desc">Deep purple with cream note &amp; neon lime spark</string>
     <string name="app_icon_crimson">Crimson Beat</string>
@@ -1481,7 +1107,6 @@
     <string name="app_icon_apply_failed">Android refused the icon change. Nothing was altered.</string>
     <string name="app_icon_current">Active</string>
     <string name="app_icon_apply_button">Apply to Home Screen</string>
-    <string name="app_icon_closest_preset">Matches "%1$s" preset</string>
     <string name="app_icon_reset">Reset</string>
     <string name="app_icon_shape_squircle">Squircle</string>
     <string name="app_icon_shape_circle">Circle</string>
@@ -1505,8 +1130,6 @@
     <string name="sp_touch_feedback">Touch feedback</string>
     <string name="sp_display_section">Display</string>
     <string name="sp_home_and_navigation">Home and navigation</string>
-    <string name="sp_video_section">Video</string>
-    <string name="sp_remember_brightness">Remember fullscreen brightness</string>
     <string name="sp_home_classic">Classic</string>
     <string name="sp_home_spotlight">Spotlight</string>
     <string name="sp_nav_floating">Floating</string>
@@ -1518,7 +1141,6 @@
     <string name="si_hub_player">Choose between eight now-playing designs and control how the player uses album artwork colors.</string>
     <string name="si_hub_playback">Song transitions, volume levelling, queue behavior, and streaming quality chosen per network.</string>
     <string name="si_hub_content">Switch between music and video mode, go fully offline, and tune Shorts, feeds and recommendations.</string>
-    <string name="si_hub_subscriptions">Manage followed channels, choose whether they live on this device or your account, and how the feed refreshes.</string>
     <string name="si_hub_sponsorblock">Skips sponsor reads and other segments in videos automatically, using community-submitted timestamps. Off by default.</string>
     <string name="si_hub_storage">Where downloads are kept, what gets cached for instant replays, and how much space Triat is allowed to use.</string>
     <string name="si_hub_notifications">Alerts for new uploads from channels you follow, and live status-bar progress for downloads and playback.</string>
@@ -1533,39 +1155,23 @@
     <string name="si_display_size">Scales the whole interface up or down without touching your system font size. You preview the change before it applies.</string>
     <string name="si_spotlight">Two Home designs showing the same content. Classic leads with a large hero and carousels; Spotlight is a denser grid of shortcuts, quick picks and artwork shelves.</string>
     <string name="si_nav_bar">The floating toolbar hides while you scroll down and returns when you scroll up. The standard bar is a fixed Material 3 navigation bar with labels.</string>
-    <string name="si_haptics">How strongly Triat vibrates in response to touch: drags, toggles, skips and taps. Rich uses the full vocabulary; Subtle keeps only the moments that matter.</string>
     <string name="si_artwork_colors">Tints the player\'s controls and background, and a playlist or album page, with colors pulled from the cover instead of the app theme.</string>
     <string name="si_crossfade">How one song hands over to the next. AutoMix analyses tempo and silence to blend compatible songs; Manual always overlaps by a fixed time; Off changes tracks cleanly.</string>
     <string name="si_normalize">Evens out loudness between songs, so a quiet acoustic track and a loudly mastered one play at a similar level.</string>
     <string name="si_auto_queue">When your queue runs out, Triat keeps the music going with similar songs instead of stopping.</string>
     <string name="si_music_history">Keeps a log on this device of the songs you play. It powers your stats and recently played. Separate from your YouTube account\'s history.</string>
-    <string name="si_hdr">When a video has an HDR version and your screen supports it, Triat plays the HDR one. Richer colors, but more data and battery.</string>
-    <string name="si_brightness">Triat remembers the brightness you drag to in fullscreen video and reapplies it next time, instead of resetting to the system level.</string>
     <string name="si_local_only">Cuts all internet use. Only downloads and files on this device play; search, streaming and every YouTube surface stay off until you switch back.</string>
-    <string name="si_home_mode_toggle">Shows a music/video switch in the Home header so you can change modes without opening Settings.</string>
-    <string name="si_timed_comments">Shows comments pinned to the moment they talk about, floating above the seek bar as the video plays.</string>
-    <string name="si_shorts">Show or hide Shorts across the app. Hidden Shorts are not just tucked away - they stop being fetched at all.</string>
     <string name="si_recent_searches">Shows your past searches when you tap the search field. Turning this off hides them without deleting them.</string>
-    <string name="si_compact_video_home">Smaller video cards in the video Home feed, so more fit on one screen.</string>
-    <string name="si_related_videos">The suggestions under a playing video. Turning them off removes the distraction; playlists and queues keep working.</string>
-    <string name="si_inline_previews">A card you stop on starts playing where it sits, without sound and without opening it. One preview at a time, and never on mobile data or with Data Saver on. Off by default, because a feed that moves on its own spends battery and data you did not ask it to.</string>
     <string name="si_not_interested">Everything you have told Triat to stop recommending - hidden videos and blocked channels. Anything can be un-hidden here.</string>
     <string name="si_private_downloads">Stores downloads inside Triat\'s private folder, invisible to other apps and the gallery, instead of the shared Downloads/Triat folder.</string>
     <string name="si_cache_music">Keeps recently streamed songs on disk so replays start instantly and cost no data. The oldest entries are evicted when the limit below is reached.</string>
-    <string name="si_cache_videos">Keeps recently streamed video temporarily for smooth scrubbing and instant replays. It clears itself a few minutes after you stop watching.</string>
-    <string name="si_cache_shorts">Caches Shorts you watch so swiping back replays them instantly.</string>
     <string name="si_preload">Fetches the beginning of upcoming songs and Shorts before you reach them, so skips start instantly. Costs some data on metered networks.</string>
-    <string name="si_fast_refresh">Fast mode reads each channel\'s lightweight RSS feed - roughly twenty times less data - but cannot show video durations or live badges.</string>
-    <string name="si_subs_source">Which subscriptions the feed shows: the ones saved on this device, the ones on your YouTube account, or both merged together.</string>
-    <string name="si_subs_target">Where the Subscribe button saves a new channel: on this device only, invisible to YouTube, or on your YouTube account.</string>
     <string name="si_load_local_songs">Scans this device for music files and shows them in your library next to YouTube Music. Needs the audio files permission.</string>
     <string name="si_compat_scan">Reads music files directly from storage instead of Android\'s media index. Fixes songs missing on HyperOS and MIUI, but needs the all-files permission.</string>
     <string name="si_battery">Aggressive battery savers kill background playback. This asks Android to leave Triat running while music plays.</string>
-    <string name="si_upload_notifications">Triat periodically checks followed channels in the background and notifies you about new uploads. Uses a little battery and data.</string>
     <string name="si_live_download">Shows download progress as a Live Update chip in the status bar while a transfer runs.</string>
     <string name="si_live_playback">Shows the playing song as a Live Update chip in the status bar.</string>
     <string name="si_time_limit">Set a daily usage budget for Triat. When it runs out, the app locks until the next day.</string>
-    <string name="si_watch_history_account">When on, videos you watch in Triat are added to your YouTube account\'s watch history, exactly as if you watched on youtube.com.</string>
     <string name="sp_motion_artwork">Motion artwork</string>
     <string name="sp_motion_artwork_sub">Animate supported album covers in the full player</string>
     <string name="sp_motion_artwork_wifi">Motion artwork on Wi-Fi only</string>
@@ -1595,29 +1201,20 @@
     <string name="sp_visualizer_sensitivity_hint">How strongly quiet passages move the strip</string>
     <string name="si_visualizer">Shows an animated strip under the progress row in every expanded player style. It reads the audio Triat is already playing, so it needs no microphone permission and records nothing. It dances while music plays and settles when paused, follows the app colors, and stands still under reduced motion or Battery Saver.</string>
     <string name="cd_visualizer">Audio visualizer</string>
-    <string name="section_releases">Releases</string>
     <string name="lyrics_settings_title">Lyrics</string>
-    <string name="lyrics_hero_title">Your lyrics, your sources</string>
     <string name="lyrics_settings_intro">Choose the services you trust and put your favorites first.</string>
-    <string name="lyrics_local_note">Lyrics saved with a song always come first.</string>
     <string name="lyrics_remote">Online lyrics</string>
     <string name="lyrics_remote_sub">Look up missing lyrics using your enabled providers.</string>
     <string name="lyrics_matching">Finding the right lyrics</string>
-    <string name="lyrics_prefer_synced">Prefer synced lyrics</string>
     <string name="lyrics_prefer_synced_sub">Favor word timing, then line timing. Your order breaks ties.</string>
     <string name="lyrics_strict_order_sub">Use the first match in your order, even if a later source has better timing.</string>
     <string name="lyrics_plain">Allow plain text</string>
-    <string name="lyrics_plain_sub">Show lyrics without timing when no synced match is found. With sync preference off, provider order wins.</string>
     <string name="lyrics_provider_order">Provider priority</string>
-    <string name="lyrics_order_sub">Higher means preferred. Use the arrows to reorder and switches to exclude sources. Your choices are saved automatically.</string>
     <string name="lyrics_local_only">Local lyrics only</string>
     <string name="lyrics_local_only_note">Online lookup is off. Only lyrics saved with your songs will be used; you can still arrange your providers below.</string>
-    <string name="lyrics_provider_on">Included in online lookup</string>
-    <string name="lyrics_provider_off">Excluded from online lookup</string>
     <string name="lyrics_move_up">Move %1$s up</string>
     <string name="lyrics_move_down">Move %1$s down</string>
     <string name="lyrics_reset">Restore lyrics defaults</string>
-    <string name="lyrics_apply_note">Changes apply on the next lyrics lookup, including new downloads. Local-only mode also blocks online lookup.</string>
     <string name="lyrics_provider_summary">%1$d enabled · %2$s first</string>
     <string name="lyrics_drag_hint">Drag to reorder. Switch off any source to skip it.</string>
     <string name="lyrics_reorder_provider">Reorder %1$s</string>
@@ -1634,28 +1231,21 @@
     <string name="lastfm_not_connected">Not connected</string>
     <string name="lastfm_intro">Keep your music listening history on Last.fm and see your recent plays here. Connecting is optional.</string>
     <string name="lastfm_enable">Use Last.fm</string>
-    <string name="lastfm_switch_detail">Sync music plays while enabled. Turning off stops requests and clears unsent plays.</string>
-    <string name="lastfm_off_hero">Your music, your choice</string>
-    <string name="lastfm_off_detail">Off by default. Triat works fully without a Last.fm account. Incognito and Local Only also pause Last.fm.</string>
     <string name="lastfm_connect">Connect your account</string>
     <string name="lastfm_login_detail">Sign in securely in your browser, approve access, then return to Triat. Your Last.fm password stays in the browser.</string>
     <string name="lastfm_key">API key</string>
     <string name="lastfm_secret">Shared secret</string>
-    <string name="lastfm_secret_detail">Scrobbling needs both your API key and shared secret, followed by account authorization. Credentials are stored encrypted on this device.</string>
     <string name="lastfm_get_key">Get Last.fm API credentials</string>
     <string name="lastfm_sign_in">Sign in with Last.fm</string>
     <string name="lastfm_finish">Finish sign-in</string>
     <string name="lastfm_finish_detail">After approving access in your browser, return here and finish sign-in within one hour.</string>
     <string name="lastfm_disconnect">Disconnect and forget account</string>
     <string name="lastfm_paused">Last.fm is paused while Incognito or Local Only is on. No new plays are recorded or synced.</string>
-    <string name="lastfm_play_count">%1$s scrobbles on Last.fm</string>
     <string name="lastfm_queue">%1$d plays waiting to sync</string>
     <string name="lastfm_refreshed">Updated %1$s</string>
     <string name="lastfm_sync">Sync now</string>
     <string name="lastfm_recent">Recent listening</string>
-    <string name="lastfm_empty">No recent listening loaded yet. Sync to check your Last.fm history.</string>
     <string name="lastfm_now_playing">Now playing</string>
-    <string name="lastfm_scope">Music plays are sent after half the track or four minutes of listening, whichever comes first. Tracks must be longer than 30 seconds. Videos are not scrobbled. Pending plays retry during music service activity; Sync now also sends them.</string>
     <string name="lastfm_error_browser">No browser could open Last.fm. Try again after installing a browser.</string>
     <string name="lastfm_error_credentials">Enter a valid 32-character API key and shared secret.</string>
     <string name="lastfm_error_start">Start Last.fm sign-in again.</string>
@@ -1822,18 +1412,10 @@
         <item quantity="one">Add %1$d song</item>
         <item quantity="other">Add %1$d songs</item>
     </plurals>
-    <plurals name="import_added_n_songs">
-        <item quantity="one">Added %1$d song</item>
-        <item quantity="other">Added %1$d songs</item>
-    </plurals>
     <string name="import_no_source_playlists">Nothing to copy from yet. Playlists and liked songs will show up here.</string>
     <string name="import_source_empty">This playlist has no songs to add</string>
     <string name="import_all_added">Everything here is already in this playlist</string>
     <string name="cd_import_sort">Sort songs</string>
-    <string name="shorts_refresh">Refresh Shorts</string>
-    <string name="shorts_refresh_failed">Couldn’t refresh Shorts. Check your connection or account and try again.</string>
-    <string name="shorts_feed_empty">No Shorts available. Try refreshing.</string>
-    <string name="video_page_load_failed">Couldn’t load this page. Try again.</string>
     <plurals name="ds_changes_playlists_written">
         <item quantity="one">%1$d playlist updated</item>
         <item quantity="other">%1$d playlists updated</item>
@@ -1855,25 +1437,14 @@
         <item quantity="other">%1$d plays added</item>
     </plurals>
     <!-- Hardcoded labels lifted into resources -->
-    <string name="cd_close_search">Close search</string>
-    <string name="cd_close_photos">Close photos</string>
     <string name="cd_sleep_timer">Sleep timer</string>
     <string name="cd_play_all">Play all</string>
-    <string name="cd_cancel_reply">Cancel reply</string>
-    <string name="cd_hearted_by_creator">Hearted by creator</string>
-    <string name="cd_delete_comment">Delete comment</string>
     <string name="cd_finish_editing">Finish editing</string>
-    <string name="sm_rename_group">Rename group</string>
-    <string name="channel_search_hint">Search %1$s</string>
     <string name="st_tile_songs_played">Songs played</string>
     <string name="st_tile_artists_explored">Artists explored</string>
     <string name="st_tile_liked_songs">Liked songs</string>
     <string name="st_tile_top_artist">Top artist</string>
     <string name="sp_android_auto_sub">Triat missing from your car? Start here</string>
-    <string name="shorts_label_not_interested">Not interested</string>
-    <string name="vpc_playback_speed">Playback speed</string>
-    <string name="vpc_more_controls">More controls</string>
-    <string name="vpc_text_color">Text color</string>
     <plurals name="lib_downloads_offline">
         <item quantity="one">%1$d song available offline</item>
         <item quantity="other">%1$d songs available offline</item>
@@ -1888,11 +1459,6 @@
     <string name="ni_recommend_again_cd">Recommend %1$s again</string>
     <string name="ni_unhide_cd">Unhide %1$s</string>
     <string name="acct_profile_own_data">It gets its own subscriptions and hidden recommendations, with no Google account involved.</string>
-    <string name="ch_featured">Featured</string>
-    <string name="ch_about_links">Links</string>
-    <string name="ch_about_details">Details</string>
-    <string name="ch_no_match_query">Nothing in this channel matches \"%1$s\"</string>
-    <string name="ch_search_hint">Search everything %1$s has published</string>
     <string name="dl_music_quality_note">Music uses your %1$s quality setting for this network.</string>
     <string name="dl_music_quality_low">Low</string>
     <string name="lib_your_playlists_count">Your playlists • %1$d</string>
@@ -1929,28 +1495,7 @@
     <string name="cd_label_hidden">%1$s: hidden</string>
     <string name="settings_search_no_match">No settings match \"%1$s\"</string>
     <string name="settings_search_no_match_hint">Try a shorter word, or what the setting does rather than its name.</string>
-    <string name="share_shared_playlist">Shared playlist</string>
     <string name="share_open_failed">Couldn\'t open that playlist</string>
-    <string name="comments_reply">Reply</string>
-    <string name="comments_replying_to">Replying to %1$s</string>
-    <string name="cd_post">Post</string>
-    <string name="cd_pinned">Pinned</string>
-    <string name="cd_level_percent">%1$s %2$d percent</string>
-    <string name="sc_unfollow_title">Unfollow %1$s?</string>
-    <string name="sc_checking_progress">Checking %1$d of %2$d channels</string>
-    <string name="sc_no_channels_match">No channels match \"%1$s\"</string>
-    <string name="cd_unfollow_channel">Unfollow %1$s</string>
-    <string name="sm_delete_named_cd">Delete %1$s</string>
-    <string name="sm_delete_title">Delete %1$s?</string>
-    <string name="sm_groups_for">Groups for %1$s</string>
-    <string name="vh_channel_cd">%1$s channel</string>
-    <string name="vp_quality">Quality</string>
-    <string name="vp_seconds">%1$d seconds</string>
-    <string name="vp_playing_from">Playing from %1$s</string>
-    <string name="vp_queue_next">%1$s • Next: %2$s</string>
-    <string name="vp_queue_last">%1$s • Last video</string>
-    <string name="vp_offline">Offline</string>
-    <string name="cd_level_brightness">Brightness</string>
     <string name="lib_remove_like_body">Removing \"%1$s\" from Your Likes removes the like from your YouTube account, everywhere you use YouTube.</string>
     <string name="lib_remove_from_yt_playlist_body">This removes \"%1$s\" from \"%2$s\" on your YouTube account, everywhere you use YouTube.</string>
     <string name="share_no_link">No YouTube link found in what you shared</string>
@@ -2005,8 +1550,6 @@
         <item quantity="one">On, %1$d folder excluded</item>
         <item quantity="other">On, %1$d folders excluded</item>
     </plurals>
-    <string name="sv_watch_history_on">Videos you watch are added to your YouTube history</string>
-    <string name="sv_watch_history_off">Watching does not touch your YouTube history</string>
     <string name="sv_amoled_on">Pure black backgrounds in dark theme</string>
     <string name="sv_amoled_off">Standard dark backgrounds</string>
     <string name="sv_ambient_on">Dynamic colors from album art</string>
@@ -2019,8 +1562,6 @@
     <string name="sv_xfade_auto">AutoMix adapts to each song, up to 15s</string>
     <string name="sv_music_history_on">Songs you play are logged on this device</string>
     <string name="sv_music_history_off">Paused: new plays are not recorded</string>
-    <string name="sv_brightness_on">Videos reopen at the brightness you last set</string>
-    <string name="sv_brightness_off">Videos reopen at the system brightness</string>
     <string name="sv_local_on">Shows songs from your device</string>
     <string name="sv_local_off">YouTube Music only</string>
     <string name="sv_folders_all">All folders included</string>
@@ -2139,7 +1680,6 @@
         <item quantity="other">%1$d active</item>
     </plurals>
     <string name="dl_empty_music">No downloaded music</string>
-    <string name="dl_empty_videos">No downloaded videos</string>
     <string name="pd_download_tracks">Download tracks</string>
     <string name="pd_download_videos">Download videos</string>
     <string name="pd_downloading_n">Downloading %1$d</string>
@@ -2158,12 +1698,6 @@
         <item quantity="one">%1$d match</item>
         <item quantity="other">%1$d matches</item>
     </plurals>
-    <string name="ch_empty_shorts">This channel hasn\'t posted any Shorts</string>
-    <string name="ch_empty_live">No past or upcoming live streams</string>
-    <string name="ch_empty_playlists">No public playlists</string>
-    <string name="ch_empty_posts">No community posts yet</string>
-    <string name="ch_empty_videos">No videos here yet</string>
-    <string name="ch_empty_generic">Nothing to show in this tab</string>
     <string name="as_sign_out_note">The account is disconnected from this device. Your subscriptions and hidden recommendations stay, and nothing changes on YouTube.</string>
     <string name="as_remove_local_note">Its subscriptions and hidden recommendations are deleted. Playlists, liked songs and downloads are shared and stay.</string>
     <string name="as_remove_account_note">Signs this account out on this device and deletes its subscriptions and hidden recommendations. Nothing changes on YouTube itself.</string>
@@ -2174,45 +1708,8 @@
     <string name="tl_day_today">%1$s (today)</string>
     <string name="al_message">You\'ve had %1$s with Triat today. Come back tomorrow - the app unlocks in %2$s.</string>
     <string name="al_under_a_minute">under a minute</string>
-    <string name="sh_hide_channel_named">Hide everything from %1$s</string>
     <string name="rb_crash_preview">%1$s - stack trace and recent logs</string>
-    <string name="cm_none_yet">No comments yet</string>
-    <string name="cm_unavailable">Comments are unavailable for this video</string>
-    <string name="cm_loading_replies">Loading replies…</string>
-    <string name="cm_view_replies">View replies</string>
-    <string name="cm_view_replies_n">View replies (%1$s)</string>
-    <string name="cm_add_reply">Add a reply…</string>
-    <string name="cm_add_comment">Add a comment…</string>
-    <string name="cm_unlike">Unlike</string>
-    <string name="sm_x_of_y_channels">%1$d of %2$d channels</string>
-    <string name="sm_on_this_device">%1$d on this device</string>
-    <string name="sm_channels_matched">Channels - %1$d of %2$d</string>
-    <plurals name="sm_in_n_groups">
-        <item quantity="one">In %1$d group</item>
-        <item quantity="other">In %1$d groups</item>
-    </plurals>
-    <string name="sm_summary_added">Added</string>
-    <string name="sm_summary_already">Already following</string>
-    <string name="sm_summary_not_found">Couldn\'t be found</string>
-    <string name="sm_summary_other">Other services</string>
-    <string name="sm_no_groups">You haven\'t made any groups yet.</string>
-    <string name="vh_open_channel">Open %1$s channel</string>
-    <string name="vl_delete_local_body">This will permanently delete \"%1$s\" from this device.</string>
-    <string name="vl_remove_yt_body">This will permanently remove \"%1$s\" from your YouTube account.</string>
-    <string name="vpp_remove_watch_later_body">This removes \"%1$s\" from Watch Later on your YouTube account, everywhere you use YouTube.</string>
-    <string name="vp_fullscreen">Fullscreen</string>
-    <string name="vp_exit_fullscreen">Exit fullscreen</string>
-    <string name="vp_load_stream_failed">Unable to load video stream</string>
-    <string name="vp_chat_not_sent">Message not sent</string>
-    <string name="sh_load_failed">Unable to load this Short</string>
-    <string name="sh_timeout">Connection timed out. Please check your internet.</string>
     <string name="untitled">Untitled</string>
     <string name="dur_long_h_m">%1$d hr %2$d min</string>
     <string name="dur_long_m">%1$d min</string>
-    <plurals name="lc_new_messages">
-        <item quantity="one">%1$d new message</item>
-        <item quantity="other">%1$d new messages</item>
-    </plurals>
-    <string name="vpc_caption_auto">%1$s (auto)</string>
-    <string name="vpc_caption_background">Background</string>
 </resources>

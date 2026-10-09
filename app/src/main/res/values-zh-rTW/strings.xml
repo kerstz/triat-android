@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">正在播放</string>
-    <string name="video_playback_channel_name">影片播放</string>
 
     <string name="undo">復原</string>
     <string name="action_cancel">取消</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">全部播放</string>
     <string name="action_show_more">顯示更多</string>
     <string name="action_try_again">請再試一次</string>
-    <string name="action_open_settings">開啟設定</string>
     <string name="action_clear_all">全部清除</string>
-    <string name="action_new_playlist">新增播放清單</string>
     <string name="action_grant_permission">授權權限</string>
     <string name="unknown_artist">未知演出者</string>
     <string name="untitled_song">未命名歌曲</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">媒體庫</string>
 
     <string name="local_only_title">「僅本機」模式已開啟</string>
-    <string name="local_only_default_subtitle">此區塊需要網際網路。請前往設定關閉「僅本機」模式才能使用。</string>
-    <string name="local_only_video_mode_subtitle">影片模式需要網際網路。請前往設定關閉「僅本機」模式以觀看影片。</string>
-    <string name="local_only_video_search_subtitle">影片搜尋需要網際網路。請前往設定關閉「僅本機」模式以搜尋影片。</string>
-    <string name="local_only_subscriptions_subtitle">訂閱內容需要網際網路。請前往設定關閉「僅本機」模式以查看。</string>
-    <string name="local_only_video_library_subtitle">影片媒體庫需要網際網路。請前往設定關閉「僅本機」模式以查看。</string>
     <string name="local_only_update_subtitle">檢查更新需要網際網路。請前往設定關閉「僅本機」模式以檢查更新。</string>
 
     <string name="crash_dialog_title">Triat 上次發生當機</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">合輯</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s、%2$s</string>
-    <string name="cd_profile">個人資料</string>
-    <string name="cd_downloads">下載</string>
-    <string name="cd_settings">設定</string>
     <string name="cd_play">播放</string>
     <string name="cd_pause">暫停</string>
     <string name="cd_next">下一首</string>
     <string name="cd_album_art">專輯封面</string>
-    <string name="cd_show_all">顯示全部：%1$s</string>
 
     <string name="spotlight_quick_picks">快速精選</string>
     <string name="spotlight_your_playlists">你的播放清單</string>
     <string name="spotlight_from_your_library">來自你的媒體庫</string>
     <string name="spotlight_caption_liked">來自你喜歡的歌曲</string>
     <string name="spotlight_caption_recent">來自你最近聆聽的內容</string>
-    <string name="shortcut_liked_songs">喜歡的歌曲</string>
     <string name="filter_all">全部</string>
     <string name="filter_liked">喜歡</string>
     <string name="filter_recent">最近</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">這首曲目結束時</string>
     <string name="sleep_timer_turn_off">關閉</string>
 
-    <string name="cd_switch_to_music">切換至音樂模式</string>
-    <string name="cd_switch_to_video">切換至影片模式</string>
     <string name="cd_drag_to_reorder">拖曳以重新排序</string>
     <string name="cd_favorite">收藏</string>
     <string name="cd_clear_search">清除搜尋</string>
@@ -110,23 +95,10 @@
     <string name="name_label">名稱</string>
     <string name="description_optional_label">說明（選填）</string>
 
-    <string name="video_options_watch_later">稍後觀看</string>
-    <string name="video_options_kept_on_device">已保存在這部裝置上</string>
-    <string name="video_options_save_to_playlist">儲存到播放清單</string>
-    <string name="video_options_download">下載</string>
-    <string name="video_options_go_to_channel">前往頻道</string>
     <string name="video_options_share">分享</string>
-    <string name="video_options_share_chooser">分享影片</string>
     <string name="video_options_not_interested">沒興趣</string>
-    <string name="video_options_dont_recommend_channel">不建議這個頻道</string>
-    <string name="video_options_dont_recommend_channel_name">不建議 %1$s</string>
     <string name="cd_back">返回</string>
-    <string name="search_playlists_placeholder">搜尋播放清單</string>
-    <string name="no_playlist_matches">沒有符合「%1$s」的播放清單</string>
-    <string name="no_playlists_yet_hint">還沒有播放清單。建立一個，這部影片就會直接加入其中。</string>
     <string name="cd_saved">已儲存</string>
-    <string name="cd_couldnt_save">無法儲存</string>
-    <string name="cd_in_this_playlist">已在這份播放清單中</string>
 
     <string name="settings_section_you">帳戶</string>
     <string name="settings_section_look_and_feel">外觀</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">播放器</string>
     <string name="settings_playback_and_quality">播放與畫質</string>
     <string name="settings_content_and_feeds">內容與動態消息</string>
-    <string name="settings_subscriptions">訂閱項目</string>
     <string name="settings_storage_and_cache">儲存空間與快取</string>
     <string name="settings_notifications">通知</string>
     <string name="settings_local_library">本機媒體庫</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">建議在此裝置上啟用</string>
     <string name="settings_advanced_value_other">掃描與電池修正</string>
     <string name="settings_version_subtitle">版本 %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">優先播放 HDR 影片</string>
-    <string name="sp_prefer_hdr_sub">僅在顯示器和解碼器均支援時使用 HDR</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">標準</string>
 
     <string name="profiles_title">個人資料</string>
     <string name="profiles_description">訂閱項目與隱藏的推薦內容會依個人資料分開保存。播放清單、喜歡的歌曲和下載內容則為共用。</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">下載</string>
     <string name="fab_listening_history">收聽記錄</string>
     <string name="fab_statistics">統計資料</string>
-    <string name="cd_listening_stats">收聽統計</string>
     <string name="recently_played">最近播放</string>
     <string name="liked_songs">喜歡的歌曲</string>
     <string name="no_artists_yet">還沒有演出者</string>
@@ -195,20 +161,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube 正在限制此網路的要求。請稍後再試。</string>
 
-    <string name="vhc_title">影片首頁</string>
-    <string name="vhc_summary">動態消息、導覽項目及其順序</string>
-    <string name="vhc_feed_section">首頁動態消息</string>
-    <string name="vhc_recommendations">推薦與建議</string>
-    <string name="vhc_recommendations_sub">在首頁載入建議影片</string>
-    <string name="vhc_navigation_section">導覽項目</string>
-    <string name="vhc_navigation_hint">隱藏你不使用的導覽項目。至少會保留一項顯示。</string>
     <string name="vhc_move_up">將%1$s上移</string>
     <string name="vhc_move_down">將%1$s下移</string>
-    <string name="vh_recommendations_off">推薦功能已關閉</string>
-    <string name="vh_recommendations_off_sub">啟用後，Shorts 仍可能顯示在這裡。</string>
-    <string name="vp_resumed_from">已從 %1$s 繼續播放</string>
-    <string name="vp_play_from_start">從頭播放</string>
-    <string name="section_releases">發行作品</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">輕觸以聆聽</string>
     <string name="widget_pulse_label">脈搏</string>
@@ -236,16 +190,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">新的上傳</string>
-    <string name="upload_check_channel_description">在此裝置上追蹤的頻道有新上傳時通知你</string>
-    <string name="upload_notification_title">%1$s：有 %2$d 部新上傳</string>
-    <string name="video_cached_portion_ended">已播到快取影片的結尾。請重新連線以繼續。</string>
-    <string name="video_not_cached_offline">影片的這個部分尚未快取。請重新連線以繼續。</string>
     <string name="action_close">關閉</string>
     <string name="action_check_updates">檢查更新</string>
     <string name="action_got_it">知道了</string>
     <string name="action_like">喜歡</string>
-    <string name="action_refresh">重新整理</string>
     <string name="spotlight_new_for_you">為你上新</string>
     <string name="spotlight_new_for_you_caption">你常聽演出者尚未播放過的歌曲</string>
     <string name="spotlight_discovery_empty">暫無新的推薦</string>
@@ -257,13 +205,11 @@
     <string name="spotlight_artists_for_you">你可能喜歡的演出者</string>
     <string name="spotlight_artists_for_you_sub">尚未收錄進你的媒體庫</string>
     <string name="filter_recommended">為你推薦</string>
-    <string name="search_channels">搜尋頻道</string>
     <string name="song_options_not_interested">沒興趣</string>
     <string name="song_options_not_interested_subtitle">不再推薦這首歌</string>
     <string name="song_options_block_artist">不再推薦%1$s</string>
     <string name="song_options_speed">播放速度</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">正常速度</string>
     <string name="cd_speed_reset">恢復為正常速度</string>
     <string name="np_tile_radio">電台</string>
     <string name="np_tile_playlist">播放清單</string>
@@ -306,61 +252,11 @@
     <string name="ps_sub_morph">會呼吸的靈動形狀</string>
     <string name="ps_sub_dial">旋轉圓環，轉動以快轉倒轉</string>
     <string name="ps_sub_hero">全幅封面加大播放按鈕</string>
-    <string name="video_options_mark_watched">標示為已看過</string>
-    <string name="video_options_mark_unwatched">標示為未看過</string>
-    <string name="video_options_remove_from_history">從觀看紀錄中移除</string>
     <string name="vh_available_offline">可離線觀看</string>
-    <string name="vh_recommended_for_you">為你推薦</string>
-    <string name="vh_trending_videos">熱門影片</string>
-    <string name="vh_from_subscriptions">來自你的訂閱</string>
-    <string name="vh_no_subscriptions">還沒有訂閱</string>
-    <string name="vh_no_subscriptions_sub">訂閱頻道後，其最新影片會顯示在首頁</string>
-    <string name="vh_youre_offline">你已離線</string>
-    <string name="vh_removed_from_history">已從觀看紀錄中移除</string>
-    <string name="vh_clear_history">清除觀看紀錄</string>
-    <string name="vh_clear_history_body">這會清空此裝置上 Triat 的觀看紀錄，不會刪除你 YouTube 帳戶中的任何內容。</string>
-    <string name="vh_clear_history_confirm">清除</string>
-    <string name="vh_no_videos_found">找不到影片</string>
-    <string name="vh_downloaded_hint">下載的影片會顯示在這裡</string>
-    <string name="vl_watch_history">觀看紀錄</string>
-    <string name="vl_library_sub">你的播放清單、紀錄和儲存的影片</string>
-    <string name="liked_videos">喜歡的影片</string>
-    <string name="history">紀錄</string>
-    <string name="view_all">查看全部</string>
-    <string name="your_playlists">你的播放清單</string>
-    <string name="action_new">新增</string>
-    <string name="vl_no_playlists_hint">還沒有播放清單。輕觸「新增」來建立一個。</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">這部裝置</string>
-    <string name="vl_local_playlist_note">僅保留在這支手機上。登出也能用，不會顯示在 youtube.com 上。</string>
-    <string name="vl_account_playlist_note">會加入到你的 YouTube 帳戶，在所有登入的地方都看得到。</string>
-    <string name="rename_playlist">重新命名播放清單</string>
     <string name="action_rename">重新命名</string>
     <string name="delete_playlist_q">要刪除播放清單嗎？</string>
     <string name="delete_playlist">刪除播放清單</string>
-    <string name="vl_login_wall">登入後查看你的播放清單、「稍後觀看」和喜歡的影片</string>
     <string name="vl_no_videos">這份播放清單中沒有影片</string>
-    <string name="sc_unfollow_body">會將其從這部裝置移除，不會影響你的 YouTube 帳戶。</string>
-    <string name="sc_hide_watched">隱藏看過的</string>
-    <string name="sc_no_uploads_match">沒有符合這些篩選條件的上傳。</string>
-    <string name="sc_none_found">找不到訂閱</string>
-    <string name="sc_search_hint">試試名稱的一部分，或 @使用者名稱。</string>
-    <string name="sc_empty_body">在這部裝置上追蹤頻道，或登入以同步你的 YouTube 訂閱。</string>
-    <string name="import_subscriptions">匯入訂閱</string>
-    <string name="sc_group_empty">此群組暫無新的上傳。</string>
-    <string name="sc_not_following">你還沒有追蹤任何頻道。</string>
-    <string name="sc_no_uploads">你追蹤的頻道暫無新的上傳。</string>
-    <string name="show_all_channels">顯示所有頻道</string>
-    <string name="sc_latest_from_channels">來自你追蹤頻道的最新內容</string>
-    <string name="sc_any_time">全部時間</string>
     <string name="sc_today">今天</string>
     <string name="sc_this_week">本週</string>
-    <string name="sc_newest_first">最新優先</string>
-    <string name="sc_oldest_first">最早優先</string>
-    <string name="sc_on_device">這部裝置上有 %1$d 個</string>
-    <string name="sc_channels_on_device">共 %1$d 個頻道 - 這部裝置上有 %2$d 個</string>
-    <string name="sh_playback_failed">播放失敗</string>
-    <string name="subscribed">已訂閱</string>
-    <string name="subscribe">訂閱</string>
-    <string name="like">喜歡</string>
 </resources>

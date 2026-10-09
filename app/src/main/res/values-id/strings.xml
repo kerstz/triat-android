@@ -2,7 +2,6 @@
 <resources>
     <string name="app_name">Triat</string>
     <string name="now_playing_channel_name">Sedang diputar</string>
-    <string name="video_playback_channel_name">Pemutaran video</string>
 
     <string name="undo">Urungkan</string>
     <string name="action_cancel">Batal</string>
@@ -17,9 +16,7 @@
     <string name="action_play_all">Putar semua</string>
     <string name="action_show_more">Tampilkan lebih banyak</string>
     <string name="action_try_again">Coba lagi</string>
-    <string name="action_open_settings">Buka Setelan</string>
     <string name="action_clear_all">Hapus semua</string>
-    <string name="action_new_playlist">Playlist baru</string>
     <string name="action_grant_permission">Berikan izin</string>
     <string name="unknown_artist">Artis tidak dikenal</string>
     <string name="untitled_song">Lagu tanpa judul</string>
@@ -31,11 +28,6 @@
     <string name="tab_library">Koleksi</string>
 
     <string name="local_only_title">Mode khusus lokal aktif</string>
-    <string name="local_only_default_subtitle">Bagian ini butuh internet. Matikan mode khusus lokal di Setelan untuk memakainya.</string>
-    <string name="local_only_video_mode_subtitle">Mode video butuh internet. Matikan mode khusus lokal di Setelan untuk menonton video.</string>
-    <string name="local_only_video_search_subtitle">Penelusuran video butuh internet. Matikan mode khusus lokal di Setelan untuk menelusuri video.</string>
-    <string name="local_only_subscriptions_subtitle">Subscription butuh internet. Matikan mode khusus lokal di Setelan untuk melihatnya.</string>
-    <string name="local_only_video_library_subtitle">Koleksi video butuh internet. Matikan mode khusus lokal di Setelan untuk melihatnya.</string>
     <string name="local_only_update_subtitle">Pemeriksaan pembaruan butuh internet. Matikan mode khusus lokal di Setelan untuk memeriksa pembaruan.</string>
 
     <string name="crash_dialog_title">Triat crash pada sesi sebelumnya</string>
@@ -51,21 +43,16 @@
     <string name="your_mix_line2">kamu</string>
     <string name="update_badge_version">v%1$s</string>
     <string name="artists_joined">%1$s, %2$s</string>
-    <string name="cd_profile">Profil</string>
-    <string name="cd_downloads">Download</string>
-    <string name="cd_settings">Setelan</string>
     <string name="cd_play">Putar</string>
     <string name="cd_pause">Jeda</string>
     <string name="cd_next">Berikutnya</string>
     <string name="cd_album_art">Sampul album</string>
-    <string name="cd_show_all">Tampilkan semua: %1$s</string>
 
     <string name="spotlight_quick_picks">Pilihan cepat</string>
     <string name="spotlight_your_playlists">Playlist kamu</string>
     <string name="spotlight_from_your_library">Dari koleksimu</string>
     <string name="spotlight_caption_liked">Dari lagu yang kamu sukai</string>
     <string name="spotlight_caption_recent">Dari yang baru saja kamu putar</string>
-    <string name="shortcut_liked_songs">Lagu yang disukai</string>
     <string name="filter_all">Semua</string>
     <string name="filter_liked">Disukai</string>
     <string name="filter_recent">Terbaru</string>
@@ -86,8 +73,6 @@
     <string name="sleep_timer_end_of_track">Akhir lagu ini</string>
     <string name="sleep_timer_turn_off">Matikan</string>
 
-    <string name="cd_switch_to_music">Beralih ke mode musik</string>
-    <string name="cd_switch_to_video">Beralih ke mode video</string>
     <string name="cd_drag_to_reorder">Tarik untuk mengurutkan ulang</string>
     <string name="cd_favorite">Favorit</string>
     <string name="cd_clear_search">Hapus penelusuran</string>
@@ -110,23 +95,10 @@
     <string name="name_label">Nama</string>
     <string name="description_optional_label">Deskripsi (opsional)</string>
 
-    <string name="video_options_watch_later">Tonton nanti</string>
-    <string name="video_options_kept_on_device">Disimpan di perangkat ini</string>
-    <string name="video_options_save_to_playlist">Simpan ke playlist</string>
-    <string name="video_options_download">Download</string>
-    <string name="video_options_go_to_channel">Buka channel</string>
     <string name="video_options_share">Bagikan</string>
-    <string name="video_options_share_chooser">Bagikan video</string>
     <string name="video_options_not_interested">Tidak tertarik</string>
-    <string name="video_options_dont_recommend_channel">Jangan rekomendasikan channel ini</string>
-    <string name="video_options_dont_recommend_channel_name">Jangan rekomendasikan %1$s</string>
     <string name="cd_back">Kembali</string>
-    <string name="search_playlists_placeholder">Telusuri playlist</string>
-    <string name="no_playlist_matches">Tidak ada playlist yang cocok dengan \"%1$s\"</string>
-    <string name="no_playlists_yet_hint">Belum ada playlist. Buat satu dan video ini langsung masuk ke dalamnya.</string>
     <string name="cd_saved">Tersimpan</string>
-    <string name="cd_couldnt_save">Tidak bisa menyimpan</string>
-    <string name="cd_in_this_playlist">Ada di playlist ini</string>
 
     <string name="settings_section_you">Anda</string>
     <string name="settings_section_look_and_feel">Tampilan</string>
@@ -138,7 +110,6 @@
     <string name="settings_player">Pemutar</string>
     <string name="settings_playback_and_quality">Pemutaran dan kualitas</string>
     <string name="settings_content_and_feeds">Konten dan feed</string>
-    <string name="settings_subscriptions">Subscription</string>
     <string name="settings_storage_and_cache">Penyimpanan dan cache</string>
     <string name="settings_notifications">Notifikasi</string>
     <string name="settings_local_library">Koleksi lokal</string>
@@ -147,10 +118,6 @@
     <string name="settings_advanced_value_xiaomi">Direkomendasikan di perangkat ini</string>
     <string name="settings_advanced_value_other">Perbaikan pemindaian dan baterai</string>
     <string name="settings_version_subtitle">Versi %1$s (%2$d)</string>
-    <string name="sp_prefer_hdr">Prioritaskan video HDR</string>
-    <string name="sp_prefer_hdr_sub">Gunakan HDR hanya jika layar dan dekoder mendukungnya</string>
-    <string name="vpc_quality_hdr">HDR</string>
-    <string name="vpc_quality_standard">Standar</string>
 
     <string name="profiles_title">Profil</string>
     <string name="profiles_description">Subscription dan rekomendasi tersembunyi disimpan per profil. Playlist, lagu yang disukai, dan download dibersamakan.</string>
@@ -176,7 +143,6 @@
     <string name="fab_downloads">Download</string>
     <string name="fab_listening_history">Riwayat dengar</string>
     <string name="fab_statistics">Statistik</string>
-    <string name="cd_listening_stats">Statistik dengar</string>
     <string name="recently_played">Baru diputar</string>
     <string name="liked_songs">Lagu yang disukai</string>
     <string name="no_artists_yet">Belum ada artis</string>
@@ -195,20 +161,8 @@
     </plurals>
     <string name="hvm_subs_feed_rate_limited_soon">YouTube membatasi permintaan dari jaringan ini. Coba lagi sebentar lagi.</string>
 
-    <string name="vhc_title">Beranda Video</string>
-    <string name="vhc_summary">Feed, tujuan, dan urutannya</string>
-    <string name="vhc_feed_section">Feed beranda</string>
-    <string name="vhc_recommendations">Rekomendasi dan saran</string>
-    <string name="vhc_recommendations_sub">Muat video yang disarankan di Beranda</string>
-    <string name="vhc_navigation_section">Tujuan</string>
-    <string name="vhc_navigation_hint">Sembunyikan tujuan mana pun yang tidak kamu gunakan. Minimal satu tetap terlihat.</string>
     <string name="vhc_move_up">Pindahkan %1$s ke atas</string>
     <string name="vhc_move_down">Pindahkan %1$s ke bawah</string>
-    <string name="vh_recommendations_off">Rekomendasi nonaktif</string>
-    <string name="vh_recommendations_off_sub">Shorts masih bisa muncul di sini jika diaktifkan.</string>
-    <string name="vp_resumed_from">Dilanjutkan dari %1$s</string>
-    <string name="vp_play_from_start">Putar dari awal</string>
-    <string name="section_releases">Rilisan</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Ketuk untuk mendengarkan</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -236,16 +190,10 @@
     <string name="widget_preview_artist">Neon Coast</string>
     <string name="widget_preview_next_1">Glasshouse</string>
     <string name="widget_preview_next_2">Ultraviolet</string>
-    <string name="upload_check_channel_name">Upload baru</string>
-    <string name="upload_check_channel_description">Memberi tahu saat channel yang kamu ikuti di perangkat ini mengupload</string>
-    <string name="upload_notification_title">%1$s: %2$d upload baru</string>
-    <string name="video_cached_portion_ended">Kamu mencapai akhir video yang di-cache. Sambung ulang untuk lanjut.</string>
-    <string name="video_not_cached_offline">Bagian video ini tidak di-cache. Sambung ulang untuk lanjut.</string>
     <string name="action_close">Tutup</string>
     <string name="action_check_updates">Periksa Pembaruan</string>
     <string name="action_got_it">Mengerti</string>
     <string name="action_like">Suka</string>
-    <string name="action_refresh">Muat ulang</string>
     <string name="spotlight_new_for_you">Baru untukmu</string>
     <string name="spotlight_new_for_you_caption">Lagu yang belum kamu putar, dari artis yang kamu dengarkan</string>
     <string name="spotlight_discovery_empty">Belum ada saran baru</string>
@@ -257,13 +205,11 @@
     <string name="spotlight_artists_for_you">Artis yang mungkin kamu suka</string>
     <string name="spotlight_artists_for_you_sub">Belum ada di koleksimu</string>
     <string name="filter_recommended">Untukmu</string>
-    <string name="search_channels">Cari channel</string>
     <string name="song_options_not_interested">Tidak tertarik</string>
     <string name="song_options_not_interested_subtitle">Berhenti merekomendasikan lagu ini</string>
     <string name="song_options_block_artist">Jangan rekomendasikan %1$s</string>
     <string name="song_options_speed">Kecepatan pemutaran</string>
     <string name="song_options_speed_value">%1$d%%</string>
-    <string name="song_options_speed_normal">Kecepatan normal</string>
     <string name="cd_speed_reset">Kembalikan ke kecepatan normal</string>
     <string name="np_tile_radio">Radio</string>
     <string name="np_tile_playlist">Playlist</string>
@@ -306,61 +252,11 @@
     <string name="ps_sub_morph">Bentuk hidup yang bernapas</string>
     <string name="ps_sub_dial">Cincin putar, putar untuk scrub</string>
     <string name="ps_sub_hero">Seni penuh, tombol putar besar</string>
-    <string name="video_options_mark_watched">Tandai sudah ditonton</string>
-    <string name="video_options_mark_unwatched">Tandai belum ditonton</string>
-    <string name="video_options_remove_from_history">Hapus dari riwayat tonton</string>
     <string name="vh_available_offline">Tersedia offline</string>
-    <string name="vh_recommended_for_you">Rekomendasi Untukmu</string>
-    <string name="vh_trending_videos">Video Trending</string>
-    <string name="vh_from_subscriptions">Dari subscription-mu</string>
-    <string name="vh_no_subscriptions">Belum ada subscription</string>
-    <string name="vh_no_subscriptions_sub">Subscribe channel agar video terbaru mereka muncul di Beranda</string>
-    <string name="vh_youre_offline">Kamu offline</string>
-    <string name="vh_removed_from_history">Dihapus dari riwayat tonton</string>
-    <string name="vh_clear_history">Hapus riwayat tonton</string>
-    <string name="vh_clear_history_body">Ini mengosongkan riwayat tonton Triat di perangkat ini. Tidak menghapus apa pun dari akun YouTube-mu.</string>
-    <string name="vh_clear_history_confirm">Hapus</string>
-    <string name="vh_no_videos_found">Tidak ada video ditemukan</string>
-    <string name="vh_downloaded_hint">Video yang didownload akan muncul di sini</string>
-    <string name="vl_watch_history">Riwayat Tonton</string>
-    <string name="vl_library_sub">Playlist, riwayat, dan video tersimpanmu</string>
-    <string name="liked_videos">Video yang Disukai</string>
-    <string name="history">Riwayat</string>
-    <string name="view_all">Lihat semua</string>
-    <string name="your_playlists">Playlist-mu</string>
-    <string name="action_new">Baru</string>
-    <string name="vl_no_playlists_hint">Belum ada playlist. Ketuk Baru untuk membuatnya.</string>
-    <string name="vl_target_youtube">YouTube</string>
-    <string name="vl_target_device">Perangkat ini</string>
-    <string name="vl_local_playlist_note">Tetap di HP ini. Bisa dipakai tanpa masuk, dan tidak terlihat di youtube.com.</string>
-    <string name="vl_account_playlist_note">Ditambahkan ke akun YouTube-mu, jadi muncul di semua tempat kamu masuk.</string>
-    <string name="rename_playlist">Ganti nama playlist</string>
     <string name="action_rename">Ganti nama</string>
     <string name="delete_playlist_q">Hapus playlist?</string>
     <string name="delete_playlist">Hapus playlist</string>
-    <string name="vl_login_wall">Masuk untuk melihat playlist, Tonton Nanti, dan video yang disukai</string>
     <string name="vl_no_videos">Tidak ada video di playlist ini</string>
-    <string name="sc_unfollow_body">Menghapusnya dari perangkat ini. Akun YouTube-mu tidak disentuh.</string>
-    <string name="sc_hide_watched">Sembunyikan yang ditonton</string>
-    <string name="sc_no_uploads_match">Tidak ada upload yang cocok dengan filter ini.</string>
-    <string name="sc_none_found">Tidak ada subscription ditemukan</string>
-    <string name="sc_search_hint">Coba sebagian nama, atau @handle.</string>
-    <string name="sc_empty_body">Ikuti channel di perangkat ini, atau masuk untuk membawa subscription YouTube-mu.</string>
-    <string name="import_subscriptions">Impor subscription</string>
-    <string name="sc_group_empty">Tidak ada upload terbaru dari grup ini.</string>
-    <string name="sc_not_following">Kamu belum mengikuti channel apa pun.</string>
-    <string name="sc_no_uploads">Tidak ada upload terbaru dari channel-mu.</string>
-    <string name="show_all_channels">Tampilkan semua channel</string>
-    <string name="sc_latest_from_channels">Terbaru dari channel yang kamu ikuti</string>
-    <string name="sc_any_time">Kapan saja</string>
     <string name="sc_today">Hari ini</string>
     <string name="sc_this_week">Minggu ini</string>
-    <string name="sc_newest_first">Terbaru dulu</string>
-    <string name="sc_oldest_first">Terlama dulu</string>
-    <string name="sc_on_device">%1$d di perangkat ini</string>
-    <string name="sc_channels_on_device">%1$d channel - %2$d di perangkat ini</string>
-    <string name="sh_playback_failed">Pemutaran gagal</string>
-    <string name="subscribed">Disubscribe</string>
-    <string name="subscribe">Subscribe</string>
-    <string name="like">Suka</string>
 </resources>
