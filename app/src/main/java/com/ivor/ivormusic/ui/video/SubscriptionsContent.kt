@@ -95,15 +95,15 @@ import com.ivor.ivormusic.ui.home.HomeViewModel
 import com.ivor.ivormusic.util.MatchField
 import com.ivor.ivormusic.util.fuzzyScore
 
-private enum class SubscriptionFeedPeriod(val label: String, val ageMs: Long?) {
-    ALL("Any time", null),
-    TODAY("Today", 24L * 60L * 60L * 1000L),
-    THIS_WEEK("This week", 7L * 24L * 60L * 60L * 1000L)
+private enum class SubscriptionFeedPeriod(val ageMs: Long?) {
+    ALL(null),
+    TODAY(24L * 60L * 60L * 1000L),
+    THIS_WEEK(7L * 24L * 60L * 60L * 1000L)
 }
 
-private enum class SubscriptionFeedOrder(val label: String) {
-    NEWEST("Newest first"),
-    OLDEST("Oldest first")
+private enum class SubscriptionFeedOrder {
+    NEWEST,
+    OLDEST
 }
 
 /**
@@ -801,7 +801,7 @@ fun SubscriptionsContent(
                                             isConnected = isYouTubeConnected
                                         )
                                     } else {
-                                        "${matchedChannels.size} of ${channels.size} channels"
+                                        stringResource(R.string.sm_x_of_y_channels, matchedChannels.size, channels.size)
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant

@@ -1,4 +1,6 @@
 package com.ivor.ivormusic.ui.downloads
+import androidx.compose.ui.res.pluralStringResource
+import androidx.annotation.StringRes
 import com.ivor.ivormusic.R
 import androidx.compose.ui.res.stringResource
 
@@ -84,9 +86,9 @@ import com.ivor.ivormusic.data.DownloadStatus
 import com.ivor.ivormusic.data.DownloadedVideo
 import com.ivor.ivormusic.data.Song
 
-private enum class DownloadsTab(val label: String) {
-    MUSIC("Music"),
-    VIDEO("Video")
+private enum class DownloadsTab(@StringRes val labelRes: Int) {
+    MUSIC(R.string.sp_mode_music),
+    VIDEO(R.string.sp_mode_video)
 }
 
 /**
@@ -188,12 +190,15 @@ fun DownloadsScreen(
             TopAppBar(
                 title = {
                     Column {
+                        val songsSummary = pluralStringResource(R.plurals.n_songs, downloadedSongs.size, downloadedSongs.size)
+                        val videosSummary = pluralStringResource(R.plurals.vpl_video_count, downloadedVideos.size, downloadedVideos.size)
+                        val activeSummary = pluralStringResource(R.plurals.dl_n_active, activeCount, activeCount)
                         Text(stringResource(R.string.fab_downloads))
                         Text(
                             text = buildString {
-                                append("${downloadedSongs.size} songs")
-                                append(" • ${downloadedVideos.size} videos")
-                                if (activeCount > 0) append(" • $activeCount active")
+                                append(songsSummary)
+                                append(" • $videosSummary")
+                                if (activeCount > 0) append(" • $activeSummary")
                             },
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -264,7 +269,7 @@ fun DownloadsScreen(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = if (pending > 0) "${tab.label} ($pending)" else tab.label,
+                            text = if (pending > 0) "${stringResource(tab.labelRes)} ($pending)" else stringResource(tab.labelRes),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
                             maxLines = 1
@@ -458,7 +463,7 @@ private fun MusicTab(
         }
 
         if (songs.isEmpty() && progress.isEmpty() && offline.isEmpty()) {
-            item { EmptyState("No downloaded music", Icons.Rounded.MusicNote) }
+            item { EmptyState(stringResource(R.string.dl_empty_music), Icons.Rounded.MusicNote) }
         }
     }
 }
@@ -514,7 +519,7 @@ private fun VideoTab(
         }
 
         if (videos.isEmpty() && progress.isEmpty()) {
-            item { EmptyState("No downloaded videos", Icons.Rounded.Videocam) }
+            item { EmptyState(stringResource(R.string.dl_empty_videos), Icons.Rounded.Videocam) }
         }
     }
 }

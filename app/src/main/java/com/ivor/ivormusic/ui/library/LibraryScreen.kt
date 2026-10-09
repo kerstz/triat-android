@@ -789,7 +789,10 @@ fun LibraryMainScreen(
                             onShuffleQueue = onShuffleQueue,
                             onDownloadsClick = onDownloadsClick,
                             onLikedSongsClick = {
-                                onNavigateToPlaylist(PlaylistDisplayItem("Liked Songs", "LM", "You", likedSongs.size, null))
+                                onNavigateToPlaylist(PlaylistDisplayItem(
+                                    context.getString(R.string.liked_songs), "LM",
+                                    context.getString(R.string.lib_uploader_you), likedSongs.size, null
+                                ))
                             },
                             onNavigateToHistory = onNavigateToHistory,
                             readyOfflineCount = readyOfflineCount,
@@ -830,7 +833,10 @@ fun LibraryMainScreen(
                                 }
                             },
                             onLikedSongsClick = {
-                                onNavigateToPlaylist(PlaylistDisplayItem("Liked Songs", "LM", "You", likedSongs.size, null))
+                                onNavigateToPlaylist(PlaylistDisplayItem(
+                                    context.getString(R.string.liked_songs), "LM",
+                                    context.getString(R.string.lib_uploader_you), likedSongs.size, null
+                                ))
                             },
                             hiddenPlaylists = hiddenPlaylists,
                             onHidePlaylist = { playlist -> viewModel.hidePlaylist(playlist) },
@@ -1135,13 +1141,14 @@ private fun LibraryShortcutsCard(
         readyOfflineCount > 0 || (readyOfflineHistoryDisabled && readyOfflineUnnamed > 0)
     val readyOfflineSubtitle = when {
         readyOfflineCount > 0 -> buildString {
-            append(if (readyOfflineCount == 1) "1 song" else "$readyOfflineCount songs")
+            append(pluralStringResource(R.plurals.n_songs, readyOfflineCount, readyOfflineCount))
             if (readyOfflineBytes > 0) append(" · ${formatCacheSize(readyOfflineBytes)}")
         }
         // Deliberately names the setting rather than saying "unavailable": the
         // fix is one toggle and the user is the only one who can make it.
-        readyOfflineUnnamed == 1 -> "1 cached song. Turn on listening history to list it"
-        else -> "$readyOfflineUnnamed cached songs. Turn on listening history to list them"
+        else -> pluralStringResource(
+            R.plurals.lib_cached_songs_history_off, readyOfflineUnnamed, readyOfflineUnnamed
+        )
     }
     // Not clickable in the explanatory state - there is nothing behind it,
     // and a row that opens an empty screen is worse than one that does not move.
@@ -1673,7 +1680,7 @@ fun ArtistsGrid(
                  Spacer(Modifier.height(12.dp))
                  Text(artist, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center, maxLines = 1, overflow = TextOverflow.Ellipsis)
                  Text(
-                     if (artistSongs.size == 1) "1 song" else "${artistSongs.size} songs",
+                     pluralStringResource(R.plurals.n_songs, artistSongs.size, artistSongs.size),
                      style = MaterialTheme.typography.bodySmall,
                      color = MaterialTheme.colorScheme.onSurfaceVariant
                  )
@@ -1779,7 +1786,7 @@ fun ExpressiveLikedSongsCard(count: Int, onClick: () -> Unit) {
             Column(modifier = Modifier.weight(1f)) {
                 Text(stringResource(R.string.liked_songs), style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onPrimaryContainer)
                 Text(
-                    if (count == 1) "1 track • Auto-playlist" else "$count tracks • Auto-playlist",
+                    pluralStringResource(R.plurals.lib_n_tracks_auto, count, count),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                 )
@@ -1939,7 +1946,7 @@ fun ExpressivePlaylistCard(
             Column(modifier = Modifier.weight(1f)) {
                 Text(name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 Text(
-                    subtitle ?: if (count == 1) "1 song" else "$count songs",
+                    subtitle ?: pluralStringResource(R.plurals.n_songs, count, count),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     maxLines = 1
@@ -2025,10 +2032,10 @@ fun ExpressivePlaylistCard(
             text = {
                 Text(
                     if (affectsYouTubeAccount) {
-                        "This will permanently remove \"$name\" from your YouTube account. " +
+                        stringResource(R.string.lib_delete_yt_account_lead, name) + " " +
                             stringResource(R.string.lib_delete_body)
                     } else {
-                        "This will permanently remove \"$name\"."
+                        stringResource(R.string.lib_delete_local_body, name)
                     }
                 )
             },
@@ -2235,6 +2242,7 @@ internal fun Modifier.songRowClick(
 }
 
 /** Compact "when was this added" label for the Recently added sort. */
+@Composable
 private fun formatRelativeDate(
     timestamp: Long,
     todayLabel: String,
@@ -2245,10 +2253,10 @@ private fun formatRelativeDate(
         days < 0L -> todayLabel // Clock skew or a file dated in the future
         days == 0L -> todayLabel
         days == 1L -> yesterdayLabel
-        days < 7L -> "${days}d ago"
-        days < 30L -> "${days / 7}w ago"
-        days < 365L -> "${days / 30}mo ago"
-        else -> "${days / 365}y ago"
+        days < 7L -> stringResource(R.string.rel_days_ago, days.toInt())
+        days < 30L -> stringResource(R.string.rel_weeks_ago, (days / 7).toInt())
+        days < 365L -> stringResource(R.string.rel_months_ago, (days / 30).toInt())
+        else -> pluralStringResource(R.plurals.rel_years_ago, (days / 365).toInt(), (days / 365).toInt())
     }
 }
 
@@ -3274,7 +3282,7 @@ fun PlaylistDetailScreen(
                                 commitLocalOrder()
                                 onBack()
                             }) {
-                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                             }
                         },
                         actions = {
@@ -3307,7 +3315,7 @@ fun PlaylistDetailScreen(
                             if (hasRename || hasShare || canCopyToLocal || radioSeed != null) {
                                 Box {
                                     IconButton(onClick = { showOverflow = true }) {
-                                        Icon(Icons.Rounded.MoreVert, "More options")
+                                        Icon(Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options))
                                     }
                                     DropdownMenu(
                                         expanded = showOverflow,
@@ -3469,7 +3477,7 @@ fun PlaylistDetailScreen(
                             trailingIcon = if (searchQuery.isNotEmpty()) {
                                 {
                                     IconButton(onClick = { searchQuery = "" }) {
-                                        Icon(Icons.Rounded.Close, "Clear search")
+                                        Icon(Icons.Rounded.Close, stringResource(R.string.cd_clear_search))
                                     }
                                 }
                             } else null,
@@ -3750,8 +3758,9 @@ fun PlaylistDetailScreen(
                             )
                         )
 
+                        val durationContext = LocalContext.current
                         val totalDurationLabel = remember(songs) {
-                            formatTotalDuration(songs.sumOf { it.duration })
+                            formatTotalDuration(durationContext, songs.sumOf { it.duration })
                         }
                         val releaseType = songs.firstOrNull()?.releaseType ?: resolvedPlaylist.releaseType
                         val releaseYear = songs.firstOrNull()?.releaseYear ?: resolvedPlaylist.releaseYear
@@ -3761,7 +3770,7 @@ fun PlaylistDetailScreen(
                                 if (isAlbum) kindLabel else stringResource(R.string.label_playlist),
                                 resolvedPlaylist.uploaderName.takeIf { isAlbum && it.isNotBlank() },
                                 releaseYear?.toString()?.takeIf { isAlbum },
-                                if (songs.size == 1) "1 track" else "${songs.size} tracks",
+                                pluralStringResource(R.plurals.n_tracks, songs.size, songs.size),
                                 totalDurationLabel
                             ).joinToString("  ·  "),
                             style = MaterialTheme.typography.labelLarge,
@@ -3888,7 +3897,7 @@ fun PlaylistDetailScreen(
             if (!isSearchActive && !isFetching.value && songs.isNotEmpty()) {
                 item {
                     TrackSectionHeader(
-                        countLabel = if (songs.size == 1) "1 track" else "${songs.size} tracks",
+                        countLabel = pluralStringResource(R.plurals.n_tracks, songs.size, songs.size),
                         manageEnabled = isReorderMode,
                         canEdit = canEditSongs,
                         onToggleEdit = {
@@ -3907,7 +3916,7 @@ fun PlaylistDetailScreen(
             if (isSearchActive && searchQuery.isNotBlank() && filteredSongs.isNotEmpty()) {
                 item {
                     Text(
-                        text = if (filteredSongs.size == 1) "1 result" else "${filteredSongs.size} results",
+                        text = pluralStringResource(R.plurals.n_results, filteredSongs.size, filteredSongs.size),
                         style = MaterialTheme.typography.labelMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 24.dp, top = 8.dp, bottom = 4.dp)
@@ -4156,10 +4165,10 @@ fun PlaylistDetailScreen(
                     // Only reached for the account's own playlists when it can
                     // actually be deleted there; a local one stays device-only.
                     if (!isLocalPlaylist) {
-                        "This will permanently delete \"${resolvedPlaylist.name}\" from your YouTube account. " +
+                        stringResource(R.string.lib_delete_yt_playlist_lead, resolvedPlaylist.name) + " " +
                             stringResource(R.string.lib_delete_body)
                     } else {
-                        "This will permanently remove \"${resolvedPlaylist.name}\" from this device."
+                        stringResource(R.string.lib_delete_local_playlist_body, resolvedPlaylist.name)
                     },
                     textAlign = TextAlign.Center
                 )

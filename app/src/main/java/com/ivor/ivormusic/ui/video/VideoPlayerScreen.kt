@@ -443,7 +443,7 @@ fun FullscreenPlayerContent(
             ),
             shapes = stableShapes
         ) {
-            Icon(Icons.Rounded.Settings, "Playback settings")
+            Icon(Icons.Rounded.Settings, stringResource(R.string.vpc_playback_settings))
         }
 
         FilledIconButton(
@@ -454,7 +454,7 @@ fun FullscreenPlayerContent(
             ),
             shapes = stableShapes
         ) {
-            Icon(Icons.Rounded.FullscreenExit, "Exit Fullscreen")
+            Icon(Icons.Rounded.FullscreenExit, stringResource(R.string.vp_exit_fullscreen))
         }
     }
 
@@ -628,7 +628,7 @@ fun FullscreenPlayerContent(
                                 ),
                                 shapes = stableShapes
                             ) {
-                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                                Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                             }
                             Text(
                                 text = videoTitle,
@@ -1042,7 +1042,7 @@ fun PortraitPlayerContent(
                         ),
                         shapes = stableShapes
                     ) {
-                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                         Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                     }
                     
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -1067,7 +1067,7 @@ fun PortraitPlayerContent(
                             ),
                             shapes = stableShapes
                         ) {
-                            Icon(Icons.Rounded.Settings, "Playback settings")
+                            Icon(Icons.Rounded.Settings, stringResource(R.string.vpc_playback_settings))
                         }
                         FilledIconButton(
                             onClick = onFullscreenToggle,
@@ -1077,7 +1077,7 @@ fun PortraitPlayerContent(
                             ),
                             shapes = stableShapes
                         ) {
-                            Icon(Icons.Rounded.Fullscreen, "Fullscreen")
+                            Icon(Icons.Rounded.Fullscreen, stringResource(R.string.vp_fullscreen))
                         }
                     }
                 }

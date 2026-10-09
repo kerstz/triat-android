@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.library
+import androidx.compose.ui.res.pluralStringResource
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
@@ -110,10 +111,10 @@ import java.util.TimeZone
  * actually arrive with: what have I been playing just now, what was that thing
  * from earlier in the week, and the whole log.
  */
-private enum class HistoryRange(val label: String, val daysBack: Int?) {
-    Today("Today", 0),
-    Week("This week", 6),
-    All("All time", null)
+private enum class HistoryRange(val daysBack: Int?) {
+    Today(0),
+    Week(6),
+    All(null)
 }
 
 /** One row: a play, plus any consecutive repeats of the same song folded in. */
@@ -250,7 +251,7 @@ fun ListeningHistoryScreen(
                 title = { Text(stringResource(R.string.fab_listening_history), fontWeight = FontWeight.Bold) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                        Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                     }
                 },
                 actions = {
@@ -603,14 +604,15 @@ private fun dayLabel(
 }
 
 /** "1h 14m", "14m", "48s" - the shortest form that is still accurate. */
+@Composable
 private fun formatListened(ms: Long): String {
     val totalSeconds = ms / 1000
     val hours = totalSeconds / 3600
     val minutes = (totalSeconds % 3600) / 60
     return when {
-        hours > 0 -> "${hours}h ${minutes}m"
-        minutes > 0 -> "${minutes}m"
-        else -> "${totalSeconds}s"
+        hours > 0 -> stringResource(R.string.dur_h_m, hours, minutes)
+        minutes > 0 -> stringResource(R.string.dur_m, minutes)
+        else -> stringResource(R.string.dur_s, totalSeconds)
     }
 }
 
@@ -658,13 +660,16 @@ private fun HistoryHeroCard(
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onPrimaryContainer
                 )
+                val summaryRange = if (isFiltered) stringResource(R.string.lh_matching) else rangeLabel.lowercase()
+                val summaryPlays = pluralStringResource(R.plurals.n_plays, plays, plays)
+                val summarySongs = pluralStringResource(R.plurals.n_songs, songs, songs)
                 Text(
                     buildString {
-                        append(if (isFiltered) "matching" else rangeLabel.lowercase())
+                        append(summaryRange)
                         append(" • ")
-                        append(if (plays == 1) "1 play" else "$plays plays")
+                        append(summaryPlays)
                         append(" • ")
-                        append(if (songs == 1) "1 song" else "$songs songs")
+                        append(summarySongs)
                     },
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
@@ -689,7 +694,7 @@ private fun HistoryHeroCard(
                             )
                             Spacer(Modifier.width(6.dp))
                             Text(
-                                "$streakDays day streak",
+                                pluralStringResource(R.plurals.lh_day_streak, streakDays, streakDays),
                                 style = MaterialTheme.typography.labelMedium,
                                 fontWeight = FontWeight.SemiBold,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
@@ -943,7 +948,7 @@ private fun HistoryRunRow(
                 }
                 DropdownMenuItem(
                     text = {
-                        Text(if (run.playCount > 1) "Remove these ${run.playCount} plays" else "Remove this play")
+                        Text(pluralStringResource(R.plurals.lh_remove_plays, run.playCount, run.playCount))
                     },
                     leadingIcon = { Icon(Icons.Rounded.Delete, contentDescription = null) },
                     onClick = {
@@ -1094,8 +1099,7 @@ private fun HistoryEmptyState(
         }
         else -> {
             title = stringResource(R.string.lh_empty_title)
-            body = stringResource(R.string.lh_empty_body) +
-                "track from Tuesday and play it again."
+            body = stringResource(R.string.lh_empty_body)
         }
     }
 
@@ -1174,9 +1178,7 @@ private fun ClearHistoryDialog(
         title = { Text(stringResource(R.string.lh_clear_dialog_title)) },
         text = {
             Text(
-                "This removes all $entryCount plays. Your recently played row, " +
-                    "the Library's \"Most played\" sort and your statistics are " +
-                    "all built on this history and will reset with it."
+                pluralStringResource(R.plurals.lh_clear_dialog_body, entryCount, entryCount)
             )
         },
         confirmButton = {

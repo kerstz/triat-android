@@ -866,11 +866,11 @@ class ShortsPlayerViewModel(application: android.app.Application) : AndroidViewM
                     } else {
                         // No second NewPipe extraction: it repeats the failure
                         // the resolver just had (see VideoPlayerViewModel).
-                        _playbackError.value = Exception("Unable to load this Short")
+                        _playbackError.value = Exception(context.getString(com.ivor.ivormusic.R.string.sh_load_failed))
                     }
                 }
             } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
-                _playbackError.value = Exception("Connection timed out. Please check your internet.")
+                _playbackError.value = Exception(context.getString(com.ivor.ivormusic.R.string.sh_timeout))
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
             } catch (e: Exception) {

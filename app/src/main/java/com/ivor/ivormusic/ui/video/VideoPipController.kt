@@ -165,24 +165,24 @@ internal fun pipActions(
     val playPause = if (isPlaying) {
         remoteAction(
             activity, packageName, ACTION_PAUSE,
-            R.drawable.ic_media_pause, "Pause"
+            R.drawable.ic_media_pause, activity.getString(R.string.cd_pause)
         )
     } else {
         remoteAction(
             activity, packageName, ACTION_PLAY,
-            R.drawable.ic_media_play, "Play"
+            R.drawable.ic_media_play, activity.getString(R.string.cd_play)
         )
     }
 
     return listOf(
         remoteAction(
             activity, packageName, ACTION_REWIND,
-            R.drawable.ic_media_replay_10, "Back 10 seconds"
+            R.drawable.ic_media_replay_10, activity.getString(R.string.vp_rewind)
         ),
         playPause,
         remoteAction(
             activity, packageName, ACTION_FORWARD,
-            R.drawable.ic_media_forward_10, "Forward 10 seconds"
+            R.drawable.ic_media_forward_10, activity.getString(R.string.vp_forward)
         )
     )
 }

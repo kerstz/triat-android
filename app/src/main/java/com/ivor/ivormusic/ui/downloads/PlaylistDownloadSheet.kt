@@ -1,4 +1,7 @@
 package com.ivor.ivormusic.ui.downloads
+import androidx.compose.ui.res.pluralStringResource
+import androidx.annotation.StringRes
+import androidx.annotation.PluralsRes
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -84,11 +87,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 private enum class PlaylistDownloadKind(
-    val itemName: String,
-    val itemNamePlural: String
+    @PluralsRes val countPlural: Int,
+    @StringRes val downloadAllLabel: Int
 ) {
-    MUSIC("track", "tracks"),
-    VIDEO("video", "videos")
+    MUSIC(R.plurals.n_tracks, R.string.pd_download_tracks),
+    VIDEO(R.plurals.vpl_video_count, R.string.pd_download_videos)
 }
 
 private data class PlaylistDownloadSnapshot(
@@ -274,7 +277,7 @@ fun VideoPlaylistDownloadAction(
             kind = PlaylistDownloadKind.VIDEO,
             playlistItemCountLabel = playlistCountText
                 ?.takeIf { it.isNotBlank() }
-                ?: if (videos.size >= 100) "100+ videos"
+                ?: if (videos.size >= 100) stringResource(R.string.vpl_video_count_partial, 100)
                 else itemCountLabel(videos.size, PlaylistDownloadKind.VIDEO),
             snapshot = snapshot,
             onDismiss = { showSheet = false },
@@ -300,14 +303,14 @@ private fun PlaylistDownloadButton(
     val label = when {
         snapshot.isComplete -> stringResource(R.string.vh_available_offline)
         snapshot.activeCount > 0 && kind == PlaylistDownloadKind.VIDEO -> stringResource(R.string.pd_downloading_playlist)
-        snapshot.activeCount > 0 -> "Downloading ${snapshot.activeCount}"
+        snapshot.activeCount > 0 -> stringResource(R.string.pd_downloading_n, snapshot.activeCount)
         !snapshot.allPagesLoaded -> stringResource(R.string.pd_download_playlist)
         snapshot.remainingCount > 0 && snapshot.remainingIds.all { it in snapshot.failedIds } ->
-            "Retry ${snapshot.remainingCount}"
+            stringResource(R.string.pd_retry_n, snapshot.remainingCount)
         snapshot.remainingCount > 0 && kind == PlaylistDownloadKind.VIDEO -> stringResource(R.string.pd_download_playlist)
-        snapshot.remainingCount > 0 -> "Download $totalItemCount"
+        snapshot.remainingCount > 0 -> stringResource(R.string.pd_download_n, totalItemCount)
         snapshot.skippedCount > 0 -> stringResource(R.string.pd_unavailable_offline)
-        else -> "Download ${kind.itemNamePlural}"
+        else -> stringResource(kind.downloadAllLabel)
     }
 
     FilledTonalButton(
@@ -631,9 +634,15 @@ private fun PlaylistDownloadSheet(
                                     text = when {
                                         localOnly -> stringResource(R.string.pd_local_only_block)
                                         kind == PlaylistDownloadKind.VIDEO ->
-                                            "${itemCountLabel(snapshot.skippedCount, kind)} can't be downloaded while live and will be skipped."
+                                            pluralStringResource(
+                                                R.plurals.pd_skipped_live, snapshot.skippedCount,
+                                                itemCountLabel(snapshot.skippedCount, kind)
+                                            )
                                         else ->
-                                            "${itemCountLabel(snapshot.skippedCount, kind)} has no downloadable source and will be skipped."
+                                            pluralStringResource(
+                                                R.plurals.pd_skipped_no_source, snapshot.skippedCount,
+                                                itemCountLabel(snapshot.skippedCount, kind)
+                                            )
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = if (localOnly) MaterialTheme.colorScheme.onErrorContainer
@@ -725,7 +734,7 @@ private fun PlaylistDownloadSheet(
                         !snapshot.allPagesLoaded -> stringResource(R.string.pd_download_full)
                         snapshot.remainingCount == 0 && snapshot.activeCount > 0 -> stringResource(R.string.dl_preparing)
                         snapshot.remainingIds.all { it in snapshot.failedIds } ->
-                            "Retry ${itemCountLabel(snapshot.remainingCount, kind)}"
+                            stringResource(R.string.pd_retry_items, itemCountLabel(snapshot.remainingCount, kind))
                         else -> stringResource(R.string.pd_download_full)
                     }
                     if (queueing) {
@@ -763,8 +772,9 @@ private fun DownloadSummaryRow(label: String, value: String) {
     }
 }
 
+@Composable
 private fun itemCountLabel(count: Int, kind: PlaylistDownloadKind): String =
-    "$count ${if (count == 1) kind.itemName else kind.itemNamePlural}"
+    pluralStringResource(kind.countPlural, count, count)
 
 @Composable
 private fun BatchQualityPill(

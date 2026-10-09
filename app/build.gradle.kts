@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.androidx.baselineprofile)
 }
 
 // Release signing credentials: CI supplies them as env vars, local builds read
@@ -195,6 +196,11 @@ android.defaultConfig.apply {
 }
 
 dependencies {
+    // Supplies app/src/main/baseline-prof.txt, which AGP packages as the
+    // app's ART profile. profileinstaller already arrives transitively
+    // through Compose and installs it on first run.
+    baselineProfile(project(":baselineprofile"))
+
     coreLibraryDesugaring(libs.desugar.jdk.libs.nio)
 
     implementation(libs.androidx.core.ktx)

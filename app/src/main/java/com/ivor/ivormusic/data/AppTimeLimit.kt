@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.data
 
+import com.ivor.ivormusic.R
 import android.content.Context
 import com.ivor.ivormusic.util.KLog
 import java.time.LocalDate
@@ -130,14 +131,14 @@ object AppTimeLimit {
     }
 
     /** "2h 30m", "45m" - shared by the editor, the overlay and onboarding. */
-    fun formatBudget(minutes: Int): String {
-        if (minutes <= 0) return "Unlimited"
+    fun formatBudget(context: Context, minutes: Int): String {
+        if (minutes <= 0) return context.getString(R.string.tl_unlimited)
         val h = minutes / 60
         val m = minutes % 60
         return when {
-            h > 0 && m > 0 -> "${h}h ${m}m"
-            h > 0 -> "${h}h"
-            else -> "${m}m"
+            h > 0 && m > 0 -> context.getString(R.string.dur_h_m, h, m)
+            h > 0 -> context.getString(R.string.dur_h, h)
+            else -> context.getString(R.string.dur_m, m)
         }
     }
 }

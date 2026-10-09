@@ -169,7 +169,7 @@ fun CommentsPanel(
                             contentAlignment = Alignment.Center
                         ) {
                             Text(
-                                text = if (commentsAvailable) "No comments yet" else "Comments are unavailable for this video",
+                                text = if (commentsAvailable) stringResource(R.string.cm_none_yet) else stringResource(R.string.cm_unavailable),
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -219,8 +219,9 @@ fun CommentsPanel(
                                     val isLoadingReplies = comment.commentId in loadingReplyIds
                                     if (comment.repliesToken != null && commentReplies == null) {
                                         Text(
-                                            text = if (isLoadingReplies) "Loading replies…"
-                                            else "View replies" + if (comment.replyCount.isNotEmpty()) " (${comment.replyCount})" else "",
+                                            text = if (isLoadingReplies) stringResource(R.string.cm_loading_replies)
+                                            else if (comment.replyCount.isNotEmpty()) stringResource(R.string.cm_view_replies_n, comment.replyCount)
+                                            else stringResource(R.string.cm_view_replies),
                                             style = MaterialTheme.typography.labelLarge,
                                             color = MaterialTheme.colorScheme.primary,
                                             fontWeight = FontWeight.Bold,
@@ -466,7 +467,7 @@ private fun CommentComposer(
                         .weight(1f)
                         .focusRequester(focusRequester),
                     placeholder = {
-                        Text(if (replyTarget != null) "Add a reply…" else "Add a comment…")
+                        Text(if (replyTarget != null) stringResource(R.string.cm_add_reply) else stringResource(R.string.cm_add_comment))
                     },
                     shape = CircleShape,
                     maxLines = 4,
@@ -620,7 +621,7 @@ private fun CommentRow(
                 ) {
                     Icon(
                         Icons.Rounded.ThumbUp,
-                        contentDescription = if (comment.isLiked) "Unlike" else "Like",
+                        contentDescription = if (comment.isLiked) stringResource(R.string.cm_unlike) else stringResource(R.string.action_like),
                         modifier = Modifier.size(14.dp),
                         tint = likeTint
                     )

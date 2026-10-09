@@ -273,7 +273,7 @@ fun PlaylistStudioScreen(
                 PlaylistDisplayItem(
                     name = name.trim(),
                     url = id,
-                    uploaderName = "You",
+                    uploaderName = context.getString(R.string.lib_uploader_you),
                     itemCount = selected.distinctBy { it.id }.size
                 )
             )

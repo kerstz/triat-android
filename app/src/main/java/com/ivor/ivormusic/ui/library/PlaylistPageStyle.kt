@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.library
 
+import com.ivor.ivormusic.R
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
@@ -130,10 +131,10 @@ internal fun playlistRaisedSurface(): Color {
 }
 
 /** Formats a summed track duration as "1 hr 32 min" / "45 min"; null when unknown. */
-internal fun formatTotalDuration(totalMs: Long): String? {
+internal fun formatTotalDuration(context: android.content.Context, totalMs: Long): String? {
     val totalMinutes = totalMs / 60_000
     if (totalMinutes <= 0) return null
     val hours = totalMinutes / 60
     val minutes = totalMinutes % 60
-    return if (hours > 0) "$hours hr $minutes min" else "$minutes min"
+    return if (hours > 0) context.getString(R.string.dur_long_h_m, hours, minutes) else context.getString(R.string.dur_long_m, minutes)
 }

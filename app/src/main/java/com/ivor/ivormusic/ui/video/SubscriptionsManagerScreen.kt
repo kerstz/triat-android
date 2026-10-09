@@ -173,7 +173,7 @@ fun SubscriptionsManagerScreen(
                         Text(stringResource(R.string.settings_subscriptions), fontWeight = FontWeight.Bold)
                         Text(
                             text = if (subscriptions.isEmpty()) stringResource(R.string.sm_nothing_followed)
-                            else "${subscriptions.size} on this device",
+                            else stringResource(R.string.sm_on_this_device, subscriptions.size),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -310,7 +310,7 @@ fun SubscriptionsManagerScreen(
                             text = if (channelQuery.isBlank()) {
                                 stringResource(R.string.section_channels)
                             } else {
-                                "Channels - ${matchedSubscriptions.size} of ${subscriptions.size}"
+                                stringResource(R.string.sm_channels_matched, matchedSubscriptions.size, subscriptions.size)
                             },
                             style = MaterialTheme.typography.titleSmall,
                             fontWeight = FontWeight.SemiBold,
@@ -484,7 +484,7 @@ private fun ImportProgressCard(progress: Pair<Int, Int>?) {
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = progress?.let { (done, total) -> "$done of $total channels" }
+                text = progress?.let { (done, total) -> stringResource(R.string.sm_x_of_y_channels, done, total) }
                     ?: stringResource(R.string.bk_reading),
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -668,7 +668,7 @@ private fun ManagedChannelRow(
                     overflow = TextOverflow.Ellipsis
                 )
                 val subtitle = when {
-                    groupCount > 0 -> "In $groupCount group${if (groupCount == 1) "" else "s"}"
+                    groupCount > 0 -> pluralStringResource(R.plurals.sm_in_n_groups, groupCount, groupCount)
                     !channel.handle.isNullOrBlank() -> channel.handle
                     else -> null
                 }
@@ -741,15 +741,15 @@ private fun ImportSummaryDialog(result: SubscriptionImportResult, onDismiss: () 
                 if (result.error != null) {
                     Text(result.error, color = MaterialTheme.colorScheme.onSurfaceVariant)
                 } else {
-                    SummaryLine("Added", "${result.added}")
+                    SummaryLine(stringResource(R.string.sm_summary_added), "${result.added}")
                     if (result.alreadyPresent > 0) {
-                        SummaryLine("Already following", "${result.alreadyPresent}")
+                        SummaryLine(stringResource(R.string.sm_summary_already), "${result.alreadyPresent}")
                     }
                     if (result.unresolved > 0) {
-                        SummaryLine("Couldn't be found", "${result.unresolved}")
+                        SummaryLine(stringResource(R.string.sm_summary_not_found), "${result.unresolved}")
                     }
                     if (result.skippedOtherService > 0) {
-                        SummaryLine("Other services", "${result.skippedOtherService}")
+                        SummaryLine(stringResource(R.string.sm_summary_other), "${result.skippedOtherService}")
                         Spacer(Modifier.height(8.dp))
                         Text(
                             text = stringResource(R.string.sm_foreign_skipped),
@@ -948,7 +948,7 @@ private fun ChannelGroupsDialog(
         text = {
             if (groups.isEmpty()) {
                 Text(
-                    "You haven't made any groups yet.",
+                    stringResource(R.string.sm_no_groups),
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             } else {

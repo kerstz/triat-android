@@ -294,14 +294,16 @@ fun PlaylistImportScreen(
         ) { picked ->
             if (picked == null) {
                 // ---- Step 1: pick a source ----
-                val sources = remember(userPlaylists, targetPlaylist.id, likedSongs) {
+                val likedSongsName = stringResource(R.string.liked_songs)
+                val youLabel = stringResource(R.string.lib_uploader_you)
+                val sources = remember(userPlaylists, targetPlaylist.id, likedSongs, likedSongsName, youLabel) {
                     buildList {
                         if (likedSongs.isNotEmpty()) {
                             add(
                                 PlaylistDisplayItem(
-                                    name = "Liked Songs",
+                                    name = likedSongsName,
                                     url = "LM",
-                                    uploaderName = "You",
+                                    uploaderName = youLabel,
                                     itemCount = likedSongs.size
                                 )
                             )

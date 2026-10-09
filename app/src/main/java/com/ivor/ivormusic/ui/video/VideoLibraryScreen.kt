@@ -529,6 +529,8 @@ private fun LibraryRoot(
             // animation - just there.
             if (isLoggedIn) {
                 item {
+                    val watchLaterTitle = stringResource(R.string.video_options_watch_later)
+                    val likedVideosTitle = stringResource(R.string.liked_videos)
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -536,13 +538,13 @@ private fun LibraryRoot(
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
                         BigNavButton(
-                            title = stringResource(R.string.video_options_watch_later),
+                            title = watchLaterTitle,
                             subtitle = null,
                             icon = Icons.Rounded.WatchLater,
                             tileColor = MaterialTheme.colorScheme.primaryContainer,
                             onTileColor = MaterialTheme.colorScheme.onPrimaryContainer,
                             onClick = {
-                                onOpenPlaylist(VideoPlaylist("WL", "Watch Later"))
+                                onOpenPlaylist(VideoPlaylist("WL", watchLaterTitle))
                             },
                             modifier = Modifier.weight(1f)
                         )
@@ -553,7 +555,7 @@ private fun LibraryRoot(
                             tileColor = MaterialTheme.colorScheme.tertiaryContainer,
                             onTileColor = MaterialTheme.colorScheme.onTertiaryContainer,
                             onClick = {
-                                onOpenPlaylist(VideoPlaylist("LL", "Liked Videos"))
+                                onOpenPlaylist(VideoPlaylist("LL", likedVideosTitle))
                             },
                             modifier = Modifier.weight(1f)
                         )
@@ -1178,9 +1180,9 @@ private fun PlaylistRow(
             text = {
                 Text(
                     if (isLocal) {
-                        "This will permanently delete \"${playlist.title}\" from this device."
+                        stringResource(R.string.vl_delete_local_body, playlist.title)
                     } else {
-                        "This will permanently remove \"${playlist.title}\" from your YouTube account."
+                        stringResource(R.string.vl_remove_yt_body, playlist.title)
                     }
                 )
             },

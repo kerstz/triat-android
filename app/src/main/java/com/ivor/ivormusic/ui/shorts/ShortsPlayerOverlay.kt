@@ -682,7 +682,7 @@ fun ShortsPlayerOverlay(
                     ShortsAction(
                         icon = if (likeStatus == LikeStatus.DISLIKE) Icons.Rounded.ThumbDown
                             else Icons.Outlined.ThumbDown,
-                        label = "Dislike",
+                        label = stringResource(R.string.cd_dislike),
                         active = likeStatus == LikeStatus.DISLIKE,
                         contentDescription = stringResource(R.string.cd_dislike),
                         onClick = { requireLogin { viewModel.toggleDislike() } }
@@ -691,7 +691,7 @@ fun ShortsPlayerOverlay(
                 if (ThemePreferences.SHORTS_ACTION_COMMENTS !in hiddenActions) {
                     ShortsAction(
                         icon = Icons.Rounded.ChatBubble,
-                        label = "Comments",
+                        label = stringResource(R.string.cd_comments),
                         contentDescription = stringResource(R.string.cd_comments),
                         onClick = {
                             viewModel.ensureCommentsLoaded()
@@ -702,7 +702,7 @@ fun ShortsPlayerOverlay(
                 if (ThemePreferences.SHORTS_ACTION_SHARE !in hiddenActions) {
                     ShortsAction(
                         icon = Icons.Rounded.Share,
-                        label = "Share",
+                        label = stringResource(R.string.video_options_share),
                         contentDescription = stringResource(R.string.video_options_share),
                         onClick = {
                             val videoId = currentVideo?.videoId ?: return@ShortsAction
@@ -998,7 +998,7 @@ private fun ShortsDismissSheet(
                 icon = Icons.Rounded.RemoveCircleOutline,
                 title = stringResource(R.string.video_options_dont_recommend_channel),
                 subtitle = channelName.takeIf { it.isNotBlank() }
-                    ?.let { "Hide everything from $it" }
+                    ?.let { stringResource(R.string.sh_hide_channel_named, it) }
                     ?: stringResource(R.string.sh_hide_channel_sub),
                 onClick = onBlockChannel
             )

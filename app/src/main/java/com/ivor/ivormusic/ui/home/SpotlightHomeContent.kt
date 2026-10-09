@@ -434,8 +434,8 @@ private const val SHORTCUT_COUNT = 6
  * this screen resolves everything from flows that already exist, so the chips
  * scope what is genuinely on the device instead of implying a catalogue.
  */
-internal enum class SpotlightFilter(val label: String, val quickPickCaption: String?) {
-    All("All", null),
+internal enum class SpotlightFilter {
+    All,
 
     /**
      * The one filter that is not a view of what the user already has.
@@ -444,10 +444,10 @@ internal enum class SpotlightFilter(val label: String, val quickPickCaption: Str
      * screen: everything else here scopes the library, and this is the only
      * entry that answers "what should I listen to that I have not heard".
      */
-    Recommended("For you", "Not in your library yet"),
-    Liked("Liked", "From songs you liked"),
-    Recent("Recent", "From what you played lately"),
-    Playlists("Playlists", null),
+    Recommended,
+    Liked,
+    Recent,
+    Playlists,
 }
 
 /** The Spin pool matching what a filter shows, so "spin these" means these. */
@@ -798,12 +798,13 @@ private fun SpotlightShelf(items: List<ShelfItem>, onClick: (String) -> Unit) {
  * card is 140dp, which is 420 physical pixels on a 3x screen. Asking for the
  * size actually being drawn is what separates a cover from a blur.
  */
+@Composable
 private fun PlaylistDisplayItem.toShelfItem(): ShelfItem = ShelfItem(
     id = id,
     title = name,
     subtitle = when {
         uploaderName.isNotBlank() -> uploaderName
-        itemCount >= 0 -> "$itemCount songs"
+        itemCount >= 0 -> pluralStringResource(R.plurals.n_songs, itemCount, itemCount)
         else -> ""
     },
     artwork = thumbnailUrl,

@@ -303,7 +303,7 @@ private fun GestureNowPlayingView(
     )
     
     // Get album info
-    val albumName = currentSong?.album?.takeIf { !isUnknownAlbum(it) } ?: "Unknown Album"
+    val albumName = currentSong?.album?.takeIf { !isUnknownAlbum(it) } ?: stringResource(R.string.unknown_album)
     val albumArtUrl = currentSong?.highResThumbnailUrl 
         ?: currentSong?.thumbnailUrl 
         ?: currentSong?.albumArtUri?.toString()
@@ -353,7 +353,7 @@ private fun GestureNowPlayingView(
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
-                    Icon(Icons.Default.KeyboardArrowDown, "Collapse", modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(28.dp))
                 }
 
                 // Lyrics toggle removed from the face to keep the player minimal.
@@ -370,7 +370,7 @@ private fun GestureNowPlayingView(
                     ) {
                         Icon(
                             Icons.AutoMirrored.Filled.QueueMusic,
-                            "Queue",
+                            stringResource(R.string.cd_queue),
                             modifier = Modifier.size(24.dp)
                         )
                     }
@@ -471,7 +471,7 @@ private fun GestureNowPlayingView(
                             horizontalAlignment = Alignment.CenterHorizontally
                         ) {
                             Text(
-                                text = currentSong?.title?.takeIf { !isUnknownTitle(it) } ?: "Untitled",
+                                text = currentSong?.title?.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
                                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
@@ -479,13 +479,13 @@ private fun GestureNowPlayingView(
                                 textAlign = TextAlign.Center
                             )
                             Spacer(modifier = Modifier.height(4.dp))
-                            val artistName = currentSong?.artist?.takeIf { !isUnknownArtist(it) } ?: "Unknown Artist"
+                            val artistName = currentSong?.artist?.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)
                             Text(
                                 text = artistName,
                                 style = MaterialTheme.typography.titleMedium,
                                 color = onSurfaceVariantColor,
                                 modifier = Modifier
-                                    .clickable(enabled = artistName != "Unknown Artist") { onArtistClick(artistName) },
+                                    .clickable(enabled = artistName != stringResource(R.string.unknown_artist)) { onArtistClick(artistName) },
                                 textAlign = TextAlign.Center
                             )
                         }
@@ -641,7 +641,7 @@ private fun CoverflowTransportRow(
                 } else {
                     Icon(
                         imageVector = if (isPlaying) Icons.Rounded.Pause else Icons.Rounded.PlayArrow,
-                        contentDescription = if (isPlaying) "Pause" else "Play",
+                        contentDescription = if (isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(32.dp)
                     )
@@ -1147,7 +1147,7 @@ private fun GestureQueueView(
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
-                    Icon(Icons.Default.KeyboardArrowDown, "Collapse", modifier = Modifier.size(28.dp))
+                    Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(28.dp))
                 }
                 
                 Surface(
@@ -1203,7 +1203,7 @@ private fun GestureQueueView(
                         ),
                         modifier = Modifier.size(48.dp)
                     ) {
-                        Icon(Icons.Rounded.MusicNote, "Now Playing", modifier = Modifier.size(24.dp))
+                        Icon(Icons.Rounded.MusicNote, stringResource(R.string.cd_now_playing), modifier = Modifier.size(24.dp))
                     }
                 }
             }
@@ -1225,7 +1225,7 @@ private fun GestureQueueView(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            "Queue is empty",
+                            stringResource(R.string.ps_queue_empty),
                             style = MaterialTheme.typography.titleMedium,
                             color = onSurfaceVariantColor
                         )
@@ -1290,7 +1290,7 @@ private fun GestureQueueView(
                                 }
                                 
                                 Text(
-                                    text = song.title.takeIf { !isUnknownTitle(it) } ?: "Untitled",
+                                    text = song.title.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
                                     style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
                                     maxLines = 1,
                                     overflow = TextOverflow.Ellipsis,
@@ -1298,7 +1298,7 @@ private fun GestureQueueView(
                                 )
                                 Spacer(modifier = Modifier.height(4.dp))
                                 Text(
-                                    text = song.artist.takeIf { !isUnknownArtist(it) } ?: "Unknown Artist",
+                                    text = song.artist.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist),
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = onSurfaceVariantColor,
                                     maxLines = 1,

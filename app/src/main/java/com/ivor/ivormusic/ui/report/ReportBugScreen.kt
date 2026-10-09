@@ -368,7 +368,7 @@ fun ReportBugScreen(onBack: () -> Unit) {
 @Composable
 private fun crashPreviewLine(crashText: String): String =
     crashText.lineSequence().firstOrNull { it.startsWith("Version:") }
-        ?.let { version -> "$version - stack trace and recent logs" }
+        ?.let { version -> stringResource(R.string.rb_crash_preview, version) }
         ?: stringResource(R.string.rb_default_attachment)
 
 /**

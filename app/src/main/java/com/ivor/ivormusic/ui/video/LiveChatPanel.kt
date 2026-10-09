@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.video
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -544,8 +545,7 @@ private fun JumpToLatestPill(missedCount: Int, onClick: () -> Unit) {
             Text(
                 text = when {
                     missedCount <= 0 -> stringResource(R.string.lc_latest)
-                    missedCount == 1 -> "1 new message"
-                    else -> "$missedCount new messages"
+                    else -> pluralStringResource(R.plurals.lc_new_messages, missedCount, missedCount)
                 },
                 style = MaterialTheme.typography.labelLarge,
                 fontWeight = FontWeight.Bold,

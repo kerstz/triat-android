@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.settings
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 import kotlin.math.roundToInt
@@ -165,19 +166,6 @@ internal fun AccountSettingsPage(
                             )
                         }
                         SettingsDivider()
-                        SettingsToggleRow(
-                            icon = Icons.Rounded.CheckCircle,
-                            title = stringResource(R.string.sp_save_watch_history),
-                            subtitle = if (saveVideoHistory) {
-                                "Videos you watch are added to your YouTube history"
-                            } else {
-                                "Watching does not touch your YouTube history"
-                            },
-                            enabled = saveVideoHistory,
-                            onToggle = onSaveVideoHistoryToggle,
-                            explanation = stringResource(R.string.si_watch_history_account)
-                        )
-                        SettingsDivider()
                         SettingsRow(
                             icon = Icons.Rounded.Cookie,
                             title = stringResource(R.string.sp_replace_session_cookies),
@@ -265,9 +253,10 @@ internal fun AppearanceSettingsPage(
 ) {
     val currentAppIcon = remember(appIcon) { AppIcon.fromId(appIcon) }
     val paletteName = if (colorPalette == ThemePreferences.DEFAULT_COLOR_PALETTE) {
-        "Dynamic (from wallpaper)"
+        stringResource(R.string.cp_dynamic_cd)
     } else {
-        com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.name ?: "Dynamic"
+        com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.nameRes?.let { stringResource(it) }
+            ?: stringResource(R.string.sv_dynamic)
     }
 
     // Regrouped from six single-row sections into four that answer real
@@ -298,9 +287,9 @@ internal fun AppearanceSettingsPage(
                         icon = Icons.Rounded.Contrast,
                         title = stringResource(R.string.sp_amoled_black),
                         subtitle = if (amoledTheme) {
-                            "Pure black backgrounds in dark theme"
+                            stringResource(R.string.sv_amoled_on)
                         } else {
-                            "Standard dark backgrounds"
+                            stringResource(R.string.sv_amoled_off)
                         },
                         enabled = amoledTheme,
                         onToggle = onAmoledThemeToggle,
@@ -338,9 +327,9 @@ internal fun AppearanceSettingsPage(
                         icon = Icons.Rounded.Palette,
                         title = stringResource(R.string.sp_ambient_background),
                         subtitle = if (ambientBackground) {
-                            "Dynamic colors from album art"
+                            stringResource(R.string.sv_ambient_on)
                         } else {
-                            "Solid background"
+                            stringResource(R.string.sv_ambient_off)
                         },
                         enabled = ambientBackground,
                         onToggle = onAmbientBackgroundToggle,
@@ -357,9 +346,9 @@ internal fun AppearanceSettingsPage(
                         icon = Icons.Rounded.Home,
                         title = stringResource(R.string.sp_spotlight_home),
                         subtitle = if (spotlightHome) {
-                            "Shortcut grid, quick picks and artwork shelves"
+                            stringResource(R.string.sv_spotlight_on)
                         } else {
-                            "Classic Home with a hero and carousels"
+                            stringResource(R.string.sv_spotlight_off)
                         },
                         enabled = spotlightHome,
                         onToggle = onSpotlightHomeToggle,
@@ -383,9 +372,9 @@ internal fun AppearanceSettingsPage(
                         icon = Icons.Rounded.Dashboard,
                         title = stringResource(R.string.sp_non_expressive_nav),
                         subtitle = if (nonExpressiveNavigationBar) {
-                            "Standard Material 3 bar with fixed labels"
+                            stringResource(R.string.sv_nav_standard)
                         } else {
-                            "Expressive floating navigation"
+                            stringResource(R.string.sv_nav_expressive)
                         },
                         enabled = nonExpressiveNavigationBar,
                         onToggle = onNonExpressiveNavigationBarToggle,
@@ -1006,9 +995,9 @@ internal fun PlaybackSettingsPage(
                         icon = Icons.Rounded.GraphicEq,
                         title = stringResource(R.string.sp_song_transitions),
                         subtitle = when {
-                            !crossfadeEnabled -> "Songs change without an overlap"
-                            crossfadeAuto -> "AutoMix adapts to each song, up to 15s"
-                            else -> "Always overlap by ${crossfadeDurationMs / 1000}s"
+                            !crossfadeEnabled -> stringResource(R.string.sv_xfade_off)
+                            crossfadeAuto -> stringResource(R.string.sv_xfade_auto)
+                            else -> stringResource(R.string.sv_xfade_fixed, crossfadeDurationMs / 1000)
                         },
                         onClick = {
                             if (crossfadeEnabled) {
@@ -1142,9 +1131,9 @@ internal fun PlaybackSettingsPage(
                         icon = Icons.Rounded.History,
                         title = stringResource(R.string.sp_save_listening_history),
                         subtitle = if (saveMusicHistory) {
-                            "Songs you play are logged on this device"
+                            stringResource(R.string.sv_music_history_on)
                         } else {
-                            "Paused: new plays are not recorded"
+                            stringResource(R.string.sv_music_history_off)
                         },
                         enabled = saveMusicHistory,
                         onToggle = onSaveMusicHistoryToggle,
@@ -1249,59 +1238,10 @@ internal fun PlaybackSettingsPage(
                         },
                         showChevron = true
                     )
-
-                    SettingsDivider()
-
-                    SettingsRow(
-                        icon = Icons.Rounded.VideoLibrary,
-                        title = stringResource(R.string.sp_video_quality),
-                        subtitle = videoQualityLabel(
-                            if (showingWifi) videoQualityWifi else videoQualityMobile
-                        ),
-                        onClick = {
-                            onOpenQualityPicker(
-                                if (showingWifi) QualityDialogTarget.VIDEO_WIFI
-                                else QualityDialogTarget.VIDEO_MOBILE
-                            )
-                        },
-                        showChevron = true
-                    )
-
-                    SettingsDivider()
-
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.HdrOn,
-                        title = stringResource(R.string.sp_prefer_hdr),
-                        subtitle = stringResource(R.string.sp_prefer_hdr_sub),
-                        enabled = preferHdr,
-                        onToggle = onPreferHdrToggle,
-                        explanation = stringResource(R.string.si_hdr)
-                    )
                 }
             }
         }
 
-        item {
-            SettingsSection(title = stringResource(R.string.sp_video_section)) {
-                SettingsCard {
-                    // The fullscreen brightness drag. Default keeps the
-                    // behaviour the player has always had; off means every
-                    // fullscreen video reopens at the system level.
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.BrightnessMedium,
-                        title = stringResource(R.string.sp_remember_brightness),
-                        subtitle = if (rememberVideoBrightness) {
-                            "Videos reopen at the brightness you last set"
-                        } else {
-                            "Videos reopen at the system brightness"
-                        },
-                        enabled = rememberVideoBrightness,
-                        onToggle = onRememberVideoBrightnessToggle,
-                        explanation = stringResource(R.string.si_brightness)
-                    )
-                }
-            }
-        }
     }
 }
 
@@ -1393,26 +1333,9 @@ internal fun ContentSettingsPage(
     onMixSourcesOnHomeToggle: (Boolean) -> Unit,
     showSourceBadge: Boolean,
     onShowSourceBadgeToggle: (Boolean) -> Unit,
-    videoMode: Boolean,
-    onVideoModeToggle: (Boolean) -> Unit,
-    homeModeToggleEnabled: Boolean,
-    onHomeModeToggleChange: (Boolean) -> Unit,
-    timedCommentsEnabled: Boolean,
-    onTimedCommentsToggle: (Boolean) -> Unit,
-    shortsEnabled: Boolean,
-    onShortsEnabledToggle: (Boolean) -> Unit,
-    shortsHiddenActions: Set<String>,
-    onShowShortsButtons: () -> Unit,
     showRecentSearches: Boolean,
     onShowRecentSearchesToggle: (Boolean) -> Unit,
-    showRelatedVideos: Boolean,
-    onShowRelatedVideosToggle: (Boolean) -> Unit,
-    inlinePreviews: Boolean,
-    onInlinePreviewsToggle: (Boolean) -> Unit,
-    compactVideoHome: Boolean,
-    onCompactVideoHomeToggle: (Boolean) -> Unit,
     onNavigateToNotInterested: () -> Unit,
-    onNavigateToVideoHome: () -> Unit,
     onBack: () -> Unit
 ) {
     SettingsDetailScaffold(title = stringResource(R.string.settings_content_and_feeds), onBack = onBack) {
@@ -1443,27 +1366,6 @@ internal fun ContentSettingsPage(
                         exit = fadeOut(tween(150))
                     ) {
                         Column {
-                            SettingsDivider()
-                            ExpressiveVideoModeToggleItem(
-                                enabled = videoMode,
-                                onToggle = onVideoModeToggle,
-                                textColor = MaterialTheme.colorScheme.onBackground,
-                                secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                accentColor = MaterialTheme.colorScheme.primary
-                            )
-                            SettingsDivider()
-                            SettingsToggleRow(
-                                icon = Icons.Rounded.ToggleOn,
-                                title = stringResource(R.string.sp_home_mode_toggle),
-                                subtitle = if (homeModeToggleEnabled) {
-                                    stringResource(R.string.sp_home_mode_toggle_on)
-                                } else {
-                                    stringResource(R.string.sp_home_mode_toggle_off)
-                                },
-                                enabled = homeModeToggleEnabled,
-                                onToggle = onHomeModeToggleChange,
-                                explanation = stringResource(R.string.si_home_mode_toggle)
-                            )
                         }
                     }
                 }
@@ -1552,78 +1454,6 @@ internal fun ContentSettingsPage(
             }
 
             item {
-                SettingsSection(title = stringResource(R.string.cat_videos)) {
-                    SettingsCard {
-                        SettingsRow(
-                            icon = Icons.Rounded.Dashboard,
-                            title = stringResource(R.string.vhc_title),
-                            subtitle = stringResource(R.string.vhc_summary),
-                            onClick = onNavigateToVideoHome,
-                            showChevron = true,
-                        )
-
-                        SettingsDivider()
-
-                        SettingsToggleRow(
-                            icon = Icons.AutoMirrored.Rounded.Comment,
-                            title = stringResource(R.string.sp_timed_comments),
-                            subtitle = if (timedCommentsEnabled) {
-                                stringResource(R.string.sp_timed_comments_on)
-                            } else {
-                                stringResource(R.string.sp_timed_comments_off)
-                            },
-                            enabled = timedCommentsEnabled,
-                            onToggle = onTimedCommentsToggle,
-                            explanation = stringResource(R.string.si_timed_comments)
-                        )
-
-                        SettingsDivider()
-
-                        SettingsToggleRow(
-                            icon = Icons.Rounded.Bolt,
-                            title = stringResource(R.string.sp_shorts),
-                            subtitle = if (shortsEnabled) {
-                                stringResource(R.string.sp_shorts_enabled_sub)
-                            } else {
-                                stringResource(R.string.sp_shorts_disabled_sub)
-                            },
-                            enabled = shortsEnabled,
-                            onToggle = onShortsEnabledToggle,
-                            explanation = stringResource(R.string.si_shorts)
-                        )
-
-                        // Action-rail choices only apply to the dedicated swipe player.
-                        AnimatedVisibility(
-                            visible = shortsEnabled,
-                            enter = fadeIn(tween(200)) + slideInVertically(
-                                initialOffsetY = { -it / 4 },
-                                animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-                            ),
-                            exit = fadeOut(tween(150))
-                        ) {
-                            Column {
-                                SettingsDivider()
-                                SettingsRow(
-                                    icon = Icons.Rounded.Visibility,
-                                    title = stringResource(R.string.sp_shorts_buttons),
-                                    subtitle = if (shortsHiddenActions.isEmpty()) {
-                                        stringResource(R.string.sp_shorts_buttons_all)
-                                    } else {
-                                        stringResource(
-                                            R.string.sp_shorts_buttons_hidden,
-                                            shortsHiddenActions.size
-                                        )
-                                    },
-                                    onClick = onShowShortsButtons,
-                                    showChevron = true
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-
-            item {
                 SettingsSection(title = stringResource(R.string.sp_recommendations)) {
                     SettingsCard {
                         // Both are worded as what is shown, so the switch
@@ -1637,39 +1467,6 @@ internal fun ContentSettingsPage(
                             enabled = showRecentSearches,
                             onToggle = onShowRecentSearchesToggle,
                             explanation = stringResource(R.string.si_recent_searches)
-                        )
-
-                        SettingsDivider()
-
-                        SettingsToggleRow(
-                            icon = Icons.Rounded.ViewList,
-                            title = stringResource(R.string.sp_compact_video_home),
-                            subtitle = stringResource(R.string.sp_compact_video_home_sub),
-                            enabled = compactVideoHome,
-                            onToggle = onCompactVideoHomeToggle,
-                            explanation = stringResource(R.string.si_compact_video_home)
-                        )
-
-                        SettingsDivider()
-
-                        SettingsToggleRow(
-                            icon = Icons.Rounded.Recommend,
-                            title = stringResource(R.string.sp_show_related_videos),
-                            subtitle = stringResource(R.string.sp_show_related_videos_sub),
-                            enabled = showRelatedVideos,
-                            onToggle = onShowRelatedVideosToggle,
-                            explanation = stringResource(R.string.si_related_videos)
-                        )
-
-                        SettingsDivider()
-
-                        SettingsToggleRow(
-                            icon = Icons.Rounded.SmartDisplay,
-                            title = stringResource(R.string.sp_inline_previews),
-                            subtitle = stringResource(R.string.sp_inline_previews_sub),
-                            enabled = inlinePreviews,
-                            onToggle = onInlinePreviewsToggle,
-                            explanation = stringResource(R.string.si_inline_previews)
                         )
 
                         SettingsDivider()
@@ -1692,62 +1489,6 @@ internal fun ContentSettingsPage(
 /* ------------------------------------------------------------------ */
 /* Video Home                                                         */
 /* ------------------------------------------------------------------ */
-
-@Composable
-internal fun VideoHomeSettingsPage(
-    configuration: VideoHomeConfiguration,
-    onRecommendationsEnabledChange: (Boolean) -> Unit,
-    onDestinationVisibleChange: (VideoHomeDestination, Boolean) -> Unit,
-    onMoveDestination: (VideoHomeDestination, Int) -> Unit,
-    onBack: () -> Unit,
-) {
-    SettingsDetailScaffold(title = stringResource(R.string.vhc_title), onBack = onBack) {
-        item {
-            SettingsSection(title = stringResource(R.string.vhc_feed_section)) {
-                SettingsCard {
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.Recommend,
-                        title = stringResource(R.string.vhc_recommendations),
-                        subtitle = stringResource(R.string.vhc_recommendations_sub),
-                        enabled = configuration.recommendationsEnabled,
-                        onToggle = onRecommendationsEnabledChange,
-                    )
-                }
-            }
-        }
-
-        item {
-            SettingsSection(title = stringResource(R.string.vhc_navigation_section)) {
-                SettingsCard {
-                    configuration.destinationOrder.forEachIndexed { index, destination ->
-                        if (index > 0) SettingsDivider()
-                        VideoHomeDestinationRow(
-                            destination = destination,
-                            visible = destination in configuration.visibleDestinations,
-                            canHide = configuration.visibleDestinations.size > 1,
-                            canMoveUp = index > 0,
-                            canMoveDown = index < configuration.destinationOrder.lastIndex,
-                            onVisibleChange = { visible ->
-                                onDestinationVisibleChange(destination, visible)
-                            },
-                            onMoveUp = { onMoveDestination(destination, -1) },
-                            onMoveDown = { onMoveDestination(destination, 1) },
-                        )
-                    }
-                }
-            }
-        }
-
-        item {
-            Text(
-                text = stringResource(R.string.vhc_navigation_hint),
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.padding(horizontal = 20.dp),
-            )
-        }
-    }
-}
 
 /**
  * One destination, with its two independent controls.
@@ -1885,76 +1626,6 @@ private fun DestinationStepper(
 /* Subscriptions                                                       */
 /* ------------------------------------------------------------------ */
 
-@Composable
-internal fun SubscriptionsSettingsPage(
-    subscriptionSource: String,
-    subscribeTarget: String,
-    fastSubscriptionFeed: Boolean,
-    onFastSubscriptionFeedToggle: (Boolean) -> Unit,
-    onNavigateToSubscriptions: () -> Unit,
-    onOpenRoutingPicker: (SubscriptionDialogTarget) -> Unit,
-    onBack: () -> Unit
-) {
-    SettingsDetailScaffold(title = stringResource(R.string.settings_subscriptions), onBack = onBack) {
-        item {
-            SettingsSection(title = stringResource(R.string.section_channels)) {
-                SettingsCard {
-                    SettingsRow(
-                        icon = Icons.Rounded.Subscriptions,
-                        title = stringResource(R.string.sp_manage_subscriptions),
-                        subtitle = stringResource(R.string.sp_manage_subscriptions_sub),
-                        onClick = onNavigateToSubscriptions,
-                        showChevron = true
-                    )
-                }
-            }
-        }
-
-        item {
-            SettingsSection(title = stringResource(R.string.sp_where_they_live)) {
-                SettingsCard {
-                    SettingsRow(
-                        icon = Icons.Rounded.FilterList,
-                        title = stringResource(R.string.sp_subscriptions_shown),
-                        subtitle = subscriptionSourceLabel(subscriptionSource),
-                        onClick = { onOpenRoutingPicker(SubscriptionDialogTarget.SOURCE) },
-                        showChevron = true,
-                        explanation = stringResource(R.string.si_subs_source)
-                    )
-                    SettingsDivider()
-                    SettingsRow(
-                        icon = Icons.Rounded.BookmarkAdd,
-                        title = stringResource(R.string.sp_subscribe_saves_to),
-                        subtitle = subscribeTargetLabel(subscribeTarget),
-                        onClick = { onOpenRoutingPicker(SubscriptionDialogTarget.TARGET) },
-                        showChevron = true,
-                        explanation = stringResource(R.string.si_subs_target)
-                    )
-                }
-            }
-        }
-
-        item {
-            SettingsSection(title = stringResource(R.string.sp_feed)) {
-                SettingsCard {
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.Bolt,
-                        title = stringResource(R.string.sp_fast_refresh),
-                        subtitle = if (fastSubscriptionFeed) {
-                            stringResource(R.string.sp_fast_refresh_on)
-                        } else {
-                            stringResource(R.string.sp_fast_refresh_off)
-                        },
-                        enabled = fastSubscriptionFeed,
-                        onToggle = onFastSubscriptionFeedToggle,
-                        explanation = stringResource(R.string.si_fast_refresh)
-                    )
-                }
-            }
-        }
-    }
-}
-
 /* ------------------------------------------------------------------ */
 /* Storage and cache                                                   */
 /* ------------------------------------------------------------------ */
@@ -2014,28 +1685,6 @@ internal fun StorageSettingsPage(
                         enabled = cacheEnabled,
                         onToggle = onCacheEnabledToggle,
                         explanation = stringResource(R.string.si_cache_music)
-                    )
-
-                    SettingsDivider()
-
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.Videocam,
-                        title = stringResource(R.string.sp_cache_videos),
-                        subtitle = stringResource(R.string.sp_cache_videos_sub),
-                        enabled = videoCacheEnabled,
-                        onToggle = onVideoCacheEnabledToggle,
-                        explanation = stringResource(R.string.si_cache_videos)
-                    )
-
-                    SettingsDivider()
-
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.PlayCircle,
-                        title = stringResource(R.string.sp_cache_shorts),
-                        subtitle = stringResource(R.string.sp_cache_shorts_sub),
-                        enabled = shortsCacheEnabled,
-                        onToggle = onShortsCacheEnabledToggle,
-                        explanation = stringResource(R.string.si_cache_shorts)
                     )
 
                     SettingsDivider()
@@ -2103,24 +1752,6 @@ internal fun StorageSettingsPage(
                     title = stringResource(R.string.sp_clear_cache),
                     subtitle = stringResource(R.string.sp_clear_cache_sub),
                     onClick = onClearCacheClick,
-                    tint = SettingsRowDefaults.destructiveTint,
-                    titleColor = SettingsRowDefaults.destructiveTint
-                )
-                SettingsDivider()
-                SettingsRow(
-                    icon = Icons.Rounded.FolderOff,
-                    title = stringResource(R.string.sp_clear_video_cache),
-                    subtitle = stringResource(R.string.sp_clear_video_cache_sub),
-                    onClick = onClearVideoCacheClick,
-                    tint = SettingsRowDefaults.destructiveTint,
-                    titleColor = SettingsRowDefaults.destructiveTint
-                )
-                SettingsDivider()
-                SettingsRow(
-                    icon = Icons.Rounded.FolderOff,
-                    title = stringResource(R.string.sp_clear_shorts_cache),
-                    subtitle = stringResource(R.string.sp_clear_shorts_cache_sub),
-                    onClick = onClearShortsCacheClick,
                     tint = SettingsRowDefaults.destructiveTint,
                     titleColor = SettingsRowDefaults.destructiveTint
                 )
@@ -2298,18 +1929,6 @@ internal fun NotificationsSettingsPage(
                 SettingsCard {
                     // Off by default and opt-in here: it is a battery-and-
                     // attention commitment the user has to ask for.
-                    SettingsToggleRow(
-                        icon = Icons.Rounded.NotificationsActive,
-                        title = stringResource(R.string.sp_notify_new_uploads),
-                        subtitle = if (uploadNotificationsEnabled) {
-                            stringResource(R.string.sp_notify_new_uploads_on)
-                        } else {
-                            stringResource(R.string.sp_notify_new_uploads_off)
-                        },
-                        enabled = uploadNotificationsEnabled,
-                        onToggle = onUploadNotificationsToggle,
-                        explanation = stringResource(R.string.si_upload_notifications)
-                    )
                 }
             }
         }
@@ -2413,9 +2032,9 @@ internal fun LocalLibrarySettingsPage(
                         icon = Icons.Rounded.Folder,
                         title = stringResource(R.string.sp_load_local_songs),
                         subtitle = if (loadLocalSongs) {
-                            "Shows songs from your device"
+                            stringResource(R.string.sv_local_on)
                         } else {
-                            "YouTube Music only"
+                            stringResource(R.string.sv_local_off)
                         },
                         enabled = loadLocalSongs,
                         onToggle = onLoadLocalSongsToggle,
@@ -2436,10 +2055,11 @@ internal fun LocalLibrarySettingsPage(
                                 icon = Icons.Rounded.FolderOff,
                                 title = stringResource(R.string.sp_excluded_folders),
                                 subtitle = if (excludedFolderCount == 0) {
-                                    "All folders included"
+                                    stringResource(R.string.sv_folders_all)
                                 } else {
-                                    "$excludedFolderCount folder" +
-                                        "${if (excludedFolderCount == 1) "" else "s"} excluded"
+                                    pluralStringResource(
+                                        R.plurals.sv_folders_excluded, excludedFolderCount, excludedFolderCount
+                                    )
                                 },
                                 onClick = onOpenFolderExclusion,
                                 showChevron = true

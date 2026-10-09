@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.settings
 
+import android.content.Context
+import androidx.annotation.PluralsRes
 import androidx.compose.ui.res.pluralStringResource
 import android.content.Intent
 import androidx.activity.compose.BackHandler
@@ -166,7 +168,7 @@ fun BackupScreen(
                 failure = context.getString(R.string.bk_write_failed)
             } else {
                 lastBackupAt = manifest.createdAt
-                snackbarHostState.showSnackbar(backupWrittenMessage(manifest))
+                snackbarHostState.showSnackbar(backupWrittenMessage(context, manifest))
             }
         }
     }
@@ -217,7 +219,7 @@ fun BackupScreen(
                     Column {
                         Text(stringResource(R.string.settings_backup_and_restore), fontWeight = FontWeight.Bold)
                         Text(
-                            text = lastBackupLine(lastBackupAt),
+                            text = lastBackupLine(context, lastBackupAt),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
@@ -662,12 +664,12 @@ private fun RestoreConfirmDialog(
                 verticalArrangement = Arrangement.spacedBy(10.dp)
             ) {
                 Text(
-                    text = manifestLine(snapshot.manifest),
+                    text = manifestLine(LocalContext.current, snapshot.manifest),
                     fontSize = 13.sp,
                     lineHeight = 18.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-                val contents = describeContents(snapshot.manifest)
+                val contents = describeContents(LocalContext.current, snapshot.manifest)
                 if (contents.isEmpty()) {
                     // A valid backup of an install with nothing in it yet. Worth
                     // saying out loud: restoring it would wipe this device for
@@ -831,36 +833,39 @@ private fun FailureDialog(message: String, onDismiss: () -> Unit) {
 
 // ---------------- Text ----------------
 
-internal fun lastBackupLine(lastBackupAt: Long?): String {
-    if (lastBackupAt == null) return "Never backed up from this device"
-    return "Last backup ${relativeDay(lastBackupAt)}"
-}
-
-private fun relativeDay(timestamp: Long): String {
-    val days = ((System.currentTimeMillis() - timestamp) / 86_400_000L).toInt()
+internal fun lastBackupLine(context: Context, lastBackupAt: Long?): String {
+    if (lastBackupAt == null) return context.getString(R.string.bk_never_backed_up)
+    val days = ((System.currentTimeMillis() - lastBackupAt) / 86_400_000L).toInt()
     return when {
-        days <= 0 -> "today"
-        days == 1 -> "yesterday"
-        days < 30 -> "$days days ago"
-        else -> "on " + DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(timestamp))
+        days <= 0 -> context.getString(R.string.bk_last_today)
+        days == 1 -> context.getString(R.string.bk_last_yesterday)
+        days < 30 -> context.resources.getQuantityString(R.plurals.bk_last_days_ago, days, days)
+        else -> context.getString(
+            R.string.bk_last_on,
+            DateFormat.getDateInstance(DateFormat.MEDIUM).format(Date(lastBackupAt))
+        )
     }
 }
 
-private fun manifestLine(manifest: BackupManifest): String {
+private fun manifestLine(context: Context, manifest: BackupManifest): String {
     val date = if (manifest.createdAt > 0) {
         DateFormat.getDateTimeInstance(DateFormat.MEDIUM, DateFormat.SHORT)
             .format(Date(manifest.createdAt))
     } else {
-        "an unknown date"
+        context.getString(R.string.bk_taken_unknown_date)
     }
-    val from = manifest.device?.let { " from $it" }.orEmpty()
+    val from = manifest.device?.let { " " + context.getString(R.string.bk_taken_from, it) }.orEmpty()
     val version = manifest.appVersionName?.let { ", Triat $it" }.orEmpty()
-    return "Taken $date$from$version."
+    return context.getString(R.string.bk_taken, date, from, version)
 }
 
-private fun backupWrittenMessage(manifest: BackupManifest): String {
-    val lines = describeContents(manifest)
-    return if (lines.isEmpty()) "Backup saved" else "Backup saved: " + lines.joinToString(", ")
+private fun backupWrittenMessage(context: Context, manifest: BackupManifest): String {
+    val lines = describeContents(context, manifest)
+    return if (lines.isEmpty()) {
+        context.getString(R.string.bk_saved)
+    } else {
+        context.getString(R.string.bk_saved_with, lines.joinToString(", "))
+    }
 }
 
 /**
@@ -870,31 +875,27 @@ private fun backupWrittenMessage(manifest: BackupManifest): String {
  * like something failed, when the honest meaning is simply that the install had
  * none. An empty result is handled separately by the caller, which says so.
  */
-private fun describeContents(manifest: BackupManifest): List<String> {
+private fun describeContents(context: Context, manifest: BackupManifest): List<String> {
     fun count(key: String) = manifest.contents[key] ?: 0
-    fun line(key: String, singular: String, plural: String): String? {
+    fun line(key: String, @PluralsRes plural: Int): String? {
         val value = count(key)
-        return when {
-            value <= 0 -> null
-            value == 1 -> "1 $singular"
-            else -> "$value $plural"
-        }
+        return if (value <= 0) null else context.resources.getQuantityString(plural, value, value)
     }
     return listOfNotNull(
-        line(BackupRepository.COUNT_PLAYLISTS, "playlist", "playlists"),
-        line(BackupRepository.COUNT_VIDEO_PLAYLISTS, "video playlist", "video playlists"),
-        line(BackupRepository.COUNT_SAVED_PLAYLISTS, "saved playlist", "saved playlists"),
-        line(BackupRepository.COUNT_LIKED_SONGS, "liked song", "liked songs"),
-        line(BackupRepository.COUNT_PLAY_HISTORY, "play", "plays"),
-        line(BackupRepository.COUNT_WATCH_HISTORY, "watched video", "watched videos"),
-        line(BackupRepository.COUNT_SUBSCRIPTIONS, "followed channel", "followed channels"),
-        line(BackupRepository.COUNT_BLOCKED, "blocked channel", "blocked channels"),
-        line(BackupRepository.COUNT_HIDDEN, "hidden video", "hidden videos"),
-        line(BackupRepository.COUNT_SETTINGS, "setting", "settings"),
+        line(BackupRepository.COUNT_PLAYLISTS, R.plurals.n_playlists),
+        line(BackupRepository.COUNT_VIDEO_PLAYLISTS, R.plurals.bk_n_video_playlists),
+        line(BackupRepository.COUNT_SAVED_PLAYLISTS, R.plurals.bk_n_saved_playlists),
+        line(BackupRepository.COUNT_LIKED_SONGS, R.plurals.bk_n_liked_songs),
+        line(BackupRepository.COUNT_PLAY_HISTORY, R.plurals.n_plays),
+        line(BackupRepository.COUNT_WATCH_HISTORY, R.plurals.bk_n_watched_videos),
+        line(BackupRepository.COUNT_SUBSCRIPTIONS, R.plurals.bk_n_followed_channels),
+        line(BackupRepository.COUNT_BLOCKED, R.plurals.bk_n_blocked_channels),
+        line(BackupRepository.COUNT_HIDDEN, R.plurals.bk_n_hidden_videos),
+        line(BackupRepository.COUNT_SETTINGS, R.plurals.bk_n_settings),
         // Only worth a line when there is more than one identity in the file;
         // "1 profile" is true of every install and tells nobody anything.
         count(BackupRepository.COUNT_PROFILES)
-            .takeIf { it > 1 }?.let { "$it profiles" }
+            .takeIf { it > 1 }?.let { context.resources.getQuantityString(R.plurals.bk_n_profiles, it, it) }
     )
 }
 

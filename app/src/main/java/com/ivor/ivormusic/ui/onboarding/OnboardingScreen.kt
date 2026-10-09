@@ -825,7 +825,7 @@ private fun AppTimeLimitPage() {
                             onClick = { applyPreset(minutes) },
                             label = {
                                 Text(
-                                    com.ivor.ivormusic.data.AppTimeLimit.formatBudget(minutes)
+                                    com.ivor.ivormusic.data.AppTimeLimit.formatBudget(LocalContext.current, minutes)
                                 )
                             }
                         )

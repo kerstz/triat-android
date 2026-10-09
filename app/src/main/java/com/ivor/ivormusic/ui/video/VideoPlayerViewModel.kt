@@ -1539,7 +1539,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
         sourceRecoveryJob?.cancel()
         sourceRecoveryJob = viewModelScope.launch {
             if (!reresolveAndReload(video)) {
-                _playbackError.value = Exception("Unable to load video stream")
+                _playbackError.value = Exception(context.getString(com.ivor.ivormusic.R.string.vp_load_stream_failed))
                 _isLoading.value = false
             }
         }
@@ -1918,7 +1918,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
         val id = LocalVideo.playbackIdFor(uri) ?: "external:${uri.hashCode()}"
         val title = displayTitle?.takeIf { it.isNotBlank() }
             ?: uri.lastPathSegment?.substringAfterLast('/')?.takeIf { it.isNotBlank() }
-            ?: "Video"
+            ?: context.getString(com.ivor.ivormusic.R.string.badge_video)
         startLocalQueue(
             items = listOf(
                 VideoItem(
@@ -2585,7 +2585,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
                         val chosen = pickDefaultQuality(qualities)
                         if (chosen == null) {
                             _playbackError.value =
-                                Exception("Unable to load video stream")
+                                Exception(context.getString(com.ivor.ivormusic.R.string.vp_load_stream_failed))
                             _isLoading.value = false
                             return@resolve
                         }
@@ -2598,7 +2598,7 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
                         // failed, so it failed the same way - and it could not
                         // add anything when extraction succeeded, because every
                         // muxed URL it picked from is already in that ladder.
-                        _playbackError.value = Exception("Unable to load video stream")
+                        _playbackError.value = Exception(context.getString(com.ivor.ivormusic.R.string.vp_load_stream_failed))
                         _isLoading.value = false
                     }
                 }
@@ -3610,11 +3610,11 @@ class VideoPlayerViewModel(application: android.app.Application) : AndroidViewMo
                         if (seenLiveChatIds.add(echo.id)) appendLiveChatMessages(listOf(echo))
                     }
                 } else {
-                    onFailure(result.error ?: "Message not sent")
+                    onFailure(result.error ?: context.getString(com.ivor.ivormusic.R.string.vp_chat_not_sent))
                 }
             } catch (e: Exception) {
                 KLog.w("VideoPlayerVM", "Failed to send live chat message", e)
-                onFailure("Message not sent")
+                onFailure(context.getString(com.ivor.ivormusic.R.string.vp_chat_not_sent))
             } finally {
                 _isSendingLiveChat.value = false
             }

@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.library
+import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
 
@@ -91,7 +92,7 @@ fun StatsScreen(
     // Format duration from seconds
     val hours = globalStats.totalPlayTimeSeconds / 3600
     val minutes = (globalStats.totalPlayTimeSeconds % 3600) / 60
-    val formattedTime = if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
+    val formattedTime = if (hours > 0) stringResource(R.string.dur_h_m, hours, minutes) else stringResource(R.string.dur_m, minutes)
 
     val onBg = MaterialTheme.colorScheme.onBackground
     val secondaryText = MaterialTheme.colorScheme.onSurfaceVariant
@@ -106,7 +107,7 @@ fun StatsScreen(
             title = { Text(stringResource(R.string.fab_statistics), fontWeight = FontWeight.Bold) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, "Back")
+                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, stringResource(R.string.cd_back))
                 }
             },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.Transparent)
@@ -149,7 +150,7 @@ fun StatsScreen(
                                 color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                             Text(
-                                "listened • ${globalStats.totalPlays} plays",
+                                pluralStringResource(R.plurals.st_listened_plays, globalStats.totalPlays, globalStats.totalPlays),
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.8f)
                             )
@@ -348,13 +349,13 @@ fun StatsScreen(
                                     overflow = TextOverflow.Ellipsis
                                 )
                                 Text(
-                                    "${artistStats.songCount} songs",
+                                    pluralStringResource(R.plurals.n_songs, artistStats.songCount, artistStats.songCount),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = secondaryText
                                 )
                             }
                             Text(
-                                "${artistStats.playCount} plays",
+                                pluralStringResource(R.plurals.n_plays, artistStats.playCount, artistStats.playCount),
                                 style = MaterialTheme.typography.labelLarge,
                                 fontWeight = FontWeight.Bold,
                                 color = MaterialTheme.colorScheme.tertiary
@@ -407,7 +408,7 @@ fun StatsScreen(
             if (searchHistory.isNotEmpty()) {
                 item {
                     Text(
-                        "Recent searches",
+                        stringResource(R.string.recent_searches),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold,
                         color = onBg,
@@ -438,7 +439,7 @@ fun StatsScreen(
                                 modifier = Modifier.weight(1f)
                             )
                             IconButton(onClick = { viewModel.removeFromSearchHistory(query) }) {
-                                Icon(Icons.Rounded.Close, "Remove", tint = secondaryText)
+                                Icon(Icons.Rounded.Close, stringResource(R.string.cd_remove), tint = secondaryText)
                             }
                         }
                     }
@@ -580,13 +581,13 @@ private fun StreakAndMilestoneRow(
                 }
                 Column {
                     Text(
-                        if (currentStreak == 1) "1 day" else "$currentStreak days",
+                        pluralStringResource(R.plurals.st_n_days, currentStreak, currentStreak),
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.onTertiaryContainer
                     )
                     Text(
-                        if (longestStreak > currentStreak) "Streak • best $longestStreak" else "Listening streak",
+                        if (longestStreak > currentStreak) stringResource(R.string.st_streak_best, longestStreak) else stringResource(R.string.st_listening_streak),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onTertiaryContainer.copy(alpha = 0.75f),
                         maxLines = 1,
@@ -627,14 +628,14 @@ private fun StreakAndMilestoneRow(
                         val fraction = (totalPlays - prevMilestone).toFloat() /
                                 (nextMilestone - prevMilestone).toFloat()
                         Text(
-                            "${nextMilestone - totalPlays} to go",
+                            stringResource(R.string.st_to_go, nextMilestone - totalPlays),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.onSurface,
                             maxLines = 1
                         )
                         Text(
-                            "Next: $nextMilestone plays",
+                            pluralStringResource(R.plurals.st_next_milestone, nextMilestone, nextMilestone),
                             style = MaterialTheme.typography.bodySmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             maxLines = 1
@@ -699,14 +700,14 @@ private fun WeeklyActivityCard(dailyPlays: Map<String, Int>) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
-                    "This week",
+                    stringResource(R.string.sc_this_week),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
                 Text(
-                    "$weekTotal plays",
+                    pluralStringResource(R.plurals.n_plays, weekTotal, weekTotal),
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = FontWeight.Bold,
                     color = MaterialTheme.colorScheme.primary

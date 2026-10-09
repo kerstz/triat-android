@@ -565,14 +565,11 @@ private fun RemoveProfileDialog(
             Text(
                 text = when {
                     isSignOutOnly ->
-                        "The account is disconnected from this device. Your subscriptions " +
-                            "and hidden recommendations stay, and nothing changes on YouTube."
+                        stringResource(R.string.as_sign_out_note)
                     profile.isLocal ->
-                        "Its subscriptions and hidden recommendations are deleted. " +
-                            "Playlists, liked songs and downloads are shared and stay."
+                        stringResource(R.string.as_remove_local_note)
                     else ->
-                        "Signs this account out on this device and deletes its subscriptions " +
-                            "and hidden recommendations. Nothing changes on YouTube itself."
+                        stringResource(R.string.as_remove_account_note)
                 },
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant

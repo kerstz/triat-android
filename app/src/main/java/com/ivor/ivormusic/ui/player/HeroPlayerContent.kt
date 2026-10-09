@@ -356,7 +356,7 @@ fun HeroPlayerSheetContent(
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             HeroChromeButton(onClick = onCollapse, field = field, ink = ink) {
-                                Icon(Icons.Default.KeyboardArrowDown, "Collapse", modifier = Modifier.size(26.dp))
+                                Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(26.dp))
                             }
                             Spacer(Modifier.weight(1f))
                             HeroChromeButton(
@@ -367,7 +367,7 @@ fun HeroPlayerSheetContent(
                                 accent = accent,
                                 onAccent = onAccent
                             ) {
-                                Icon(Icons.Rounded.Lyrics, "Lyrics", modifier = Modifier.size(22.dp))
+                                Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(22.dp))
                             }
                             HeroChromeButton(
                                 onClick = sleepTimer.open,
@@ -377,7 +377,7 @@ fun HeroPlayerSheetContent(
                                 accent = accent,
                                 onAccent = onAccent
                             ) {
-                                Icon(Icons.Rounded.Bedtime, "Sleep timer", modifier = Modifier.size(22.dp))
+                                Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
                             }
                             HeroChromeButton(onClick = { showOptions = true }, field = field, ink = ink) {
                                 Icon(
@@ -492,13 +492,13 @@ fun HeroPlayerSheetContent(
                                         onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
                                         ink = ink
                                     ) {
-                                        Icon(Icons.Default.SkipPrevious, "Previous", modifier = Modifier.size(30.dp))
+                                        Icon(Icons.Default.SkipPrevious, stringResource(R.string.cd_previous), modifier = Modifier.size(30.dp))
                                     }
                                     HeroSkipPill(
                                         onClick = { playerHaptics.skip(); viewModel.skipToNext() },
                                         ink = ink
                                     ) {
-                                        Icon(Icons.Default.SkipNext, "Next", modifier = Modifier.size(30.dp))
+                                        Icon(Icons.Default.SkipNext, stringResource(R.string.cd_next), modifier = Modifier.size(30.dp))
                                     }
                                 }
                                 Row(
@@ -530,7 +530,7 @@ fun HeroPlayerSheetContent(
                                         Icon(
                                             if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne
                                             else Icons.Default.Repeat,
-                                            "Repeat",
+                                            stringResource(R.string.cd_repeat),
                                             modifier = Modifier.size(22.dp)
                                         )
                                     }
@@ -543,7 +543,7 @@ fun HeroPlayerSheetContent(
                                     ) {
                                         Icon(
                                             Icons.AutoMirrored.Filled.QueueMusic,
-                                            "Queue",
+                                            stringResource(R.string.cd_queue),
                                             modifier = Modifier.size(22.dp)
                                         )
                                     }
@@ -637,7 +637,7 @@ private fun HeroPlayDisc(
             } else {
                 Icon(
                     imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                    contentDescription = if (isPlaying) "Pause" else stringResource(R.string.cd_play),
+                    contentDescription = if (isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                     modifier = Modifier.size(64.dp)
                 )
             }

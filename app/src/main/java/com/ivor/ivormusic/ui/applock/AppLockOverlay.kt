@@ -156,14 +156,11 @@ fun AppLockOverlay(
                 )
                 Spacer(Modifier.height(8.dp))
                 Text(
-                    text = buildString {
-                        append(stringResource(R.string.al_youve_had))
-                        append(AppTimeLimit.formatBudget(budgetMinutes))
-                        append(" with Triat today. Come back tomorrow - ")
-                        append("the app unlocks in ")
-                        append(formatCountdown(millisLeft))
-                        append(".")
-                    },
+                    text = stringResource(
+                        R.string.al_message,
+                        AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, budgetMinutes),
+                        formatCountdown(millisLeft)
+                    ),
                     style = MaterialTheme.typography.bodyLarge,
                     textAlign = TextAlign.Center,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
@@ -179,14 +176,15 @@ fun AppLockOverlay(
     }
 }
 
+@Composable
 private fun formatCountdown(millis: Long): String {
     val totalMinutes = (millis / 60000L).coerceAtLeast(0L)
     val h = totalMinutes / 60
     val m = totalMinutes % 60
     return when {
-        h > 0 -> "${h}h ${m}m"
-        m > 0 -> "${m}m"
-        else -> "under a minute"
+        h > 0 -> stringResource(R.string.dur_h_m, h, m)
+        m > 0 -> stringResource(R.string.dur_m, m)
+        else -> stringResource(R.string.al_under_a_minute)
     }
 }
 

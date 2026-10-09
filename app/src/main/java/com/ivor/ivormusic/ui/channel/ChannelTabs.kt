@@ -744,12 +744,12 @@ private fun ChannelPlaylistCard(
 @Composable
 private fun ChannelEmptyState(tabKind: ChannelTabKind) {
     val (icon, message) = when (tabKind) {
-        ChannelTabKind.SHORTS -> Icons.Rounded.PlayArrow to "This channel hasn't posted any Shorts"
-        ChannelTabKind.LIVE -> Icons.Rounded.Visibility to "No past or upcoming live streams"
-        ChannelTabKind.PLAYLISTS -> Icons.Rounded.VideoLibrary to "No public playlists"
-        ChannelTabKind.POSTS -> Icons.AutoMirrored.Rounded.Article to "No community posts yet"
-        ChannelTabKind.VIDEOS -> Icons.Rounded.VideoLibrary to "No videos here yet"
-        else -> Icons.Rounded.VideoLibrary to "Nothing to show in this tab"
+        ChannelTabKind.SHORTS -> Icons.Rounded.PlayArrow to stringResource(R.string.ch_empty_shorts)
+        ChannelTabKind.LIVE -> Icons.Rounded.Visibility to stringResource(R.string.ch_empty_live)
+        ChannelTabKind.PLAYLISTS -> Icons.Rounded.VideoLibrary to stringResource(R.string.ch_empty_playlists)
+        ChannelTabKind.POSTS -> Icons.AutoMirrored.Rounded.Article to stringResource(R.string.ch_empty_posts)
+        ChannelTabKind.VIDEOS -> Icons.Rounded.VideoLibrary to stringResource(R.string.ch_empty_videos)
+        else -> Icons.Rounded.VideoLibrary to stringResource(R.string.ch_empty_generic)
     }
     Column(
         modifier = Modifier

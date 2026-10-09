@@ -179,7 +179,7 @@ fun PlayerScreen(
             ) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = (currentSong?.title.takeIf { !isUnknownTitle(it) } ?: "Untitled Song"),
+                        text = (currentSong?.title.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled_song)),
                         style = MaterialTheme.typography.headlineMedium.copy(
                             fontWeight = FontWeight.ExtraBold,
                             letterSpacing = (-0.5).sp,
@@ -195,7 +195,7 @@ fun PlayerScreen(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = (currentSong?.artist.takeIf { !isUnknownArtist(it) } ?: "Unknown Artist"),
+                        text = (currentSong?.artist.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)),
                         style = MaterialTheme.typography.titleMedium,
                         color = onSurfaceVariantColor,
                         maxLines = 1,
@@ -323,7 +323,7 @@ fun PlayerScreen(
                     } else {
                         Icon(
                             imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
-                            contentDescription = if (isPlaying) "Pause" else "Play",
+                            contentDescription = if (isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                             modifier = Modifier.size(56.dp)
                         )
                     }

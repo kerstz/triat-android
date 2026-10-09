@@ -359,7 +359,10 @@ fun VideoPlaylistDetail(
                                 else -> pluralStringResource(R.plurals.vpl_video_count, videos.size, videos.size)
                             }
                         val durationLabel = if (allLoaded) {
-                            formatTotalDuration(videos.sumOf { it.duration.coerceAtLeast(0L) } * 1000L)
+                            formatTotalDuration(
+                                androidx.compose.ui.platform.LocalContext.current,
+                                videos.sumOf { it.duration.coerceAtLeast(0L) } * 1000L
+                            )
                         } else null
                         val facts = listOfNotNull(
                             stringResource(R.string.label_playlist),
@@ -645,9 +648,9 @@ fun VideoPlaylistDetail(
             text = {
                 Text(
                     when (playlist.playlistId) {
-                        "WL" -> "This removes \"${video.title}\" from Watch Later on your YouTube account, everywhere you use YouTube."
-                        "LL" -> "This removes the like from \"${video.title}\" on your YouTube account, everywhere you use YouTube."
-                        else -> "This removes \"${video.title}\" from \"${playlist.title}\" on your YouTube account, everywhere you use YouTube."
+                        "WL" -> stringResource(R.string.vpp_remove_watch_later_body, video.title)
+                        "LL" -> stringResource(R.string.lib_remove_like_body, video.title)
+                        else -> stringResource(R.string.lib_remove_from_yt_playlist_body, video.title, playlist.title)
                     }
                 )
             },

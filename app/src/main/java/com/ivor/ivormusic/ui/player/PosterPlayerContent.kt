@@ -1,5 +1,7 @@
 package com.ivor.ivormusic.ui.player
 
+import androidx.compose.ui.res.stringResource
+import com.ivor.ivormusic.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.Crossfade
@@ -337,7 +339,7 @@ fun PosterPlayerSheetContent(
                                 size = 44.dp
                             ) {
                                 Icon(
-                                    Icons.Default.KeyboardArrowDown, "Collapse",
+                                    Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse),
                                     modifier = Modifier.size(26.dp)
                                 )
                             }
@@ -351,7 +353,7 @@ fun PosterPlayerSheetContent(
                                     size = 44.dp
                                 ) {
                                     Icon(
-                                        Icons.Rounded.Bedtime, "Sleep timer",
+                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
@@ -362,7 +364,7 @@ fun PosterPlayerSheetContent(
                                     size = 44.dp
                                 ) {
                                     Icon(
-                                        Icons.AutoMirrored.Filled.QueueMusic, "Queue",
+                                        Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue),
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
@@ -373,7 +375,7 @@ fun PosterPlayerSheetContent(
                                     size = 44.dp
                                 ) {
                                     Icon(
-                                        Icons.Rounded.MoreVert, "More options",
+                                        Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options),
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
@@ -399,7 +401,7 @@ fun PosterPlayerSheetContent(
                                 ) {
                                     Text(
                                         text = currentSong?.title
-                                            ?.takeIf { !isUnknownTitle(it) } ?: "Untitled",
+                                            ?.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
                                         style = MaterialTheme.typography.headlineMedium.copy(
                                             fontWeight = FontWeight.Black
                                         ),
@@ -408,7 +410,7 @@ fun PosterPlayerSheetContent(
                                         overflow = TextOverflow.Ellipsis
                                     )
                                     val artistName = currentSong?.artist
-                                        ?.takeIf { !isUnknownArtist(it) } ?: "Unknown Artist"
+                                        ?.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)
                                     Text(
                                         text = artistName,
                                         style = MaterialTheme.typography.titleSmall,
@@ -417,7 +419,7 @@ fun PosterPlayerSheetContent(
                                         overflow = TextOverflow.Ellipsis,
                                         modifier = Modifier
                                             .clip(RoundedCornerShape(8.dp))
-                                            .clickable(enabled = artistName != "Unknown Artist") {
+                                            .clickable(enabled = artistName != stringResource(R.string.unknown_artist)) {
                                                 onArtistClick(artistName)
                                             }
                                             .padding(vertical = 2.dp)
@@ -437,7 +439,7 @@ fun PosterPlayerSheetContent(
                                     accent = glyph,
                                     field = scrim
                                 ) {
-                                    Icon(Icons.Rounded.Lyrics, "Lyrics", modifier = Modifier.size(20.dp))
+                                    Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                                 }
                             }
 
@@ -513,7 +515,7 @@ fun PosterPlayerSheetContent(
                                             field = scrim
                                         ) {
                                             Icon(
-                                                Icons.Default.Shuffle, "Shuffle",
+                                                Icons.Default.Shuffle, stringResource(R.string.cd_shuffle),
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
@@ -528,7 +530,7 @@ fun PosterPlayerSheetContent(
                                             size = 52.dp
                                         ) {
                                             Icon(
-                                                Icons.Default.SkipPrevious, "Previous",
+                                                Icons.Default.SkipPrevious, stringResource(R.string.cd_previous),
                                                 modifier = Modifier.size(30.dp)
                                             )
                                         }
@@ -556,7 +558,7 @@ fun PosterPlayerSheetContent(
                                                 Icon(
                                                     if (isPlaying) Icons.Rounded.Pause
                                                     else Icons.Rounded.PlayArrow,
-                                                    if (isPlaying) "Pause" else "Play",
+                                                    if (isPlaying) stringResource(R.string.cd_pause) else stringResource(R.string.cd_play),
                                                     modifier = Modifier.size(34.dp)
                                                 )
                                             }
@@ -572,7 +574,7 @@ fun PosterPlayerSheetContent(
                                             size = 52.dp
                                         ) {
                                             Icon(
-                                                Icons.Default.SkipNext, "Next",
+                                                Icons.Default.SkipNext, stringResource(R.string.cd_next),
                                                 modifier = Modifier.size(30.dp)
                                             )
                                         }
@@ -585,7 +587,7 @@ fun PosterPlayerSheetContent(
                                             Icon(
                                                 if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne
                                                 else Icons.Default.Repeat,
-                                                "Repeat",
+                                                stringResource(R.string.cd_repeat),
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }

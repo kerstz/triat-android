@@ -199,9 +199,10 @@ private enum class ClearTarget { VIDEOS, CHANNELS }
 @Composable
 private fun summaryLine(hiddenCount: Int, blockedCount: Int): String = when {
     hiddenCount == 0 && blockedCount == 0 -> stringResource(R.string.ni_nothing_hidden)
-    blockedCount == 0 -> "$hiddenCount video${if (hiddenCount == 1) "" else "s"}"
-    hiddenCount == 0 -> "$blockedCount channel${if (blockedCount == 1) "" else "s"}"
-    else -> "$blockedCount channel${if (blockedCount == 1) "" else "s"}, $hiddenCount video${if (hiddenCount == 1) "" else "s"}"
+    blockedCount == 0 -> pluralStringResource(R.plurals.vpl_video_count, hiddenCount, hiddenCount)
+    hiddenCount == 0 -> pluralStringResource(R.plurals.n_channels, blockedCount, blockedCount)
+    else -> pluralStringResource(R.plurals.n_channels, blockedCount, blockedCount) + ", " +
+        pluralStringResource(R.plurals.vpl_video_count, hiddenCount, hiddenCount)
 }
 
 @Composable

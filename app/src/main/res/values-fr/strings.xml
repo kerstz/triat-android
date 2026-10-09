@@ -1836,4 +1836,263 @@
     <string name="share_no_link">Aucun lien YouTube trouvé dans ce que tu as partagé</string>
     <string name="share_local_only">Le mode local uniquement est activé. Désactive-le dans les réglages pour ouvrir des liens YouTube.</string>
     <string name="share_open_link_failed">Impossible d\'ouvrir ce lien</string>
+    <string name="cd_queue">File d\'attente</string>
+    <string name="pl_end_of_queue">Fin de la file</string>
+    <string name="psw_release_for">Relâche pour</string>
+    <string name="palette_name_nothing">Nothing</string>
+    <string name="palette_name_electric">Électrique</string>
+    <string name="palette_name_magenta">Magenta pop</string>
+    <string name="palette_name_citrus">Agrumes</string>
+    <string name="palette_name_neon">Citron vert néon</string>
+    <string name="palette_name_lavender">Brume de lavande</string>
+    <string name="palette_name_mint">Menthe douce</string>
+    <string name="palette_name_peach">Sorbet pêche</string>
+    <string name="palette_name_sky">Ciel tendre</string>
+    <string name="palette_name_vintagefilm">Pellicule vintage</string>
+    <string name="palette_name_dustyrose">Rose poudré</string>
+    <string name="palette_name_sagesand">Sauge et sable</string>
+    <string name="palette_name_fadeddenim">Denim délavé</string>
+    <string name="palette_name_oatlatte">Latte à l\'avoine</string>
+    <string name="palette_name_sunbleached">Blanchi par le soleil</string>
+    <string name="palette_name_terracotta">Terracotta</string>
+    <string name="palette_name_forest">Forêt</string>
+    <string name="palette_name_mocha">Moka</string>
+    <string name="palette_name_autumn">Automne</string>
+    <string name="palette_name_crimson">Pourpre noir</string>
+    <string name="palette_name_indigo">Indigo de minuit</string>
+    <string name="palette_name_deepteal">Sarcelle profond</string>
+    <string name="palette_name_plum">Prune royale</string>
+    <string name="palette_name_emerald">Émeraude</string>
+    <string name="palette_name_ocean">Océan</string>
+    <string name="palette_name_rosegold">Or rose</string>
+    <string name="palette_name_graphite">Graphite</string>
+    <string name="palette_name_black">Noir</string>
+    <string name="palette_name_white">Blanc</string>
+    <string name="sv_not_signed_in">Non connecté</string>
+    <string name="sv_signed_in">Connecté</string>
+    <string name="sv_dynamic">Dynamique</string>
+    <string name="sv_local_only_offline">Local uniquement, hors ligne</string>
+    <string name="sv_music_mode">Mode musique</string>
+    <string name="sv_cached">%1$s en cache</string>
+    <string name="sv_caching_off">Cache désactivé</string>
+    <string name="sv_blocked_by_system">Bloqué par le système</string>
+    <string name="sv_downloads_and_playback">Téléchargements et lecture</string>
+    <string name="sv_downloads_only">Téléchargements uniquement</string>
+    <string name="sv_playback_only">Lecture uniquement</string>
+    <string name="sv_off">Désactivé</string>
+    <string name="sv_on">Activé</string>
+    <plurals name="sv_on_folders_excluded">
+        <item quantity="one">Activé, %1$d dossier exclu</item>
+        <item quantity="other">Activé, %1$d dossiers exclus</item>
+    </plurals>
+    <string name="sv_watch_history_on">Les vidéos que tu regardes sont ajoutées à ton historique YouTube</string>
+    <string name="sv_watch_history_off">Regarder ne touche pas à ton historique YouTube</string>
+    <string name="sv_amoled_on">Fonds noir pur dans le thème sombre</string>
+    <string name="sv_amoled_off">Fonds sombres standard</string>
+    <string name="sv_ambient_on">Couleurs dynamiques tirées de la pochette</string>
+    <string name="sv_ambient_off">Fond uni</string>
+    <string name="sv_spotlight_on">Grille de raccourcis, sélection rapide et étagères de pochettes</string>
+    <string name="sv_spotlight_off">Accueil classique avec une grande vedette et des carrousels</string>
+    <string name="sv_nav_standard">Barre Material 3 standard avec libellés fixes</string>
+    <string name="sv_nav_expressive">Navigation flottante expressive</string>
+    <string name="sv_xfade_off">Les chansons s\'enchaînent sans chevauchement</string>
+    <string name="sv_xfade_auto">AutoMix s\'adapte à chaque chanson, jusqu\'à 15 s</string>
+    <string name="sv_music_history_on">Les chansons que tu écoutes sont enregistrées sur cet appareil</string>
+    <string name="sv_music_history_off">En pause : les nouvelles lectures ne sont pas enregistrées</string>
+    <string name="sv_brightness_on">Les vidéos s\'ouvrent à la dernière luminosité réglée</string>
+    <string name="sv_brightness_off">Les vidéos s\'ouvrent à la luminosité du système</string>
+    <string name="sv_local_on">Affiche les chansons de ton appareil</string>
+    <string name="sv_local_off">YouTube Music uniquement</string>
+    <string name="sv_folders_all">Tous les dossiers sont inclus</string>
+    <string name="sv_xfade_fixed">Chevauchement fixe de %1$d s</string>
+    <plurals name="sv_folders_excluded">
+        <item quantity="one">%1$d dossier exclu</item>
+        <item quantity="other">%1$d dossiers exclus</item>
+    </plurals>
+    <string name="bk_never_backed_up">Aucune sauvegarde faite depuis cet appareil</string>
+    <string name="bk_last_today">Dernière sauvegarde aujourd\'hui</string>
+    <string name="bk_last_yesterday">Dernière sauvegarde hier</string>
+    <plurals name="bk_last_days_ago">
+        <item quantity="one">Dernière sauvegarde il y a %1$d jour</item>
+        <item quantity="other">Dernière sauvegarde il y a %1$d jours</item>
+    </plurals>
+    <string name="bk_last_on">Dernière sauvegarde le %1$s</string>
+    <string name="bk_taken">Sauvegarde créée : %1$s%2$s%3$s.</string>
+    <string name="bk_taken_unknown_date">date inconnue</string>
+    <string name="bk_taken_from">depuis %1$s</string>
+    <string name="bk_saved">Sauvegarde enregistrée</string>
+    <string name="bk_saved_with">Sauvegarde enregistrée : %1$s</string>
+    <plurals name="bk_n_video_playlists">
+        <item quantity="one">%1$d playlist vidéo</item>
+        <item quantity="other">%1$d playlists vidéo</item>
+    </plurals>
+    <plurals name="bk_n_saved_playlists">
+        <item quantity="one">%1$d playlist enregistrée</item>
+        <item quantity="other">%1$d playlists enregistrées</item>
+    </plurals>
+    <plurals name="bk_n_liked_songs">
+        <item quantity="one">%1$d chanson aimée</item>
+        <item quantity="other">%1$d chansons aimées</item>
+    </plurals>
+    <plurals name="bk_n_watched_videos">
+        <item quantity="one">%1$d vidéo regardée</item>
+        <item quantity="other">%1$d vidéos regardées</item>
+    </plurals>
+    <plurals name="bk_n_followed_channels">
+        <item quantity="one">%1$d chaîne suivie</item>
+        <item quantity="other">%1$d chaînes suivies</item>
+    </plurals>
+    <plurals name="bk_n_blocked_channels">
+        <item quantity="one">%1$d chaîne bloquée</item>
+        <item quantity="other">%1$d chaînes bloquées</item>
+    </plurals>
+    <plurals name="bk_n_hidden_videos">
+        <item quantity="one">%1$d vidéo masquée</item>
+        <item quantity="other">%1$d vidéos masquées</item>
+    </plurals>
+    <plurals name="bk_n_settings">
+        <item quantity="one">%1$d réglage</item>
+        <item quantity="other">%1$d réglages</item>
+    </plurals>
+    <plurals name="bk_n_profiles">
+        <item quantity="one">%1$d profil</item>
+        <item quantity="other">%1$d profils</item>
+    </plurals>
+    <string name="lib_uploader_you">Toi</string>
+    <plurals name="n_tracks">
+        <item quantity="one">%1$d titre</item>
+        <item quantity="other">%1$d titres</item>
+    </plurals>
+    <string name="dur_h_m">%1$d h %2$d min</string>
+    <string name="dur_m">%1$d min</string>
+    <string name="dur_s">%1$d s</string>
+    <plurals name="lib_cached_songs_history_off">
+        <item quantity="one">1 titre en cache. Active l\'historique d\'écoute pour le lister</item>
+        <item quantity="other">%1$d titres en cache. Active l\'historique d\'écoute pour les lister</item>
+    </plurals>
+    <plurals name="lib_n_tracks_auto">
+        <item quantity="one">%1$d titre • Playlist automatique</item>
+        <item quantity="other">%1$d titres • Playlist automatique</item>
+    </plurals>
+    <string name="lib_delete_yt_account_lead">Cela retire définitivement « %1$s » de ton compte YouTube.</string>
+    <string name="lib_delete_local_body">Cela retire définitivement « %1$s ».</string>
+    <string name="lib_delete_yt_playlist_lead">Cela supprime définitivement « %1$s » de ton compte YouTube.</string>
+    <string name="lib_delete_local_playlist_body">Cela retire définitivement « %1$s » de cet appareil.</string>
+    <string name="rel_days_ago">il y a %1$d j</string>
+    <string name="rel_weeks_ago">il y a %1$d sem.</string>
+    <string name="rel_months_ago">il y a %1$d mois</string>
+    <plurals name="rel_years_ago">
+        <item quantity="one">il y a %1$d an</item>
+        <item quantity="other">il y a %1$d ans</item>
+    </plurals>
+    <string name="lh_matching">correspondants</string>
+    <plurals name="lh_day_streak">
+        <item quantity="one">Série de %1$d jour</item>
+        <item quantity="other">Série de %1$d jours</item>
+    </plurals>
+    <plurals name="lh_remove_plays">
+        <item quantity="one">Retirer cette lecture</item>
+        <item quantity="other">Retirer ces %1$d lectures</item>
+    </plurals>
+    <plurals name="lh_clear_dialog_body">
+        <item quantity="one">Cela supprime ta seule lecture. La rangée « Écoutés récemment », le tri « Les plus écoutés » de la bibliothèque et tes statistiques reposent sur cet historique et seront réinitialisés avec lui.</item>
+        <item quantity="other">Cela supprime les %1$d lectures. La rangée « Écoutés récemment », le tri « Les plus écoutés » de la bibliothèque et tes statistiques reposent sur cet historique et seront réinitialisés avec lui.</item>
+    </plurals>
+    <plurals name="st_listened_plays">
+        <item quantity="one">d\'écoute • %1$d lecture</item>
+        <item quantity="other">d\'écoute • %1$d lectures</item>
+    </plurals>
+    <plurals name="st_n_days">
+        <item quantity="one">%1$d jour</item>
+        <item quantity="other">%1$d jours</item>
+    </plurals>
+    <string name="st_streak_best">Série • record : %1$d</string>
+    <string name="st_listening_streak">Série d\'écoute</string>
+    <string name="st_to_go">Encore %1$d</string>
+    <plurals name="st_next_milestone">
+        <item quantity="one">Prochain palier : %1$d lecture</item>
+        <item quantity="other">Prochain palier : %1$d lectures</item>
+    </plurals>
+    <string name="dl_action_with_size">Télécharger • %1$s</string>
+    <plurals name="dl_n_active">
+        <item quantity="one">%1$d en cours</item>
+        <item quantity="other">%1$d en cours</item>
+    </plurals>
+    <string name="dl_empty_music">Aucune musique téléchargée</string>
+    <string name="dl_empty_videos">Aucune vidéo téléchargée</string>
+    <string name="pd_download_tracks">Télécharger les titres</string>
+    <string name="pd_download_videos">Télécharger les vidéos</string>
+    <string name="pd_downloading_n">Téléchargement de %1$d</string>
+    <string name="pd_retry_n">Réessayer %1$d</string>
+    <string name="pd_download_n">Télécharger %1$d</string>
+    <string name="pd_retry_items">Réessayer %1$s</string>
+    <plurals name="pd_skipped_live">
+        <item quantity="one">%1$s ne peut pas être téléchargée pendant le direct et sera ignorée.</item>
+        <item quantity="other">%1$s ne peuvent pas être téléchargées pendant le direct et seront ignorées.</item>
+    </plurals>
+    <plurals name="pd_skipped_no_source">
+        <item quantity="one">Aucune source téléchargeable pour %1$s : téléchargement ignoré.</item>
+        <item quantity="other">Aucune source téléchargeable pour %1$s : téléchargements ignorés.</item>
+    </plurals>
+    <plurals name="search_n_matches">
+        <item quantity="one">%1$d correspondance</item>
+        <item quantity="other">%1$d correspondances</item>
+    </plurals>
+    <string name="ch_empty_shorts">Cette chaîne n\'a publié aucun Short</string>
+    <string name="ch_empty_live">Aucun direct passé ou à venir</string>
+    <string name="ch_empty_playlists">Aucune playlist publique</string>
+    <string name="ch_empty_posts">Aucune publication de la communauté pour l\'instant</string>
+    <string name="ch_empty_videos">Aucune vidéo ici pour l\'instant</string>
+    <string name="ch_empty_generic">Rien à afficher dans cet onglet</string>
+    <string name="as_sign_out_note">Le compte est déconnecté de cet appareil. Tes abonnements et tes recommandations masquées sont conservés, et rien ne change sur YouTube.</string>
+    <string name="as_remove_local_note">Ses abonnements et ses recommandations masquées sont supprimés. Les playlists, les titres aimés et les téléchargements sont partagés et restent.</string>
+    <string name="as_remove_account_note">Déconnecte ce compte sur cet appareil et supprime ses abonnements et ses recommandations masquées. Rien ne change sur YouTube lui-même.</string>
+    <string name="tl_unlimited">Illimité</string>
+    <string name="dur_h">%1$d h</string>
+    <string name="tl_used_locked">%1$s d\'utilisation - verrouillé jusqu\'à minuit</string>
+    <string name="tl_used_of">%1$s utilisées sur %2$s</string>
+    <string name="tl_day_today">%1$s (aujourd\'hui)</string>
+    <string name="al_message">Tu as eu %1$s avec Triat aujourd\'hui. Reviens demain : l\'appli se déverrouille dans %2$s.</string>
+    <string name="al_under_a_minute">moins d\'une minute</string>
+    <string name="sh_hide_channel_named">Masquer tout ce qui vient de %1$s</string>
+    <string name="rb_crash_preview">%1$s - trace de plantage et journaux récents</string>
+    <string name="cm_none_yet">Aucun commentaire pour l\'instant</string>
+    <string name="cm_unavailable">Les commentaires sont indisponibles pour cette vidéo</string>
+    <string name="cm_loading_replies">Chargement des réponses…</string>
+    <string name="cm_view_replies">Voir les réponses</string>
+    <string name="cm_view_replies_n">Voir les réponses (%1$s)</string>
+    <string name="cm_add_reply">Ajouter une réponse…</string>
+    <string name="cm_add_comment">Ajouter un commentaire…</string>
+    <string name="cm_unlike">Je n\'aime plus</string>
+    <string name="sm_x_of_y_channels">%1$d sur %2$d chaînes</string>
+    <string name="sm_on_this_device">%1$d sur cet appareil</string>
+    <string name="sm_channels_matched">Chaînes - %1$d sur %2$d</string>
+    <plurals name="sm_in_n_groups">
+        <item quantity="one">Dans %1$d groupe</item>
+        <item quantity="other">Dans %1$d groupes</item>
+    </plurals>
+    <string name="sm_summary_added">Ajoutées</string>
+    <string name="sm_summary_already">Déjà suivies</string>
+    <string name="sm_summary_not_found">Introuvables</string>
+    <string name="sm_summary_other">Autres services</string>
+    <string name="sm_no_groups">Tu n\'as pas encore créé de groupe.</string>
+    <string name="vh_open_channel">Ouvrir la chaîne %1$s</string>
+    <string name="vl_delete_local_body">Cela supprime définitivement « %1$s » de cet appareil.</string>
+    <string name="vl_remove_yt_body">Cela retire définitivement « %1$s » de ton compte YouTube.</string>
+    <string name="vpp_remove_watch_later_body">Cela retire « %1$s » de « Regarder plus tard » sur ton compte YouTube, partout où tu utilises YouTube.</string>
+    <string name="vp_fullscreen">Plein écran</string>
+    <string name="vp_exit_fullscreen">Quitter le plein écran</string>
+    <string name="vp_load_stream_failed">Impossible de charger le flux vidéo</string>
+    <string name="vp_chat_not_sent">Message non envoyé</string>
+    <string name="sh_load_failed">Impossible de charger ce Short</string>
+    <string name="sh_timeout">Délai de connexion dépassé. Vérifie ta connexion Internet.</string>
+    <string name="untitled">Sans titre</string>
+    <string name="dur_long_h_m">%1$d h %2$d min</string>
+    <string name="dur_long_m">%1$d min</string>
+    <plurals name="lc_new_messages">
+        <item quantity="one">%1$d nouveau message</item>
+        <item quantity="other">%1$d nouveaux messages</item>
+    </plurals>
+    <string name="vpc_caption_auto">%1$s (auto)</string>
+    <string name="vpc_caption_background">Arrière-plan</string>
 </resources>

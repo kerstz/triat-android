@@ -160,8 +160,8 @@ fun SongDownloadSheet(
                 Icon(Icons.Rounded.Download, contentDescription = null)
                 Spacer(Modifier.width(8.dp))
                 Text(
-                    text = estimatedBytes?.let { "Download • ${formatDownloadSize(it)}" }
-                        ?: "Download",
+                    text = estimatedBytes?.let { stringResource(R.string.dl_action_with_size, formatDownloadSize(it)) }
+                        ?: stringResource(R.string.song_options_download),
                     fontWeight = FontWeight.SemiBold
                 )
             }

@@ -158,7 +158,7 @@ fun AppTimeLimitScreen(onBack: () -> Unit) {
                                 FilterChip(
                                     selected = false,
                                     onClick = { prefs.setAllTimeLimitBudgets(minutes) },
-                                    label = { Text(AppTimeLimit.formatBudget(minutes)) }
+                                    label = { Text(AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, minutes)) }
                                 )
                             }
                         }
@@ -231,10 +231,16 @@ private fun TodayCard(
                             budgetMinutes <= 0 ->
                                 stringResource(R.string.tl_unlimited_today)
                             lockedNow ->
-                                "${AppTimeLimit.formatBudget(budgetMinutes)} used - locked until midnight"
+                                stringResource(
+                                    R.string.tl_used_locked,
+                                    AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, budgetMinutes)
+                                )
                             else ->
-                                "${formatUsed(usedSecondsToday)} of " +
-                                    "${AppTimeLimit.formatBudget(budgetMinutes)} used"
+                                stringResource(
+                                    R.string.tl_used_of,
+                                    formatUsed(usedSecondsToday),
+                                    AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, budgetMinutes)
+                                )
                         },
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
@@ -278,12 +284,12 @@ private fun DayBudgetCard(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = if (isToday) "$dayName (today)" else dayName,
+                    text = if (isToday) stringResource(R.string.tl_day_today, dayName) else dayName,
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )
                 Text(
-                    text = AppTimeLimit.formatBudget(minutes),
+                    text = AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, minutes),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = if (minutes == 0) {
@@ -303,5 +309,6 @@ private fun DayBudgetCard(
     }
 }
 
+@Composable
 private fun formatUsed(seconds: Long): String =
-    AppTimeLimit.formatBudget((seconds / 60L).toInt())
+    AppTimeLimit.formatBudget(androidx.compose.ui.platform.LocalContext.current, (seconds / 60L).toInt())

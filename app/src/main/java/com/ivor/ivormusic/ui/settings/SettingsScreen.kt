@@ -260,8 +260,6 @@ internal enum class SettingsPage {
     PLAYER,
     PLAYBACK,
     CONTENT,
-    VIDEO_HOME,
-    SUBSCRIPTIONS,
     STORAGE,
     NOTIFICATIONS,
     LOCAL_LIBRARY,
@@ -907,46 +905,9 @@ fun SettingsScreen(
                     onMixSourcesOnHomeToggle = onMixSourcesOnHomeToggle,
                     showSourceBadge = showSourceBadge,
                     onShowSourceBadgeToggle = onShowSourceBadgeToggle,
-                    videoMode = videoMode,
-                    onVideoModeToggle = onVideoModeToggle,
-                    homeModeToggleEnabled = homeModeToggleEnabled,
-                    onHomeModeToggleChange = onHomeModeToggleChange,
-                    timedCommentsEnabled = timedCommentsEnabled,
                     showRecentSearches = showRecentSearches,
                     onShowRecentSearchesToggle = onShowRecentSearchesToggle,
-                    showRelatedVideos = showRelatedVideos,
-                    onShowRelatedVideosToggle = onShowRelatedVideosToggle,
-                    inlinePreviews = inlinePreviews,
-                    onInlinePreviewsToggle = onInlinePreviewsToggle,
-                    compactVideoHome = compactVideoHome,
-                    onCompactVideoHomeToggle = onCompactVideoHomeToggle,
-                    onTimedCommentsToggle = onTimedCommentsToggle,
-                    shortsEnabled = shortsEnabled,
-                    onShortsEnabledToggle = onShortsEnabledToggle,
-                    shortsHiddenActions = shortsHiddenActions,
-                    onShowShortsButtons = { showShortsButtonsDialog = true },
                     onNavigateToNotInterested = onNavigateToNotInterested,
-                    onNavigateToVideoHome = { page = SettingsPage.VIDEO_HOME },
-                    onBack = { page = SettingsPage.HUB }
-                )
-
-                SettingsPage.VIDEO_HOME -> VideoHomeSettingsPage(
-                    configuration = videoHomeConfiguration,
-                    onRecommendationsEnabledChange =
-                        onVideoRecommendationsEnabledChange,
-                    onDestinationVisibleChange =
-                        onVideoHomeDestinationVisibleChange,
-                    onMoveDestination = onMoveVideoHomeDestination,
-                    onBack = { page = SettingsPage.CONTENT },
-                )
-
-                SettingsPage.SUBSCRIPTIONS -> SubscriptionsSettingsPage(
-                    subscriptionSource = subscriptionSource,
-                    subscribeTarget = subscribeTarget,
-                    fastSubscriptionFeed = fastSubscriptionFeed,
-                    onFastSubscriptionFeedToggle = onFastSubscriptionFeedToggle,
-                    onNavigateToSubscriptions = onNavigateToSubscriptions,
-                    onOpenRoutingPicker = { subscriptionDialogTarget = it },
                     onBack = { page = SettingsPage.HUB }
                 )
 
@@ -1197,59 +1158,66 @@ private fun SettingsHub(
 
     val accountValue = key(accountRefreshKey) {
         when {
-            !isLoggedIn -> "Not signed in"
-            else -> sessionManager.getUserName() ?: "Signed in"
+            !isLoggedIn -> stringResource(R.string.sv_not_signed_in)
+            else -> sessionManager.getUserName() ?: stringResource(R.string.sv_signed_in)
         }
     }
 
     val themeLabel = when (currentThemeMode) {
-        ThemeMode.SYSTEM -> "System"
-        ThemeMode.LIGHT -> "Light"
-        ThemeMode.DARK -> "Dark"
+        ThemeMode.SYSTEM -> stringResource(R.string.theme_system)
+        ThemeMode.LIGHT -> stringResource(R.string.theme_light)
+        ThemeMode.DARK -> stringResource(R.string.theme_dark)
     }
     val paletteName = if (colorPalette == ThemePreferences.DEFAULT_COLOR_PALETTE) {
-        "Dynamic"
+        stringResource(R.string.sv_dynamic)
     } else {
-        com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.name ?: "Dynamic"
+        com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.nameRes?.let { stringResource(it) }
+            ?: stringResource(R.string.sv_dynamic)
     }
-    val playerStyleLabel = com.ivor.ivormusic.ui.player.playerStyleInfo(playerStyle).label
+    val playerStyleLabel = com.ivor.ivormusic.ui.player.playerStyleLabel(playerStyle)
 
     val contentValue = when {
-        localOnlyMode -> "Local only, offline"
-        videoMode -> "Video mode"
-        else -> "Music mode"
+        localOnlyMode -> stringResource(R.string.sv_local_only_offline)
+        videoMode -> stringResource(R.string.ob_page_video_mode)
+        else -> stringResource(R.string.sv_music_mode)
     }
 
-    val storageValue = buildString {
-        append(if (privateDownloadsEnabled) "Private downloads" else "Downloads/Triat")
-        append(" · ")
-        append(
-            if (cacheEnabled) {
-                "${com.ivor.ivormusic.data.CacheManager.formatSize(currentCacheSize)} cached"
-            } else {
-                "Caching off"
-            }
+    val privateDownloadsLabel = stringResource(R.string.sp_private_downloads)
+    val cachedLabel = if (cacheEnabled) {
+        stringResource(
+            R.string.sv_cached,
+            com.ivor.ivormusic.data.CacheManager.formatSize(currentCacheSize)
         )
+    } else {
+        stringResource(R.string.sv_caching_off)
+    }
+    val storageValue = buildString {
+        append(if (privateDownloadsEnabled) privateDownloadsLabel else "Downloads/Triat")
+        append(" · ")
+        append(cachedLabel)
     }
 
     val notificationsValue = when {
-        !canPostPromoted && (liveDownloadUpdates || livePlaybackUpdates) -> "Blocked by system"
-        liveDownloadUpdates && livePlaybackUpdates -> "Downloads and playback"
-        liveDownloadUpdates -> "Downloads only"
-        livePlaybackUpdates -> "Playback only"
-        else -> "Off"
+        !canPostPromoted && (liveDownloadUpdates || livePlaybackUpdates) -> stringResource(R.string.sv_blocked_by_system)
+        liveDownloadUpdates && livePlaybackUpdates -> stringResource(R.string.sv_downloads_and_playback)
+        liveDownloadUpdates -> stringResource(R.string.sv_downloads_only)
+        livePlaybackUpdates -> stringResource(R.string.sv_playback_only)
+        else -> stringResource(R.string.sv_off)
     }
 
     // Read on entry rather than held in a flow: Navigation Compose disposes
     // this destination while the backup screen is on top, so returning from
     // one re-runs this and the row is current without any plumbing.
     val backupContext = LocalContext.current
-    val backupValue = remember { lastBackupLine(BackupRepository.lastBackupAt(backupContext)) }
+    val backupValue = remember { lastBackupLine(backupContext, BackupRepository.lastBackupAt(backupContext)) }
+    val spotlightLabel = stringResource(R.string.sp_home_spotlight)
 
     val localLibraryValue = when {
-        !loadLocalSongs -> "Off"
-        excludedFolderCount > 0 -> "On, $excludedFolderCount folder${if (excludedFolderCount == 1) "" else "s"} excluded"
-        else -> "On"
+        !loadLocalSongs -> stringResource(R.string.sv_off)
+        excludedFolderCount > 0 -> pluralStringResource(
+            R.plurals.sv_on_folders_excluded, excludedFolderCount, excludedFolderCount
+        )
+        else -> stringResource(R.string.sv_on)
     }
 
     Column(modifier = Modifier.fillMaxSize()) {
@@ -1378,7 +1346,7 @@ private fun SettingsHub(
                                 append(themeLabel)
                                 append(", ")
                                 append(paletteName)
-                                if (spotlightHome) append(", Spotlight")
+                                if (spotlightHome) append(", $spotlightLabel")
                                 // Only when it is doing something: a "100%"
                                 // on every install is noise, not a live value.
                                 if (uiScale != UI_SCALE_DEFAULT) {
@@ -1439,16 +1407,6 @@ private fun SettingsHub(
                             tint = MaterialTheme.colorScheme.secondary,
                             iconShape = MaterialShapes.Pill.toShape(),
                             explanation = stringResource(R.string.import_links_hub_value)
-                        )
-                        SettingsDivider()
-                        SettingsHubRow(
-                            icon = Icons.Rounded.Subscriptions,
-                            title = stringResource(R.string.settings_subscriptions),
-                            value = subscriptionSourceLabel(subscriptionSource),
-                            onClick = { onOpenPage(SettingsPage.SUBSCRIPTIONS) },
-                            tint = MaterialTheme.colorScheme.secondary,
-                            iconShape = MaterialShapes.Cookie6Sided.toShape(),
-                            explanation = stringResource(R.string.si_hub_subscriptions)
                         )
                         SettingsDivider()
                         SettingsHubRow(
@@ -1628,9 +1586,9 @@ internal fun ExpressiveThemeSelectGroup(
                     // Content
                     Text(
                         text = when(mode) {
-                            ThemeMode.SYSTEM -> "System"
-                            ThemeMode.LIGHT -> "Light"
-                            ThemeMode.DARK -> "Dark"
+                            ThemeMode.SYSTEM -> stringResource(R.string.theme_system)
+                            ThemeMode.LIGHT -> stringResource(R.string.theme_light)
+                            ThemeMode.DARK -> stringResource(R.string.theme_dark)
                         },
                         fontSize = 14.sp,
                         fontWeight = if (currentMode == mode) FontWeight.Bold else FontWeight.Medium
@@ -1690,7 +1648,7 @@ internal fun ExpressiveAccountItem(
         // User Info
         Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = userName ?: "YouTube Account",
+                text = userName ?: stringResource(R.string.profile_youtube_account),
                 color = textColor,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -1714,106 +1672,6 @@ internal fun ExpressiveAccountItem(
                     fontSize = 13.sp,
                     fontWeight = FontWeight.Medium
                 )
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
-@Composable
-internal fun ExpressiveVideoModeToggleItem(
-    enabled: Boolean,
-    onToggle: (Boolean) -> Unit,
-    textColor: Color,
-    secondaryTextColor: Color,
-    accentColor: Color
-) {
-    val options = listOf(stringResource(R.string.sp_mode_music), stringResource(R.string.sp_mode_video))
-    val selectedIndex = if (enabled) 1 else 0
-    
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 14.dp)
-    ) {
-        // Header Row
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // Icon
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(RoundedCornerShape(14.dp))
-                    .background(accentColor.copy(alpha = 0.12f)),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector = if (enabled) Icons.Rounded.VideoLibrary else Icons.Rounded.MusicNote,
-                    contentDescription = null,
-                    tint = accentColor,
-                    modifier = Modifier.size(26.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            // Text
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = stringResource(R.string.sp_content_mode),
-                    color = textColor,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold
-                )
-                Spacer(modifier = Modifier.height(2.dp))
-                Text(
-                    text = if (enabled) {
-                        stringResource(R.string.sp_content_mode_video)
-                    } else {
-                        stringResource(R.string.sp_content_mode_music)
-                    },
-                    color = secondaryTextColor,
-                    fontSize = 13.sp
-                )
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(
-                ButtonGroupDefaults.ConnectedSpaceBetween
-            ),
-        ) {
-            options.forEachIndexed { index, label ->
-                ToggleButton(
-                    checked = selectedIndex == index,
-                    onCheckedChange = { onToggle(index == 1) },
-                    modifier = Modifier.weight(1f),
-                    shapes = when (index) {
-                        0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                        options.lastIndex ->
-                            ButtonGroupDefaults.connectedTrailingButtonShapes()
-                        else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                    },
-                    colors = ToggleButtonDefaults.toggleButtonColors(
-                        containerColor = accentColor.copy(alpha = 0.1f),
-                        checkedContainerColor = accentColor,
-                        contentColor = textColor,
-                        checkedContentColor = MaterialTheme.colorScheme.onPrimary,
-                    ),
-                ) {
-                    Icon(
-                        imageVector = if (index == 0) Icons.Rounded.MusicNote
-                        else Icons.Rounded.VideoLibrary,
-                        contentDescription = null,
-                        modifier = Modifier.size(18.dp),
-                    )
-                    Text(label)
-                }
             }
         }
     }

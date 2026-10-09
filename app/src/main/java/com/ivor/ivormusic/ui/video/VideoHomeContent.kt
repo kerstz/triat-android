@@ -975,7 +975,7 @@ fun VideoCard(
                             .then(
                                 if (openChannel != null) {
                                     Modifier.clickable(
-                                        onClickLabel = "Open ${video.channelName} channel",
+                                        onClickLabel = stringResource(R.string.vh_open_channel, video.channelName),
                                         onClick = openChannel
                                     )
                                 } else {

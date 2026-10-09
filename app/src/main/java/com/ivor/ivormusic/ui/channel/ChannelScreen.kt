@@ -576,7 +576,11 @@ private fun ChannelTabRow(
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 Text(
-                    text = tab.title,
+                    text = if (tab.kind == ChannelTabKind.ABOUT) {
+                        stringResource(R.string.settings_section_about)
+                    } else {
+                        tab.title
+                    },
                     style = MaterialTheme.typography.labelLarge,
                     fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
                     maxLines = 1

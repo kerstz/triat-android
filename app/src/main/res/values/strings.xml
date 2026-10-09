@@ -1956,4 +1956,263 @@
     <string name="share_no_link">No YouTube link found in what you shared</string>
     <string name="share_local_only">Local only mode is on. Turn it off in Settings to open YouTube links.</string>
     <string name="share_open_link_failed">Couldn\'t open that link</string>
+    <string name="cd_queue">Queue</string>
+    <string name="pl_end_of_queue">End of queue</string>
+    <string name="psw_release_for">Release for</string>
+    <string name="palette_name_nothing">Nothing</string>
+    <string name="palette_name_electric">Electric</string>
+    <string name="palette_name_magenta">Magenta Pop</string>
+    <string name="palette_name_citrus">Citrus</string>
+    <string name="palette_name_neon">Neon Lime</string>
+    <string name="palette_name_lavender">Lavender Haze</string>
+    <string name="palette_name_mint">Cotton Mint</string>
+    <string name="palette_name_peach">Peach Sorbet</string>
+    <string name="palette_name_sky">Baby Sky</string>
+    <string name="palette_name_vintagefilm">Vintage Film</string>
+    <string name="palette_name_dustyrose">Dusty Rose</string>
+    <string name="palette_name_sagesand">Sage &amp; Sand</string>
+    <string name="palette_name_fadeddenim">Faded Denim</string>
+    <string name="palette_name_oatlatte">Oat Latte</string>
+    <string name="palette_name_sunbleached">Sun-bleached</string>
+    <string name="palette_name_terracotta">Terracotta</string>
+    <string name="palette_name_forest">Forest</string>
+    <string name="palette_name_mocha">Mocha</string>
+    <string name="palette_name_autumn">Autumn</string>
+    <string name="palette_name_crimson">Crimson Noir</string>
+    <string name="palette_name_indigo">Midnight Indigo</string>
+    <string name="palette_name_deepteal">Deep Teal</string>
+    <string name="palette_name_plum">Royal Plum</string>
+    <string name="palette_name_emerald">Emerald</string>
+    <string name="palette_name_ocean">Ocean</string>
+    <string name="palette_name_rosegold">Rose Gold</string>
+    <string name="palette_name_graphite">Graphite</string>
+    <string name="palette_name_black">Black</string>
+    <string name="palette_name_white">White</string>
+    <string name="sv_not_signed_in">Not signed in</string>
+    <string name="sv_signed_in">Signed in</string>
+    <string name="sv_dynamic">Dynamic</string>
+    <string name="sv_local_only_offline">Local only, offline</string>
+    <string name="sv_music_mode">Music mode</string>
+    <string name="sv_cached">%1$s cached</string>
+    <string name="sv_caching_off">Caching off</string>
+    <string name="sv_blocked_by_system">Blocked by system</string>
+    <string name="sv_downloads_and_playback">Downloads and playback</string>
+    <string name="sv_downloads_only">Downloads only</string>
+    <string name="sv_playback_only">Playback only</string>
+    <string name="sv_off">Off</string>
+    <string name="sv_on">On</string>
+    <plurals name="sv_on_folders_excluded">
+        <item quantity="one">On, %1$d folder excluded</item>
+        <item quantity="other">On, %1$d folders excluded</item>
+    </plurals>
+    <string name="sv_watch_history_on">Videos you watch are added to your YouTube history</string>
+    <string name="sv_watch_history_off">Watching does not touch your YouTube history</string>
+    <string name="sv_amoled_on">Pure black backgrounds in dark theme</string>
+    <string name="sv_amoled_off">Standard dark backgrounds</string>
+    <string name="sv_ambient_on">Dynamic colors from album art</string>
+    <string name="sv_ambient_off">Solid background</string>
+    <string name="sv_spotlight_on">Shortcut grid, quick picks and artwork shelves</string>
+    <string name="sv_spotlight_off">Classic Home with a hero and carousels</string>
+    <string name="sv_nav_standard">Standard Material 3 bar with fixed labels</string>
+    <string name="sv_nav_expressive">Expressive floating navigation</string>
+    <string name="sv_xfade_off">Songs change without an overlap</string>
+    <string name="sv_xfade_auto">AutoMix adapts to each song, up to 15s</string>
+    <string name="sv_music_history_on">Songs you play are logged on this device</string>
+    <string name="sv_music_history_off">Paused: new plays are not recorded</string>
+    <string name="sv_brightness_on">Videos reopen at the brightness you last set</string>
+    <string name="sv_brightness_off">Videos reopen at the system brightness</string>
+    <string name="sv_local_on">Shows songs from your device</string>
+    <string name="sv_local_off">YouTube Music only</string>
+    <string name="sv_folders_all">All folders included</string>
+    <string name="sv_xfade_fixed">Always overlap by %1$ds</string>
+    <plurals name="sv_folders_excluded">
+        <item quantity="one">%1$d folder excluded</item>
+        <item quantity="other">%1$d folders excluded</item>
+    </plurals>
+    <string name="bk_never_backed_up">Never backed up from this device</string>
+    <string name="bk_last_today">Last backup today</string>
+    <string name="bk_last_yesterday">Last backup yesterday</string>
+    <plurals name="bk_last_days_ago">
+        <item quantity="one">Last backup %1$d day ago</item>
+        <item quantity="other">Last backup %1$d days ago</item>
+    </plurals>
+    <string name="bk_last_on">Last backup on %1$s</string>
+    <string name="bk_taken">Taken %1$s%2$s%3$s.</string>
+    <string name="bk_taken_unknown_date">an unknown date</string>
+    <string name="bk_taken_from">from %1$s</string>
+    <string name="bk_saved">Backup saved</string>
+    <string name="bk_saved_with">Backup saved: %1$s</string>
+    <plurals name="bk_n_video_playlists">
+        <item quantity="one">%1$d video playlist</item>
+        <item quantity="other">%1$d video playlists</item>
+    </plurals>
+    <plurals name="bk_n_saved_playlists">
+        <item quantity="one">%1$d saved playlist</item>
+        <item quantity="other">%1$d saved playlists</item>
+    </plurals>
+    <plurals name="bk_n_liked_songs">
+        <item quantity="one">%1$d liked song</item>
+        <item quantity="other">%1$d liked songs</item>
+    </plurals>
+    <plurals name="bk_n_watched_videos">
+        <item quantity="one">%1$d watched video</item>
+        <item quantity="other">%1$d watched videos</item>
+    </plurals>
+    <plurals name="bk_n_followed_channels">
+        <item quantity="one">%1$d followed channel</item>
+        <item quantity="other">%1$d followed channels</item>
+    </plurals>
+    <plurals name="bk_n_blocked_channels">
+        <item quantity="one">%1$d blocked channel</item>
+        <item quantity="other">%1$d blocked channels</item>
+    </plurals>
+    <plurals name="bk_n_hidden_videos">
+        <item quantity="one">%1$d hidden video</item>
+        <item quantity="other">%1$d hidden videos</item>
+    </plurals>
+    <plurals name="bk_n_settings">
+        <item quantity="one">%1$d setting</item>
+        <item quantity="other">%1$d settings</item>
+    </plurals>
+    <plurals name="bk_n_profiles">
+        <item quantity="one">%1$d profile</item>
+        <item quantity="other">%1$d profiles</item>
+    </plurals>
+    <string name="lib_uploader_you">You</string>
+    <plurals name="n_tracks">
+        <item quantity="one">%1$d track</item>
+        <item quantity="other">%1$d tracks</item>
+    </plurals>
+    <string name="dur_h_m">%1$dh %2$dm</string>
+    <string name="dur_m">%1$dm</string>
+    <string name="dur_s">%1$ds</string>
+    <plurals name="lib_cached_songs_history_off">
+        <item quantity="one">1 cached song. Turn on listening history to list it</item>
+        <item quantity="other">%1$d cached songs. Turn on listening history to list them</item>
+    </plurals>
+    <plurals name="lib_n_tracks_auto">
+        <item quantity="one">%1$d track • Auto-playlist</item>
+        <item quantity="other">%1$d tracks • Auto-playlist</item>
+    </plurals>
+    <string name="lib_delete_yt_account_lead">This will permanently remove \"%1$s\" from your YouTube account.</string>
+    <string name="lib_delete_local_body">This will permanently remove \"%1$s\".</string>
+    <string name="lib_delete_yt_playlist_lead">This will permanently delete \"%1$s\" from your YouTube account.</string>
+    <string name="lib_delete_local_playlist_body">This will permanently remove \"%1$s\" from this device.</string>
+    <string name="rel_days_ago">%1$dd ago</string>
+    <string name="rel_weeks_ago">%1$dw ago</string>
+    <string name="rel_months_ago">%1$dmo ago</string>
+    <plurals name="rel_years_ago">
+        <item quantity="one">%1$dy ago</item>
+        <item quantity="other">%1$dy ago</item>
+    </plurals>
+    <string name="lh_matching">matching</string>
+    <plurals name="lh_day_streak">
+        <item quantity="one">%1$d day streak</item>
+        <item quantity="other">%1$d day streak</item>
+    </plurals>
+    <plurals name="lh_remove_plays">
+        <item quantity="one">Remove this play</item>
+        <item quantity="other">Remove these %1$d plays</item>
+    </plurals>
+    <plurals name="lh_clear_dialog_body">
+        <item quantity="one">This removes your only play. Your recently played row, the Library\'s \"Most played\" sort and your statistics are all built on this history and will reset with it.</item>
+        <item quantity="other">This removes all %1$d plays. Your recently played row, the Library\'s \"Most played\" sort and your statistics are all built on this history and will reset with it.</item>
+    </plurals>
+    <plurals name="st_listened_plays">
+        <item quantity="one">listened • %1$d play</item>
+        <item quantity="other">listened • %1$d plays</item>
+    </plurals>
+    <plurals name="st_n_days">
+        <item quantity="one">%1$d day</item>
+        <item quantity="other">%1$d days</item>
+    </plurals>
+    <string name="st_streak_best">Streak • best %1$d</string>
+    <string name="st_listening_streak">Listening streak</string>
+    <string name="st_to_go">%1$d to go</string>
+    <plurals name="st_next_milestone">
+        <item quantity="one">Next: %1$d play</item>
+        <item quantity="other">Next: %1$d plays</item>
+    </plurals>
+    <string name="dl_action_with_size">Download • %1$s</string>
+    <plurals name="dl_n_active">
+        <item quantity="one">%1$d active</item>
+        <item quantity="other">%1$d active</item>
+    </plurals>
+    <string name="dl_empty_music">No downloaded music</string>
+    <string name="dl_empty_videos">No downloaded videos</string>
+    <string name="pd_download_tracks">Download tracks</string>
+    <string name="pd_download_videos">Download videos</string>
+    <string name="pd_downloading_n">Downloading %1$d</string>
+    <string name="pd_retry_n">Retry %1$d</string>
+    <string name="pd_download_n">Download %1$d</string>
+    <string name="pd_retry_items">Retry %1$s</string>
+    <plurals name="pd_skipped_live">
+        <item quantity="one">%1$s can\'t be downloaded while live and will be skipped.</item>
+        <item quantity="other">%1$s can\'t be downloaded while live and will be skipped.</item>
+    </plurals>
+    <plurals name="pd_skipped_no_source">
+        <item quantity="one">%1$s has no downloadable source and will be skipped.</item>
+        <item quantity="other">%1$s have no downloadable source and will be skipped.</item>
+    </plurals>
+    <plurals name="search_n_matches">
+        <item quantity="one">%1$d match</item>
+        <item quantity="other">%1$d matches</item>
+    </plurals>
+    <string name="ch_empty_shorts">This channel hasn\'t posted any Shorts</string>
+    <string name="ch_empty_live">No past or upcoming live streams</string>
+    <string name="ch_empty_playlists">No public playlists</string>
+    <string name="ch_empty_posts">No community posts yet</string>
+    <string name="ch_empty_videos">No videos here yet</string>
+    <string name="ch_empty_generic">Nothing to show in this tab</string>
+    <string name="as_sign_out_note">The account is disconnected from this device. Your subscriptions and hidden recommendations stay, and nothing changes on YouTube.</string>
+    <string name="as_remove_local_note">Its subscriptions and hidden recommendations are deleted. Playlists, liked songs and downloads are shared and stay.</string>
+    <string name="as_remove_account_note">Signs this account out on this device and deletes its subscriptions and hidden recommendations. Nothing changes on YouTube itself.</string>
+    <string name="tl_unlimited">Unlimited</string>
+    <string name="dur_h">%1$dh</string>
+    <string name="tl_used_locked">%1$s used - locked until midnight</string>
+    <string name="tl_used_of">%1$s of %2$s used</string>
+    <string name="tl_day_today">%1$s (today)</string>
+    <string name="al_message">You\'ve had %1$s with Triat today. Come back tomorrow - the app unlocks in %2$s.</string>
+    <string name="al_under_a_minute">under a minute</string>
+    <string name="sh_hide_channel_named">Hide everything from %1$s</string>
+    <string name="rb_crash_preview">%1$s - stack trace and recent logs</string>
+    <string name="cm_none_yet">No comments yet</string>
+    <string name="cm_unavailable">Comments are unavailable for this video</string>
+    <string name="cm_loading_replies">Loading replies…</string>
+    <string name="cm_view_replies">View replies</string>
+    <string name="cm_view_replies_n">View replies (%1$s)</string>
+    <string name="cm_add_reply">Add a reply…</string>
+    <string name="cm_add_comment">Add a comment…</string>
+    <string name="cm_unlike">Unlike</string>
+    <string name="sm_x_of_y_channels">%1$d of %2$d channels</string>
+    <string name="sm_on_this_device">%1$d on this device</string>
+    <string name="sm_channels_matched">Channels - %1$d of %2$d</string>
+    <plurals name="sm_in_n_groups">
+        <item quantity="one">In %1$d group</item>
+        <item quantity="other">In %1$d groups</item>
+    </plurals>
+    <string name="sm_summary_added">Added</string>
+    <string name="sm_summary_already">Already following</string>
+    <string name="sm_summary_not_found">Couldn\'t be found</string>
+    <string name="sm_summary_other">Other services</string>
+    <string name="sm_no_groups">You haven\'t made any groups yet.</string>
+    <string name="vh_open_channel">Open %1$s channel</string>
+    <string name="vl_delete_local_body">This will permanently delete \"%1$s\" from this device.</string>
+    <string name="vl_remove_yt_body">This will permanently remove \"%1$s\" from your YouTube account.</string>
+    <string name="vpp_remove_watch_later_body">This removes \"%1$s\" from Watch Later on your YouTube account, everywhere you use YouTube.</string>
+    <string name="vp_fullscreen">Fullscreen</string>
+    <string name="vp_exit_fullscreen">Exit fullscreen</string>
+    <string name="vp_load_stream_failed">Unable to load video stream</string>
+    <string name="vp_chat_not_sent">Message not sent</string>
+    <string name="sh_load_failed">Unable to load this Short</string>
+    <string name="sh_timeout">Connection timed out. Please check your internet.</string>
+    <string name="untitled">Untitled</string>
+    <string name="dur_long_h_m">%1$d hr %2$d min</string>
+    <string name="dur_long_m">%1$d min</string>
+    <plurals name="lc_new_messages">
+        <item quantity="one">%1$d new message</item>
+        <item quantity="other">%1$d new messages</item>
+    </plurals>
+    <string name="vpc_caption_auto">%1$s (auto)</string>
+    <string name="vpc_caption_background">Background</string>
 </resources>

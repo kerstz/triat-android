@@ -219,7 +219,7 @@ fun ColorPaletteScreen(
                                 if (isDarkMode && amoledDark) it.toAmoled() else it
                             }
                         },
-                        name = palette.name,
+                        name = stringResource(palette.nameRes),
                         selected = currentPalette == palette.id,
                         onClick = { onPaletteSelected(palette.id) }
                     )
