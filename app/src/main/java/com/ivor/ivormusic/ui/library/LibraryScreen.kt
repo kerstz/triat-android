@@ -66,6 +66,10 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.toShape
+import androidx.compose.material3.ToggleButtonDefaults
+import androidx.compose.material3.MaterialShapes
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.luminance
@@ -692,8 +696,8 @@ fun LibraryMainScreen(
                 // where a heading system for the whole app belongs.
                 Text(
                     text = stringResource(R.string.tab_library),
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
                     color = MaterialTheme.colorScheme.onBackground,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -727,12 +731,20 @@ fun LibraryMainScreen(
                             LibraryTab.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
                             else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
                         },
+                        // Same quiet chips as Home and Search: the accent is
+                        // not a filter state.
+                        colors = ToggleButtonDefaults.toggleButtonColors(
+                            containerColor = Color.Transparent,
+                            checkedContainerColor = MaterialTheme.colorScheme.surfaceContainerHighest,
+                            contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                            checkedContentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
                         contentPadding = PaddingValues(horizontal = 8.dp)
                     ) {
                         Text(
                             text = stringResource(tab.labelRes),
                             style = MaterialTheme.typography.labelLarge,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
+                            fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium,
                             maxLines = 1
                         )
                     }
@@ -1166,8 +1178,8 @@ private fun LibraryShortcutsCard(
             if (downloadCount != null) {
                 LibraryShortcutRow(
                     icon = Icons.Rounded.DownloadDone,
-                    iconContainerColor = MaterialTheme.colorScheme.secondary,
-                    iconContentColor = MaterialTheme.colorScheme.onSecondary,
+                    iconShape = MaterialShapes.Sunny.toShape(),
+                    iconTint = MaterialTheme.colorScheme.primary,
                     title = stringResource(R.string.fab_downloads),
                     subtitle = pluralStringResource(
                         R.plurals.lib_downloads_offline,
@@ -1182,13 +1194,9 @@ private fun LibraryShortcutsCard(
                 if (needsDivider) LibraryShortcutDivider()
                 LibraryShortcutRow(
                     icon = Icons.Rounded.OfflineBolt,
-                    iconContainerColor = if (readyOfflineClickable) {
+                    iconShape = MaterialShapes.Clover4Leaf.toShape(),
+                    iconTint = if (readyOfflineClickable) {
                         MaterialTheme.colorScheme.primary
-                    } else {
-                        MaterialTheme.colorScheme.surfaceContainerHighest
-                    },
-                    iconContentColor = if (readyOfflineClickable) {
-                        MaterialTheme.colorScheme.onPrimary
                     } else {
                         MaterialTheme.colorScheme.onSurfaceVariant
                     },
@@ -1201,8 +1209,8 @@ private fun LibraryShortcutsCard(
             if (needsDivider) LibraryShortcutDivider()
             LibraryShortcutRow(
                 icon = Icons.Rounded.History,
-                iconContainerColor = MaterialTheme.colorScheme.tertiary,
-                iconContentColor = MaterialTheme.colorScheme.onTertiary,
+                iconShape = MaterialShapes.Cookie9Sided.toShape(),
+                iconTint = MaterialTheme.colorScheme.primary,
                 title = stringResource(R.string.fab_listening_history),
                 subtitle = when {
                     historyPlayCount <= 0 -> stringResource(R.string.lib_everything_in_order)
@@ -1217,8 +1225,8 @@ private fun LibraryShortcutsCard(
 @Composable
 private fun LibraryShortcutRow(
     icon: ImageVector,
-    iconContainerColor: Color,
-    iconContentColor: Color,
+    iconShape: Shape,
+    iconTint: Color,
     title: String,
     subtitle: String,
     onClick: (() -> Unit)?
@@ -1248,26 +1256,17 @@ private fun LibraryShortcutRow(
             .padding(horizontal = 16.dp, vertical = 10.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Surface(
-            shape = CircleShape,
-            color = iconContainerColor,
-            modifier = Modifier.size(44.dp)
-        ) {
-            Box(contentAlignment = Alignment.Center) {
-                Icon(
-                    icon,
-                    contentDescription = null,
-                    tint = iconContentColor,
-                    modifier = Modifier.size(22.dp)
-                )
-            }
-        }
+        com.ivor.ivormusic.ui.components.RowIcon(
+            icon = icon,
+            shape = iconShape,
+            tint = iconTint
+        )
         Spacer(Modifier.width(16.dp))
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 title,
                 style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.onSurface,
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -2320,18 +2319,21 @@ fun EmptyLibraryState(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(top = 100.dp)
+            // Head room above, and enough below to clear the mini player: the
+            // lists this sits in are short when they are empty, so the bottom
+            // content padding never gets a chance to push it up.
+            .padding(top = 48.dp, bottom = 140.dp)
             .padding(horizontal = 32.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Icon(
             icon,
             contentDescription = null,
-            modifier = Modifier.size(80.dp),
+            modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f)
         )
         Spacer(Modifier.height(16.dp))
-        Text(title, style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
+        Text(title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.SemiBold, color = MaterialTheme.colorScheme.onBackground, textAlign = TextAlign.Center)
         Spacer(Modifier.height(4.dp))
         Text(subtitle, style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant, textAlign = TextAlign.Center)
         if (action != null) {

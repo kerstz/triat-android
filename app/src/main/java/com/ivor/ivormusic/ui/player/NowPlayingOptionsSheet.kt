@@ -32,6 +32,10 @@ import androidx.compose.material.icons.rounded.DownloadDone
 import androidx.compose.material.icons.rounded.Favorite
 import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material.icons.rounded.Radio
+import androidx.media3.common.Player
+import androidx.compose.material.icons.rounded.Shuffle
+import androidx.compose.material.icons.rounded.RepeatOne
+import androidx.compose.material.icons.rounded.Repeat
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.RemoveCircleOutline
 import androidx.compose.material.icons.rounded.Share
@@ -139,13 +143,10 @@ fun NowPlayingOptionsSheet(
      * a stream's is a browse id.
      */
     onOpenAlbum: (PlaylistDisplayItem) -> Unit = {},
-    /**
-     * Take this song over to the video player at its current position. Null
-     * where the host has no video pipeline to hand it to; the pill also hides
-     * itself for a song with no video behind it.
-     */
 ) {
     var showPlaylists by remember { mutableStateOf(false) }
+    val shuffleEnabled by viewModel.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
     val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsStateWithLifecycle()
 
     // The account's playlists are a network read, and seven of the eight styles
@@ -324,6 +325,43 @@ fun NowPlayingOptionsSheet(
                         }
                     )
                 }
+            }
+
+            // Shuffle and repeat. They belong here rather than on the player
+            // face: seven styles found room for them, the default Coverflow
+            // did not, and a mode you can only reach by changing player style
+            // is a mode nobody has.
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                OptionTile(
+                    icon = Icons.Rounded.Shuffle,
+                    label = stringResource(R.string.cd_shuffle),
+                    selected = shuffleEnabled,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        haptics.performHapticFeedback(
+                            if (shuffleEnabled) HapticFeedbackType.ToggleOff else HapticFeedbackType.ToggleOn
+                        )
+                        viewModel.toggleShuffle()
+                    }
+                )
+                OptionTile(
+                    icon = when (repeatMode) {
+                        Player.REPEAT_MODE_ONE -> Icons.Rounded.RepeatOne
+                        else -> Icons.Rounded.Repeat
+                    },
+                    label = stringResource(R.string.cd_repeat),
+                    selected = repeatMode != Player.REPEAT_MODE_OFF,
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        viewModel.toggleRepeat()
+                    }
+                )
+                // Keeps the two tiles on the grid the row above sets.
+                Spacer(modifier = Modifier.weight(2f))
             }
 
             // Where this song came from, and what else can be done with it.

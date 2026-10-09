@@ -222,7 +222,7 @@
     <string name="settings_appearance">Appearance</string>
     <string name="settings_player">Player</string>
     <string name="settings_playback_and_quality">Playback and quality</string>
-    <string name="settings_content_and_feeds">Content and feeds</string>
+    <string name="settings_content_and_feeds">Content</string>
     <string name="settings_storage_and_cache">Storage and cache</string>
     <string name="settings_notifications">Notifications</string>
     <string name="settings_local_library">Local library</string>

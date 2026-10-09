@@ -121,7 +121,7 @@
     <string name="settings_appearance">Apparence</string>
     <string name="settings_player">Lecteur</string>
     <string name="settings_playback_and_quality">Lecture et qualité</string>
-    <string name="settings_content_and_feeds">Contenu et fils</string>
+    <string name="settings_content_and_feeds">Contenu</string>
     <string name="source_youtube_music">YouTube Music</string>
     <string name="source_soundcloud">SoundCloud</string>
     <string name="sp_sources">Sources</string>

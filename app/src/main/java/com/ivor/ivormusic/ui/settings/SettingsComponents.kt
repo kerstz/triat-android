@@ -169,12 +169,14 @@ internal fun SettingsSection(
     // recomposes items as they scroll into view - any enter animation replays
     // on every scroll and makes the cards look like they're "loading".
     Column {
+        // The same heading as a shelf on Home or the Library: sentence case,
+        // titleMedium, semibold. Settings used to shout its sections in
+        // tracked-out capitals, which read as a different app.
         Text(
-            text = title.uppercase(),
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            fontSize = 12.sp,
+            text = title,
+            color = MaterialTheme.colorScheme.onSurface,
+            style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.SemiBold,
-            letterSpacing = 1.2.sp,
             modifier = Modifier.padding(start = 8.dp, bottom = 10.dp)
         )
         content()
@@ -368,22 +370,7 @@ private fun SettingsRowIcon(
     icon: ImageVector,
     tint: Color,
     shape: Shape = RoundedCornerShape(14.dp)
-) {
-    Box(
-        modifier = Modifier
-            .size(48.dp)
-            .clip(shape)
-            .background(tint.copy(alpha = 0.12f)),
-        contentAlignment = Alignment.Center
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = tint,
-            modifier = Modifier.size(26.dp)
-        )
-    }
-}
+) = com.ivor.ivormusic.ui.components.RowIcon(icon = icon, shape = shape, tint = tint)
 
 @Composable
 internal fun SettingsDivider() {

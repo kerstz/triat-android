@@ -1281,17 +1281,7 @@ fun YourMixContent(
                     alpha = if (visible) 1f else 0f
                     translationY = if (visible) 0f else -20f
                 }.animateContentSize()) {
-                    TopBarSection(
-                        onProfileClick = onProfileClick,
-                        onSettingsClick = onSettingsClick,
-                        onDownloadsClick = onDownloadsClick,
-                        onImportCookiesClick = onImportCookiesClick,
-                        isDarkMode = isDarkMode,
-                        viewModel = viewModel,
-                        videoMode = videoMode,
-                        onVideoModeToggle = onVideoModeToggle,
-                        showModeToggle = showModeToggle,
-                    )
+    Spacer(modifier = Modifier.height(8.dp))
                 }
             }
             
@@ -1389,27 +1379,6 @@ fun YourMixContent(
         }
     }
 }
-
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun TopBarSection(
-    onProfileClick: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onDownloadsClick: () -> Unit = {},
-    onImportCookiesClick: (() -> Unit)? = null,
-    isDarkMode: Boolean,
-    viewModel: HomeViewModel,
-    videoMode: Boolean = false,
-    onVideoModeToggle: (Boolean) -> Unit = {},
-    showModeToggle: Boolean = true,
-) {
-    // The Home corner bar is intentionally empty now. Settings moved to the
-    // bottom navigation (Reglages tab), and the music/video switch lives in
-    // Settings > Content, so nothing floats in the top-right: the header is
-    // just the feed. A small spacer keeps the first row clear of the status bar.
-    Spacer(modifier = Modifier.height(8.dp))
-}
-
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

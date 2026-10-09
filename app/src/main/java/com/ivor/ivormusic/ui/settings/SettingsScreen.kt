@@ -107,6 +107,7 @@ import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material.icons.rounded.ToggleOn
 import androidx.compose.material.icons.rounded.TouchApp
 import androidx.compose.material.icons.rounded.ChatBubble
+import androidx.compose.material.icons.rounded.Cloud
 import androidx.compose.material.icons.rounded.CloudOff
 import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.material.icons.rounded.Code
@@ -616,6 +617,7 @@ fun SettingsScreen(
                 .coveredBy(page != SettingsPage.HUB)
         ) {
             SettingsHub(
+                contentSource = contentSource,
                 searchQuery = searchQuery,
                 onSearchQueryChange = { searchQuery = it },
                 searchEntries = searchEntries,
@@ -993,6 +995,7 @@ fun SettingsScreen(
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun SettingsHub(
+    contentSource: com.ivor.ivormusic.data.ContentSource,
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
     searchEntries: List<SettingsSearchEntry>,
@@ -1053,10 +1056,16 @@ private fun SettingsHub(
     }
     val playerStyleLabel = com.ivor.ivormusic.ui.player.playerStyleLabel(playerStyle)
 
+    // "Music mode" was the answer back when there were two modes. The row now
+    // reports the setting a reader would actually want from it.
     val contentValue = if (localOnlyMode) {
         stringResource(R.string.sv_local_only_offline)
     } else {
-        stringResource(R.string.sv_music_mode)
+        when (contentSource) {
+            com.ivor.ivormusic.data.ContentSource.YOUTUBE -> stringResource(R.string.sp_source_yt_only)
+            com.ivor.ivormusic.data.ContentSource.SOUNDCLOUD -> stringResource(R.string.sp_source_sc_only)
+            com.ivor.ivormusic.data.ContentSource.BOTH -> stringResource(R.string.sp_source_both)
+        }
     }
 
     val privateDownloadsLabel = stringResource(R.string.sp_private_downloads)
@@ -1107,21 +1116,21 @@ private fun SettingsHub(
                         animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
                     )
                 ) {
+                    // One screen-title treatment for the whole app: Search,
+                    // Library and Settings all announce themselves the same way.
                     Text(
                         text = stringResource(R.string.settings_title),
                         color = MaterialTheme.colorScheme.onBackground,
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.headlineMedium
+                        fontWeight = FontWeight.SemiBold,
+                        style = MaterialTheme.typography.titleLarge
                     )
                 }
             },
             navigationIcon = {
                 IconButton(
                     onClick = onBackClick,
-                    shapes = IconButtonDefaults.shapes(),
                     colors = IconButtonDefaults.iconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onBackground
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier
                         .padding(start = 8.dp)
@@ -1263,7 +1272,7 @@ private fun SettingsHub(
                         )
                         SettingsDivider()
                         SettingsHubRow(
-                            icon = Icons.Rounded.VideoLibrary,
+                            icon = Icons.Rounded.Cloud,
                             title = stringResource(R.string.settings_content_and_feeds),
                             value = contentValue,
                             onClick = { onOpenPage(SettingsPage.CONTENT) },

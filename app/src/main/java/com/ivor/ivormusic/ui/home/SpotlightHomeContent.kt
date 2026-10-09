@@ -185,16 +185,7 @@ fun SpotlightHomeContent(
             contentPadding = contentPadding,
         ) {
             item(key = "topbar") {
-                TopBarSection(
-                    onProfileClick = onProfileClick,
-                    onSettingsClick = onSettingsClick,
-                    onDownloadsClick = onDownloadsClick,
-                    isDarkMode = isDarkMode,
-                    viewModel = viewModel,
-                    videoMode = videoMode,
-                    onVideoModeToggle = onVideoModeToggle,
-                    showModeToggle = showModeToggle,
-                )
+                Spacer(modifier = Modifier.height(8.dp))
             }
 
             item(key = "chips") {
