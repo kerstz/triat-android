@@ -35,8 +35,6 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.compose.AsyncImagePainter
 import coil.request.ImageRequest
-import com.ivor.ivormusic.data.LocalVideo
-import com.ivor.ivormusic.data.LocalVideoThumbnail
 import com.ivor.ivormusic.data.VideoItem
 import kotlinx.coroutines.delay
 
@@ -235,43 +233,16 @@ fun VideoThumbnail(
         } else video.watchedProgress
     }
     Box(modifier = modifier) {
-        // A device video carries no thumbnail URL - its frame is drawn by the
-        // MediaStore fetcher from the file itself. Watch history stores nothing but
-        // the VideoItem, so this is the one place that can tell the two apart for
-        // every surface that lists videos.
-        val deviceUri = remember(video.videoId) { LocalVideo.uriFor(video.videoId) }
-        if (deviceUri != null) {
-            Box(
-                modifier = Modifier.matchParentSize().background(placeholderColor),
-                contentAlignment = Alignment.Center
-            ) {
-                // Drawn under the frame rather than instead of it, so a file whose
-                // thumbnail could not be decoded still reads as a video.
-                Icon(
-                    imageVector = Icons.Rounded.PlayArrow,
-                    contentDescription = null,
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.35f),
-                    modifier = Modifier.size(indicatorSize * 0.6f)
-                )
-                AsyncImage(
-                    model = LocalVideoThumbnail(deviceUri),
-                    contentDescription = video.title,
-                    modifier = Modifier.matchParentSize(),
-                    contentScale = contentScale
-                )
-            }
-        } else {
-            VideoThumbnail(
-                thumbnailUrl = video.thumbnailUrl,
-                highResThumbnailUrl = video.highResThumbnailUrl,
-                contentDescription = video.title,
-                modifier = Modifier.matchParentSize(),
-                contentScale = contentScale,
-                showProgress = showProgress,
-                indicatorSize = indicatorSize,
-                placeholderColor = placeholderColor
-            )
-        }
+        VideoThumbnail(
+            thumbnailUrl = video.thumbnailUrl,
+            highResThumbnailUrl = video.highResThumbnailUrl,
+            contentDescription = video.title,
+            modifier = Modifier.matchParentSize(),
+            contentScale = contentScale,
+            showProgress = showProgress,
+            indicatorSize = indicatorSize,
+            placeholderColor = placeholderColor
+        )
         progress?.takeIf { it > 0f }?.let { watched ->
             LinearProgressIndicator(
                 progress = { watched.coerceIn(0f, 1f) },

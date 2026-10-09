@@ -6,7 +6,6 @@ import coil.ImageLoaderFactory
 import coil.disk.DiskCache
 import coil.memory.MemoryCache
 import com.ivor.ivormusic.data.CrashReporter
-import com.ivor.ivormusic.data.LocalVideoThumbnailFetcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -52,10 +51,6 @@ class IvorMusicApplication : Application(), ImageLoaderFactory {
                     .directory(cacheDir.resolve("image_cache"))
                     .maxSizeBytes(100L * 1024 * 1024) // 100 MB
                     .build()
-            }
-            .components {
-                add(LocalVideoThumbnailFetcher.Factory(this@IvorMusicApplication))
-                add(LocalVideoThumbnailFetcher.ThumbnailKeyer())
             }
             .crossfade(true)
             .build()
