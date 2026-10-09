@@ -182,22 +182,18 @@ fun DialPlayerSheetContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        EditorialCircleButton(
-                            onClick = onCollapse,
-                            accent = chipColor,
-                            field = ink,
-                            size = 44.dp
-                        ) {
+                        // Chrome is glyphs; the dial and the disc are the
+                        // only things that get a fill on this screen.
+                        EditorialGhostButton(onClick = onCollapse, accent = ink, size = 44.dp) {
                             Icon(
                                 Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse),
                                 modifier = Modifier.size(26.dp)
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            EditorialCircleButton(
+                            EditorialGhostButton(
                                 onClick = sleepTimer.open,
-                                accent = if (sleepTimer.active) accent else chipColor,
-                                field = if (sleepTimer.active) MaterialTheme.colorScheme.onPrimary else ink,
+                                accent = if (sleepTimer.active) accent else ink,
                                 size = 44.dp
                             ) {
                                 Icon(
@@ -205,23 +201,13 @@ fun DialPlayerSheetContent(
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
-                            EditorialCircleButton(
-                                onClick = { showQueue = true },
-                                accent = chipColor,
-                                field = ink,
-                                size = 44.dp
-                            ) {
+                            EditorialGhostButton(onClick = { showQueue = true }, accent = ink, size = 44.dp) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue),
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
-                            EditorialCircleButton(
-                                onClick = { showOptions = true },
-                                accent = chipColor,
-                                field = ink,
-                                size = 44.dp
-                            ) {
+                            EditorialGhostButton(onClick = { showOptions = true }, accent = ink, size = 44.dp) {
                                 Icon(
                                     Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options),
                                     modifier = Modifier.size(22.dp)
@@ -329,10 +315,9 @@ fun DialPlayerSheetContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        EditorialCircleButton(
+                        EditorialGhostButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
-                            accent = chipColor,
-                            field = ink,
+                            accent = ink,
                             size = 56.dp
                         ) {
                             Icon(
@@ -344,7 +329,8 @@ fun DialPlayerSheetContent(
                             checked = isFavorite,
                             onClick = { viewModel.toggleCurrentSongLike() },
                             accent = accent,
-                            field = MaterialTheme.colorScheme.onPrimary
+                            field = MaterialTheme.colorScheme.onPrimary,
+                            idle = inkVariant
                         ) {
                             LikeBurstIcon(isFavorite = isFavorite, iconSize = 20.dp)
                         }
@@ -352,7 +338,8 @@ fun DialPlayerSheetContent(
                             checked = shuffleModeEnabled,
                             onClick = { viewModel.toggleShuffle() },
                             accent = accent,
-                            field = MaterialTheme.colorScheme.onPrimary
+                            field = MaterialTheme.colorScheme.onPrimary,
+                            idle = inkVariant
                         ) {
                             Icon(Icons.Default.Shuffle, stringResource(R.string.cd_shuffle), modifier = Modifier.size(20.dp))
                         }
@@ -360,7 +347,8 @@ fun DialPlayerSheetContent(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
                             onClick = { viewModel.toggleRepeat() },
                             accent = accent,
-                            field = MaterialTheme.colorScheme.onPrimary
+                            field = MaterialTheme.colorScheme.onPrimary,
+                            idle = inkVariant
                         ) {
                             Icon(
                                 if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne
@@ -373,14 +361,14 @@ fun DialPlayerSheetContent(
                             checked = showLyrics,
                             onClick = { showLyrics = !showLyrics },
                             accent = accent,
-                            field = MaterialTheme.colorScheme.onPrimary
+                            field = MaterialTheme.colorScheme.onPrimary,
+                            idle = inkVariant
                         ) {
                             Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                         }
-                        EditorialCircleButton(
+                        EditorialGhostButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },
-                            accent = chipColor,
-                            field = ink,
+                            accent = ink,
                             size = 56.dp
                         ) {
                             Icon(Icons.Default.SkipNext, stringResource(R.string.cd_next), modifier = Modifier.size(28.dp))

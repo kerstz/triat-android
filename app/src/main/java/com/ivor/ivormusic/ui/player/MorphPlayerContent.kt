@@ -53,6 +53,7 @@ import androidx.compose.material3.CircularWavyProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.FilledIconButton
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.Icon
@@ -487,20 +488,30 @@ private fun MorphUtilityButton(
     active: Boolean = false,
     content: @Composable () -> Unit
 ) {
-    FilledIconButton(
-        onClick = onClick,
-        shape = CircleShape,
-        colors = IconButtonDefaults.filledIconButtonColors(
-            containerColor = if (active) {
-                MaterialTheme.colorScheme.primary
-            } else MaterialTheme.colorScheme.surfaceContainerHigh,
-            contentColor = if (active) {
-                MaterialTheme.colorScheme.onPrimary
-            } else MaterialTheme.colorScheme.onSurface
-        ),
-        modifier = Modifier.size(44.dp)
-    ) {
-        content()
+    // Idle utilities are glyphs; only an active one takes a fill, so the
+    // row reads as state rather than as five buttons.
+    if (active) {
+        FilledIconButton(
+            onClick = onClick,
+            shape = CircleShape,
+            colors = IconButtonDefaults.filledIconButtonColors(
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ),
+            modifier = Modifier.size(44.dp)
+        ) {
+            content()
+        }
+    } else {
+        IconButton(
+            onClick = onClick,
+            colors = IconButtonDefaults.iconButtonColors(
+                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+            ),
+            modifier = Modifier.size(44.dp)
+        ) {
+            content()
+        }
     }
 }
 

@@ -341,37 +341,26 @@ private fun GestureNowPlayingView(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Collapse button
-                FilledIconButton(
-                    onClick = onCollapse,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(28.dp))
+                // Collapse and queue are glyphs, not pills: the accent and the
+                // only filled container on this screen belong to playback.
+                IconButton(onClick = onCollapse, modifier = Modifier.size(48.dp)) {
+                    Icon(
+                        Icons.Default.KeyboardArrowDown,
+                        stringResource(R.string.cd_collapse),
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
                 // Lyrics toggle removed from the face to keep the player minimal.
 
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    FilledIconButton(
-                        onClick = onShowQueue,
-                        shape = CircleShape,
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Filled.QueueMusic,
-                            stringResource(R.string.cd_queue),
-                            modifier = Modifier.size(24.dp)
-                        )
-                    }
+                IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
+                    Icon(
+                        Icons.AutoMirrored.Filled.QueueMusic,
+                        stringResource(R.string.cd_queue),
+                        modifier = Modifier.size(24.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
             
@@ -885,8 +874,12 @@ private fun SwipeableAlbumCarousel(
                                 }
                             }
                             
-                            // Play/Pause overlay only for centered album when paused/buffering
-                            if (isCentered && songIndex == currentIndex && (isBuffering || !isPlaying)) {
+                            // Only buffering dims the artwork. A paused state
+                            // already reads from the transport button right
+                            // below, so a second giant play glyph over the
+                            // cover was noise on top of the one thing this
+                            // player exists to show.
+                            if (isCentered && songIndex == currentIndex && isBuffering) {
                                 Box(
                                     modifier = Modifier
                                         .fillMaxSize()
@@ -894,25 +887,16 @@ private fun SwipeableAlbumCarousel(
                                         .background(Color.Black.copy(alpha = 0.35f)),
                                     contentAlignment = Alignment.Center
                                 ) {
-                                    if (isBuffering) {
-                                        LoadingIndicator(
-                                            modifier = Modifier.size(60.dp),
-                                            color = Color.White,
-                                            polygons = listOf(
-                                                MaterialShapes.SoftBurst,
-                                                MaterialShapes.Cookie9Sided,
-                                                MaterialShapes.Pill,
-                                                MaterialShapes.Sunny
-                                            )
+                                    LoadingIndicator(
+                                        modifier = Modifier.size(60.dp),
+                                        color = Color.White,
+                                        polygons = listOf(
+                                            MaterialShapes.SoftBurst,
+                                            MaterialShapes.Cookie9Sided,
+                                            MaterialShapes.Pill,
+                                            MaterialShapes.Sunny
                                         )
-                                    } else {
-                                        Icon(
-                                            imageVector = Icons.Default.PlayArrow,
-                                            contentDescription = stringResource(R.string.cd_play),
-                                            modifier = Modifier.size(68.dp),
-                                            tint = Color.White.copy(alpha = 0.9f)
-                                        )
-                                    }
+                                    )
                                 }
                             }
                         }
@@ -997,8 +981,8 @@ private fun SingleAlbumArt(
                     }
                 }
                 
-                // Play/Pause overlay
-                if (isBuffering || !isPlaying) {
+                // Buffering only - see the queue variant above.
+                if (isBuffering) {
                     Box(
                         modifier = Modifier
                             .fillMaxSize()
@@ -1006,25 +990,16 @@ private fun SingleAlbumArt(
                             .background(Color.Black.copy(alpha = 0.4f)),
                         contentAlignment = Alignment.Center
                     ) {
-                        if (isBuffering) {
-                            LoadingIndicator(
-                                modifier = Modifier.size(64.dp),
-                                color = Color.White,
-                                polygons = listOf(
-                                    MaterialShapes.SoftBurst,
-                                    MaterialShapes.Cookie9Sided,
-                                    MaterialShapes.Pill,
-                                    MaterialShapes.Sunny
-                                )
+                        LoadingIndicator(
+                            modifier = Modifier.size(64.dp),
+                            color = Color.White,
+                            polygons = listOf(
+                                MaterialShapes.SoftBurst,
+                                MaterialShapes.Cookie9Sided,
+                                MaterialShapes.Pill,
+                                MaterialShapes.Sunny
                             )
-                        } else {
-                            Icon(
-                                imageVector = Icons.Default.PlayArrow,
-                                contentDescription = stringResource(R.string.cd_play),
-                                modifier = Modifier.size(72.dp),
-                                tint = Color.White.copy(alpha = 0.9f)
-                            )
-                        }
+                        )
                     }
                 }
             }
@@ -1097,72 +1072,47 @@ private fun GestureQueueView(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                FilledIconButton(
-                    onClick = onCollapse,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
-                    ),
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(28.dp))
+                IconButton(onClick = onCollapse, modifier = Modifier.size(48.dp)) {
+                    Icon(
+                        Icons.Default.KeyboardArrowDown,
+                        stringResource(R.string.cd_collapse),
+                        modifier = Modifier.size(28.dp),
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
-                
-                Surface(
-                    shape = RoundedCornerShape(24.dp),
-                    color = MaterialTheme.colorScheme.surfaceContainerHigh
-                ) {
-                    Row(
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.QueueMusic, 
-                            contentDescription = null,
-                            tint = MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = stringResource(R.string.ps_up_next),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                }
-                
+
+                // The title is a title, not a chip.
+                Text(
+                    text = stringResource(R.string.ps_up_next),
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
+
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    horizontalArrangement = Arrangement.spacedBy(4.dp)
                 ) {
-                    FilledIconButton(
+                    IconButton(
                         onClick = { showSaveDialog = true },
                         enabled = queue.isNotEmpty(),
-                        shape = CircleShape,
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        ),
                         modifier = Modifier.size(48.dp)
                     ) {
                         Icon(
                             Icons.AutoMirrored.Rounded.PlaylistAdd,
                             stringResource(R.string.queue_save_as_playlist),
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
-                    FilledIconButton(
-                        onClick = onBackToPlayer,
-                        shape = CircleShape,
-                        colors = IconButtonDefaults.filledIconButtonColors(
-                            containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                            contentColor = MaterialTheme.colorScheme.onSurface
-                        ),
-                        modifier = Modifier.size(48.dp)
-                    ) {
-                        Icon(Icons.Rounded.MusicNote, stringResource(R.string.cd_now_playing), modifier = Modifier.size(24.dp))
+                    IconButton(onClick = onBackToPlayer, modifier = Modifier.size(48.dp)) {
+                        Icon(
+                            Icons.Rounded.MusicNote,
+                            stringResource(R.string.cd_now_playing),
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
                     }
                 }
             }

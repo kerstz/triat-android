@@ -206,23 +206,9 @@ fun BentoPlayerSheetContent(
                                 modifier = Modifier.size(26.dp)
                             )
                         }
-                        Surface(
-                            modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            shape = RoundedCornerShape(18.dp),
-                            color = tileColor,
-                            contentColor = onTileVariant
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = stringResource(R.string.ps_now_playing).uppercase(),
-                                    style = MaterialTheme.typography.labelLarge.copy(letterSpacing = 3.sp),
-                                    maxLines = 1,
-                                    overflow = androidx.compose.ui.text.style.TextOverflow.Ellipsis
-                                )
-                            }
-                        }
+                        // A tile that only says "now playing" on the now
+                        // playing screen is a tile saying nothing.
+                        Spacer(modifier = Modifier.weight(1f))
                         BentoTile(
                             onClick = sleepTimer.open,
                             color = if (sleepTimer.active) {
@@ -389,11 +375,13 @@ fun BentoPlayerSheetContent(
                             .height(84.dp),
                         horizontalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
+                        // Skips wear the plain tile: in a grid of tiles the
+                        // filled one has to be the thing that plays.
                         BentoSquishTile(
                             baseWeight = 1f,
                             onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = tileColor,
+                            contentColor = onTile
                         ) {
                             Icon(
                                 Icons.Default.SkipPrevious, stringResource(R.string.cd_previous),
@@ -406,13 +394,13 @@ fun BentoPlayerSheetContent(
                                 playerHaptics.playPause(!viewModel.isPlaying.value)
                                 viewModel.togglePlayPause()
                             },
-                            color = MaterialTheme.colorScheme.primaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                            color = MaterialTheme.colorScheme.primary,
+                            contentColor = MaterialTheme.colorScheme.onPrimary
                         ) {
                             if (isBuffering && playWhenReady && !isPlaying) {
                                 LoadingIndicator(
                                     modifier = Modifier.size(36.dp),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     polygons = listOf(
                                         MaterialShapes.SoftBurst,
                                         MaterialShapes.Cookie9Sided,
@@ -431,8 +419,8 @@ fun BentoPlayerSheetContent(
                         BentoSquishTile(
                             baseWeight = 1f,
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },
-                            color = MaterialTheme.colorScheme.secondaryContainer,
-                            contentColor = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = tileColor,
+                            contentColor = onTile
                         ) {
                             Icon(
                                 Icons.Default.SkipNext, stringResource(R.string.cd_next),

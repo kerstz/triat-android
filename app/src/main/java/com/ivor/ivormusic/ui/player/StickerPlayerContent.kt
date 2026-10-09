@@ -220,10 +220,9 @@ fun StickerPlayerSheetContent(
                         horizontalArrangement = Arrangement.SpaceBetween,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        EditorialCircleButton(
+                        EditorialGhostButton(
                             onClick = onCollapse,
-                            accent = chipColor,
-                            field = onChip,
+                            accent = ink,
                             size = 44.dp
                         ) {
                             Icon(
@@ -232,21 +231,36 @@ fun StickerPlayerSheetContent(
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            EditorialCircleButton(
-                                onClick = sleepTimer.open,
-                                accent = if (sleepTimer.active) ink else chipColor,
-                                field = if (sleepTimer.active) chipColor else onChip,
-                                size = 44.dp
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                    modifier = Modifier.size(22.dp)
-                                )
+                            // The fill is the state, not the button: a timer
+                            // that is not running looks like the rest of the
+                            // chrome.
+                            if (sleepTimer.active) {
+                                EditorialCircleButton(
+                                    onClick = sleepTimer.open,
+                                    accent = ink,
+                                    field = chipColor,
+                                    size = 44.dp
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
+                            } else {
+                                EditorialGhostButton(
+                                    onClick = sleepTimer.open,
+                                    accent = ink,
+                                    size = 44.dp
+                                ) {
+                                    Icon(
+                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
+                                        modifier = Modifier.size(22.dp)
+                                    )
+                                }
                             }
-                            EditorialCircleButton(
+                            EditorialGhostButton(
                                 onClick = { showQueue = true },
-                                accent = chipColor,
-                                field = onChip,
+                                accent = ink,
                                 size = 44.dp
                             ) {
                                 Icon(
@@ -254,10 +268,9 @@ fun StickerPlayerSheetContent(
                                     modifier = Modifier.size(22.dp)
                                 )
                             }
-                            EditorialCircleButton(
+                            EditorialGhostButton(
                                 onClick = { showOptions = true },
-                                accent = chipColor,
-                                field = onChip,
+                                accent = ink,
                                 size = 44.dp
                             ) {
                                 Icon(
@@ -421,10 +434,9 @@ fun StickerPlayerSheetContent(
                         horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
                         verticalAlignment = Alignment.CenterVertically
                     ) {
-                        EditorialCircleButton(
+                        EditorialGhostButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
-                            accent = chipColor,
-                            field = onChip,
+                            accent = ink,
                             size = 56.dp
                         ) {
                             Icon(
@@ -432,10 +444,9 @@ fun StickerPlayerSheetContent(
                                 modifier = Modifier.size(28.dp)
                             )
                         }
-                        EditorialCircleButton(
+                        EditorialGhostButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },
-                            accent = chipColor,
-                            field = onChip,
+                            accent = ink,
                             size = 56.dp
                         ) {
                             Icon(Icons.Default.SkipNext, stringResource(R.string.cd_next), modifier = Modifier.size(28.dp))
@@ -444,7 +455,8 @@ fun StickerPlayerSheetContent(
                             checked = isFavorite,
                             onClick = { viewModel.toggleCurrentSongLike() },
                             accent = chipColor,
-                            field = onChip
+                            field = onChip,
+                            idle = inkVariant
                         ) {
                             LikeBurstIcon(isFavorite = isFavorite, iconSize = 20.dp)
                         }
@@ -452,7 +464,8 @@ fun StickerPlayerSheetContent(
                             checked = shuffleModeEnabled,
                             onClick = { viewModel.toggleShuffle() },
                             accent = chipColor,
-                            field = onChip
+                            field = onChip,
+                            idle = inkVariant
                         ) {
                             Icon(Icons.Default.Shuffle, stringResource(R.string.cd_shuffle), modifier = Modifier.size(20.dp))
                         }
@@ -460,7 +473,8 @@ fun StickerPlayerSheetContent(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
                             onClick = { viewModel.toggleRepeat() },
                             accent = chipColor,
-                            field = onChip
+                            field = onChip,
+                            idle = inkVariant
                         ) {
                             Icon(
                                 if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne
@@ -473,7 +487,8 @@ fun StickerPlayerSheetContent(
                             checked = showLyrics,
                             onClick = { showLyrics = !showLyrics },
                             accent = chipColor,
-                            field = onChip
+                            field = onChip,
+                            idle = inkVariant
                         ) {
                             Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                         }

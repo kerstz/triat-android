@@ -331,10 +331,9 @@ fun PosterPlayerSheetContent(
                             horizontalArrangement = Arrangement.SpaceBetween,
                             verticalAlignment = Alignment.CenterVertically
                         ) {
-                            EditorialCircleButton(
+                            EditorialGhostButton(
                                 onClick = onCollapse,
-                                accent = scrim.copy(alpha = 0.35f),
-                                field = glyph,
+                                accent = glyph,
                                 size = 44.dp
                             ) {
                                 Icon(
@@ -347,7 +346,7 @@ fun PosterPlayerSheetContent(
                                 // available over artwork is the scrim's alpha.
                                 EditorialCircleButton(
                                     onClick = sleepTimer.open,
-                                    accent = if (sleepTimer.active) glyph else scrim.copy(alpha = 0.35f),
+                                    accent = if (sleepTimer.active) glyph else Color.Transparent,
                                     field = if (sleepTimer.active) scrim else glyph,
                                     size = 44.dp
                                 ) {
@@ -356,10 +355,9 @@ fun PosterPlayerSheetContent(
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
-                                EditorialCircleButton(
+                                EditorialGhostButton(
                                     onClick = { showQueue = true },
-                                    accent = scrim.copy(alpha = 0.35f),
-                                    field = glyph,
+                                    accent = glyph,
                                     size = 44.dp
                                 ) {
                                     Icon(
@@ -367,10 +365,9 @@ fun PosterPlayerSheetContent(
                                         modifier = Modifier.size(22.dp)
                                     )
                                 }
-                                EditorialCircleButton(
+                                EditorialGhostButton(
                                     onClick = { showOptions = true },
-                                    accent = scrim.copy(alpha = 0.35f),
-                                    field = glyph,
+                                    accent = glyph,
                                     size = 44.dp
                                 ) {
                                     Icon(
@@ -518,14 +515,13 @@ fun PosterPlayerSheetContent(
                                                 modifier = Modifier.size(20.dp)
                                             )
                                         }
-                                        EditorialCircleButton(
+                                        EditorialGhostButton(
                                             onClick = {
                                                 skipDirection = -1
                                                 playerHaptics.skip()
                                                 viewModel.skipToPrevious()
                                             },
-                                            accent = Color.Transparent,
-                                            field = glyph,
+                                            accent = glyph,
                                             size = 52.dp
                                         ) {
                                             Icon(
@@ -533,13 +529,12 @@ fun PosterPlayerSheetContent(
                                                 modifier = Modifier.size(30.dp)
                                             )
                                         }
-                                        EditorialCircleButton(
+                                        EditorialGhostButton(
                                             onClick = {
                                                 playerHaptics.playPause(!viewModel.isPlaying.value)
                                                 viewModel.togglePlayPause()
                                             },
                                             accent = glyph,
-                                            field = scrim,
                                             size = 64.dp
                                         ) {
                                             if (isBuffering && playWhenReady && !isPlaying) {
@@ -562,14 +557,13 @@ fun PosterPlayerSheetContent(
                                                 )
                                             }
                                         }
-                                        EditorialCircleButton(
+                                        EditorialGhostButton(
                                             onClick = {
                                                 skipDirection = 1
                                                 playerHaptics.skip()
                                                 viewModel.skipToNext()
                                             },
-                                            accent = Color.Transparent,
-                                            field = glyph,
+                                            accent = glyph,
                                             size = 52.dp
                                         ) {
                                             Icon(

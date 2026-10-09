@@ -313,39 +313,30 @@ private fun EditorialNowPlayingView(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            EditorialCircleButton(
-                onClick = onCollapse,
-                accent = accent,
-                field = field,
-                size = 44.dp
-            ) {
+            EditorialGhostButton(onClick = onCollapse, accent = accent, size = 44.dp) {
                 Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(26.dp))
             }
-            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                // Inverted while a timer runs - in a two-tone player, swapping
-                // the fill is the only emphasis there is.
-                EditorialCircleButton(
-                    onClick = onShowSleepTimer,
-                    accent = if (sleepTimerActive) accent else field,
-                    field = if (sleepTimerActive) field else accent,
-                    size = 44.dp
-                ) {
-                    Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                // A running timer is the one piece of state up here, so it is
+                // the one button that still takes a fill.
+                if (sleepTimerActive) {
+                    EditorialCircleButton(
+                        onClick = onShowSleepTimer,
+                        accent = accent,
+                        field = field,
+                        size = 44.dp
+                    ) {
+                        Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
+                    }
+                } else {
+                    EditorialGhostButton(onClick = onShowSleepTimer, accent = accent, size = 44.dp) {
+                        Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
+                    }
                 }
-                EditorialCircleButton(
-                    onClick = onShowQueue,
-                    accent = accent,
-                    field = field,
-                    size = 44.dp
-                ) {
+                EditorialGhostButton(onClick = onShowQueue, accent = accent, size = 44.dp) {
                     Icon(Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue), modifier = Modifier.size(22.dp))
                 }
-                EditorialCircleButton(
-                    onClick = onShowOptions,
-                    accent = accent,
-                    field = field,
-                    size = 44.dp
-                ) {
+                EditorialGhostButton(onClick = onShowOptions, accent = accent, size = 44.dp) {
                     Icon(Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options), modifier = Modifier.size(22.dp))
                 }
             }
@@ -492,12 +483,7 @@ private fun EditorialNowPlayingView(
                         }
                     }
                 }
-                EditorialCircleButton(
-                    onClick = onNext,
-                    accent = accent,
-                    field = field,
-                    size = 80.dp
-                ) {
+                EditorialGhostButton(onClick = onNext, accent = accent, size = 80.dp) {
                     Icon(Icons.Default.SkipNext, stringResource(R.string.cd_next), modifier = Modifier.size(34.dp))
                 }
             }
@@ -510,12 +496,7 @@ private fun EditorialNowPlayingView(
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                EditorialCircleButton(
-                    onClick = onPrevious,
-                    accent = accent,
-                    field = field,
-                    size = 80.dp
-                ) {
+                EditorialGhostButton(onClick = onPrevious, accent = accent, size = 80.dp) {
                     Icon(Icons.Default.SkipPrevious, stringResource(R.string.cd_previous), modifier = Modifier.size(34.dp))
                 }
 
@@ -770,6 +751,29 @@ private fun EditorialDieCutArt(
     }
 }
 
+/**
+ * Bare accent glyph, no disc. The filled circle is emphasis, and in a player
+ * the only thing worth emphasising is playback - so chrome and skips use this
+ * and [EditorialCircleButton] is left to the transport.
+ */
+@Composable
+internal fun EditorialGhostButton(
+    onClick: () -> Unit,
+    accent: Color,
+    size: androidx.compose.ui.unit.Dp,
+    enabled: Boolean = true,
+    content: @Composable () -> Unit
+) {
+    IconButton(
+        onClick = onClick,
+        enabled = enabled,
+        colors = IconButtonDefaults.iconButtonColors(contentColor = accent),
+        modifier = Modifier.size(size)
+    ) {
+        content()
+    }
+}
+
 /** Flat accent circle button with field-colored content. */
 @Composable
 internal fun EditorialCircleButton(
@@ -804,13 +808,14 @@ internal fun EditorialChip(
     onClick: () -> Unit,
     accent: Color,
     field: Color,
+    idle: Color = accent,
     content: @Composable () -> Unit
 ) {
     Surface(
         onClick = onClick,
         shape = CircleShape,
         color = if (checked) accent else Color.Transparent,
-        contentColor = if (checked) field else accent,
+        contentColor = if (checked) field else idle,
         modifier = Modifier.size(48.dp)
     ) {
         Box(contentAlignment = Alignment.Center) {

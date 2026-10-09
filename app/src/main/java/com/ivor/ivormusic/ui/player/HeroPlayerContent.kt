@@ -46,6 +46,8 @@ import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.MaterialTheme
@@ -327,18 +329,14 @@ fun HeroPlayerSheetContent(
                                     )
                                 }
                                 Spacer(Modifier.width(12.dp))
-                                // Like, in the reference's round slot on the art.
-                                Surface(
+                                // Like is a glyph on the art, not a slot cut
+                                // into it: one outline fewer over the cover.
+                                IconButton(
                                     onClick = { viewModel.toggleCurrentSongLike() },
-                                    shape = CircleShape,
-                                    color = ink.copy(alpha = 0.06f),
-                                    contentColor = ink,
-                                    border = BorderStroke(1.5.dp, ink.copy(alpha = 0.55f)),
+                                    colors = IconButtonDefaults.iconButtonColors(contentColor = ink),
                                     modifier = Modifier.size(48.dp)
                                 ) {
-                                    Box(contentAlignment = Alignment.Center) {
-                                        LikeBurstIcon(isFavorite = isFavorite, iconSize = 22.dp)
-                                    }
+                                    LikeBurstIcon(isFavorite = isFavorite, iconSize = 22.dp)
                                 }
                             }
                         }
@@ -666,7 +664,6 @@ private fun RowScope.HeroSkipPill(
         shape = RoundedCornerShape(percent = 50),
         color = ink.copy(alpha = 0.08f),
         contentColor = ink,
-        border = BorderStroke(1.5.dp, ink.copy(alpha = 0.4f)),
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight()
@@ -730,7 +727,7 @@ private fun HeroChromeButton(
     Surface(
         onClick = onClick,
         shape = CircleShape,
-        color = if (checked) accent else field.copy(alpha = 0.78f),
+        color = if (checked) accent else field.copy(alpha = 0.28f),
         contentColor = if (checked) onAccent else ink,
         modifier = Modifier.size(44.dp)
     ) {
