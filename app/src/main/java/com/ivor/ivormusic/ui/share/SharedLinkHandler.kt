@@ -16,7 +16,6 @@ import com.ivor.ivormusic.data.VideoQueue
 import com.ivor.ivormusic.data.YouTubeLinkParser
 import com.ivor.ivormusic.ui.home.HomeViewModel
 import com.ivor.ivormusic.ui.player.PlayerViewModel
-import com.ivor.ivormusic.ui.video.VideoPlayerViewModel
 
 /**
  * A link handed to Koda from outside the app, waiting to be opened.
@@ -70,7 +69,6 @@ fun SharedLinkHandler(
     localOnlyMode: Boolean,
     homeViewModel: HomeViewModel,
     playerViewModel: PlayerViewModel,
-    videoPlayerViewModel: VideoPlayerViewModel,
     onNavigateHome: () -> Unit,
     /**
      * Open a shared channel link. Takes the reference as the link named it -
@@ -159,59 +157,21 @@ fun SharedLinkHandler(
                 }
             }
 
-            // A watch link that also names a playlist. The video starts first
-            // and the playlist is attached behind it: resolving the list is a
-            // round trip, and making the shared video wait on it would trade
-            // the thing the user actually tapped for context they did not ask
-            // for. `playQueue` on the video that is already playing attaches
-            // the queue without restarting, which is what makes the two-step
-            // invisible.
-            videoId != null && playlistId != null -> {
-                videoPlayerViewModel.playVideo(placeholderVideo(videoId))
-                val videos = homeViewModel.resolvePlaylistVideosFromLink(playlistId)
-                val startIndex = videos.indexOfFirst { it.videoId == videoId }
-                // The list may not resolve, may not contain the shared video,
-                // and the user may have moved on entirely while it was in
-                // flight. In all three cases the video they opened keeps
-                // playing, unqueued, which is where they already are.
-                if (startIndex >= 0 &&
-                    videoPlayerViewModel.currentVideo.value?.videoId == videoId
-                ) {
-                    videoPlayerViewModel.playQueue(
-                        VideoQueue(
-                            videos = videos,
-                            index = startIndex,
-                            title = context.getString(R.string.share_shared_playlist),
-                            playlistId = playlistId
-                        )
-                    )
-                }
+            // A watch link, with or without a playlist behind it. Koda plays
+            // music only, so the track it names is resolved and played; the
+            // list it came from is context this app has nowhere to put.
+            videoId != null -> {
+                val video = homeViewModel.resolveVideoFromLink(videoId)
+                if (video == null) toast(context.getString(R.string.share_open_link_failed))
+                else playerViewModel.playSong(video.toSong())
             }
 
-            videoId != null -> videoPlayerViewModel.playVideo(placeholderVideo(videoId))
-
-            // A video playlist on its own, same as the music side: the page
-            // rather than immediate playback, because the page is where it can
-            // be kept, played in order, or looked at before either.
+            // A playlist on its own plays as a queue: the page behind it is a
+            // video page, and what is wanted here is the music.
             playlistId != null -> {
-                val page = homeViewModel.resolvePlaylistPageFromLink(playlistId)
-                if (page != null) {
-                    homeViewModel.requestVideoPlaylistPage(page)
-                } else {
-                    val videos = homeViewModel.resolvePlaylistVideosFromLink(playlistId)
-                    if (videos.isEmpty()) {
-                        toast(context.getString(R.string.share_open_failed))
-                    } else {
-                        videoPlayerViewModel.playQueue(
-                            VideoQueue(
-                                videos = videos,
-                                index = 0,
-                                title = context.getString(R.string.share_shared_playlist),
-                                playlistId = playlistId
-                            )
-                        )
-                    }
-                }
+                val songs = homeViewModel.resolvePlaylistSongsFromLink(playlistId)
+                if (songs.isEmpty()) toast(context.getString(R.string.share_open_failed))
+                else playerViewModel.playQueue(songs, songs.first())
             }
         }
     }

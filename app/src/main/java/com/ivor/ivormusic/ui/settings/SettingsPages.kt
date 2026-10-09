@@ -146,8 +146,6 @@ internal fun AccountSettingsPage(
     isLoggedIn: Boolean,
     accountRefreshKey: Int,
     sessionManager: SessionManager,
-    saveVideoHistory: Boolean,
-    onSaveVideoHistoryToggle: (Boolean) -> Unit,
     onShowAuthDialog: () -> Unit,
     onShowCookieSheet: () -> Unit,
     onSignOut: () -> Unit,
@@ -967,18 +965,12 @@ internal fun PlaybackSettingsPage(
     onCrossfadeDurationChange: (Int) -> Unit,
     normalizeVolume: Boolean,
     onNormalizeVolumeToggle: (Boolean) -> Unit,
-    rememberVideoBrightness: Boolean,
-    onRememberVideoBrightnessToggle: (Boolean) -> Unit,
     autoLoadQueue: Boolean,
     onAutoLoadQueueToggle: (Boolean) -> Unit,
     saveMusicHistory: Boolean,
     onSaveMusicHistoryToggle: (Boolean) -> Unit,
     musicQualityWifi: String,
     musicQualityMobile: String,
-    videoQualityWifi: String,
-    videoQualityMobile: String,
-    preferHdr: Boolean,
-    onPreferHdrToggle: (Boolean) -> Unit,
     onOpenQualityPicker: (QualityDialogTarget) -> Unit,
     onBack: () -> Unit
 ) {
@@ -1637,18 +1629,12 @@ internal fun StorageSettingsPage(
     onPrivateDownloadsEnabledToggle: (Boolean) -> Unit,
     cacheEnabled: Boolean,
     onCacheEnabledToggle: (Boolean) -> Unit,
-    videoCacheEnabled: Boolean,
-    onVideoCacheEnabledToggle: (Boolean) -> Unit,
-    shortsCacheEnabled: Boolean,
-    onShortsCacheEnabledToggle: (Boolean) -> Unit,
     playbackPreloadEnabled: Boolean,
     onPlaybackPreloadEnabledToggle: (Boolean) -> Unit,
     maxCacheSizeMb: Long,
     onMaxCacheSizeMbChange: (Long) -> Unit,
     currentCacheSize: Long,
     onClearCacheClick: () -> Unit,
-    onClearVideoCacheClick: () -> Unit,
-    onClearShortsCacheClick: () -> Unit,
     onBack: () -> Unit
 ) {
     SettingsDetailScaffold(title = stringResource(R.string.settings_storage_and_cache), onBack = onBack) {
@@ -1915,54 +1901,10 @@ internal fun NotificationsSettingsPage(
     livePlaybackUpdates: Boolean,
     onLivePlaybackUpdatesToggle: (Boolean) -> Unit,
     canPostPromoted: Boolean,
-    uploadNotificationsEnabled: Boolean,
-    onUploadNotificationsToggle: (Boolean) -> Unit,
-    followedChannels: List<com.ivor.ivormusic.data.LocalSubscription>,
-    mutedChannelIds: Set<String>,
-    onChannelMutedChange: (String, Boolean) -> Unit,
     onOpenSystemSettings: () -> Unit,
     onBack: () -> Unit
 ) {
     SettingsDetailScaffold(title = stringResource(R.string.settings_notifications), onBack = onBack) {
-        item {
-            SettingsSection(title = stringResource(R.string.sp_new_uploads)) {
-                SettingsCard {
-                    // Off by default and opt-in here: it is a battery-and-
-                    // attention commitment the user has to ask for.
-                }
-            }
-        }
-
-        if (uploadNotificationsEnabled && followedChannels.isNotEmpty()) {
-            item {
-                SettingsSection(title = stringResource(R.string.sp_channels)) {
-                    SettingsCard {
-                        Text(
-                            text = stringResource(R.string.sp_choose_notifiers),
-                            color = MaterialTheme.colorScheme.onSurfaceVariant,
-                            fontSize = 13.sp,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-                        )
-                        followedChannels.forEachIndexed { index, channel ->
-                            if (index > 0) SettingsDivider()
-                            val muted = channel.channelId in mutedChannelIds
-                            SettingsToggleRow(
-                                icon = Icons.Rounded.Subscriptions,
-                                title = channel.name,
-                                subtitle = if (muted) {
-                                    stringResource(R.string.sp_muted)
-                                } else {
-                                    stringResource(R.string.sp_notifying)
-                                },
-                                enabled = !muted,
-                                onToggle = { onChannelMutedChange(channel.channelId, !muted) }
-                            )
-                        }
-                    }
-                }
-            }
-        }
-
         item {
             SettingsSection(title = stringResource(R.string.sp_live_updates)) {                SettingsCard {
                     SettingsToggleRow(

@@ -123,7 +123,7 @@ import com.ivor.ivormusic.ui.theme.ThemeMode
 import kotlin.math.absoluteValue
 import kotlinx.coroutines.launch
 
-private const val ONBOARDING_PAGE_COUNT = 7
+private const val ONBOARDING_PAGE_COUNT = 6
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -134,12 +134,6 @@ fun OnboardingScreen(
     onLoadLocalSongsToggle: (Boolean) -> Unit,
     ambientBackground: Boolean,
     onAmbientBackgroundToggle: (Boolean) -> Unit,
-    videoMode: Boolean,
-    onVideoModeToggle: (Boolean) -> Unit,
-    homeModeToggleEnabled: Boolean = true,
-    onHomeModeToggleEnabledChange: (Boolean) -> Unit = {},
-    shortsEnabled: Boolean = false,
-    onShortsEnabledToggle: (Boolean) -> Unit = {},
     spotlightHome: Boolean = false,
     onSpotlightHomeChange: (Boolean) -> Unit = {},
     playerStyle: PlayerStyle,
@@ -270,15 +264,7 @@ fun OnboardingScreen(
                             isLoggedIn = isLoggedIn,
                             onConnectYouTube = { showAuthDialog = true }
                         )
-                        3 -> VideoModePage(
-                            videoMode = videoMode,
-                            shortsEnabled = shortsEnabled,
-                            onShortsEnabledToggle = onShortsEnabledToggle,
-                            onVideoModeToggle = onVideoModeToggle,
-                            homeModeToggleEnabled = homeModeToggleEnabled,
-                            onHomeModeToggleEnabledChange = onHomeModeToggleEnabledChange
-                        )
-                        4 -> LookAndFeelPage(
+                        3 -> LookAndFeelPage(
                             currentThemeMode = currentThemeMode,
                             onThemeModeChange = onThemeModeChange,
                             ambientBackground = ambientBackground,
@@ -288,7 +274,7 @@ fun OnboardingScreen(
                             playerStyle = playerStyle,
                             onPlayerStyleChange = onPlayerStyleChange
                         )
-                        5 -> FinalTouchesPage(
+                        4 -> FinalTouchesPage(
                             crossfadeEnabled = crossfadeEnabled,
                             onCrossfadeEnabledToggle = onCrossfadeEnabledToggle,
                             notificationPermissionGranted = notificationPermissionState?.isGranted ?: true,
@@ -567,51 +553,6 @@ private fun YouTubePage(
         }
 
         HintText(stringResource(R.string.ob_hint_session_secure))
-    }
-}
-
-@Composable
-private fun VideoModePage(
-    videoMode: Boolean,
-    onVideoModeToggle: (Boolean) -> Unit,
-    homeModeToggleEnabled: Boolean,
-    onHomeModeToggleEnabledChange: (Boolean) -> Unit,
-    shortsEnabled: Boolean,
-    onShortsEnabledToggle: (Boolean) -> Unit
-) {
-    OnboardingPageScaffold(
-        icon = Icons.Rounded.Videocam,
-        iconShape = MaterialShapes.Arch,
-        title = stringResource(R.string.ob_page_video_mode),
-        body = stringResource(R.string.ob_page_video_mode_body)
-    ) {
-        SettingSwitchRow(
-            icon = Icons.Rounded.Videocam,
-            title = stringResource(R.string.ob_enable_video_mode),
-            subtitle = stringResource(R.string.ob_enable_video_mode_sub),
-            checked = videoMode,
-            onCheckedChange = onVideoModeToggle
-        )
-
-        SettingSwitchRow(
-            icon = Icons.Rounded.ToggleOn,
-            title = stringResource(R.string.ob_home_switch),
-            subtitle = stringResource(R.string.ob_home_switch_sub),
-            checked = homeModeToggleEnabled,
-            onCheckedChange = onHomeModeToggleEnabledChange
-        )
-
-        SettingSwitchRow(
-            icon = Icons.Rounded.Bolt,
-            title = stringResource(R.string.sp_shorts),
-            subtitle = stringResource(R.string.ob_shorts_sub),
-            checked = shortsEnabled,
-            onCheckedChange = onShortsEnabledToggle
-        )
-
-        ShortsWarningCard()
-
-        HintText(stringResource(R.string.ob_off_hint))
     }
 }
 

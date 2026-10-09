@@ -86,11 +86,6 @@ import com.ivor.ivormusic.data.DownloadStatus
 import com.ivor.ivormusic.data.DownloadedVideo
 import com.ivor.ivormusic.data.Song
 
-private enum class DownloadsTab(@StringRes val labelRes: Int) {
-    MUSIC(R.string.sp_mode_music),
-    VIDEO(R.string.sp_mode_video)
-}
-
 /**
  * Outer radius of a connected group. Matches the track list on the album and
  * playlist page (`PlaylistDetailScreen`).
@@ -153,24 +148,18 @@ private fun SegmentDivider(inset: Dp) {
 @Composable
 fun DownloadsScreen(
     downloadedSongs: List<Song>,
-    downloadedVideos: List<DownloadedVideo>,
     activeDownloads: Map<String, DownloadProgress>,
     onBack: () -> Unit,
     onPlaySong: (Song) -> Unit,
     onPlayQueue: (List<Song>, Song) -> Unit = { _, song -> onPlaySong(song) },
-    onPlayVideo: (List<DownloadedVideo>, DownloadedVideo) -> Unit,
     onDeleteDownload: (String) -> Unit,
-    onDeleteVideo: (String) -> Unit,
     onCancelDownload: (String) -> Unit,
     onRetryDownload: (DownloadRequest) -> Unit,
     onPauseDownload: (String) -> Unit,
     onResumeDownload: (String) -> Unit,
-    initiallyShowVideos: Boolean = false,
     onCancelAll: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var selectedTab by rememberSaveable { mutableStateOf(if (initiallyShowVideos) DownloadsTab.VIDEO else DownloadsTab.MUSIC) }
-
     // Split by the media type of the request itself rather than by which list
     // the finished item lands in, so queued and failed entries route correctly
     // before anything has completed.
@@ -191,13 +180,11 @@ fun DownloadsScreen(
                 title = {
                     Column {
                         val songsSummary = pluralStringResource(R.plurals.n_songs, downloadedSongs.size, downloadedSongs.size)
-                        val videosSummary = pluralStringResource(R.plurals.vpl_video_count, downloadedVideos.size, downloadedVideos.size)
                         val activeSummary = pluralStringResource(R.plurals.dl_n_active, activeCount, activeCount)
                         Text(stringResource(R.string.fab_downloads))
                         Text(
                             text = buildString {
                                 append(songsSummary)
-                                append(" • $videosSummary")
                                 if (activeCount > 0) append(" • $activeSummary")
                             },
                             style = MaterialTheme.typography.bodySmall,
@@ -218,120 +205,19 @@ fun DownloadsScreen(
             )
         }
     ) { paddingValues ->
-        Column(
+        MusicTab(
+            songs = downloadedSongs,
+            progress = musicProgress,
+            onPlayQueue = onPlayQueue,
+            onDelete = onDeleteDownload,
+            onCancel = onCancelDownload,
+            onRetry = onRetryDownload,
+            onPause = onPauseDownload,
+            onResume = onResumeDownload,
             modifier = modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-        ) {
-            // M3 Expressive connected button group, matching LibraryScreen's
-            // view switcher.
-            val tabHaptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                horizontalArrangement = Arrangement.spacedBy(ButtonGroupDefaults.ConnectedSpaceBetween)
-            ) {
-                DownloadsTab.entries.forEachIndexed { index, tab ->
-                    val selected = selectedTab == tab
-                    val pending = if (tab == DownloadsTab.MUSIC) {
-                        musicProgress.size
-                    } else {
-                        videoProgress.size
-                    }
-                    ToggleButton(
-                        checked = selected,
-                        onCheckedChange = {
-                            if (!selected) {
-                                tabHaptics.subtle()
-                                selectedTab = tab
-                            }
-                        },
-                        modifier = Modifier
-                            .weight(1f)
-                            .height(48.dp),
-                        shapes = when (index) {
-                            0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
-                            DownloadsTab.entries.lastIndex ->
-                                ButtonGroupDefaults.connectedTrailingButtonShapes()
-                            else -> ButtonGroupDefaults.connectedMiddleButtonShapes()
-                        },
-                        contentPadding = PaddingValues(horizontal = 8.dp)
-                    ) {
-                        Icon(
-                            imageVector = if (tab == DownloadsTab.MUSIC) {
-                                Icons.Rounded.MusicNote
-                            } else {
-                                Icons.Rounded.Videocam
-                            },
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text(
-                            text = if (pending > 0) "${stringResource(tab.labelRes)} ($pending)" else stringResource(tab.labelRes),
-                            style = MaterialTheme.typography.labelLarge,
-                            fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                            maxLines = 1
-                        )
-                    }
-                }
-            }
-
-            // Swipeable, the same as the Library tabs and for the same reason:
-            // two tabs, each its own scroller, and nothing shared above them
-            // that a pager would displace. See docs/channels.md for why the
-            // channel page is the one tab strip that deliberately does not get
-            // this.
-            val pagerState = rememberPagerState(
-                initialPage = selectedTab.ordinal,
-                pageCount = { DownloadsTab.entries.size }
-            )
-            LaunchedEffect(selectedTab) {
-                if (pagerState.currentPage != selectedTab.ordinal) {
-                    pagerState.animateScrollToPage(selectedTab.ordinal)
-                }
-            }
-            val openTab by rememberUpdatedState(selectedTab)
-            LaunchedEffect(pagerState) {
-                snapshotFlow { pagerState.settledPage }.collect { page ->
-                    val settled = DownloadsTab.entries.getOrNull(page)
-                    if (settled != null && settled != openTab) {
-                        tabHaptics.subtle()
-                        selectedTab = settled
-                    }
-                }
-            }
-            HorizontalPager(
-                state = pagerState,
-                beyondViewportPageCount = 0,
-                key = { DownloadsTab.entries[it].name }
-            ) { page ->
-                when (DownloadsTab.entries[page]) {
-                    DownloadsTab.MUSIC -> MusicTab(
-                        songs = downloadedSongs,
-                        progress = musicProgress,
-                        onPlayQueue = onPlayQueue,
-                        onDelete = onDeleteDownload,
-                        onCancel = onCancelDownload,
-                        onRetry = onRetryDownload,
-                        onPause = onPauseDownload,
-                        onResume = onResumeDownload
-                    )
-
-                    DownloadsTab.VIDEO -> VideoTab(
-                        videos = downloadedVideos,
-                        progress = videoProgress,
-                        onPlay = { video -> onPlayVideo(downloadedVideos, video) },
-                        onDelete = onDeleteVideo,
-                        onCancel = onCancelDownload,
-                        onRetry = onRetryDownload,
-                        onPause = onPauseDownload,
-                        onResume = onResumeDownload
-                    )
-                }
-            }
-        }
+        )
     }
 }
 
@@ -344,7 +230,8 @@ private fun MusicTab(
     onCancel: (String) -> Unit,
     onRetry: (DownloadRequest) -> Unit,
     onPause: (String) -> Unit,
-    onResume: (String) -> Unit
+    onResume: (String) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     val context = LocalContext.current
     val repository = remember(context) { DownloadRepository.getInstance(context) }
@@ -464,62 +351,6 @@ private fun MusicTab(
 
         if (songs.isEmpty() && progress.isEmpty() && offline.isEmpty()) {
             item { EmptyState(stringResource(R.string.dl_empty_music), Icons.Rounded.MusicNote) }
-        }
-    }
-}
-
-@Composable
-private fun VideoTab(
-    videos: List<DownloadedVideo>,
-    progress: List<DownloadProgress>,
-    onPlay: (DownloadedVideo) -> Unit,
-    onDelete: (String) -> Unit,
-    onCancel: (String) -> Unit,
-    onRetry: (DownloadRequest) -> Unit,
-    onPause: (String) -> Unit,
-    onResume: (String) -> Unit
-) {
-    LazyColumn(
-        modifier = Modifier.fillMaxSize(),
-        contentPadding = PaddingValues(16.dp)
-    ) {
-        if (progress.isNotEmpty()) {
-            item { SectionHeader(stringResource(R.string.in_progress)) }
-            itemsIndexed(progress, key = { _, it -> "p_${it.songId}" }) { index, item ->
-                ProgressCard(
-                    item = item,
-                    shape = segmentedShape(index, progress.size),
-                    onCancel = onCancel,
-                    onRetry = onRetry,
-                    onPause = onPause,
-                    onResume = onResume
-                )
-                if (index < progress.lastIndex) SegmentDivider(inset = 46.dp)
-            }
-            item { Spacer(modifier = Modifier.height(24.dp)) }
-        }
-
-        if (videos.isNotEmpty()) {
-            item { SectionHeader(stringResource(R.string.song_options_downloaded)) }
-            itemsIndexed(videos, key = { _, it -> "v_${it.id}" }) { index, video ->
-                DownloadedRow(
-                    title = video.title,
-                    subtitle = listOfNotNull(video.channelName, video.quality)
-                        .filter { it.isNotBlank() }
-                        .joinToString(" • "),
-                    artworkUrl = video.thumbnailUrl,
-                    fallbackIcon = Icons.Rounded.Videocam,
-                    shape = segmentedShape(index, videos.size),
-                    wideArtwork = true,
-                    onPlay = { onPlay(video) },
-                    onDelete = { onDelete(video.id) }
-                )
-                if (index < videos.lastIndex) SegmentDivider(inset = 110.dp)
-            }
-        }
-
-        if (videos.isEmpty() && progress.isEmpty()) {
-            item { EmptyState(stringResource(R.string.dl_empty_videos), Icons.Rounded.Videocam) }
         }
     }
 }

@@ -297,18 +297,6 @@ fun SettingsScreen(
     onMotionArtworkQualityChange: (MotionArtworkQuality) -> Unit,
     waveformSeekBar: Boolean,
     onWaveformSeekBarToggle: (Boolean) -> Unit,
-    videoMode: Boolean,
-    onVideoModeToggle: (Boolean) -> Unit,
-    homeModeToggleEnabled: Boolean = true,
-    onHomeModeToggleChange: (Boolean) -> Unit = {},
-    videoHomeConfiguration: com.ivor.ivormusic.data.VideoHomeConfiguration =
-        com.ivor.ivormusic.data.VideoHomeConfiguration(),
-    onVideoRecommendationsEnabledChange: (Boolean) -> Unit = {},
-    onVideoHomeDestinationVisibleChange: (
-        com.ivor.ivormusic.data.VideoHomeDestination,
-        Boolean,
-    ) -> Unit = { _, _ -> },
-    onMoveVideoHomeDestination: (com.ivor.ivormusic.data.VideoHomeDestination, Int) -> Unit = { _, _ -> },
     spotlightHome: Boolean = false,
     onSpotlightHomeToggle: (Boolean) -> Unit = {},
     nonExpressiveNavigationBar: Boolean = false,
@@ -321,51 +309,24 @@ fun SettingsScreen(
     onMixSourcesOnHomeToggle: (Boolean) -> Unit = {},
     showSourceBadge: Boolean = true,
     onShowSourceBadgeToggle: (Boolean) -> Unit = {},
-    saveVideoHistory: Boolean,
-    onSaveVideoHistoryToggle: (Boolean) -> Unit,
     saveMusicHistory: Boolean,
     onSaveMusicHistoryToggle: (Boolean) -> Unit,
     liveDownloadUpdates: Boolean,
     onLiveDownloadUpdatesToggle: (Boolean) -> Unit,
     livePlaybackUpdates: Boolean,
     onLivePlaybackUpdatesToggle: (Boolean) -> Unit,
-    timedCommentsEnabled: Boolean,
     showRecentSearches: Boolean,
     onShowRecentSearchesToggle: (Boolean) -> Unit,
-    showRelatedVideos: Boolean,
-    onShowRelatedVideosToggle: (Boolean) -> Unit,
-    inlinePreviews: Boolean,
-    onInlinePreviewsToggle: (Boolean) -> Unit,
-    compactVideoHome: Boolean,
-    onCompactVideoHomeToggle: (Boolean) -> Unit,
     playlistSwipeEnabled: Boolean,
     onPlaylistSwipeEnabledToggle: (Boolean) -> Unit,
     playlistSwipeStartAction: String,
     onPlaylistSwipeStartActionChange: (String) -> Unit,
     playlistSwipeEndAction: String,
     onPlaylistSwipeEndActionChange: (String) -> Unit,
-    onTimedCommentsToggle: (Boolean) -> Unit,
-    shortsEnabled: Boolean,
-    onShortsEnabledToggle: (Boolean) -> Unit,
-    shortsHiddenActions: Set<String> = emptySet(),
-    onShortsHiddenActionsChange: (Set<String>) -> Unit = {},
-    videoQualityWifi: String,
-    onVideoQualityWifiChange: (String) -> Unit,
-    videoQualityMobile: String,
-    onVideoQualityMobileChange: (String) -> Unit,
-    preferHdr: Boolean = false,
-    onPreferHdrToggle: (Boolean) -> Unit = {},
     musicQualityWifi: String,
     onMusicQualityWifiChange: (String) -> Unit,
     musicQualityMobile: String,
     onMusicQualityMobileChange: (String) -> Unit,
-    subscriptionSource: String = ThemePreferences.SUBSCRIPTIONS_AUTO,
-    onSubscriptionSourceChange: (String) -> Unit = {},
-    subscribeTarget: String = ThemePreferences.SUBSCRIPTIONS_AUTO,
-    onSubscribeTargetChange: (String) -> Unit = {},
-    fastSubscriptionFeed: Boolean = true,
-    onFastSubscriptionFeedToggle: (Boolean) -> Unit = {},
-    onNavigateToSubscriptions: () -> Unit = {},
     onNavigateToNotInterested: () -> Unit = {},
     onNavigateToBackup: () -> Unit = {},
     onNavigateToReportBug: () -> Unit = {},
@@ -378,18 +339,12 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
     cacheEnabled: Boolean,
     onCacheEnabledToggle: (Boolean) -> Unit,
-    videoCacheEnabled: Boolean,
-    onVideoCacheEnabledToggle: (Boolean) -> Unit,
-    shortsCacheEnabled: Boolean,
-    onShortsCacheEnabledToggle: (Boolean) -> Unit,
     playbackPreloadEnabled: Boolean,
     onPlaybackPreloadEnabledToggle: (Boolean) -> Unit,
     maxCacheSizeMb: Long,
     onMaxCacheSizeMbChange: (Long) -> Unit,
     currentCacheSize: Long,
     onClearCacheClick: () -> Unit,
-    onClearVideoCacheClick: () -> Unit,
-    onClearShortsCacheClick: () -> Unit,
     autoLoadQueue: Boolean,
     onAutoLoadQueueToggle: (Boolean) -> Unit,
     crossfadeEnabled: Boolean,
@@ -400,12 +355,8 @@ fun SettingsScreen(
     onCrossfadeDurationChange: (Int) -> Unit,
     normalizeVolume: Boolean,
     onNormalizeVolumeToggle: (Boolean) -> Unit,
-    rememberVideoBrightness: Boolean,
-    onRememberVideoBrightnessToggle: (Boolean) -> Unit,
     hapticsLevel: String,
     onHapticsLevelChange: (String) -> Unit,
-    uploadNotificationsEnabled: Boolean,
-    onUploadNotificationsToggle: (Boolean) -> Unit,
     oemFixEnabled: Boolean,
     onOemFixEnabledToggle: (Boolean) -> Unit,
     manualScanEnabled: Boolean,
@@ -627,10 +578,8 @@ fun SettingsScreen(
         onOpenQualityPicker = { qualityDialogTarget = it },
         onOpenRoutingPicker = { subscriptionDialogTarget = it },
         onShowAbout = { showAboutDialog = true },
-        onShowShortsButtons = { showShortsButtonsDialog = true },
         onOpenFolderExclusion = openFolderExclusion,
         onNavigateToColorPalette = onNavigateToColorPalette,
-        onNavigateToSubscriptions = onNavigateToSubscriptions,
         onNavigateToNotInterested = onNavigateToNotInterested,
         onNavigateToBackup = onNavigateToBackup,
         onNavigateToReportBug = onNavigateToReportBug,
@@ -694,10 +643,7 @@ fun SettingsScreen(
                 sponsorBlockActions = sponsorBlockActions,
                 playerStyle = playerStyle,
                 musicQualityWifi = musicQualityWifi,
-                videoQualityWifi = videoQualityWifi,
                 localOnlyMode = localOnlyMode,
-                videoMode = videoMode,
-                subscriptionSource = subscriptionSource,
                 privateDownloadsEnabled = privateDownloadsEnabled,
                 cacheEnabled = cacheEnabled,
                 currentCacheSize = currentCacheSize,
@@ -784,8 +730,6 @@ fun SettingsScreen(
                     isLoggedIn = isLoggedIn,
                     accountRefreshKey = accountRefreshKey,
                     sessionManager = sessionManager,
-                    saveVideoHistory = saveVideoHistory,
-                    onSaveVideoHistoryToggle = onSaveVideoHistoryToggle,
                     onShowAuthDialog = { showAuthDialog = true },
                     onShowCookieSheet = { showCookiePasteSheet = true },
                     onSignOut = {
@@ -880,18 +824,12 @@ fun SettingsScreen(
                     onCrossfadeDurationChange = onCrossfadeDurationChange,
                     normalizeVolume = normalizeVolume,
                     onNormalizeVolumeToggle = onNormalizeVolumeToggle,
-                    rememberVideoBrightness = rememberVideoBrightness,
-                    onRememberVideoBrightnessToggle = onRememberVideoBrightnessToggle,
                     autoLoadQueue = autoLoadQueue,
                     onAutoLoadQueueToggle = onAutoLoadQueueToggle,
                     saveMusicHistory = saveMusicHistory,
                     onSaveMusicHistoryToggle = onSaveMusicHistoryToggle,
                     musicQualityWifi = musicQualityWifi,
                     musicQualityMobile = musicQualityMobile,
-                    videoQualityWifi = videoQualityWifi,
-                    videoQualityMobile = videoQualityMobile,
-                    preferHdr = preferHdr,
-                    onPreferHdrToggle = onPreferHdrToggle,
                     onOpenQualityPicker = { qualityDialogTarget = it },
                     onBack = { page = SettingsPage.HUB }
                 )
@@ -916,18 +854,12 @@ fun SettingsScreen(
                     onPrivateDownloadsEnabledToggle = onPrivateDownloadsEnabledToggle,
                     cacheEnabled = cacheEnabled,
                     onCacheEnabledToggle = onCacheEnabledToggle,
-                    videoCacheEnabled = videoCacheEnabled,
-                    onVideoCacheEnabledToggle = onVideoCacheEnabledToggle,
-                    shortsCacheEnabled = shortsCacheEnabled,
-                    onShortsCacheEnabledToggle = onShortsCacheEnabledToggle,
                     playbackPreloadEnabled = playbackPreloadEnabled,
                     onPlaybackPreloadEnabledToggle = onPlaybackPreloadEnabledToggle,
                     maxCacheSizeMb = maxCacheSizeMb,
                     onMaxCacheSizeMbChange = onMaxCacheSizeMbChange,
                     currentCacheSize = currentCacheSize,
                     onClearCacheClick = onClearCacheClick,
-                    onClearVideoCacheClick = onClearVideoCacheClick,
-                    onClearShortsCacheClick = onClearShortsCacheClick,
                     onBack = { page = SettingsPage.HUB }
                 )
 
@@ -937,13 +869,6 @@ fun SettingsScreen(
                     livePlaybackUpdates = livePlaybackUpdates,
                     onLivePlaybackUpdatesToggle = onLivePlaybackUpdatesToggle,
                     canPostPromoted = canPostPromoted,
-                    uploadNotificationsEnabled = uploadNotificationsEnabled,
-                    onUploadNotificationsToggle = onUploadNotificationsToggle,
-                    followedChannels = followedChannels,
-                    mutedChannelIds = mutedChannelIds,
-                    onChannelMutedChange = { channelId, muted ->
-                        uploadCheckRepository.setMuted(channelId, muted)
-                    },
                     onOpenSystemSettings = {
                         notificationHelper
                             .promotedNotificationSettingsIntent()
@@ -1031,17 +956,13 @@ fun SettingsScreen(
         )
     }
 
-    // Per-network stream quality pickers (video + music, Wi-Fi + mobile data)
+    // Per-network stream quality pickers (Wi-Fi and mobile data)
     qualityDialogTarget?.let { target ->
         val currentQuality = when (target) {
-            QualityDialogTarget.VIDEO_WIFI -> videoQualityWifi
-            QualityDialogTarget.VIDEO_MOBILE -> videoQualityMobile
             QualityDialogTarget.MUSIC_WIFI -> musicQualityWifi
             QualityDialogTarget.MUSIC_MOBILE -> musicQualityMobile
         }
         val onQualitySelected: (String) -> Unit = when (target) {
-            QualityDialogTarget.VIDEO_WIFI -> onVideoQualityWifiChange
-            QualityDialogTarget.VIDEO_MOBILE -> onVideoQualityMobileChange
             QualityDialogTarget.MUSIC_WIFI -> onMusicQualityWifiChange
             QualityDialogTarget.MUSIC_MOBILE -> onMusicQualityMobileChange
         }
@@ -1056,27 +977,6 @@ fun SettingsScreen(
         )
     }
 
-    // Where subscriptions are read from / written to
-    subscriptionDialogTarget?.let { target ->
-        val current = when (target) {
-            SubscriptionDialogTarget.SOURCE -> subscriptionSource
-            SubscriptionDialogTarget.TARGET -> subscribeTarget
-        }
-        val onSelected: (String) -> Unit = when (target) {
-            SubscriptionDialogTarget.SOURCE -> onSubscriptionSourceChange
-            SubscriptionDialogTarget.TARGET -> onSubscribeTargetChange
-        }
-        SubscriptionRoutingDialog(
-            target = target,
-            currentValue = current,
-            onValueSelected = {
-                onSelected(it)
-                subscriptionDialogTarget = null
-            },
-            onDismiss = { subscriptionDialogTarget = null }
-        )
-    }
-
     // Folder Exclusion Dialog
     if (showFolderExclusionDialog) {
         FolderExclusionDialog(
@@ -1086,14 +986,6 @@ fun SettingsScreen(
             onAddExcludedFolder = onAddExcludedFolder,
             onRemoveExcludedFolder = onRemoveExcludedFolder,
             onDismiss = { showFolderExclusionDialog = false }
-        )
-    }
-
-    if (showShortsButtonsDialog) {
-        ShortsButtonsDialog(
-            hiddenActions = shortsHiddenActions,
-            onHiddenActionsChange = onShortsHiddenActionsChange,
-            onDismiss = { showShortsButtonsDialog = false }
         )
     }
 
@@ -1128,10 +1020,7 @@ private fun SettingsHub(
     sponsorBlockActions: Map<SponsorCategory, SegmentAction>,
     playerStyle: PlayerStyle,
     musicQualityWifi: String,
-    videoQualityWifi: String,
     localOnlyMode: Boolean,
-    videoMode: Boolean,
-    subscriptionSource: String,
     privateDownloadsEnabled: Boolean,
     cacheEnabled: Boolean,
     currentCacheSize: Long,
@@ -1176,10 +1065,10 @@ private fun SettingsHub(
     }
     val playerStyleLabel = com.ivor.ivormusic.ui.player.playerStyleLabel(playerStyle)
 
-    val contentValue = when {
-        localOnlyMode -> stringResource(R.string.sv_local_only_offline)
-        videoMode -> stringResource(R.string.ob_page_video_mode)
-        else -> stringResource(R.string.sv_music_mode)
+    val contentValue = if (localOnlyMode) {
+        stringResource(R.string.sv_local_only_offline)
+    } else {
+        stringResource(R.string.sv_music_mode)
     }
 
     val privateDownloadsLabel = stringResource(R.string.sp_private_downloads)
@@ -1378,11 +1267,7 @@ private fun SettingsHub(
                         SettingsHubRow(
                             icon = Icons.Rounded.GraphicEq,
                             title = stringResource(R.string.settings_playback_and_quality),
-                            value = stringResource(
-                                R.string.sp_playback_wifi_summary,
-                                musicQualityLabel(musicQualityWifi),
-                                videoQualityLabel(videoQualityWifi)
-                            ),
+                            value = musicQualityLabel(musicQualityWifi),
                             onClick = { onOpenPage(SettingsPage.PLAYBACK) },
                             tint = MaterialTheme.colorScheme.secondary,
                             iconShape = MaterialShapes.SoftBurst.toShape(),
@@ -1884,16 +1769,6 @@ internal enum class QualityDialogTarget(
     @StringRes val descriptionRes: Int,
     val isMusic: Boolean
 ) {
-    VIDEO_WIFI(
-        titleRes = R.string.qd_video_wifi,
-        descriptionRes = R.string.qd_video_wifi_desc,
-        isMusic = false
-    ),
-    VIDEO_MOBILE(
-        titleRes = R.string.qd_video_mobile,
-        descriptionRes = R.string.qd_video_mobile_desc,
-        isMusic = false
-    ),
     MUSIC_WIFI(
         titleRes = R.string.qd_music_wifi,
         descriptionRes = R.string.qd_music_wifi_desc,
