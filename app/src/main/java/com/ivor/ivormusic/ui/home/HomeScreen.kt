@@ -197,19 +197,9 @@ fun HomeScreen(
     onNavigateToSettings: () -> Unit = {},
     onNavigateToDownloads: () -> Unit = {},
     onNavigateToStats: () -> Unit = {},
-    onNavigateToSubscriptions: () -> Unit = {},
     onNavigateToUpdate: () -> Unit = {},
-    onNavigateToVideoPlayer: (VideoItem) -> Unit = {},
     /** Play completed video downloads as a local queue, without URL resolution. */
-    onPlayDownloadedVideos: (
-        List<com.ivor.ivormusic.data.DownloadedVideo>,
-        com.ivor.ivormusic.data.DownloadedVideo
-    ) -> Unit = { _, _ -> },
     /** The same, for the device's own video files from the Library tab. */
-    onPlayDeviceVideos: (
-        List<com.ivor.ivormusic.data.LocalVideo>,
-        com.ivor.ivormusic.data.LocalVideo
-    ) -> Unit = { _, _ -> },
     /**
      * Open the video player on a whole playlist rather than one video, so the
      * rest of it plays after this one and is browsable from the player.
@@ -222,44 +212,31 @@ fun HomeScreen(
      * Queue a video from a long press, either next or at the end. Routed to the
      * video player's ViewModel, which owns the queue.
      */
-    onEnqueueVideo: ((com.ivor.ivormusic.data.VideoItem, Boolean) -> Unit)? = null,
-    onPlayVideoQueue: ((com.ivor.ivormusic.data.VideoQueue) -> Unit)? = null,
-    onOpenShorts: (List<com.ivor.ivormusic.data.ShortsItem>, Int) -> Unit = { _, _ -> },
     /**
      * Open a creator's channel page. Threaded down to every surface that shows
      * a channel name, so tapping one means the same thing everywhere.
      */
     onOpenChannel: (String) -> Unit = {},
-    shortsEnabled: Boolean = false,
-    compactVideoHome: Boolean = false,
     /** Cards on the video feed play a silent preview when rested on. */
-    inlinePreviews: Boolean = false,
     /**
      * Hand the playing song to the video player, from the player's overflow.
      * Null where the host has no video pipeline, which is every caller but
      * MainActivity.
      */
-    onWatchAsVideo: (() -> Unit)? = null,
     loadLocalSongs: Boolean = false,
     excludedFolders: Set<String> = emptySet(),
     ambientBackground: Boolean = true,
     playerArtworkColors: Boolean = true,
-    videoMode: Boolean = false,
-    onVideoModeToggle: (Boolean) -> Unit = {},
-    showModeToggle: Boolean = true,
     playerStyle: PlayerStyle = PlayerStyle.EDITORIAL,
     onPlayerStyleChange: (PlayerStyle) -> Unit = {},
     manualScan: Boolean = false,
     localOnly: Boolean = false,
-    hasVideoMiniPlayer: Boolean = false,
     /** Prevent a rebuilt Search tab from focusing behind the full video player. */
-    hasExpandedVideoPlayer: Boolean = false,
     /** Spotlight: the alternative music Home. Off by default. */
     spotlightHome: Boolean = false,
     /** Use Material 3's compact bar instead of the default floating toolbar. */
     nonExpressiveNavigationBar: Boolean = false,
     /** Visibility, order and recommendation policy for Video mode. */
-    videoHomeConfiguration: VideoHomeConfiguration = VideoHomeConfiguration(),
     /**
      * Hoisted so the video mini player - an overlay above the NavHost, outside
      * this composable - can follow the same toolbar this shell hides on scroll.
@@ -339,136 +316,25 @@ fun HomeScreen(
         }
     }
     
-    // Video mode state
-    val trendingVideos by viewModel.trendingVideos.collectAsState()
-    val isVideoLoading by viewModel.isVideoLoading.collectAsState()
-    val isVideoHomeOffline by viewModel.isVideoHomeOffline.collectAsState()
-    val downloadedVideos by viewModel.downloadedVideos.collectAsState()
-    val shortsFeed by viewModel.shortsFeed.collectAsState()
-    val subscriptionMix by viewModel.subscriptionMix.collectAsState()
-    val isSubscriptionMixLoading by viewModel.isSubscriptionMixLoading.collectAsState()
-    val localSubscriptions by viewModel.localSubscriptions.collectAsState()
-    
-    // Load videos when video mode is enabled. Hiding the Home destination
-    // takes the only surface these feeds are drawn on with it, so neither the
-    // recommendations nor the Shorts shelf are worth a request in that state.
-    val videoHomeVisible =
-        VideoHomeDestination.HOME in videoHomeConfiguration.visibleDestinations
-    // The account avatar, downloads and Settings live in video Home's top bar,
-    // and Home can be hidden - which used to strand the viewer, since the
-    // switch that brings Home back is itself inside Settings. Hiding Home
-    // moves that bar onto the shell instead, where every destination has it.
-    val videoShellTopBar = videoMode && !videoHomeVisible
-    LaunchedEffect(
-        videoMode,
-        videoHomeVisible,
-        videoHomeConfiguration.recommendationsEnabled,
-    ) {
-        if (videoMode && videoHomeVisible) {
-            viewModel.applyVideoRecommendationsPreference(
-                videoHomeConfiguration.recommendationsEnabled
-            )
-        }
-    }
-
-    // Fetch the Home-only Shorts shelf when the user opts in mid-session (the
-    // load itself also gates on the preference).
-    LaunchedEffect(
-        videoMode,
-        videoHomeVisible,
-        videoHomeConfiguration.recommendationsEnabled,
-        isYouTubeConnected,
-        localSubscriptions.size,
-    ) {
-        if (videoMode && videoHomeVisible && !videoHomeConfiguration.recommendationsEnabled) {
-            viewModel.loadSubscriptions()
-            viewModel.loadSubscriptionMix()
-        }
-    }
-
-    LaunchedEffect(videoMode, shortsEnabled) {
-        if (videoMode && shortsEnabled) {
-            viewModel.loadShortsFeed()
-        }
-    }
-
     // Saveable, not just remembered. Opening a channel page is a real
     // navigation, so this composable is disposed and restored on the way back,
     // and a plainly-remembered tab index would drop the user on Home every time
-    // they looked at a creator from the Subscriptions feed. The scroll states
-    // below already survive it, because rememberLazyListState is saveable.
-    val videoRootTab = videoHomeConfiguration.orderedVisibleDestinations
-        .firstOrNull()?.tabId ?: VideoHomeDestination.HOME.tabId
-
-    // The remembered tab may name a destination that has since been hidden, so
-    // it is clamped as the state is created rather than only corrected by the
-    // effect below - otherwise a cold entry composes the hidden tab's content
-    // once before the correction lands.
-    var selectedTab by androidx.compose.runtime.saveable.rememberSaveable(videoMode) {
-        val stored = homePreferences.getLastHomeTab(videoMode)
-        val reachable = !videoMode ||
-            videoHomeConfiguration.orderedVisibleDestinations.any { it.tabId == stored }
-        mutableIntStateOf(if (reachable) stored else videoRootTab)
+    // they looked at a creator. The scroll states below already survive it,
+    // because rememberLazyListState is saveable.
+    var selectedTab by androidx.compose.runtime.saveable.rememberSaveable {
+        mutableIntStateOf(homePreferences.getLastHomeTab())
     }
 
-    val rootTab = if (videoMode) videoRootTab else 0
-    val visualTabOrder = if (videoMode) {
-        videoHomeConfiguration.destinationOrder.map(VideoHomeDestination::tabId)
-    } else {
-        listOf(0, 1, 2)
+    val rootTab = 0
+    val visualTabOrder = listOf(0, 1, 2)
+
+    LaunchedEffect(selectedTab) {
+        homePreferences.setLastHomeTab(selectedTab)
     }
 
-    // A destination can be hidden while it is selected (including from the
-    // Settings screen on top of Home). Land on the first configured page when
-    // Home becomes visible again rather than rendering an unreachable tab.
-    LaunchedEffect(videoMode, videoHomeConfiguration) {
-        if (videoMode && videoHomeConfiguration.orderedVisibleDestinations.none {
-                it.tabId == selectedTab
-            }
-        ) {
-            selectedTab = videoRootTab
-        }
-    }
-
-    LaunchedEffect(selectedTab, videoMode) {
-        homePreferences.setLastHomeTab(videoMode, selectedTab)
-    }
-
-    // A tab asked for by something that also had to switch modes, held until the
-    // mode it belongs to is actually the live one.
-    //
-    // [scar] This is load-bearing and the reason a hand-off across the video
-    // toggle cannot simply assign `selectedTab`. The mode switch is a
-    // preference write, so it lands a recomposition later - and `selectedTab`
-    // is keyed on `videoMode`, deliberately, so that switching modes lands on
-    // that mode's own last tab. The key therefore *re-creates* the state after
-    // the write, discarding anything assigned before it: the player's artist
-    // row set tab 2, the toggle flipped, and the fresh state read the stored
-    // music tab instead, dropping the user on Home with the artist request
-    // still pending. The request is matched against the mode it was made for,
-    // so it can never apply to the mode it was trying to leave.
-    var pendingTabRequest by remember { mutableStateOf<TabRequest?>(null) }
-    LaunchedEffect(videoMode, pendingTabRequest) {
-        val request = pendingTabRequest ?: return@LaunchedEffect
-        if (request.videoMode == videoMode) {
-            selectedTab = request.tab
-            pendingTabRequest = null
-        }
-    }
-
-    /**
-     * Land on [tab] of [wantVideoMode], switching modes first if that is where
-     * the tab lives. The only correct way to open a tab from a hand-off: a tab
-     * index names a different screen in each mode (2 is the music Library or the
-     * Subscriptions feed), so the mode is part of the destination.
-     */
-    fun goToTab(tab: Int, wantVideoMode: Boolean = false) {
-        if (videoMode == wantVideoMode) {
-            selectedTab = tab
-        } else {
-            onVideoModeToggle(wantVideoMode)
-            pendingTabRequest = TabRequest(tab, wantVideoMode)
-        }
+    /** Land on [tab]. */
+    fun goToTab(tab: Int) {
+        selectedTab = tab
     }
 
     // Every tab's scroll position, remembered HERE rather than inside the tab
@@ -486,24 +352,16 @@ fun HomeScreen(
     // One per tab AND per mode where the mode swaps the content: video Home and
     // music Home are different lists, and sharing a state between them would
     // restore one list's index into the other.
-    val videoHomeScrollState = rememberLazyListState()
     val musicHomeScrollState = rememberLazyListState()
     val searchScrollState = rememberLazyListState()
-    val subscriptionsScrollState = rememberLazyListState()
     val musicLibraryScrollState = rememberLazyListState()
-    val videoLibraryScrollState = rememberLazyListState()
 
     // Which of the above the visible tab is currently driving.
     val currentTabScrollState = when (selectedTab) {
-        0 -> if (videoMode) videoHomeScrollState else musicHomeScrollState
+        0 -> musicHomeScrollState
         1 -> searchScrollState
-        2 -> if (videoMode) subscriptionsScrollState else musicLibraryScrollState
-        else -> videoLibraryScrollState
+        else -> musicLibraryScrollState
     }
-
-    // Lives outside the mode-swapped content so the thumb keeps animating
-    // while the music/video home content cross-fades underneath it
-    val modeToggleState = rememberMusicVideoToggleState(videoMode)
 
     // Material owns both the offset range and the settle/fling behavior. The
     // toolbar is bottom-centred, so its exit direction is down and the Home
@@ -518,16 +376,11 @@ fun HomeScreen(
         selectedTab = rootTab
     }
 
-    // The Subscriptions/History tabs (2/3) only exist in video mode
-    LaunchedEffect(videoMode) {
-        if (!videoMode && selectedTab > 2) selectedTab = 0
-    }
-
     // Re-read the history when Home becomes the active tab. Playback writes an
     // entry only after 15s, so coming back from the player is exactly when the
     // rail has something new to show.
-    LaunchedEffect(selectedTab, videoMode) {
-        if (selectedTab == 0 && !videoMode) viewModel.refreshRecentlyPlayed()
+    LaunchedEffect(selectedTab) {
+        if (selectedTab == 0) viewModel.refreshRecentlyPlayed()
     }
 
     // Auth Dialog State
@@ -559,7 +412,7 @@ fun HomeScreen(
     // then belongs to the other mode.
     var libraryReturnTab by remember { mutableStateOf<Int?>(null) }
     fun noteLibraryReturn() {
-        libraryReturnTab = if (videoMode) null else selectedTab.takeIf { it != 2 }
+        libraryReturnTab = selectedTab.takeIf { it != 2 }
     }
 
     // The album counterpart, from the player's overflow menu. A name rather
@@ -609,15 +462,6 @@ fun HomeScreen(
             viewModel.consumePlaylistPageRequest()
         }
     }
-    val pendingVideoPlaylistPage by viewModel.pendingVideoPlaylistPage.collectAsState()
-    LaunchedEffect(pendingVideoPlaylistPage) {
-        pendingVideoPlaylistPage?.let { playlist ->
-            viewedVideoPlaylistFromHome = playlist
-            // Video mode's Library is tab 3; music's is tab 2.
-            goToTab(3, wantVideoMode = true)
-            viewModel.consumeVideoPlaylistPageRequest()
-        }
-    }
     // Long-pressed song, for the options sheet. Hosted here, once, rather than
     // per screen: the sheet acts on the PlayerViewModel, which lives at this
     // level, and the Library's sub-routes would each otherwise need their own.
@@ -664,12 +508,8 @@ fun HomeScreen(
         miniPlayerFollowDistancePx * floatingToolbarState.hiddenFraction()
     }
     val bottomOverlayInset by androidx.compose.animation.core.animateDpAsState(
-        targetValue = when {
-            musicPillVisible && hasVideoMiniPlayer -> navigationOverlayInset + 196.dp
-            hasVideoMiniPlayer -> navigationOverlayInset + 108.dp
-            musicPillVisible -> navigationOverlayInset + 100.dp
-            else -> navigationOverlayInset
-        },
+        targetValue = if (musicPillVisible) navigationOverlayInset + 100.dp
+        else navigationOverlayInset,
         animationSpec = MaterialTheme.motionScheme.defaultSpatialSpec(),
         label = "bottomOverlayInset"
     )
@@ -681,7 +521,7 @@ fun HomeScreen(
     // status bar instead of passing under it, and the top of the screen reads
     // as a system title bar. The bottom already worked this way.
     val listContentPadding = PaddingValues(
-        top = statusBarInset + if (videoShellTopBar) VIDEO_SHELL_TOP_BAR_HEIGHT else 0.dp,
+        top = statusBarInset,
         bottom = bottomOverlayInset + navBarInset + 16.dp
     )
 
@@ -699,11 +539,7 @@ fun HomeScreen(
     // destinations are never landed on.
     val gestureHaptics = com.ivor.ivormusic.util.rememberKodaHaptics()
     val gestureDensity = LocalDensity.current
-    val gestureTabIds = if (videoMode) {
-        videoHomeConfiguration.orderedVisibleDestinations.map { it.tabId }
-    } else {
-        listOf(0, 1, 2)
-    }
+    val gestureTabIds = listOf(0, 1, 2)
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -712,7 +548,7 @@ fun HomeScreen(
                 if (nonExpressiveNavigationBar) Modifier
                 else Modifier.nestedScroll(floatingToolbarScrollBehavior)
             )
-            .pointerInput(selectedTab, videoMode, gestureTabIds) {
+            .pointerInput(selectedTab, gestureTabIds) {
                 val minDistancePx = with(gestureDensity) { 96.dp.toPx() }
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
@@ -757,25 +593,13 @@ fun HomeScreen(
                 // Keyed on the mode as well as the tab so the spec below can
                 // tell a tab move from a mode switch. They deserve different
                 // motion and used to share one.
-                targetState = HomeTabKey(selectedTab, videoMode),
+                targetState = selectedTab,
                 label = "TabTransition",
                 transitionSpec = {
-                    // A mode switch cross-fades. Both Homes draw their header
-                    // in the same place, so sliding the page sideways drags
-                    // that header off with it and reads as the whole chrome
-                    // leaving - when nothing about it was supposed to move.
-                    // A fade leaves it apparently stationary.
-                    if (initialState.videoMode != targetState.videoMode) {
-                        return@AnimatedContent androidx.compose.animation.fadeIn(
-                            androidx.compose.animation.core.tween(220)
-                        ) togetherWith androidx.compose.animation.fadeOut(
-                            androidx.compose.animation.core.tween(180)
-                        )
-                    }
-                    val initialRank = visualTabOrder.indexOf(initialState.tab).takeIf { it >= 0 }
-                        ?: initialState.tab
-                    val targetRank = visualTabOrder.indexOf(targetState.tab).takeIf { it >= 0 }
-                        ?: targetState.tab
+                    val initialRank = visualTabOrder.indexOf(initialState).takeIf { it >= 0 }
+                        ?: initialState
+                    val targetRank = visualTabOrder.indexOf(targetState).takeIf { it >= 0 }
+                        ?: targetState
                     val direction = if (targetRank > initialRank) 1 else -1
                     if (direction > 0) {
                         // Moving forward (Right): New enters from Right, Old leaves to Left
@@ -791,231 +615,137 @@ fun HomeScreen(
                                         androidx.compose.animation.fadeOut())
                     }
                 }
-            ) { tabKey ->
-                val targetTab = tabKey.tab
+            ) { targetTab ->
                 when (targetTab) {
                     0 -> {
-                        // Mode swap morphs the page while the hoisted toggle
-                        // thumb keeps sliding above it. Spec is read here because
-                        // motionScheme is composable and transitionSpec is not.
-                        val modeScaleSpec = MaterialTheme.motionScheme.fastSpatialSpec<Float>()
-                        androidx.compose.animation.AnimatedContent(
-                            targetState = videoMode,
-                            label = "ModeTransition",
-                            transitionSpec = {
-                                (androidx.compose.animation.fadeIn(
-                                    androidx.compose.animation.core.tween(durationMillis = 260, delayMillis = 60)
-                                ) + androidx.compose.animation.scaleIn(
-                                    initialScale = 0.92f,
-                                    animationSpec = modeScaleSpec
-                                )) togetherWith (androidx.compose.animation.fadeOut(
-                                    androidx.compose.animation.core.tween(durationMillis = 160)
-                                ) + androidx.compose.animation.scaleOut(
-                                    targetScale = 1.05f,
-                                    animationSpec = androidx.compose.animation.core.tween(durationMillis = 220)
-                                ))
-                            }
-                        ) { videoModeContent ->
-                            // Video Mode: Show video content
-                            if (videoModeContent && localOnly) {
-                                com.ivor.ivormusic.ui.components.LocalOnlyNotice(
-                                    subtitle = stringResource(R.string.local_only_video_mode_subtitle),
-                                    onOpenSettings = onNavigateToSettings
-                                )
-                            } else if (videoModeContent) {
-                                VideoHomeContent(
-                                    compact = compactVideoHome,
-                                    inlinePreviews = inlinePreviews,
-                                    // Recommendations off: a shuffle across the
-                                    // followed channels' histories rather than a
-                                    // second copy of the Subscriptions tab.
-                                    videos = if (videoHomeConfiguration.recommendationsEnabled) {
-                                        trendingVideos
-                                    } else {
-                                        subscriptionMix
+                    // Spin, the wheel, rides over whichever music
+                    // Home is showing as a child page: back peels it
+                    // away to the Home underneath. Declared here so
+                    // leaving the tab closes it, as it closes a
+                    // Library sub-screen.
+                    var spinOpen by remember { mutableStateOf(false) }
+                    var spinSource by remember { mutableStateOf(SpinSource.Mix) }
+                    com.ivor.ivormusic.ui.components.PredictiveBackStack(
+                        childOpen = spinOpen,
+                        onBack = { spinOpen = false },
+                        background = {
+                            // Music Mode, Spotlight: the shortcut-grid and
+                            // shelves alternative. Same flows, same overlays,
+                            // same tab system - only the composition of this one
+                            // tab differs, which is the move the video toggle
+                            // already established.
+                            if (spotlightHome) {
+                                val spotlightPlaylists by viewModel.userPlaylists.collectAsState()
+                                val spotlightLiked by viewModel.likedSongs.collectAsState()
+                                SpotlightHomeContent(
+                                    songs = songs,
+                                    recentlyPlayed = recentlyPlayed,
+                                    likedSongs = spotlightLiked,
+                                    playlists = spotlightPlaylists,
+                                    isInitialLoading = isLoading && songs.isEmpty(),
+                                    onSongLongPress = { song -> songOptionsTarget = song },
+                                    onSongClick = { song ->
+                                        playerViewModel.playQueue(songs, song)
+                                        showPlayerSheet = true
                                     },
-                                    isLoading = if (videoHomeConfiguration.recommendationsEnabled) {
-                                        isVideoLoading
-                                    } else {
-                                        isSubscriptionMixLoading
+                                    onPlaySongs = { queue, start ->
+                                        playerViewModel.playQueue(queue, start)
+                                        showPlayerSheet = true
                                     },
-                                    isOffline = isVideoHomeOffline,
-                                    downloadedVideos = downloadedVideos,
-                                    onVideoClick = { video ->
-                                        // Navigate to video player screen
-                                        onNavigateToVideoPlayer(video)
+                                    onRecentClick = { song ->
+                                        playerViewModel.playQueue(recentlyPlayed, song)
+                                        showPlayerSheet = true
                                     },
-                                    onDownloadedVideoClick = { video ->
-                                        onPlayDownloadedVideos(downloadedVideos, video)
+                                    // Playlist detail lives in LibraryContent, so
+                                    // Spotlight hands the playlist over and
+                                    // switches tab: the Library opens straight
+                                    // onto it, the same deep-link shape the
+                                    // player already uses for artists.
+                                    onPlaylistClick = { playlist ->
+                                        noteLibraryReturn()
+                                        viewedPlaylistFromHome = playlist
+                                        selectedTab = 2
                                     },
-                                    shortsEnabled = shortsEnabled,
-                                    shorts = if (shortsEnabled) shortsFeed else emptyList(),
-                                    onShortClick = { index -> onOpenShorts(shortsFeed, index) },
-                                    // Without this the long-press sheet loses
-                                    // its whole queue section, on the one feed
-                                    // people spend the most time in.
-                                    onEnqueueVideo = onEnqueueVideo,
-                                    onOpenChannel = onOpenChannel,
+                                    onOpenLiked = { selectedTab = 2 },
+                                    onShowAllInLibrary = { selectedTab = 2 },
+                                    onSpinClick = { source ->
+                                        spinSource = source
+                                        spinOpen = true
+                                    },
                                     onProfileClick = onProfileClick,
                                     onSettingsClick = onNavigateToSettings,
                                     onDownloadsClick = onNavigateToDownloads,
-                                    onRefresh = { viewModel.refreshVideos() },
-                                    recommendationsEnabled =
-                                        videoHomeConfiguration.recommendationsEnabled,
                                     isDarkMode = isDarkMode,
                                     contentPadding = listContentPadding,
                                     viewModel = viewModel,
-                                    videoMode = videoMode,
-                                    onVideoModeToggle = onVideoModeToggle,
-                                    showModeToggle = showModeToggle,
-                                    modeToggleState = modeToggleState,
-                                    listState = videoHomeScrollState
+                                    excludedFolders = excludedFolders,
+                                    manualScan = manualScan,
+                                    listState = musicHomeScrollState
+                                )
+                            } else {
+                                // Music Mode: Show original content. The first load
+                                // renders the real screen with placeholders in the
+                                // data-backed sections rather than a full-screen
+                                // spinner - the top bar, titles and nav have
+                                // nothing to wait for.
+                                YourMixContent(
+                                    songs = songs,
+                                    isInitialLoading = isLoading && songs.isEmpty(),
+                                    recentlyPlayed = recentlyPlayed,
+                                    onRecentClick = { song ->
+                                        // Resume from the history rail: the
+                                        // recents are the queue, not the mix.
+                                        playerViewModel.playQueue(recentlyPlayed, song)
+                                        showPlayerSheet = true
+                                    },
+                                    onShowAllInLibrary = { selectedTab = 2 },
+                                    onSpinClick = {
+                                        spinSource = SpinSource.Mix
+                                        spinOpen = true
+                                    },
+                                    onSongLongPress = { song -> songOptionsTarget = song },
+                                    onSongClick = { song ->
+                                        playerViewModel.playQueue(songs, song)
+                                        showPlayerSheet = true
+                                    },
+                                    onPlayClick = {
+                                        if (songs.isNotEmpty()) {
+                                            playerViewModel.playQueue(songs)
+                                            showPlayerSheet = true
+                                        }
+                                    },
+                                    onProfileClick = onProfileClick,
+                                    onSettingsClick = onNavigateToSettings,
+                                    onDownloadsClick = onNavigateToDownloads,
+                                    onImportCookiesClick = { showCookiePasteSheet = true },
+                                    isDarkMode = isDarkMode,
+                                    contentPadding = listContentPadding,
+                                    viewModel = viewModel,
+                                    excludedFolders = excludedFolders,
+                                    manualScan = manualScan,
+                                    listState = musicHomeScrollState
                                 )
                             }
-                            else {
-                                // Spin, the wheel, rides over whichever music
-                                // Home is showing as a child page: back peels it
-                                // away to the Home underneath. Declared here so
-                                // leaving the tab closes it, as it closes a
-                                // Library sub-screen.
-                                var spinOpen by remember { mutableStateOf(false) }
-                                var spinSource by remember { mutableStateOf(SpinSource.Mix) }
-                                com.ivor.ivormusic.ui.components.PredictiveBackStack(
-                                    childOpen = spinOpen,
-                                    onBack = { spinOpen = false },
-                                    background = {
-                                        // Music Mode, Spotlight: the shortcut-grid and
-                                        // shelves alternative. Same flows, same overlays,
-                                        // same tab system - only the composition of this one
-                                        // tab differs, which is the move the video toggle
-                                        // already established.
-                                        if (spotlightHome) {
-                                            val spotlightPlaylists by viewModel.userPlaylists.collectAsState()
-                                            val spotlightLiked by viewModel.likedSongs.collectAsState()
-                                            SpotlightHomeContent(
-                                                songs = songs,
-                                                recentlyPlayed = recentlyPlayed,
-                                                likedSongs = spotlightLiked,
-                                                playlists = spotlightPlaylists,
-                                                isInitialLoading = isLoading && songs.isEmpty(),
-                                                onSongLongPress = { song -> songOptionsTarget = song },
-                                                onSongClick = { song ->
-                                                    playerViewModel.playQueue(songs, song)
-                                                    showPlayerSheet = true
-                                                },
-                                                onPlaySongs = { queue, start ->
-                                                    playerViewModel.playQueue(queue, start)
-                                                    showPlayerSheet = true
-                                                },
-                                                onRecentClick = { song ->
-                                                    playerViewModel.playQueue(recentlyPlayed, song)
-                                                    showPlayerSheet = true
-                                                },
-                                                // Playlist detail lives in LibraryContent, so
-                                                // Spotlight hands the playlist over and
-                                                // switches tab: the Library opens straight
-                                                // onto it, the same deep-link shape the
-                                                // player already uses for artists.
-                                                onPlaylistClick = { playlist ->
-                                                    noteLibraryReturn()
-                                                    viewedPlaylistFromHome = playlist
-                                                    selectedTab = 2
-                                                },
-                                                onOpenLiked = { selectedTab = 2 },
-                                                onShowAllInLibrary = { selectedTab = 2 },
-                                                onSpinClick = { source ->
-                                                    spinSource = source
-                                                    spinOpen = true
-                                                },
-                                                onProfileClick = onProfileClick,
-                                                onSettingsClick = onNavigateToSettings,
-                                                onDownloadsClick = onNavigateToDownloads,
-                                                isDarkMode = isDarkMode,
-                                                contentPadding = listContentPadding,
-                                                viewModel = viewModel,
-                                                excludedFolders = excludedFolders,
-                                                manualScan = manualScan,
-                                                videoMode = videoMode,
-                                                onVideoModeToggle = onVideoModeToggle,
-                                                showModeToggle = showModeToggle,
-                                                modeToggleState = modeToggleState,
-                                                listState = musicHomeScrollState
-                                            )
-                                        } else {
-                                            // Music Mode: Show original content. The first load
-                                            // renders the real screen with placeholders in the
-                                            // data-backed sections rather than a full-screen
-                                            // spinner - the top bar, titles and nav have
-                                            // nothing to wait for.
-                                            YourMixContent(
-                                                songs = songs,
-                                                isInitialLoading = isLoading && songs.isEmpty(),
-                                                recentlyPlayed = recentlyPlayed,
-                                                onRecentClick = { song ->
-                                                    // Resume from the history rail: the
-                                                    // recents are the queue, not the mix.
-                                                    playerViewModel.playQueue(recentlyPlayed, song)
-                                                    showPlayerSheet = true
-                                                },
-                                                onShowAllInLibrary = { selectedTab = 2 },
-                                                onSpinClick = {
-                                                    spinSource = SpinSource.Mix
-                                                    spinOpen = true
-                                                },
-                                                onSongLongPress = { song -> songOptionsTarget = song },
-                                                onSongClick = { song ->
-                                                    playerViewModel.playQueue(songs, song)
-                                                    showPlayerSheet = true
-                                                },
-                                                onPlayClick = {
-                                                    if (songs.isNotEmpty()) {
-                                                        playerViewModel.playQueue(songs)
-                                                        showPlayerSheet = true
-                                                    }
-                                                },
-                                                onProfileClick = onProfileClick,
-                                                onSettingsClick = onNavigateToSettings,
-                                                onDownloadsClick = onNavigateToDownloads,
-                                                onImportCookiesClick = { showCookiePasteSheet = true },
-                                                isDarkMode = isDarkMode,
-                                                contentPadding = listContentPadding,
-                                                viewModel = viewModel,
-                                                excludedFolders = excludedFolders,
-                                                manualScan = manualScan,
-                                                videoMode = videoMode,
-                                                onVideoModeToggle = onVideoModeToggle,
-                                                showModeToggle = showModeToggle,
-                                                modeToggleState = modeToggleState,
-                                                listState = musicHomeScrollState
-                                            )
-                                        }
-                                    }
-                                ) { committedByGesture ->
-                                    SpinOverlay(
-                                        open = spinOpen,
-                                        committedByGesture = committedByGesture,
-                                        initialSource = spinSource,
-                                        mix = songs,
-                                        recent = recentlyPlayed,
-                                        viewModel = viewModel,
-                                        contentPadding = listContentPadding,
-                                        onPlay = { queue, start ->
-                                            playerViewModel.playQueue(queue, start)
-                                            showPlayerSheet = true
-                                        },
-                                        onSongLongPress = { song -> songOptionsTarget = song },
-                                        onBack = { spinOpen = false }
-                                    )
-                                }
-                            }
                         }
-                    }
-                    1 -> if (videoMode && localOnly) {
-                        com.ivor.ivormusic.ui.components.LocalOnlyNotice(
-                            subtitle = stringResource(R.string.local_only_video_search_subtitle),
-                            onOpenSettings = onNavigateToSettings
+                    ) { committedByGesture ->
+                        SpinOverlay(
+                            open = spinOpen,
+                            committedByGesture = committedByGesture,
+                            initialSource = spinSource,
+                            mix = songs,
+                            recent = recentlyPlayed,
+                            viewModel = viewModel,
+                            contentPadding = listContentPadding,
+                            onPlay = { queue, start ->
+                                playerViewModel.playQueue(queue, start)
+                                showPlayerSheet = true
+                            },
+                            onSongLongPress = { song -> songOptionsTarget = song },
+                            onBack = { spinOpen = false }
                         )
-                    } else SearchContent(
+                    }
+                    }
+                    1 -> SearchContent(
                         songs = songs,
                         onSongClick = { song ->
                             // Fallback: Pass all songs to enable Next/Previous navigation
@@ -1040,12 +770,6 @@ fun HomeScreen(
                             playerViewModel.playSongRadio(song)
                             showPlayerSheet = true
                         },
-                        onVideoClick = { video ->
-                            // Navigate to video player screen
-                            onNavigateToVideoPlayer(video)
-                        },
-                        onPlayVideoQueue = onPlayVideoQueue,
-                        onEnqueueVideo = onEnqueueVideo,
                         onProfileClick = onProfileClick,
                         onOpenChannel = onOpenChannel,
                         onSongLongPress = { song -> songOptionsTarget = song },
@@ -1056,166 +780,56 @@ fun HomeScreen(
                         contentPadding = listContentPadding,
                         viewModel = viewModel,
                         isDarkMode = isDarkMode,
-                        videoMode = videoMode,
                         localOnly = localOnly,
-                        requestInitialFocus = !hasExpandedVideoPlayer,
+                        requestInitialFocus = true,
                         listState = searchScrollState
                     )
                     2 -> {
-                        if (videoMode && localOnly) {
-                            com.ivor.ivormusic.ui.components.LocalOnlyNotice(
-                                subtitle = stringResource(R.string.local_only_subscriptions_subtitle),
-                                onOpenSettings = onNavigateToSettings
-                            )
-                        } else if (videoMode) {
-                            com.ivor.ivormusic.ui.video.SubscriptionsContent(
-                                viewModel = viewModel,
-                                onEnqueueVideo = onEnqueueVideo,
-                                onVideoClick = { video ->
-                                    onNavigateToVideoPlayer(video)
-                                },
-                                onLoginClick = { showAuthDialog = true },
-                                onOpenChannel = onOpenChannel,
-                                onManageSubscriptions = onNavigateToSubscriptions,
-                                contentPadding = listContentPadding,
-                                feedListState = subscriptionsScrollState
-                            )
-                        } else {
-                            LibraryContent(
-                                songs = songs,
-                                isLocalLibrary = loadLocalSongs,
-                                onDownloadsClick = onNavigateToDownloads,
-                                onSongClick = { song: Song ->
-                                    // Pass all songs to enable Next/Previous navigation
-                                    playerViewModel.playQueue(songs, song)
-                                    showPlayerSheet = true
-                                },
-                                onPlaylistClick = { playlist: com.ivor.ivormusic.data.PlaylistDisplayItem ->
-                                    // Optional: navigate to playlist detail or handled by parent
-                                },
-                                onPlayQueue = { songs: List<Song>, selectedSong: Song? ->
-                                    playerViewModel.playQueue(songs, selectedSong)
-                                    showPlayerSheet = true
-                                },
-                                onShuffleQueue = { songs: List<Song> ->
-                                    playerViewModel.playQueueShuffled(songs)
-                                    showPlayerSheet = true
-                                },
-                                contentPadding = listContentPadding,
-                                viewModel = viewModel,
-                                isDarkMode = isDarkMode,
-                                initialArtist = viewedArtistFromPlayer,
-                                onInitialArtistConsumed = { viewedArtistFromPlayer = null },
-                                initialReturnToCaller = libraryReturnTab != null,
-                                onReturnToCaller = {
-                                    // The tab slide reads as going back; the
-                                    // player keeps whatever state it was in.
-                                    libraryReturnTab?.let { selectedTab = it }
-                                    libraryReturnTab = null
-                                },
-                                initialPlaylist = viewedPlaylistFromHome,
-                                onInitialPlaylistConsumed = { viewedPlaylistFromHome = null },
-                                initialAlbum = viewedAlbumFromPlayer,
-                                onInitialAlbumConsumed = { viewedAlbumFromPlayer = null },
-                                onStatsClick = onNavigateToStats,
-                                onOpenChannel = onOpenChannel,
-                                onSongLongPress = { song -> songOptionsTarget = song },
-                                onEnqueueSong = { song, playNext ->
-                                    if (playNext) playerViewModel.playNext(song)
-                                    else playerViewModel.addToQueue(song)
-                                },
-                                allSongsListState = musicLibraryScrollState
-                            )
-                        }
-                    }
-                    3 -> {
-                        // Video mode only: Library (playlists, Watch Later,
-                        // liked videos, watch history)
-                        if (videoMode && localOnly) {
-                            // With YouTube switched off the video Library is
-                            // the device's own videos: playlists, history and
-                            // the pinned account feeds all need a network the
-                            // user has turned off, and the notice that used to
-                            // stand here explained that while offering nothing.
-                            val deviceVideos by viewModel.deviceVideos.collectAsState()
-                            val deviceFolders by viewModel.deviceVideoFolders.collectAsState()
-                            val isDeviceLoading by viewModel.isDeviceVideosLoading.collectAsState()
-                            val hasScanned by viewModel.hasScannedDeviceVideos.collectAsState()
-                            val videoAccess =
-                                com.ivor.ivormusic.ui.components.rememberVideoMediaAccessState()
-                            var deviceSort by remember {
-                                mutableStateOf(com.ivor.ivormusic.data.LocalVideoSort.RECENT)
-                            }
-                            LaunchedEffect(videoAccess.access) {
-                                if (videoAccess.isReadable) viewModel.loadDeviceVideos()
-                            }
-                            com.ivor.ivormusic.ui.video.DeviceVideosScreen(
-                                videos = deviceVideos,
-                                folders = deviceFolders,
-                                access = videoAccess.access,
-                                isLoading = isDeviceLoading,
-                                hasScanned = hasScanned,
-                                sort = deviceSort,
-                                onSortChange = { deviceSort = it },
-                                onRequestAccess = { videoAccess.launchRequest() },
-                                onRefresh = { viewModel.loadDeviceVideos() },
-                                onPlay = onPlayDeviceVideos,
-                                // The top inset is spent by the header below,
-                                // so the list must not pay it a second time.
-                                contentPadding = PaddingValues(
-                                    bottom = listContentPadding.calculateBottomPadding()
-                                ),
-                                topBar = {
-                                    Column {
-                                    com.ivor.ivormusic.ui.video.DownloadedContentLibraryCard(
-                                        onClick = onNavigateToDownloads,
-                                        modifier = Modifier.padding(
-                                            start = 16.dp, end = 16.dp,
-                                            top = listContentPadding.calculateTopPadding()
-                                        )
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.dv_on_this_device),
-                                        style = MaterialTheme.typography.headlineSmall,
-                                        fontWeight = FontWeight.Bold,
-                                        color = MaterialTheme.colorScheme.onBackground,
-                                        modifier = Modifier.padding(
-                                            start = 20.dp,
-                                            end = 20.dp,
-                                            top = 12.dp,
-                                            bottom = 8.dp
-                                        )
-                                    )
-                                    }
-                                },
-                                folderTopBar = { title, onBack ->
-                                    com.ivor.ivormusic.ui.video.DeviceFolderTopBar(
-                                        title = title,
-                                        onBack = onBack,
-                                        modifier = Modifier.padding(
-                                            top = listContentPadding.calculateTopPadding()
-                                        )
-                                    )
-                                }
-                            )
-                        } else if (videoMode) {
-                            com.ivor.ivormusic.ui.video.VideoLibraryContent(
-                                onOpenDownloads = onNavigateToDownloads,
-                                viewModel = viewModel,
-                                onOpenChannel = onOpenChannel,
-                                onVideoClick = { video ->
-                                    onNavigateToVideoPlayer(video)
-                                },
-                                onPlayQueue = onPlayVideoQueue,
-                                onPlayDeviceVideos = onPlayDeviceVideos,
-                                onLoginClick = { showAuthDialog = true },
-                                contentPadding = listContentPadding,
-                                onEnqueueVideo = onEnqueueVideo,
-                                initialPlaylist = viewedVideoPlaylistFromHome,
-                                onInitialPlaylistConsumed = { viewedVideoPlaylistFromHome = null },
-                                rootListState = videoLibraryScrollState
-                            )
-                        }
+                        LibraryContent(
+                            songs = songs,
+                            isLocalLibrary = loadLocalSongs,
+                            onDownloadsClick = onNavigateToDownloads,
+                            onSongClick = { song: Song ->
+                                // Pass all songs to enable Next/Previous navigation
+                                playerViewModel.playQueue(songs, song)
+                                showPlayerSheet = true
+                            },
+                            onPlaylistClick = { playlist: com.ivor.ivormusic.data.PlaylistDisplayItem ->
+                                // Optional: navigate to playlist detail or handled by parent
+                            },
+                            onPlayQueue = { songs: List<Song>, selectedSong: Song? ->
+                                playerViewModel.playQueue(songs, selectedSong)
+                                showPlayerSheet = true
+                            },
+                            onShuffleQueue = { songs: List<Song> ->
+                                playerViewModel.playQueueShuffled(songs)
+                                showPlayerSheet = true
+                            },
+                            contentPadding = listContentPadding,
+                            viewModel = viewModel,
+                            isDarkMode = isDarkMode,
+                            initialArtist = viewedArtistFromPlayer,
+                            onInitialArtistConsumed = { viewedArtistFromPlayer = null },
+                            initialReturnToCaller = libraryReturnTab != null,
+                            onReturnToCaller = {
+                                // The tab slide reads as going back; the
+                                // player keeps whatever state it was in.
+                                libraryReturnTab?.let { selectedTab = it }
+                                libraryReturnTab = null
+                            },
+                            initialPlaylist = viewedPlaylistFromHome,
+                            onInitialPlaylistConsumed = { viewedPlaylistFromHome = null },
+                            initialAlbum = viewedAlbumFromPlayer,
+                            onInitialAlbumConsumed = { viewedAlbumFromPlayer = null },
+                            onStatsClick = onNavigateToStats,
+                            onOpenChannel = onOpenChannel,
+                            onSongLongPress = { song -> songOptionsTarget = song },
+                            onEnqueueSong = { song, playNext ->
+                                if (playNext) playerViewModel.playNext(song)
+                                else playerViewModel.addToQueue(song)
+                            },
+                            allSongsListState = musicLibraryScrollState
+                        )
                     }
                 }
             }
@@ -1249,48 +863,6 @@ fun HomeScreen(
                 )
             }
         }
-        
-        // Video Home carries the account avatar, downloads and Settings, so
-        // hiding that destination took the only route to them - including the
-        // switch that puts Home back. The bar becomes part of the shell in
-        // that configuration, above every destination rather than inside one.
-        // Opaque, because the lists underneath scroll beneath it.
-        // Fades rather than popping, on the same curve the mode cross-fade
-        // uses, so leaving video mode does not blink the chrome out a frame
-        // before the content underneath it changes.
-        androidx.compose.animation.AnimatedVisibility(
-            visible = videoShellTopBar,
-            enter = androidx.compose.animation.fadeIn(
-                androidx.compose.animation.core.tween(220)
-            ),
-            exit = androidx.compose.animation.fadeOut(
-                androidx.compose.animation.core.tween(180)
-            ),
-            modifier = Modifier.align(Alignment.TopCenter)
-        ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(backgroundColor)
-                    .padding(top = statusBarInset)
-            ) {
-                com.ivor.ivormusic.ui.video.VideoTopBarSection(
-                    onProfileClick = onProfileClick,
-                    onSettingsClick = onNavigateToSettings,
-                    onDownloadsClick = onNavigateToDownloads,
-                    // The bell reports on the Home feed and its sheet belongs
-                    // to that screen, so the shell copy leaves it out.
-                    onNotificationsClick = onProfileClick,
-                    viewModel = viewModel,
-                    videoMode = videoMode,
-                    onVideoModeToggle = onVideoModeToggle,
-                    showModeToggle = showModeToggle,
-                    modeToggleState = modeToggleState,
-                    showNotifications = false
-                )
-            }
-        }
-
         // Both navigation variants use the same destinations and interaction
         // contract. Only their Material container and item presentation differ.
         val navBarHaptics = com.ivor.ivormusic.util.rememberKodaHaptics()
@@ -1298,32 +870,7 @@ fun HomeScreen(
         // bar as an action under this sentinel id: tapping it opens Settings
         // instead of selecting a tab, so it never shows as the current tab.
         val settingsNavId = -99
-        val navTabs = if (videoMode) {
-            videoHomeConfiguration.orderedVisibleDestinations.map { destination ->
-                when (destination) {
-                    VideoHomeDestination.HOME -> Triple(
-                        destination.tabId,
-                        stringResource(R.string.tab_home),
-                        Pair(Icons.Rounded.Home, Icons.Outlined.Home)
-                    )
-                    VideoHomeDestination.SEARCH -> Triple(
-                        destination.tabId,
-                        stringResource(R.string.tab_search),
-                        Pair(Icons.Filled.Search, Icons.Outlined.Search)
-                    )
-                    VideoHomeDestination.SUBSCRIPTIONS -> Triple(
-                        destination.tabId,
-                        stringResource(R.string.tab_subs),
-                        Pair(Icons.Filled.Subscriptions, Icons.Outlined.Subscriptions)
-                    )
-                    VideoHomeDestination.LIBRARY -> Triple(
-                        destination.tabId,
-                        stringResource(R.string.tab_library),
-                        Pair(Icons.Filled.VideoLibrary, Icons.Outlined.VideoLibrary)
-                    )
-                }
-            }
-        } else listOf(
+        val navTabs = listOf(
             Triple(0, stringResource(R.string.tab_home), Pair(Icons.Rounded.Home, Icons.Outlined.Home)),
             Triple(1, stringResource(R.string.tab_search), Pair(Icons.Filled.Search, Icons.Outlined.Search)),
             Triple(2, stringResource(R.string.tab_library), Pair(Icons.Filled.LibraryMusic, Icons.Outlined.LibraryMusic)),
@@ -1473,7 +1020,6 @@ fun HomeScreen(
             onPlayerStyleChange = onPlayerStyleChange,
             collapsedBottomSpacing = miniPlayerCollapsedSpacing,
             collapsedFollowOffsetPx = miniPlayerFollowOffsetPx,
-            onWatchAsVideo = onWatchAsVideo,
             onArtistClick = { artistName ->
                 // Collapse the player and open the artist inside the music
                 // Library tab. The origin tab is remembered so back returns to
@@ -1605,17 +1151,7 @@ fun HomeScreen(
                 // Refresh login state, account info and the feeds so the UI
                 // reflects the account immediately instead of after a restart
                 viewModel.checkYouTubeConnection(force = true)
-                if (videoMode) {
-                    if (videoHomeConfiguration.recommendationsEnabled) {
-                        viewModel.loadTrendingVideos()
-                    } else {
-                        viewModel.loadSubscriptions(force = true)
-                        viewModel.loadSubscriptionMix(force = true)
-                    }
-                    viewModel.loadYouTubeHistory()
-                } else {
-                    viewModel.loadYouTubeRecommendations(force = true)
-                }
+                viewModel.loadYouTubeRecommendations(force = true)
             },
             addAsNewProfile = addAuthAsNewProfile
         )

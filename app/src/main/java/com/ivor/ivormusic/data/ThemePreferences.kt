@@ -1121,17 +1121,12 @@ class ThemePreferences(context: Context) {
     }
 
     /** Root Home destination restored after Koda is recreated. */
-    fun getLastHomeTab(videoMode: Boolean): Int {
-        val key = if (videoMode) KEY_LAST_VIDEO_TAB else KEY_LAST_MUSIC_TAB
-        val lastValidTab = if (videoMode) 3 else 2
-        return prefs.getInt(key, 0).coerceIn(0, lastValidTab)
+    fun getLastHomeTab(): Int {
+        return prefs.getInt(KEY_LAST_MUSIC_TAB, 0).coerceIn(0, 2)
     }
 
-    /** Music and video keep separate positions because their tab sets differ. */
-    fun setLastHomeTab(videoMode: Boolean, tab: Int) {
-        val key = if (videoMode) KEY_LAST_VIDEO_TAB else KEY_LAST_MUSIC_TAB
-        val lastValidTab = if (videoMode) 3 else 2
-        prefs.edit().putInt(key, tab.coerceIn(0, lastValidTab)).apply()
+    fun setLastHomeTab(tab: Int) {
+        prefs.edit().putInt(KEY_LAST_MUSIC_TAB, tab.coerceIn(0, 2)).apply()
     }
 
     /**
