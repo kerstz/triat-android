@@ -66,8 +66,6 @@ import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.ui.library.songRowClick
 import com.ivor.ivormusic.ui.components.ExpressivePullToRefresh
-import com.ivor.ivormusic.ui.components.MusicVideoToggleState
-import com.ivor.ivormusic.ui.components.rememberMusicVideoToggleState
 
 /**
  * Spotlight: an alternative music Home built the way music apps are actually
@@ -125,7 +123,6 @@ fun SpotlightHomeContent(
     videoMode: Boolean = false,
     onVideoModeToggle: (Boolean) -> Unit = {},
     showModeToggle: Boolean = true,
-    modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode),
     listState: LazyListState = rememberLazyListState(),
 ) {
     val isRefreshing by viewModel.isLoading.collectAsStateWithLifecycle()
@@ -197,7 +194,6 @@ fun SpotlightHomeContent(
                     videoMode = videoMode,
                     onVideoModeToggle = onVideoModeToggle,
                     showModeToggle = showModeToggle,
-                    modeToggleState = modeToggleState,
                 )
             }
 

@@ -113,7 +113,6 @@ data class LocalVideo(
 data class LocalVideoFolder(
     val bucketId: Long?,
     val name: String,
-    val videoCount: Int,
     /** Newest video in the folder, used as the card's cover frame. */
     val coverUri: Uri?,
     /** Newest date in the folder, so folders order by recent activity. */

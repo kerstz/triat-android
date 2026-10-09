@@ -125,9 +125,6 @@ import coil.compose.AsyncImage
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.ui.library.songRowClick
 import com.ivor.ivormusic.data.PlayerStyle
-import com.ivor.ivormusic.ui.components.MusicVideoToggle
-import com.ivor.ivormusic.ui.components.MusicVideoToggleState
-import com.ivor.ivormusic.ui.components.rememberMusicVideoToggleState
 import com.ivor.ivormusic.ui.components.rememberPermissionState
 import com.ivor.ivormusic.ui.components.scrollToTop
 import com.ivor.ivormusic.ui.player.PlayerViewModel
@@ -1243,7 +1240,6 @@ fun YourMixContent(
     videoMode: Boolean = false,
     onVideoModeToggle: (Boolean) -> Unit = {},
     showModeToggle: Boolean = true,
-    modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode),
     /** Hoisted by HomeScreen: survives tab switches, reachable by the nav bar. */
     listState: LazyListState = rememberLazyListState()
 ) {
@@ -1295,7 +1291,6 @@ fun YourMixContent(
                         videoMode = videoMode,
                         onVideoModeToggle = onVideoModeToggle,
                         showModeToggle = showModeToggle,
-                        modeToggleState = modeToggleState
                     )
                 }
             }
@@ -1407,7 +1402,6 @@ fun TopBarSection(
     videoMode: Boolean = false,
     onVideoModeToggle: (Boolean) -> Unit = {},
     showModeToggle: Boolean = true,
-    modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode)
 ) {
     // The Home corner bar is intentionally empty now. Settings moved to the
     // bottom navigation (Reglages tab), and the music/video switch lives in
