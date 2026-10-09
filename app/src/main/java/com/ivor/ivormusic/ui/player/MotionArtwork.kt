@@ -23,6 +23,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
 import androidx.media3.common.PlaybackException
@@ -79,11 +80,11 @@ internal fun PlayerArtwork(
 internal fun rememberMotionArtworkSession(song: Song, active: Boolean): MotionArtworkSession? {
     val context = LocalContext.current.applicationContext
     val preferences = remember(context) { ThemePreferences(context) }
-    val enabled by preferences.motionArtwork.collectAsState()
-    val wifiOnly by preferences.motionArtworkWifiOnly.collectAsState()
-    val quality by preferences.motionArtworkQuality.collectAsState()
-    val localOnly by preferences.localOnlyMode.collectAsState()
-    val incognito by remember(context) { IncognitoMode.enabled(context) }.collectAsState()
+    val enabled by preferences.motionArtwork.collectAsStateWithLifecycle()
+    val wifiOnly by preferences.motionArtworkWifiOnly.collectAsStateWithLifecycle()
+    val quality by preferences.motionArtworkQuality.collectAsStateWithLifecycle()
+    val localOnly by preferences.localOnlyMode.collectAsStateWithLifecycle()
+    val incognito by remember(context) { IncognitoMode.enabled(context) }.collectAsStateWithLifecycle()
     val repository = remember(context) { MotionArtworkRepository(context) }
     // No network observer, catalog request or video decoder until this feature is opted into.
     if (!enabled || !active || localOnly || incognito) return null

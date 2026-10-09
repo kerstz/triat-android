@@ -1,6 +1,7 @@
 package com.ivor.ivormusic.ui.player
 
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -53,7 +54,6 @@ import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -114,19 +114,19 @@ fun PosterPlayerSheetContent(
     // as a gesture instead of firing at the end of one. A BackHandler here
     // would be registered later and silently win.
 
-    val currentSong by viewModel.currentSong.collectAsState()
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    val isBuffering by viewModel.isBuffering.collectAsState()
-    val playWhenReady by viewModel.playWhenReady.collectAsState()
-    val progress by viewModel.progress.collectAsState()
-    val duration by viewModel.duration.collectAsState()
-    val shuffleModeEnabled by viewModel.shuffleModeEnabled.collectAsState()
-    val repeatMode by viewModel.repeatMode.collectAsState()
-    val currentQueue by viewModel.playOrderQueue.collectAsState()
-    val currentQueueItemId by viewModel.currentQueueItemId.collectAsState()
-    val isFavorite by viewModel.isCurrentSongLiked.collectAsState()
-    val lyricsResult by viewModel.lyricsResult.collectAsState()
-    val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+    val currentSong by viewModel.currentSong.collectAsStateWithLifecycle()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val isBuffering by viewModel.isBuffering.collectAsStateWithLifecycle()
+    val playWhenReady by viewModel.playWhenReady.collectAsStateWithLifecycle()
+    val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val duration by viewModel.duration.collectAsStateWithLifecycle()
+    val shuffleModeEnabled by viewModel.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
+    val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
+    val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
+    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
+    val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
     var showLyrics by remember { mutableStateOf(false) }

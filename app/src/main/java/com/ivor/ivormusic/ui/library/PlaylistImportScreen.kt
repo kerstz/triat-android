@@ -63,11 +63,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.data.Song
-import androidx.compose.runtime.collectAsState
 import com.ivor.ivormusic.ui.components.LocalBottomOverlayInset
 import com.ivor.ivormusic.ui.home.HomeViewModel
 import com.ivor.ivormusic.util.rememberKodaHaptics
@@ -93,8 +93,8 @@ fun PlaylistImportScreen(
     /** Selection landed; count is how many songs were genuinely new. */
     onDone: (Int) -> Unit
 ) {
-    val userPlaylists by viewModel.userPlaylists.collectAsState()
-    val likedSongs by viewModel.likedSongs.collectAsState()
+    val userPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
+    val likedSongs by viewModel.likedSongs.collectAsStateWithLifecycle()
 
     var source by remember { mutableStateOf<PlaylistDisplayItem?>(null) }
     var sourceSongs by remember { mutableStateOf<List<Song>>(emptyList()) }

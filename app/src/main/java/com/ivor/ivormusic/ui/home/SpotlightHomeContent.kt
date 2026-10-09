@@ -2,6 +2,7 @@ package com.ivor.ivormusic.ui.home
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.foundation.background
@@ -44,7 +45,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -128,16 +128,16 @@ fun SpotlightHomeContent(
     modeToggleState: MusicVideoToggleState = rememberMusicVideoToggleState(videoMode),
     listState: LazyListState = rememberLazyListState(),
 ) {
-    val isRefreshing by viewModel.isLoading.collectAsState()
+    val isRefreshing by viewModel.isLoading.collectAsStateWithLifecycle()
 
     // rememberSaveable, not remember: the filter is a place in the screen, and
     // losing it on a tab switch or a rotation is the same annoyance as losing a
     // scroll position.
     var filter by rememberSaveable { mutableStateOf(SpotlightFilter.All) }
 
-    val discoverySongs by viewModel.discoverySongs.collectAsState()
-    val discoveryCollections by viewModel.discoveryCollections.collectAsState()
-    val isDiscoveryLoading by viewModel.isDiscoveryLoading.collectAsState()
+    val discoverySongs by viewModel.discoverySongs.collectAsStateWithLifecycle()
+    val discoveryCollections by viewModel.discoveryCollections.collectAsStateWithLifecycle()
+    val isDiscoveryLoading by viewModel.isDiscoveryLoading.collectAsStateWithLifecycle()
 
     // Fetched when its tab is opened rather than with the rest of Home: it is
     // several searches plus a radio call, and most sessions never look at it.

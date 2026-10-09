@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.lerp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.PlayerStyle
 import com.ivor.ivormusic.data.PlaylistDisplayItem
@@ -118,7 +119,7 @@ fun ExpandablePlayer(
     // The user's playback rate, for the same reason and by the same route: a bar
     // that interpolates between samples has to know how fast the clock is
     // running. It changes only when somebody moves the speed slider.
-    val playbackSpeed by viewModel.playbackSpeed.collectAsState()
+    val playbackSpeed by viewModel.playbackSpeed.collectAsStateWithLifecycle()
     LaunchedEffect(isExpanded) {
         if (!isExpanded) styleWheel.dismiss()
     }

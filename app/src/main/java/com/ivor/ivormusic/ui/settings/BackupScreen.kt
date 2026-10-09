@@ -67,7 +67,6 @@ import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -82,6 +81,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.BackupManifest
 import com.ivor.ivormusic.data.BackupRepository
@@ -123,17 +123,17 @@ fun BackupScreen(
     val repository = remember { BackupRepository(context) }
     val scheduledRepo = remember { ScheduledBackupRepository(context) }
 
-    val scheduledEnabled by scheduledRepo.enabled.collectAsState()
-    val scheduledFolderUri by scheduledRepo.folderUri.collectAsState()
-    val scheduledFolderName by scheduledRepo.folderDisplayName.collectAsState()
-    val scheduledFrequencyHours by scheduledRepo.frequencyHours.collectAsState()
-    val scheduledRetentionLimit by scheduledRepo.retentionLimit.collectAsState()
-    val scheduledRequiresCharging by scheduledRepo.requiresCharging.collectAsState()
-    val scheduledRequiresDeviceIdle by scheduledRepo.requiresDeviceIdle.collectAsState()
-    val scheduledRequiresUnmetered by scheduledRepo.requiresUnmetered.collectAsState()
-    val scheduledLastRunAt by scheduledRepo.lastRunAt.collectAsState()
-    val scheduledLastRunStatus by scheduledRepo.lastRunStatus.collectAsState()
-    val scheduledLastRunError by scheduledRepo.lastRunError.collectAsState()
+    val scheduledEnabled by scheduledRepo.enabled.collectAsStateWithLifecycle()
+    val scheduledFolderUri by scheduledRepo.folderUri.collectAsStateWithLifecycle()
+    val scheduledFolderName by scheduledRepo.folderDisplayName.collectAsStateWithLifecycle()
+    val scheduledFrequencyHours by scheduledRepo.frequencyHours.collectAsStateWithLifecycle()
+    val scheduledRetentionLimit by scheduledRepo.retentionLimit.collectAsStateWithLifecycle()
+    val scheduledRequiresCharging by scheduledRepo.requiresCharging.collectAsStateWithLifecycle()
+    val scheduledRequiresDeviceIdle by scheduledRepo.requiresDeviceIdle.collectAsStateWithLifecycle()
+    val scheduledRequiresUnmetered by scheduledRepo.requiresUnmetered.collectAsStateWithLifecycle()
+    val scheduledLastRunAt by scheduledRepo.lastRunAt.collectAsStateWithLifecycle()
+    val scheduledLastRunStatus by scheduledRepo.lastRunStatus.collectAsStateWithLifecycle()
+    val scheduledLastRunError by scheduledRepo.lastRunError.collectAsStateWithLifecycle()
 
     var showFrequencyDialog by remember { mutableStateOf(false) }
     var showRetentionDialog by remember { mutableStateOf(false) }

@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.applock
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.foundation.background
@@ -32,7 +33,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -65,8 +65,8 @@ fun AppTimeLimitScreen(onBack: () -> Unit) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val prefs = remember { ThemePreferences(context) }
 
-    val enabled by prefs.timeLimitEnabled.collectAsState()
-    val budgetsStored by prefs.timeLimitBudgets.collectAsState()
+    val enabled by prefs.timeLimitEnabled.collectAsStateWithLifecycle()
+    val budgetsStored by prefs.timeLimitBudgets.collectAsStateWithLifecycle()
     val budgets = remember(budgetsStored) { AppTimeLimit.parseBudgets(budgetsStored) }
 
     // Snapshot of today's usage for the summary ring. Read once per entry;

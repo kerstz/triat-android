@@ -1,6 +1,7 @@
 package com.ivor.ivormusic.ui.library
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.foundation.background
@@ -46,7 +47,6 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -79,10 +79,10 @@ fun StatsScreen(
     viewModel: HomeViewModel,
     contentPadding: PaddingValues
 ) {
-    val searchHistory by viewModel.searchHistory.collectAsState()
-    val likedSongs by viewModel.likedSongs.collectAsState()
-    val globalStats by viewModel.globalStats.collectAsState()
-    val dailyPlays by viewModel.dailyPlays.collectAsState()
+    val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
+    val likedSongs by viewModel.likedSongs.collectAsStateWithLifecycle()
+    val globalStats by viewModel.globalStats.collectAsStateWithLifecycle()
+    val dailyPlays by viewModel.dailyPlays.collectAsStateWithLifecycle()
 
     // Refresh stats on entry
     LaunchedEffect(Unit) {

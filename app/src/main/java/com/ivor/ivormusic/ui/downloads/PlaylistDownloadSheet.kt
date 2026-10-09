@@ -3,6 +3,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.annotation.StringRes
 import androidx.annotation.PluralsRes
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.animation.AnimatedContent
@@ -53,7 +54,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -145,8 +145,8 @@ fun MusicPlaylistDownloadAction(
     val context = LocalContext.current
     val repository = remember(context) { DownloadRepository.getInstance(context) }
     val repositoryScope = rememberCoroutineScope()
-    val downloadedSongs by repository.downloadedSongs.collectAsState()
-    val progress by repository.downloadProgress.collectAsState()
+    val downloadedSongs by repository.downloadedSongs.collectAsStateWithLifecycle()
+    val progress by repository.downloadProgress.collectAsStateWithLifecycle()
     var showSheet by remember(playlistTitle) { mutableStateOf(false) }
 
     val eligibleSongs = remember(songs) {
@@ -229,8 +229,8 @@ fun VideoPlaylistDownloadAction(
 ) {
     val context = LocalContext.current
     val repository = remember(context) { DownloadRepository.getInstance(context) }
-    val downloadedVideos by repository.downloadedVideos.collectAsState()
-    val progress by repository.downloadProgress.collectAsState()
+    val downloadedVideos by repository.downloadedVideos.collectAsStateWithLifecycle()
+    val progress by repository.downloadProgress.collectAsStateWithLifecycle()
     var showSheet by remember(playlistTitle) { mutableStateOf(false) }
 
     val eligibleVideos = remember(videos) {

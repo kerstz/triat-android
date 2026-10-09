@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.settings
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import android.content.Intent
@@ -145,7 +146,6 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
@@ -386,16 +386,6 @@ fun SettingsScreen(
     val context = LocalContext.current
     val sessionManager = remember { SessionManager(context) }
     val coroutineScope = rememberCoroutineScope()
-
-    // The upload-notification channel list reads the stores directly (no DI
-    // house style): the mute toggles write through the same instances.
-    val localSubscriptionsRepository = remember {
-        com.ivor.ivormusic.data.LocalSubscriptionsRepository(context)
-    }
-    val uploadCheckRepository = remember {
-        com.ivor.ivormusic.data.UploadCheckRepository(context)
-    }
-    val mutedChannelIds by uploadCheckRepository.mutedChannelIds.collectAsState()
 
     // Check actual login status
     var isLoggedIn by remember { mutableStateOf(sessionManager.isLoggedIn()) }
@@ -1973,9 +1963,9 @@ private fun ExpressiveAboutDialog(
                                 val styleStore = remember {
                                     com.ivor.ivormusic.data.AppIconStyleStore(context)
                                 }
-                                val currentAppIconId by themePrefs.appIcon.collectAsState()
-                                val activeStyleId by styleStore.activeStyleId.collectAsState()
-                                val savedStyles by styleStore.styles.collectAsState()
+                                val currentAppIconId by themePrefs.appIcon.collectAsStateWithLifecycle()
+                                val activeStyleId by styleStore.activeStyleId.collectAsStateWithLifecycle()
+                                val savedStyles by styleStore.styles.collectAsStateWithLifecycle()
                                 val currentAppIcon = remember(currentAppIconId) {
                                     AppIcon.fromId(currentAppIconId)
                                 }

@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.player
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import androidx.compose.ui.res.stringResource
 import androidx.compose.foundation.background
@@ -45,7 +46,6 @@ import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,13 +77,13 @@ fun PlayerScreen(
     onBackClick: () -> Unit,
     viewModel: PlayerViewModel
 ) {
-    val currentSong by viewModel.currentSong.collectAsState()
-    val isPlaying by viewModel.isPlaying.collectAsState()
+    val currentSong by viewModel.currentSong.collectAsStateWithLifecycle()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
     val playerHaptics = rememberPlayerHaptics()
-    val isBuffering by viewModel.isBuffering.collectAsState()
-    val playWhenReady by viewModel.playWhenReady.collectAsState()
-    val progress by viewModel.progress.collectAsState()
-    val duration by viewModel.duration.collectAsState()
+    val isBuffering by viewModel.isBuffering.collectAsStateWithLifecycle()
+    val playWhenReady by viewModel.playWhenReady.collectAsStateWithLifecycle()
+    val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val duration by viewModel.duration.collectAsStateWithLifecycle()
     
     var isFavorite by remember { mutableStateOf(false) }
     var isShuffleOn by remember { mutableStateOf(false) }

@@ -74,7 +74,6 @@ import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -106,6 +105,7 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.util.lerp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import coil.imageLoader
 import coil.request.ImageRequest
@@ -232,9 +232,9 @@ internal fun SpinOverlay(
         }
     ) { visible ->
         if (visible) {
-            val liked by viewModel.likedSongs.collectAsState()
-            val forYou by viewModel.discoverySongs.collectAsState()
-            val forYouLoading by viewModel.isDiscoveryLoading.collectAsState()
+            val liked by viewModel.likedSongs.collectAsStateWithLifecycle()
+            val forYou by viewModel.discoverySongs.collectAsStateWithLifecycle()
+            val forYouLoading by viewModel.isDiscoveryLoading.collectAsStateWithLifecycle()
             SpinScreen(
                 initialSource = initialSource,
                 mix = mix,

@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.library
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
@@ -224,7 +225,7 @@ fun LibraryContent(
     // because the cache changes as a side effect of listening: songs arrive by
     // being played and leave by being evicted, so a value collected once at
     // first composition would be stale by the time anyone looked at it again.
-    val readyOffline by viewModel.readyOffline.collectAsState()
+    val readyOffline by viewModel.readyOffline.collectAsStateWithLifecycle()
     LaunchedEffect(currentRoute) {
         if (currentRoute == LibraryRoute.Main) viewModel.refreshReadyOffline()
     }
@@ -584,16 +585,16 @@ fun LibraryMainScreen(
     onSongLongPress: ((Song) -> Unit)? = null,
     allSongsListState: LazyListState = rememberLazyListState()
 ) {
-    val userPlaylists by viewModel.userPlaylists.collectAsState()
-    val localPlaylistIds by viewModel.localPlaylistIds.collectAsState()
-    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsState()
-    val hiddenPlaylists by viewModel.hiddenPlaylists.collectAsState()
-    val likedSongs by viewModel.likedSongs.collectAsState()
-    val downloadedSongs by viewModel.downloadedSongs.collectAsState()
-    val recentlyPlayed by viewModel.recentlyPlayed.collectAsState()
-    val playCounts by viewModel.playCounts.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsState()
+    val userPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
+    val localPlaylistIds by viewModel.localPlaylistIds.collectAsStateWithLifecycle()
+    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsStateWithLifecycle()
+    val hiddenPlaylists by viewModel.hiddenPlaylists.collectAsStateWithLifecycle()
+    val likedSongs by viewModel.likedSongs.collectAsStateWithLifecycle()
+    val downloadedSongs by viewModel.downloadedSongs.collectAsStateWithLifecycle()
+    val recentlyPlayed by viewModel.recentlyPlayed.collectAsStateWithLifecycle()
+    val playCounts by viewModel.playCounts.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
+    val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsStateWithLifecycle()
 
     // Sort order sticks across launches, so it lives in prefs rather than in
     // rememberSaveable. Matched by name instead of valueOf so an option
@@ -608,12 +609,12 @@ fun LibraryMainScreen(
     // screen lives inside Home's AnimatedContent, so every trip out to a
     // playlist and back landed on All again. Someone who lives in Albums had
     // to re-select it all day.
-    val storedTabName by themePreferences.libraryTab.collectAsState()
+    val storedTabName by themePreferences.libraryTab.collectAsStateWithLifecycle()
     val selectedTab = remember(storedTabName) {
         LibraryTab.entries.firstOrNull { it.name == storedTabName } ?: LibraryTab.All
     }
     val tabHaptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-    val storedSortName by themePreferences.librarySortOption.collectAsState()
+    val storedSortName by themePreferences.librarySortOption.collectAsStateWithLifecycle()
     val sortOption = remember(storedSortName) {
         LibrarySortOption.entries.firstOrNull { it.name == storedSortName }
             ?: LibrarySortOption.Title
@@ -2869,9 +2870,9 @@ fun PlaylistDetailScreen(
      */
     onAddSongsRequest: (() -> Unit)?
 ) {
-    val userPlaylists by viewModel.userPlaylists.collectAsState()
-    val localPlaylistIds by viewModel.localPlaylistIds.collectAsState()
-    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsState()
+    val userPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
+    val localPlaylistIds by viewModel.localPlaylistIds.collectAsStateWithLifecycle()
+    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsStateWithLifecycle()
     val resolvedPlaylist = remember(playlist, userPlaylists) {
         userPlaylists.firstOrNull { it.id == playlist.id } ?: playlist
     }
@@ -2952,9 +2953,9 @@ fun PlaylistDetailScreen(
     // Swipe actions, read live so a settings change reaches rows that are
     // already on screen - no DI here, one instance per screen.
     val swipePrefs = remember(shareContext) { ThemePreferences(shareContext) }
-    val swipeEnabled by swipePrefs.playlistSwipeEnabled.collectAsState()
-    val swipeStartSetting by swipePrefs.playlistSwipeStartAction.collectAsState()
-    val swipeEndSetting by swipePrefs.playlistSwipeEndAction.collectAsState()
+    val swipeEnabled by swipePrefs.playlistSwipeEnabled.collectAsStateWithLifecycle()
+    val swipeStartSetting by swipePrefs.playlistSwipeStartAction.collectAsStateWithLifecycle()
+    val swipeEndSetting by swipePrefs.playlistSwipeEndAction.collectAsStateWithLifecycle()
 
     // Search state
     var searchQuery by remember { mutableStateOf("") }
@@ -3247,7 +3248,7 @@ fun PlaylistDetailScreen(
     // that off did so because they want the app's own palette, and a page
     // that tints itself from the cover anyway is the switch not working.
     val heroArt = resolvedPlaylist.thumbnailUrl?.takeIf { it.isNotBlank() && it != "null" }
-    val artworkColorsEnabled by swipePrefs.playerArtworkColors.collectAsState()
+    val artworkColorsEnabled by swipePrefs.playerArtworkColors.collectAsStateWithLifecycle()
     val artworkScheme = rememberArtworkColorScheme(
         enabled = artworkColorsEnabled,
         albumArtUri = heroArt,

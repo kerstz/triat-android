@@ -36,7 +36,6 @@ import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -61,6 +60,7 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.VisualizerPreferences
 import com.ivor.ivormusic.data.VisualizerStyle
@@ -113,10 +113,10 @@ private const val EMIT_INTERVAL_MS = 33L
 fun PlayerVisualizerSlot(modifier: Modifier = Modifier) {
     val context = LocalContext.current
     val prefs = remember(context) { VisualizerPreferences(context) }
-    val enabled by prefs.enabled.collectAsState()
-    val style by prefs.style.collectAsState()
-    val barCount by prefs.barCount.collectAsState()
-    val sensitivity by prefs.sensitivity.collectAsState()
+    val enabled by prefs.enabled.collectAsStateWithLifecycle()
+    val style by prefs.style.collectAsStateWithLifecycle()
+    val barCount by prefs.barCount.collectAsStateWithLifecycle()
+    val sensitivity by prefs.sensitivity.collectAsStateWithLifecycle()
     val description = stringResource(R.string.cd_visualizer)
 
     AnimatedVisibility(
@@ -350,10 +350,10 @@ private fun DrawScope.drawVisualizerDots(
 fun VisualizerSettingsSection() {
     val context = LocalContext.current
     val prefs = remember(context) { VisualizerPreferences(context) }
-    val enabled by prefs.enabled.collectAsState()
-    val style by prefs.style.collectAsState()
-    val barCount by prefs.barCount.collectAsState()
-    val sensitivity by prefs.sensitivity.collectAsState()
+    val enabled by prefs.enabled.collectAsStateWithLifecycle()
+    val style by prefs.style.collectAsStateWithLifecycle()
+    val barCount by prefs.barCount.collectAsStateWithLifecycle()
+    val sensitivity by prefs.sensitivity.collectAsStateWithLifecycle()
 
     SettingsSection(title = stringResource(R.string.sp_visualizer)) {
         SettingsCard {

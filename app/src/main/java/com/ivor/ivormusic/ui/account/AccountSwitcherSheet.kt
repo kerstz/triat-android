@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.account
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.animation.AnimatedVisibility
@@ -50,7 +51,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,11 +93,11 @@ fun AccountSwitcherSheet(
 ) {
     val context = LocalContext.current
     val switcher = remember(context) { AccountSwitcher(context) }
-    val profiles by switcher.profiles.collectAsState()
-    val activeId by switcher.activeProfileId.collectAsState()
+    val profiles by switcher.profiles.collectAsStateWithLifecycle()
+    val activeId by switcher.activeProfileId.collectAsStateWithLifecycle()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val incognito by IncognitoMode.enabled(context).collectAsState()
+    val incognito by IncognitoMode.enabled(context).collectAsStateWithLifecycle()
 
     var pendingRemoval by remember { mutableStateOf<Profile?>(null) }
     var showAddLocal by remember { mutableStateOf(false) }

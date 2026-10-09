@@ -27,7 +27,6 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,6 +35,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.data.Song
@@ -106,7 +106,7 @@ fun SongOptionsSheet(
     onOpenAlbum: (PlaylistDisplayItem) -> Unit = {},
 ) {
     var showPlaylists by remember { mutableStateOf(false) }
-    val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsState()
+    val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsStateWithLifecycle()
 
     if (showPlaylists) {
         AddToPlaylistSheet(
@@ -126,7 +126,7 @@ fun SongOptionsSheet(
 
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-    val likedIds by viewModel.likedSongIds.collectAsState()
+    val likedIds by viewModel.likedSongIds.collectAsStateWithLifecycle()
     val isLiked = song.id in likedIds
     val isDownloaded = remember(song.id) { viewModel.isDownloaded(song.id) }
     val artist = song.artist.takeIf { !isUnknownArtist(it) }

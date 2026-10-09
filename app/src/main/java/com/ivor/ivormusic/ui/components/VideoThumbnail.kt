@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.LinearProgressIndicator
-import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.data.VideoHistoryRepository
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BrokenImage
@@ -226,7 +226,7 @@ fun VideoThumbnail(
 ) {
     val context = LocalContext.current
     val repository = remember(context) { VideoHistoryRepository(context) }
-    val history by repository.history.collectAsState()
+    val history by repository.history.collectAsStateWithLifecycle()
     val local = history.firstOrNull { it.videoId == video.videoId }
     val progress = if (video.isLive) null else {
         if (local?.watchedProgress != null &&

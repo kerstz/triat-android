@@ -2,7 +2,6 @@ package com.ivor.ivormusic.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -17,6 +16,7 @@ import androidx.glance.appwidget.provideContent
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.fillMaxSize
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Orbit: one cell, the cover as a record, the hero centred on it.
@@ -34,7 +34,7 @@ class OrbitWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         PlayerWidgetHost.ensureSeeded(context)
         provideContent {
-            val ui by PlayerWidgetHost.state.collectAsState()
+            val ui by PlayerWidgetHost.state.collectAsStateWithLifecycle()
             GlanceTheme(colors = KodaWidgetTheme.colors(context)) {
                 OrbitContent(ui)
             }

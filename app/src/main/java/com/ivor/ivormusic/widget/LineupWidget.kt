@@ -2,7 +2,6 @@ package com.ivor.ivormusic.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -31,6 +30,7 @@ import androidx.glance.layout.width
 import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 /**
@@ -60,7 +60,7 @@ class LineupWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         PlayerWidgetHost.ensureSeeded(context)
         provideContent {
-            val ui by PlayerWidgetHost.state.collectAsState()
+            val ui by PlayerWidgetHost.state.collectAsStateWithLifecycle()
             GlanceTheme(colors = KodaWidgetTheme.colors(context)) {
                 LineupContent(ui)
             }

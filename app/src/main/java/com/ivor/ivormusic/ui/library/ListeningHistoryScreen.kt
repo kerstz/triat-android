@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.ui.library
 import androidx.compose.ui.res.pluralStringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import androidx.compose.ui.res.stringResource
 import com.ivor.ivormusic.R
@@ -75,7 +76,6 @@ import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -177,17 +177,17 @@ fun ListeningHistoryScreen(
     val focusManager = LocalFocusManager.current
     val scope = rememberCoroutineScope()
 
-    val history by viewModel.playHistory.collectAsState()
-    val isLoading by viewModel.isPlayHistoryLoading.collectAsState()
-    val localSongs by viewModel.songs.collectAsState()
-    val globalStats by viewModel.globalStats.collectAsState()
+    val history by viewModel.playHistory.collectAsStateWithLifecycle()
+    val isLoading by viewModel.isPlayHistoryLoading.collectAsStateWithLifecycle()
+    val localSongs by viewModel.songs.collectAsStateWithLifecycle()
+    val globalStats by viewModel.globalStats.collectAsStateWithLifecycle()
 
     // The pause toggle lives here as well as in Settings, because this is where
     // someone is standing when the thought occurs. Its own ThemePreferences
     // instance, like every other consumer - the flow is what keeps this screen
     // honest while it is open.
     val themePreferences = remember(context) { ThemePreferences(context) }
-    val saveHistory by themePreferences.saveMusicHistory.collectAsState()
+    val saveHistory by themePreferences.saveMusicHistory.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
         viewModel.loadPlayHistory()

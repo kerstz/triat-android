@@ -1,6 +1,7 @@
 package com.ivor.ivormusic.ui.downloads
 import androidx.compose.ui.res.pluralStringResource
 import androidx.annotation.StringRes
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import androidx.compose.ui.res.stringResource
 
@@ -55,7 +56,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.TopAppBar
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -232,7 +232,7 @@ private fun MusicTab(
 ) {
     val context = LocalContext.current
     val repository = remember(context) { DownloadRepository.getInstance(context) }
-    val playlists by repository.playlistStore.playlists.collectAsState()
+    val playlists by repository.playlistStore.playlists.collectAsStateWithLifecycle()
     var expandedPlaylist by rememberSaveable { mutableStateOf<String?>(null) }
 
     // Resolved once per change rather than inside the lazy scope: offlineSongs

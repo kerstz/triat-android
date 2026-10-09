@@ -1,6 +1,7 @@
 package com.ivor.ivormusic.ui.moderation
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 import androidx.compose.foundation.background
@@ -38,7 +39,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -75,8 +75,8 @@ fun NotInterestedScreen(
     onBack: () -> Unit,
     contentPadding: PaddingValues = PaddingValues()
 ) {
-    val hiddenVideos by viewModel.hiddenVideos.collectAsState()
-    val blockedChannels by viewModel.blockedChannels.collectAsState()
+    val hiddenVideos by viewModel.hiddenVideos.collectAsStateWithLifecycle()
+    val blockedChannels by viewModel.blockedChannels.collectAsStateWithLifecycle()
 
     var confirmClear by remember { mutableStateOf<ClearTarget?>(null) }
 

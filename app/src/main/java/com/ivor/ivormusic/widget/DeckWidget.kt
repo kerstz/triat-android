@@ -2,7 +2,6 @@ package com.ivor.ivormusic.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
@@ -22,6 +21,7 @@ import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 /**
@@ -49,7 +49,7 @@ class DeckWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         PlayerWidgetHost.ensureSeeded(context)
         provideContent {
-            val ui by PlayerWidgetHost.state.collectAsState()
+            val ui by PlayerWidgetHost.state.collectAsStateWithLifecycle()
             GlanceTheme(colors = KodaWidgetTheme.colors(context)) {
                 DeckContent(ui)
             }

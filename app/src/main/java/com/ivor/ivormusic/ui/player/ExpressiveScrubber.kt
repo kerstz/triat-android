@@ -18,7 +18,6 @@ import androidx.compose.material3.WavyProgressIndicatorDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,6 +38,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.data.ThemePreferences
 import com.ivor.ivormusic.data.WaveformEnvelope
 import com.ivor.ivormusic.data.WaveformStore
@@ -125,7 +125,7 @@ internal class PlayerWaveform(private val envelope: WaveformEnvelope) {
 internal fun rememberPlayerWaveform(songId: String?): PlayerWaveform? {
     val context = LocalContext.current.applicationContext
     val preferences = remember(context) { ThemePreferences(context) }
-    val enabled by preferences.waveformSeekBar.collectAsState()
+    val enabled by preferences.waveformSeekBar.collectAsStateWithLifecycle()
 
     var waveform by remember(songId, enabled) {
         mutableStateOf(

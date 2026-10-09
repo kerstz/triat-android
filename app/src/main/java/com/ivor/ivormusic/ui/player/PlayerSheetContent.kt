@@ -1,4 +1,5 @@
 package com.ivor.ivormusic.ui.player
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import com.ivor.ivormusic.R
 import androidx.compose.ui.res.stringResource
@@ -92,26 +93,26 @@ fun PlayerSheetContent(
     // as a gesture instead of firing at the end of one. A BackHandler here
     // would be registered later and silently win.
     
-    val currentSong by viewModel.currentSong.collectAsState()
-    val isPlaying by viewModel.isPlaying.collectAsState()
-    val isBuffering by viewModel.isBuffering.collectAsState()
-    val progress by viewModel.progress.collectAsState()
-    val duration by viewModel.duration.collectAsState()
-    val shuffleModeEnabled by viewModel.shuffleModeEnabled.collectAsState()
-    val repeatMode by viewModel.repeatMode.collectAsState()
-    val currentQueue by viewModel.playOrderQueue.collectAsState()
-    val currentQueueItemId by viewModel.currentQueueItemId.collectAsState()
-    val playWhenReady by viewModel.playWhenReady.collectAsState()
-    val isFavorite by viewModel.isCurrentSongLiked.collectAsState()
+    val currentSong by viewModel.currentSong.collectAsStateWithLifecycle()
+    val isPlaying by viewModel.isPlaying.collectAsStateWithLifecycle()
+    val isBuffering by viewModel.isBuffering.collectAsStateWithLifecycle()
+    val progress by viewModel.progress.collectAsStateWithLifecycle()
+    val duration by viewModel.duration.collectAsStateWithLifecycle()
+    val shuffleModeEnabled by viewModel.shuffleModeEnabled.collectAsStateWithLifecycle()
+    val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
+    val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
+    val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
+    val playWhenReady by viewModel.playWhenReady.collectAsStateWithLifecycle()
+    val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
     val playLabel = stringResource(R.string.cd_play)
     val pauseLabel = stringResource(R.string.cd_pause)
     
     // Download states
-    val downloadingIds by viewModel.downloadingIds.collectAsState()
-    val downloadedSongs by viewModel.downloadedSongs.collectAsState()
+    val downloadingIds by viewModel.downloadingIds.collectAsStateWithLifecycle()
+    val downloadedSongs by viewModel.downloadedSongs.collectAsStateWithLifecycle()
     
     // Lyrics state
-    val lyricsResult by viewModel.lyricsResult.collectAsState()
+    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     
     var showQueue by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
@@ -137,7 +138,7 @@ fun PlayerSheetContent(
         Crossfade(targetState = showQueue, label = "PlayerQueueTransition") { isQueueVisible ->
             if (isQueueVisible) {
                 // Determine loading state for the specific "load more" action
-                val isLoadingMore by viewModel.isLoadingMore.collectAsState()
+                val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
                 
                 ExpressiveQueueView(
                     queue = currentQueue,

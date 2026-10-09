@@ -254,7 +254,6 @@ class ThemePreferences(context: Context) {
 
     private val _uploadNotificationsEnabled =
         MutableStateFlow(getUploadNotificationsEnabledPreference())
-    val uploadNotificationsEnabled: StateFlow<Boolean> = _uploadNotificationsEnabled.asStateFlow()
 
     private val _oemFixEnabled = MutableStateFlow(getOemFixEnabledPreference())
     val oemFixEnabled: StateFlow<Boolean> = _oemFixEnabled.asStateFlow()
@@ -1676,21 +1675,10 @@ class ThemePreferences(context: Context) {
         _hapticsLevel.value = value
     }
 
-    /**
-     * Whether the background check may notify about new uploads from channels
-     * followed on this device. Off by default: it is a battery-and-attention
-     * commitment, and its periodic work is canceled while this is false.
-     */
-    fun getUploadNotificationsEnabled(): Boolean =
-        prefs.getBoolean(KEY_UPLOAD_NOTIFICATIONS_ENABLED, false)
 
     private fun getUploadNotificationsEnabledPreference(): Boolean =
         prefs.getBoolean(KEY_UPLOAD_NOTIFICATIONS_ENABLED, false)
 
-    fun setUploadNotificationsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_UPLOAD_NOTIFICATIONS_ENABLED, enabled).apply()
-        _uploadNotificationsEnabled.value = enabled
-    }
 
     /**
      * Get the stored excluded folders preference. Defaults to empty set.

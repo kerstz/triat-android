@@ -48,7 +48,6 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -58,6 +57,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
 import androidx.compose.ui.text.font.FontWeight
@@ -89,7 +89,7 @@ fun TxtImportSheet(
     val scope = rememberCoroutineScope()
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
-    val userPlaylists by viewModel.userPlaylists.collectAsState()
+    val userPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
     val availableLocalPlaylists = remember(userPlaylists) { userPlaylists.filter { it.id != "LM" && it.id != "RTM" } }
 
     var pastedText by remember { mutableStateOf("") }

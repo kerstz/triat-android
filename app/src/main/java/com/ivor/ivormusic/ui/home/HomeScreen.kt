@@ -85,6 +85,7 @@ import androidx.compose.material3.HorizontalFloatingToolbar
 import androidx.compose.material3.FloatingToolbarDefaults
 import androidx.compose.material3.FloatingToolbarExitDirection
 import androidx.compose.material3.IconToggleButton
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.ExpressivePullToRefresh
 import androidx.activity.compose.BackHandler
 import androidx.compose.material3.carousel.CarouselDefaults
@@ -94,7 +95,6 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -245,13 +245,13 @@ fun HomeScreen(
 ) {
     val context = androidx.compose.ui.platform.LocalContext.current
     val homePreferences = remember(context) { com.ivor.ivormusic.data.ThemePreferences(context) }
-    val localSongs by viewModel.songs.collectAsState()
-    val youtubeSongs by viewModel.youtubeSongs.collectAsState()
-    val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsState()
+    val localSongs by viewModel.songs.collectAsStateWithLifecycle()
+    val youtubeSongs by viewModel.youtubeSongs.collectAsStateWithLifecycle()
+    val isYouTubeConnected by viewModel.isYouTubeConnected.collectAsStateWithLifecycle()
     
-    val contentSource by viewModel.contentSource.collectAsState()
-    val mixSourcesOnHome by viewModel.mixSourcesOnHome.collectAsState()
-    val soundCloudHome by viewModel.soundCloudHome.collectAsState()
+    val contentSource by viewModel.contentSource.collectAsStateWithLifecycle()
+    val mixSourcesOnHome by viewModel.mixSourcesOnHome.collectAsStateWithLifecycle()
+    val soundCloudHome by viewModel.soundCloudHome.collectAsStateWithLifecycle()
     LaunchedEffect(contentSource) { viewModel.refreshSoundCloudHome() }
 
     // Use local songs or YouTube songs (which includes fallback search results if not logged in).
@@ -270,14 +270,14 @@ fun HomeScreen(
     // Local play history, for the "Jump back in" rail. Free (a file read, no
     // network), and refreshed whenever the Home tab comes back into view so a
     // song played since the last look shows up.
-    val recentlyPlayed by viewModel.recentlyPlayed.collectAsState()
+    val recentlyPlayed by viewModel.recentlyPlayed.collectAsStateWithLifecycle()
 
-    val currentSong by playerViewModel.currentSong.collectAsState()
-    val isPlaying by playerViewModel.isPlaying.collectAsState()
-    val isBuffering by playerViewModel.isBuffering.collectAsState()
-    val playWhenReady by playerViewModel.playWhenReady.collectAsState()
-    val progress by playerViewModel.progress.collectAsState()
-    val duration by playerViewModel.duration.collectAsState()
+    val currentSong by playerViewModel.currentSong.collectAsStateWithLifecycle()
+    val isPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
+    val isBuffering by playerViewModel.isBuffering.collectAsStateWithLifecycle()
+    val playWhenReady by playerViewModel.playWhenReady.collectAsStateWithLifecycle()
+    val progress by playerViewModel.progress.collectAsStateWithLifecycle()
+    val duration by playerViewModel.duration.collectAsStateWithLifecycle()
     
     val progressFraction = if (duration > 0) progress.toFloat() / duration.toFloat() else 0f
     
@@ -398,7 +398,7 @@ fun HomeScreen(
     
     // Loading state for playlist fetch
     var isPlaylistLoading by remember { mutableStateOf(false) }
-    val isLoading by viewModel.isLoading.collectAsState()
+    val isLoading by viewModel.isLoading.collectAsStateWithLifecycle()
     
     // Artist screen state (for navigation from player)
     var viewedArtistFromPlayer by remember { mutableStateOf<String?>(null) }
@@ -423,7 +423,7 @@ fun HomeScreen(
     // "Open music artist page" cross-link on a creator's channel page pops back
     // to home and leaves the request on the ViewModel, because a NavHost
     // destination cannot reach the tab state that lives in here.
-    val pendingArtistPage by viewModel.pendingArtistPage.collectAsState()
+    val pendingArtistPage by viewModel.pendingArtistPage.collectAsStateWithLifecycle()
     LaunchedEffect(pendingArtistPage) {
         pendingArtistPage?.let { artist ->
             // The artist page is the music-mode view of this creator, and tab 2
@@ -448,7 +448,7 @@ fun HomeScreen(
     // that can show this playlist only exists on one side of the video toggle,
     // so leaving the toggle alone would land on the wrong tab and read as the
     // share having done nothing.
-    val pendingPlaylistPage by viewModel.pendingPlaylistPage.collectAsState()
+    val pendingPlaylistPage by viewModel.pendingPlaylistPage.collectAsStateWithLifecycle()
     LaunchedEffect(pendingPlaylistPage) {
         pendingPlaylistPage?.let { playlist ->
             noteLibraryReturn()
@@ -630,8 +630,8 @@ fun HomeScreen(
                             // tab differs, which is the move the video toggle
                             // already established.
                             if (spotlightHome) {
-                                val spotlightPlaylists by viewModel.userPlaylists.collectAsState()
-                                val spotlightLiked by viewModel.likedSongs.collectAsState()
+                                val spotlightPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
+                                val spotlightLiked by viewModel.likedSongs.collectAsStateWithLifecycle()
                                 SpotlightHomeContent(
                                     songs = songs,
                                     recentlyPlayed = recentlyPlayed,
@@ -1005,7 +1005,7 @@ fun HomeScreen(
             isBuffering = isBuffering,
             playWhenReady = playWhenReady,
             progress = progressFraction,
-            duration = playerViewModel.duration.collectAsState().value,
+            duration = playerViewModel.duration.collectAsStateWithLifecycle().value,
             onPlayPauseClick = { playerViewModel.togglePlayPause() },
             onNextClick = { playerViewModel.skipToNext() },
             viewModel = playerViewModel,
@@ -1250,7 +1250,7 @@ fun YourMixContent(
     val backgroundColor = MaterialTheme.colorScheme.background
     val textColor = MaterialTheme.colorScheme.onBackground
 
-    val isRefreshing by viewModel.isLoading.collectAsState()
+    val isRefreshing by viewModel.isLoading.collectAsStateWithLifecycle()
 
     // Do not leave an infinite transition running behind the loaded Home.
     // Reading its value here invalidates this whole composition on every

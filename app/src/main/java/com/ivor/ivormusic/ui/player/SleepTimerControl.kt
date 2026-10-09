@@ -3,12 +3,12 @@ package com.ivor.ivormusic.ui.player
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.SleepTimerSheet
 
 /**
@@ -44,8 +44,8 @@ internal fun rememberSleepTimerControl(
     container: Color = MaterialTheme.colorScheme.surfaceContainerHigh,
     onContainer: Color = MaterialTheme.colorScheme.onSurface
 ): SleepTimerControl {
-    val endsAt by viewModel.sleepTimerEndsAt.collectAsState()
-    val endOfTrack by viewModel.sleepTimerEndOfTrack.collectAsState()
+    val endsAt by viewModel.sleepTimerEndsAt.collectAsStateWithLifecycle()
+    val endOfTrack by viewModel.sleepTimerEndOfTrack.collectAsStateWithLifecycle()
     var showSheet by remember { mutableStateOf(false) }
 
     if (showSheet) {

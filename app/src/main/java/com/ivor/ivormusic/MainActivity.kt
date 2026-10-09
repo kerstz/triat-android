@@ -1,5 +1,6 @@
 package com.ivor.ivormusic
 
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.hiddenFraction
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
 import android.content.Intent
@@ -30,7 +31,6 @@ import androidx.compose.material.icons.rounded.BugReport
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -145,61 +145,61 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             val themeViewModel: ThemeViewModel = viewModel()
-            val themeMode by themeViewModel.themeMode.collectAsState()
-            val amoledTheme by themeViewModel.amoledTheme.collectAsState()
-            val colorPalette by themeViewModel.colorPalette.collectAsState()
-            val paletteStyle by themeViewModel.paletteStyle.collectAsState()
-            val appIcon by themeViewModel.appIcon.collectAsState()
-            val loadLocalSongs by themeViewModel.loadLocalSongs.collectAsState()
-            val ambientBackground by themeViewModel.ambientBackground.collectAsState()
-            val motionArtwork by themeViewModel.motionArtwork.collectAsState()
-            val motionArtworkWifiOnly by themeViewModel.motionArtworkWifiOnly.collectAsState()
-            val motionArtworkQuality by themeViewModel.motionArtworkQuality.collectAsState()
-            val waveformSeekBar by themeViewModel.waveformSeekBar.collectAsState()
-            val playerArtworkColors by themeViewModel.playerArtworkColors.collectAsState()
-            val playerStyle by themeViewModel.playerStyle.collectAsState()
-            val contentSource by themeViewModel.contentSource.collectAsState()
-            val mixSourcesOnHome by themeViewModel.mixSourcesOnHome.collectAsState()
-            val showSourceBadge by themeViewModel.showSourceBadge.collectAsState()
-            val saveMusicHistory by themeViewModel.saveMusicHistory.collectAsState()
-            val liveDownloadUpdates by themeViewModel.liveDownloadUpdates.collectAsState()
-            val livePlaybackUpdates by themeViewModel.livePlaybackUpdates.collectAsState()
-            val showRecentSearches by themeViewModel.showRecentSearches.collectAsState()
-            val playlistSwipeEnabled by themeViewModel.playlistSwipeEnabled.collectAsState()
-            val playlistSwipeStartAction by themeViewModel.playlistSwipeStartAction.collectAsState()
-            val playlistSwipeEndAction by themeViewModel.playlistSwipeEndAction.collectAsState()
-            val musicQualityWifi by themeViewModel.musicQualityWifi.collectAsState()
-            val musicQualityMobile by themeViewModel.musicQualityMobile.collectAsState()
-            val spotlightHome by themeViewModel.spotlightHome.collectAsState()
-            val uiScale by themeViewModel.uiScale.collectAsState()
-            val lyricsConfiguration by themeViewModel.lyricsConfiguration.collectAsState()
-            val sponsorBlockEnabled by themeViewModel.sponsorBlockEnabled.collectAsState()
-            val sponsorBlockActions by themeViewModel.sponsorBlockActions.collectAsState()
+            val themeMode by themeViewModel.themeMode.collectAsStateWithLifecycle()
+            val amoledTheme by themeViewModel.amoledTheme.collectAsStateWithLifecycle()
+            val colorPalette by themeViewModel.colorPalette.collectAsStateWithLifecycle()
+            val paletteStyle by themeViewModel.paletteStyle.collectAsStateWithLifecycle()
+            val appIcon by themeViewModel.appIcon.collectAsStateWithLifecycle()
+            val loadLocalSongs by themeViewModel.loadLocalSongs.collectAsStateWithLifecycle()
+            val ambientBackground by themeViewModel.ambientBackground.collectAsStateWithLifecycle()
+            val motionArtwork by themeViewModel.motionArtwork.collectAsStateWithLifecycle()
+            val motionArtworkWifiOnly by themeViewModel.motionArtworkWifiOnly.collectAsStateWithLifecycle()
+            val motionArtworkQuality by themeViewModel.motionArtworkQuality.collectAsStateWithLifecycle()
+            val waveformSeekBar by themeViewModel.waveformSeekBar.collectAsStateWithLifecycle()
+            val playerArtworkColors by themeViewModel.playerArtworkColors.collectAsStateWithLifecycle()
+            val playerStyle by themeViewModel.playerStyle.collectAsStateWithLifecycle()
+            val contentSource by themeViewModel.contentSource.collectAsStateWithLifecycle()
+            val mixSourcesOnHome by themeViewModel.mixSourcesOnHome.collectAsStateWithLifecycle()
+            val showSourceBadge by themeViewModel.showSourceBadge.collectAsStateWithLifecycle()
+            val saveMusicHistory by themeViewModel.saveMusicHistory.collectAsStateWithLifecycle()
+            val liveDownloadUpdates by themeViewModel.liveDownloadUpdates.collectAsStateWithLifecycle()
+            val livePlaybackUpdates by themeViewModel.livePlaybackUpdates.collectAsStateWithLifecycle()
+            val showRecentSearches by themeViewModel.showRecentSearches.collectAsStateWithLifecycle()
+            val playlistSwipeEnabled by themeViewModel.playlistSwipeEnabled.collectAsStateWithLifecycle()
+            val playlistSwipeStartAction by themeViewModel.playlistSwipeStartAction.collectAsStateWithLifecycle()
+            val playlistSwipeEndAction by themeViewModel.playlistSwipeEndAction.collectAsStateWithLifecycle()
+            val musicQualityWifi by themeViewModel.musicQualityWifi.collectAsStateWithLifecycle()
+            val musicQualityMobile by themeViewModel.musicQualityMobile.collectAsStateWithLifecycle()
+            val spotlightHome by themeViewModel.spotlightHome.collectAsStateWithLifecycle()
+            val uiScale by themeViewModel.uiScale.collectAsStateWithLifecycle()
+            val lyricsConfiguration by themeViewModel.lyricsConfiguration.collectAsStateWithLifecycle()
+            val sponsorBlockEnabled by themeViewModel.sponsorBlockEnabled.collectAsStateWithLifecycle()
+            val sponsorBlockActions by themeViewModel.sponsorBlockActions.collectAsStateWithLifecycle()
             val sponsorBlockShowOnSeekBar by
-                themeViewModel.sponsorBlockShowOnSeekBar.collectAsState()
-            val sponsorBlockNotice by themeViewModel.sponsorBlockNotice.collectAsState()
+                themeViewModel.sponsorBlockShowOnSeekBar.collectAsStateWithLifecycle()
+            val sponsorBlockNotice by themeViewModel.sponsorBlockNotice.collectAsStateWithLifecycle()
             val sponsorBlockMinDurationMs by
-                themeViewModel.sponsorBlockMinDurationMs.collectAsState()
+                themeViewModel.sponsorBlockMinDurationMs.collectAsStateWithLifecycle()
             val nonExpressiveNavigationBar by
-                themeViewModel.nonExpressiveNavigationBar.collectAsState()
-            val excludedFolders by themeViewModel.excludedFolders.collectAsState()
-            val oemFixEnabled by themeViewModel.oemFixEnabled.collectAsState()
-            val manualScanEnabled by themeViewModel.manualScanEnabled.collectAsState()
+                themeViewModel.nonExpressiveNavigationBar.collectAsStateWithLifecycle()
+            val excludedFolders by themeViewModel.excludedFolders.collectAsStateWithLifecycle()
+            val oemFixEnabled by themeViewModel.oemFixEnabled.collectAsStateWithLifecycle()
+            val manualScanEnabled by themeViewModel.manualScanEnabled.collectAsStateWithLifecycle()
             val privateDownloadsEnabled by
-                themeViewModel.privateDownloadsEnabled.collectAsState()
-            val onboardingCompleted by themeViewModel.onboardingCompleted.collectAsState()
-            val localOnlyMode by themeViewModel.localOnlyMode.collectAsState()
+                themeViewModel.privateDownloadsEnabled.collectAsStateWithLifecycle()
+            val onboardingCompleted by themeViewModel.onboardingCompleted.collectAsStateWithLifecycle()
+            val localOnlyMode by themeViewModel.localOnlyMode.collectAsStateWithLifecycle()
             
-            val cacheEnabled by themeViewModel.cacheEnabled.collectAsState()
-            val playbackPreloadEnabled by themeViewModel.playbackPreloadEnabled.collectAsState()
-            val maxCacheSizeMb by themeViewModel.maxCacheSizeMb.collectAsState()
-            val currentCacheSize by themeViewModel.currentCacheSizeBytes.collectAsState()
-            val autoLoadQueue by themeViewModel.autoLoadQueue.collectAsState()
-            val crossfadeEnabled by themeViewModel.crossfadeEnabled.collectAsState()
-            val crossfadeAuto by themeViewModel.crossfadeAuto.collectAsState()
-            val crossfadeDurationMs by themeViewModel.crossfadeDurationMs.collectAsState()
-            val normalizeVolume by themeViewModel.normalizeVolume.collectAsState()
-            val hapticsLevel by themeViewModel.hapticsLevel.collectAsState()
+            val cacheEnabled by themeViewModel.cacheEnabled.collectAsStateWithLifecycle()
+            val playbackPreloadEnabled by themeViewModel.playbackPreloadEnabled.collectAsStateWithLifecycle()
+            val maxCacheSizeMb by themeViewModel.maxCacheSizeMb.collectAsStateWithLifecycle()
+            val currentCacheSize by themeViewModel.currentCacheSizeBytes.collectAsStateWithLifecycle()
+            val autoLoadQueue by themeViewModel.autoLoadQueue.collectAsStateWithLifecycle()
+            val crossfadeEnabled by themeViewModel.crossfadeEnabled.collectAsStateWithLifecycle()
+            val crossfadeAuto by themeViewModel.crossfadeAuto.collectAsStateWithLifecycle()
+            val crossfadeDurationMs by themeViewModel.crossfadeDurationMs.collectAsStateWithLifecycle()
+            val normalizeVolume by themeViewModel.normalizeVolume.collectAsStateWithLifecycle()
+            val hapticsLevel by themeViewModel.hapticsLevel.collectAsStateWithLifecycle()
             
             val isSystemDark = isSystemInDarkTheme()
             val isDarkTheme = remember(themeMode, isSystemDark) {
@@ -597,10 +597,10 @@ fun MusicApp(
         navController.navigate("channel/${android.net.Uri.encode(channelId)}")
     }
 
-    val isMusicPlaying by playerViewModel.isPlaying.collectAsState()
-    val pendingSongDownload by playerViewModel.pendingSongDownload.collectAsState()
+    val isMusicPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
+    val pendingSongDownload by playerViewModel.pendingSongDownload.collectAsStateWithLifecycle()
 
-    val musicPillVisible = playerViewModel.currentSong.collectAsState().value != null
+    val musicPillVisible = playerViewModel.currentSong.collectAsStateWithLifecycle().value != null
 
     // Opens YouTube links shared into the app.
     SharedLinkHandler(
@@ -848,8 +848,8 @@ fun MusicApp(
                 popEnterTransition = { slideInHorizontally(initialOffsetX = { -it / 3 }) + fadeIn() },
                 popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) + fadeOut() }
             ) {
-                val downloadedSongs by playerViewModel.downloadedSongs.collectAsState()
-                val downloadProgress by playerViewModel.downloadProgress.collectAsState()
+                val downloadedSongs by playerViewModel.downloadedSongs.collectAsStateWithLifecycle()
+                val downloadProgress by playerViewModel.downloadProgress.collectAsStateWithLifecycle()
                 com.ivor.ivormusic.ui.downloads.DownloadsScreen(
                     downloadedSongs = downloadedSongs,
                     activeDownloads = downloadProgress,
@@ -1059,7 +1059,7 @@ private fun NotInterestedUndoHost(modifier: Modifier = Modifier) {
     // moment another dismissal replaces this one, which would drop the undo
     // request mid-flight exactly when the user is undoing in a hurry.
     val undoScope = androidx.compose.runtime.rememberCoroutineScope()
-    val lastAction by repository.lastAction.collectAsState()
+    val lastAction by repository.lastAction.collectAsStateWithLifecycle()
     val snackbarHostState = remember { SnackbarHostState() }
 
     LaunchedEffect(lastAction?.id) {

@@ -1,6 +1,7 @@
 package com.ivor.ivormusic.ui.search
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.ui.components.displaySubtitle
 import com.ivor.ivormusic.ui.components.VideoThumbnailBadge
@@ -141,7 +142,6 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.material3.toShape
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
@@ -238,8 +238,8 @@ fun SearchScreen(
     var albumResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var playlistResults by remember { mutableStateOf<List<PlaylistDisplayItem>>(emptyList()) }
     var selectedCategory by rememberSaveable { mutableStateOf(SearchCategory.SONGS) }
-    val contentSource by viewModel.contentSource.collectAsState()
-    val showSourceBadge by viewModel.showSourceBadge.collectAsState()
+    val contentSource by viewModel.contentSource.collectAsStateWithLifecycle()
+    val showSourceBadge by viewModel.showSourceBadge.collectAsStateWithLifecycle()
     val visibleCategories = remember(contentSource) {
         SearchCategory.entries.filter { cat ->
             if (cat == SearchCategory.SOUNDCLOUD) contentSource.includesSoundCloud
@@ -259,7 +259,7 @@ fun SearchScreen(
     val focusManager = LocalFocusManager.current
     
     // Search history and focus state
-    val searchHistory by viewModel.searchHistory.collectAsState()
+    val searchHistory by viewModel.searchHistory.collectAsStateWithLifecycle()
     // Read here rather than threaded from MainActivity: ThemePreferences
     // instances listen to the same preference file, so a flip in Settings
     // reaches this one, and the alternative is another parameter through a
@@ -268,13 +268,13 @@ fun SearchScreen(
     val searchThemePreferences = remember(searchScreenContext) {
         com.ivor.ivormusic.data.ThemePreferences(searchScreenContext)
     }
-    val showRecentSearches by searchThemePreferences.showRecentSearches.collectAsState()
+    val showRecentSearches by searchThemePreferences.showRecentSearches.collectAsStateWithLifecycle()
     var isSearchFocused by remember { mutableStateOf(false) }
 
     // Playlists and albums already kept, so a result the user saved earlier
     // comes back marked instead of inviting them to save it twice. One store
     // behind both, read through each mode's own shape.
-    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsState()
+    val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsStateWithLifecycle()
 
     // Pasted YouTube link handling: when the query is a URL, resolve it into
     // a directly playable result instead of running a text search.

@@ -7,7 +7,6 @@ import kotlinx.coroutines.launch
 import com.ivor.ivormusic.data.ThemePreferences
 import com.ivor.ivormusic.data.MotionArtworkQuality
 import com.ivor.ivormusic.data.PlayerStyle
-import com.ivor.ivormusic.work.UploadCheckWorker
 import kotlinx.coroutines.flow.StateFlow
 
 /**
@@ -97,7 +96,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     val normalizeVolume: StateFlow<Boolean> = themePreferences.normalizeVolume
     val rememberVideoBrightness: StateFlow<Boolean> = themePreferences.rememberVideoBrightness
     val hapticsLevel: StateFlow<String> = themePreferences.hapticsLevel
-    val uploadNotificationsEnabled: StateFlow<Boolean> = themePreferences.uploadNotificationsEnabled
 
     val oemFixEnabled: StateFlow<Boolean> = themePreferences.oemFixEnabled
     val manualScanEnabled: StateFlow<Boolean> = themePreferences.manualScanEnabled
@@ -373,10 +371,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setHapticsLevel(value)
     }
 
-    fun setUploadNotificationsEnabled(enabled: Boolean) {
-        themePreferences.setUploadNotificationsEnabled(enabled)
-        UploadCheckWorker.setEnabled(getApplication<Application>(), enabled)
-    }
     
     fun setCrossfadeDuration(durationMs: Int) {
         themePreferences.setCrossfadeDuration(durationMs)

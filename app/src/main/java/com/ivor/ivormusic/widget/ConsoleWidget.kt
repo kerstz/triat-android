@@ -2,7 +2,6 @@ package com.ivor.ivormusic.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -20,6 +19,7 @@ import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 
 /**
  * Console: transport and nothing else. No cover, no title - the widget for
@@ -43,7 +43,7 @@ class ConsoleWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         PlayerWidgetHost.ensureSeeded(context)
         provideContent {
-            val ui by PlayerWidgetHost.state.collectAsState()
+            val ui by PlayerWidgetHost.state.collectAsStateWithLifecycle()
             GlanceTheme(colors = KodaWidgetTheme.colors(context)) {
                 ConsoleContent(ui)
             }

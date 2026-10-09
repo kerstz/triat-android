@@ -46,7 +46,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -63,6 +62,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.hasWatchableVideo
@@ -146,7 +146,7 @@ fun NowPlayingOptionsSheet(
      */
 ) {
     var showPlaylists by remember { mutableStateOf(false) }
-    val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsState()
+    val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsStateWithLifecycle()
 
     // The account's playlists are a network read, and seven of the eight styles
     // never asked for them - their picker listed local playlists only. Asking
@@ -181,12 +181,12 @@ fun NowPlayingOptionsSheet(
     // Follows the hardware keys and the system panel while the sheet is open;
     // hides itself on a device whose output volume cannot be moved.
     val volume = rememberMediaVolume()
-    val likedIds by viewModel.likedSongIds.collectAsState()
+    val likedIds by viewModel.likedSongIds.collectAsStateWithLifecycle()
     val isLiked = song.id in likedIds
     // Keyed on the store's own flows so the row follows a download that
     // finishes while the menu is open, rather than reading once at open time.
-    val downloadedSongs by viewModel.downloadedSongs.collectAsState()
-    val downloadingIds by viewModel.downloadingIds.collectAsState()
+    val downloadedSongs by viewModel.downloadedSongs.collectAsStateWithLifecycle()
+    val downloadingIds by viewModel.downloadingIds.collectAsStateWithLifecycle()
     val isDownloaded = remember(downloadedSongs, song.id) { viewModel.isDownloaded(song.id) }
     val isDownloading = remember(downloadingIds, song.id) { viewModel.isDownloading(song.id) }
     val isLocalOriginal = remember(song.id) { viewModel.isLocalOriginal(song) }
@@ -526,7 +526,7 @@ private fun ControlRow(
 @Composable
 private fun PlaybackSpeedRow(viewModel: PlayerViewModel) {
     val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-    val speed by viewModel.playbackSpeed.collectAsState()
+    val speed by viewModel.playbackSpeed.collectAsStateWithLifecycle()
     var dragging by remember { mutableStateOf(false) }
     var sliderSpeed by remember { mutableFloatStateOf(speed) }
     // Follow the service while the control is at rest - another surface, or a

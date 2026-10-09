@@ -54,7 +54,6 @@ import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.toShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -77,6 +76,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.AppIconStyleStore
 import com.ivor.ivormusic.data.SavedIconStyle
@@ -118,9 +118,9 @@ internal fun AppIconSettingsPage(
     val themePrefs = remember { ThemePreferences(context) }
     val styleStore = remember { AppIconStyleStore(context) }
 
-    val launcherIconId by themePrefs.appIcon.collectAsState()
-    val savedStyles by styleStore.styles.collectAsState()
-    val activeStyleId by styleStore.activeStyleId.collectAsState()
+    val launcherIconId by themePrefs.appIcon.collectAsStateWithLifecycle()
+    val savedStyles by styleStore.styles.collectAsStateWithLifecycle()
+    val activeStyleId by styleStore.activeStyleId.collectAsStateWithLifecycle()
 
     val launcherPreset = remember(launcherIconId) { AppIcon.fromId(launcherIconId) }
 

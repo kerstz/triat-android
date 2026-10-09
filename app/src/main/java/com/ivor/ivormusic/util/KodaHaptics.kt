@@ -1,13 +1,13 @@
 package com.ivor.ivormusic.util
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.data.ThemePreferences
 
 /**
@@ -140,7 +140,7 @@ class KodaHaptics(
 fun rememberKodaHaptics(): KodaHaptics {
     val context = LocalContext.current
     val themePreferences = remember(context) { ThemePreferences(context) }
-    val levelPref by themePreferences.hapticsLevel.collectAsState()
+    val levelPref by themePreferences.hapticsLevel.collectAsStateWithLifecycle()
     val feedback = LocalHapticFeedback.current
     // Read through a state holder rather than capturing the value: some
     // holders (QueueReorderState) remember this wrapper across level changes,

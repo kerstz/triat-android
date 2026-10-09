@@ -2,7 +2,6 @@ package com.ivor.ivormusic.widget
 
 import android.content.Context
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
@@ -24,6 +23,7 @@ import androidx.glance.layout.fillMaxWidth
 import androidx.glance.layout.height
 import androidx.glance.layout.padding
 import androidx.glance.layout.width
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
 
 /**
@@ -50,7 +50,7 @@ class PulseWidget : GlanceAppWidget() {
             // Collected, not captured: provideGlance runs once per session
             // while updateAll only recomposes, so a value read out here would
             // never change again for the life of that session.
-            val ui by PlayerWidgetHost.state.collectAsState()
+            val ui by PlayerWidgetHost.state.collectAsStateWithLifecycle()
             GlanceTheme(colors = KodaWidgetTheme.colors(context)) {
                 PulseContent(ui)
             }
