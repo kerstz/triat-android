@@ -58,7 +58,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val recommendationEngine = com.ivor.ivormusic.data.RecommendationEngine(application, youtubeRepository)
     private val homeRecommendationCache = HomeRecommendationCache(application)
     private val videoHistoryRepository = com.ivor.ivormusic.data.VideoHistoryRepository(application)
-    private val localVideoRepository = com.ivor.ivormusic.data.LocalVideoRepository(application)
 
     // What the user asked not to be recommended, in either mode. Declared with
     // the other repositories rather than beside the video feeds it started
@@ -111,8 +110,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _pendingPlaylistPage = MutableStateFlow<PlaylistDisplayItem?>(null)
     val pendingPlaylistPage: StateFlow<PlaylistDisplayItem?> = _pendingPlaylistPage.asStateFlow()
 
-    private val _pendingVideoPlaylistPage = MutableStateFlow<VideoPlaylist?>(null)
-    val pendingVideoPlaylistPage: StateFlow<VideoPlaylist?> = _pendingVideoPlaylistPage.asStateFlow()
 
     fun requestPlaylistPage(info: PlaylistPageInfo) {
         _pendingPlaylistPage.value = info.toDisplayItem()
@@ -122,13 +119,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _pendingPlaylistPage.value = null
     }
 
-    fun requestVideoPlaylistPage(info: PlaylistPageInfo) {
-        _pendingVideoPlaylistPage.value = info.toVideoPlaylist(app)
-    }
 
-    fun consumeVideoPlaylistPageRequest() {
-        _pendingVideoPlaylistPage.value = null
-    }
 
     /**
      * What a shared playlist link points at, as the page that opens it needs to
@@ -217,11 +208,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val hiddenPlaylistsRepository =
         com.ivor.ivormusic.data.HiddenPlaylistsRepository(application)
 
-    // Video playlists held on the device, with the videos embedded. The video
-    // counterpart of playlistRepository, and the reason video mode can save
-    // anything at all signed out. See LocalVideoPlaylistsRepository.
-    private val localVideoPlaylistsRepository =
-        com.ivor.ivormusic.data.LocalVideoPlaylistsRepository(application)
 
     // Merged Playlists (Local + Saved + YouTube)
     //
@@ -522,12 +508,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    // Video Mode State
-    /**
-     * Raw feed as fetched. Everything user-facing reads [trendingVideos]
-     * instead, which subtracts what the user asked not to see.
-     */
-    private val _trendingVideos = MutableStateFlow<List<VideoItem>>(emptyList())
 
     /**
      * Apply the setting immediately; in-flight requests are prevented from
@@ -537,51 +517,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * loaded either way - switching recommendations off must not silently take
      * the Shorts row away with them.
      */
-    fun applyVideoRecommendationsPreference(enabled: Boolean) {
-        if (enabled) {
-            // Runs on every return to Home, not only when the preference
-            // changes. A feed loaded minutes ago stays, with the user's place
-            // in it, instead of being refetched and replaced.
-            if (_trendingVideos.value.isNotEmpty() && loadedRecently(videoFeedLoadedAtMs)) {
-                loadShortsFeed()
-                return
-            }
-            loadTrendingVideos()
-        } else {
-            loadShortsFeed()
-            loadSubscriptions()
-            // Home shows the shuffle now, not the date-ordered feed; that one
-            // is warmed for the Subscriptions tab on its own.
-            loadSubscriptionMix()
-            _trendingVideos.value = emptyList()
-            _isVideoLoading.value = false
-            _isVideoLoadingMore.value = false
-            videoFeedContinuation = null
-            videoFeedExhausted = true
-        }
-    }
 
-    /**
-     * The home feed with hidden videos and blocked channels removed.
-     *
-     * Filtering is a derived flow rather than a write into the raw list, so a
-     * "not interested" tap takes the item off screen on the next frame with no
-     * refetch, and Undo puts it straight back where it was. Doing it the other
-     * way - mutating the fetched list - would make undo a re-fetch, and the
-     * video would come back in a different position or not at all.
-     */
-    val trendingVideos: StateFlow<List<VideoItem>> =
-        combine(
-            _trendingVideos,
-            notInterestedRepository.hiddenVideos,
-            notInterestedRepository.blockedChannels
-        ) { videos, _, _ -> notInterestedRepository.filter(videos) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     
-    private val _historyVideos = MutableStateFlow<List<VideoItem>>(emptyList())
-    val historyVideos: StateFlow<List<VideoItem>> = _historyVideos.asStateFlow()
     private val historyPagination = com.ivor.ivormusic.data.DemandPagination<String>()
-    val historyPageState = historyPagination.state
     private var historyLoadJob: Job? = null
     private var historySession: com.ivor.ivormusic.data.YouTubeSession? = null
 
@@ -592,25 +530,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * feature: nothing here runs, and no permission is requested, for a user
      * who never opens the section.
      */
-    private val _deviceVideos =
-        MutableStateFlow<List<com.ivor.ivormusic.data.LocalVideo>>(emptyList())
-    val deviceVideos: StateFlow<List<com.ivor.ivormusic.data.LocalVideo>> =
-        _deviceVideos.asStateFlow()
 
     /** Folder cards, derived rather than queried a second time. */
-    val deviceVideoFolders: StateFlow<List<com.ivor.ivormusic.data.LocalVideoFolder>> =
-        _deviceVideos
-            .map { com.ivor.ivormusic.data.LocalVideoRepository.foldersOf(it) }
-            .stateIn(viewModelScope, SharingStarted.Lazily, emptyList())
 
-    private val _isDeviceVideosLoading = MutableStateFlow(false)
-    val isDeviceVideosLoading: StateFlow<Boolean> = _isDeviceVideosLoading.asStateFlow()
 
     /** True once a scan has finished, so an empty list can be told from a pending one. */
-    private val _hasScannedDeviceVideos = MutableStateFlow(false)
-    val hasScannedDeviceVideos: StateFlow<Boolean> = _hasScannedDeviceVideos.asStateFlow()
 
-    private var deviceVideosJob: Job? = null
 
     /**
      * Re-read the device's videos.
@@ -620,35 +545,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * tab was last opened must appear on the way back to it. A scan already in
      * flight is left alone, since the two would return the same rows.
      */
-    fun loadDeviceVideos() {
-        if (deviceVideosJob?.isActive == true) return
-        deviceVideosJob = viewModelScope.launch {
-            _isDeviceVideosLoading.value = true
-            try {
-                _deviceVideos.value = localVideoRepository.getVideos()
-                _hasScannedDeviceVideos.value = true
-            } finally {
-                _isDeviceVideosLoading.value = false
-            }
-        }
-    }
 
-    private val _shortsFeed = MutableStateFlow<List<com.ivor.ivormusic.data.ShortsItem>>(emptyList())
-    private var shortsFeedLoadJob: Job? = null
-    private var shortsFeedGeneration = 0L
-    private val _isShortsLoading = MutableStateFlow(false)
-    val isShortsLoading = _isShortsLoading.asStateFlow()
-    private val _shortsFeedFailed = MutableStateFlow(false)
-    val shortsFeedFailed = _shortsFeedFailed.asStateFlow()
 
-    private fun clearShortsFeed() {
-        shortsFeedGeneration++
-        shortsFeedLoadJob?.cancel()
-        shortsFeedLoadJob = null
-        _shortsFeed.value = emptyList()
-        _isShortsLoading.value = false
-        _shortsFeedFailed.value = false
-    }
 
     /**
      * Shorts shelf minus individually hidden Shorts.
@@ -658,49 +556,25 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * The block still applies the moment the Short is opened and enriched -
      * it just cannot pre-empt the shelf.
      */
-    val shortsFeed: StateFlow<List<com.ivor.ivormusic.data.ShortsItem>> =
-        combine(_shortsFeed, notInterestedRepository.hiddenVideos) { shorts, _ ->
-            shorts.filterNot { notInterestedRepository.isVideoHidden(it.videoId) }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
     
     private val _isHistoryLoading = MutableStateFlow(false)
-    val isHistoryLoading: StateFlow<Boolean> = _isHistoryLoading.asStateFlow()
     
-    private val _isVideoLoading = MutableStateFlow(false)
-    val isVideoLoading: StateFlow<Boolean> = _isVideoLoading.asStateFlow()
 
     /**
      * True when the latest empty Home fetch failed without a validated network.
      * Kept separate from an empty online response so the UI can offer completed
      * downloads only when they are actually the useful fallback.
      */
-    private val _isVideoHomeOffline = MutableStateFlow(false)
-    val isVideoHomeOffline: StateFlow<Boolean> = _isVideoHomeOffline.asStateFlow()
 
-    private val _isVideoLoadingMore = MutableStateFlow(false)
-    val isVideoLoadingMore: StateFlow<Boolean> = _isVideoLoadingMore.asStateFlow()
 
-    // Home feed paging: browse continuation token (logged-in personalized
-    // feed) or watch-history seed offset (logged-out taste-based feed).
-    private var videoFeedContinuation: String? = null
     private var tasteSeedOffset = 0
-    private var videoFeedExhausted = false
 
-    // Videos already put in front of the user this session, so a refresh can
-    // skip them. FEwhat_to_watch barely moves between fetches - measured
-    // against the live feed (August 2026), re-requesting page 1 came back 22
-    // videos of which 16 had just been on screen - so a refresh that simply
-    // replaced the list looked like nothing had happened. Continuation pages,
-    // by contrast, were 100% new, which is what [refreshVideos] pulls from.
-    private val shownVideoIds = LinkedHashSet<String>()
 
     // ---------------- Subscriptions tab ----------------
 
     private val localSubscriptionsRepository =
         com.ivor.ivormusic.data.LocalSubscriptionsRepository(application)
 
-    /** Channels from the signed-in Google account (FEchannels). */
-    private val _accountChannels = MutableStateFlow<List<com.ivor.ivormusic.data.SubscribedChannel>>(emptyList())
 
     /** Channels followed on this device. Process-wide, so a subscribe anywhere lands here. */
     val localSubscriptions: StateFlow<List<com.ivor.ivormusic.data.LocalSubscription>> =
@@ -720,24 +594,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * appear once, so the merge dedupes on channel id with the local entry
      * winning (it carries the avatar an import backfilled).
      */
-    val subscribedChannels: StateFlow<List<com.ivor.ivormusic.data.SubscribedChannel>> =
-        combine(
-            _accountChannels,
-            localSubscriptions,
-            themePreferences.subscriptionSource
-        ) { account, local, source ->
-            val localAsChannels = local.map { it.toSubscribedChannel() }
-            when (source) {
-                com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_LOCAL -> localAsChannels
-                com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> account
-                else -> (localAsChannels + account).distinctBy { it.channelId }
-            }.sortedBy { it.name.lowercase() }
-        }.stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _isSubscriptionsLoading = MutableStateFlow(false)
-    val isSubscriptionsLoading: StateFlow<Boolean> = _isSubscriptionsLoading.asStateFlow()
 
-    private val _subscriptionFeed = MutableStateFlow<List<VideoItem>>(emptyList())
 
     /**
      * The subscriptions feed, minus what the user asked not to see. A channel
@@ -745,95 +603,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * are different statements, and someone who blocks a channel they follow
      * has been unambiguous about it.
      */
-    val subscriptionFeed: StateFlow<List<VideoItem>> =
-        combine(
-            _subscriptionFeed,
-            notInterestedRepository.hiddenVideos,
-            notInterestedRepository.blockedChannels
-        ) { videos, _, _ -> notInterestedRepository.filter(videos) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _isSubscriptionFeedLoading = MutableStateFlow(false)
-    val isSubscriptionFeedLoading: StateFlow<Boolean> = _isSubscriptionFeedLoading.asStateFlow()
 
-    // A force request can arrive while a large imported list is still being
-    // fetched (for example, the import finishes during startup warm-up). The
-    // old guard dropped it outright, leaving the newly added channels absent
-    // until the user pulled manually. Coalesce those requests into one follow-
-    // up pass instead of running two hundred-channel refreshes concurrently.
-    private var subscriptionFeedRefreshPending = false
 
-    /**
-     * Whether a feed refresh has run to completion this session.
-     *
-     * The guard below used to be "is the feed non-empty", which never holds
-     * when the refresh came back with nothing - so every visit to the tab
-     * re-ran the whole one-request-per-channel fan-out. Blocked or throttled,
-     * that is a loop: empty feed, user refreshes, N more requests, deeper hold.
-     * An attempt that finished is an attempt, whatever it returned; only an
-     * explicit refresh goes again.
-     */
-    private var subscriptionFeedAttempted = false
 
-    private val _selectedChannelFeed = MutableStateFlow<List<VideoItem>>(emptyList())
-    val selectedChannelFeed: StateFlow<List<VideoItem>> = _selectedChannelFeed.asStateFlow()
 
-    private val _isSelectedChannelFeedLoading = MutableStateFlow(false)
-    val isSelectedChannelFeedLoading: StateFlow<Boolean> =
-        _isSelectedChannelFeedLoading.asStateFlow()
 
-    private val _selectedChannelFeedError = MutableStateFlow<String?>(null)
-    val selectedChannelFeedError: StateFlow<String?> = _selectedChannelFeedError.asStateFlow()
-    private var selectedChannelFeedJob: kotlinx.coroutines.Job? = null
 
-    /**
-     * "42 of 130 channels" while a local refresh runs. A device-local feed
-     * costs one request per channel, so a large list takes long enough that an
-     * indeterminate spinner reads as a hang.
-     */
-    private val _subscriptionFeedProgress = MutableStateFlow<Pair<Int, Int>?>(null)
-    val subscriptionFeedProgress: StateFlow<Pair<Int, Int>?> = _subscriptionFeedProgress.asStateFlow()
 
-    /** Set when a refresh produced nothing and the network was the reason. */
-    private val _subscriptionFeedError = MutableStateFlow<String?>(null)
-    val subscriptionFeedError: StateFlow<String?> = _subscriptionFeedError.asStateFlow()
 
     // Notifications state
     private val _notifications = MutableStateFlow<List<com.ivor.ivormusic.data.NotificationItem>>(emptyList())
     val notifications: StateFlow<List<com.ivor.ivormusic.data.NotificationItem>> = _notifications.asStateFlow()
 
-    private val _isNotificationsLoading = MutableStateFlow(false)
-    val isNotificationsLoading: StateFlow<Boolean> = _isNotificationsLoading.asStateFlow()
 
-    // Video library tab state. This half is the signed-in account's own
-    // playlists; the device's are merged in by [videoPlaylists] below.
-    private val _videoPlaylists = MutableStateFlow<List<com.ivor.ivormusic.data.VideoPlaylist>>(emptyList())
 
-    /**
-     * Every playlist a video can be saved into: the device's own first, then
-     * the account's.
-     *
-     * Local ones lead because they are the user's own creations and, signed
-     * out, the only ones there are - the same order the music Library merges
-     * its three kinds in. Consumers tell them apart with
-     * [com.ivor.ivormusic.data.LocalVideoPlaylistsRepository.isLocal]; nothing
-     * here may assume a playlist id addresses YouTube.
-     */
-    val videoPlaylists: StateFlow<List<com.ivor.ivormusic.data.VideoPlaylist>> = combine(
-        localVideoPlaylistsRepository.playlists,
-        _videoPlaylists,
-        hiddenPlaylistsRepository.hiddenPlaylists
-    ) { local, account, hidden ->
-        // The hide is on the playlist, not on the mode. A playlist id means
-        // the same playlist whichever list found it, so "Hide from Koda"
-        // covers both - the alternative is a control whose label says Koda and
-        // whose effect stops at one tab.
-        val hiddenIds = hidden.map { it.playlistId }.toSet()
-        (local.map { it.toVideoPlaylist(app) } + account).filterNot { it.playlistId in hiddenIds }
-    }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
 
-    private val _isVideoPlaylistsLoading = MutableStateFlow(false)
-    val isVideoPlaylistsLoading: StateFlow<Boolean> = _isVideoPlaylistsLoading.asStateFlow()
 
     /**
      * The device's video playlists with their videos still attached, which is
@@ -844,58 +629,15 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * playlist browse each, which is one request per row for a checkmark, and
      * saving twice is a no-op on both sides anyway.
      */
-    val localVideoPlaylists: StateFlow<List<com.ivor.ivormusic.data.LocalVideoPlaylist>> =
-        localVideoPlaylistsRepository.playlists
 
-    /**
-     * The saved playlists again, shaped for video mode's Library list and
-     * playlist page. One store feeds both modes, so anything kept in music mode
-     * is here too - see [com.ivor.ivormusic.data.SavedPlaylistsRepository].
-     *
-     * Excludes what the account already owns *on the video side*, for the
-     * reason [savedPlaylistIds] excludes the music side's: a playlist that is
-     * genuinely the user's would otherwise sit in the list twice, once as
-     * theirs and once as a reference offering to remove it from the library.
-     *
-     * Albums cross over too: they are kept by browse id ("MPRE..."), which a
-     * video-mode open resolves through [loadPlaylistVideos]'s album branch -
-     * the tracks are ordinary YouTube video ids and play as videos - rather
-     * than the playlist call an MPRE id would silently fail against.
-     *
-     * Declared here rather than beside the other saved-playlist members because
-     * it reads [_videoPlaylists], and a property initialized before the one it
-     * combines with gets null.
-     */
-    val savedVideoPlaylists: StateFlow<List<com.ivor.ivormusic.data.VideoPlaylist>> = combine(
-        savedPlaylistsRepository.savedPlaylists,
-        _videoPlaylists
-    ) { saved, accountPlaylists ->
-        val accountIds = accountPlaylists.map { it.playlistId }.toSet()
-        saved.filterNot { it.id in accountIds }.map { it.toVideoPlaylist(app) }
-    }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
 
-    /** Ids of [savedVideoPlaylists], for marking a row or a page as kept. */
-    val savedVideoPlaylistIds: StateFlow<Set<String>> = savedVideoPlaylists
-        .map { playlists -> playlists.map { it.playlistId }.toSet() }
-        .stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptySet())
 
     /**
      * Keep or drop a playlist found in video mode. Returns the state after the
      * toggle, synchronous for the same reason [toggleSavedPlaylist] is.
      */
-    fun toggleSavedVideoPlaylist(playlist: com.ivor.ivormusic.data.VideoPlaylist): Boolean =
-        savedPlaylistsRepository.toggle(com.ivor.ivormusic.data.SavedPlaylist.from(playlist))
 
-    private val _playlistVideos = MutableStateFlow<List<VideoItem>>(emptyList())
-    val playlistVideos: StateFlow<List<VideoItem>> = _playlistVideos.asStateFlow()
-    private val playlistPagination = com.ivor.ivormusic.data.DemandPagination<com.ivor.ivormusic.data.VideoPlaylistCursor>()
-    val playlistPageState = playlistPagination.state
-    private var playlistLoadJob: Job? = null
-    private var activeVideoPlaylistId: String? = null
-    private var playlistSession: com.ivor.ivormusic.data.YouTubeSession? = null
 
-    private val _isPlaylistVideosLoading = MutableStateFlow(false)
-    val isPlaylistVideosLoading: StateFlow<Boolean> = _isPlaylistVideosLoading.asStateFlow()
 
     // When each Home loader last reached the network successfully. HomeScreen
     // is disposed by every real navigation (a channel page, a playlist) and
@@ -917,12 +659,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private var accountLoadedAtMs = 0L
     private var recommendationsLoadJob: Job? = null
     private var recommendationsLoadedAtMs = 0L
-    private var videoFeedLoadedAtMs = 0L
-    private var shortsFeedLoadedAtMs = 0L
 
     init {
-        observeLocalVideoHistory()
-        observeSubscriptionFeedWarmup()
         checkYouTubeConnection()
         observeProfileSwitches()
         viewModelScope.launch {
@@ -933,65 +671,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         viewModelScope.reloadAfterEachSync(application) { playlistRepository.refreshPlaylists() }
     }
 
-    /**
-     * Surface a play recorded by the video player or Shorts immediately in
-     * Library. Those surfaces and this ViewModel own different repository
-     * instances, so waiting for another FEhistory fetch left the carousel
-     * stale until a pull-to-refresh. Account history remains authoritative for
-     * the rest of the list; the newest device write only moves that item to the
-     * front while YouTube's watch-stat update catches up.
-     */
-    private fun observeLocalVideoHistory() {
-        viewModelScope.launch {
-            videoHistoryRepository.history
-                .drop(1)
-                .collect { localHistory ->
-                    if (!sessionManager.isLoggedIn()) {
-                        _historyVideos.value = localHistory
-                        return@collect
-                    }
-                    val latest = localHistory.firstOrNull() ?: return@collect
-                    _historyVideos.value = listOf(latest) +
-                        _historyVideos.value.filterNot { it.videoId == latest.videoId }
-                }
-        }
-    }
 
-    /**
-     * Warm the Subscriptions feed from its real inputs, independently of the
-     * tab's composition. Local imports are already persisted and available at
-     * ViewModel construction, so a signed-out user now starts fetching their
-     * device feed as the app opens and sees it ready (or already progressing)
-     * when they visit Subscriptions.
-     *
-     * Only channel ids participate in the key. Avatar/profile backfill rewrites
-     * the same subscriptions and must not restart a potentially large feed.
-     */
-    private fun observeSubscriptionFeedWarmup() {
-        viewModelScope.launch {
-            combine(
-                localSubscriptions
-                    .map { subscriptions -> subscriptions.map { it.channelId }.sorted() }
-                    .distinctUntilChanged(),
-                themePreferences.subscriptionSource,
-                themePreferences.fastSubscriptionFeed
-            ) { localIds, source, fastMode -> Triple(localIds, source, fastMode) }
-                .distinctUntilChanged()
-                .collect { (localIds, source, _) ->
-                    if (shouldWarmSubscriptionFeed(
-                            source = source,
-                            hasLocalSubscriptions = localIds.isNotEmpty(),
-                            isLoggedIn = sessionManager.isLoggedIn()
-                        )
-                    ) {
-                        loadSubscriptionFeed(force = true)
-                    } else {
-                        _subscriptionFeed.value = emptyList()
-                        _subscriptionFeedError.value = null
-                    }
-                }
-        }
-    }
 
     /**
      * Reload everything account-derived when the active profile changes.
@@ -1022,7 +702,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * reason - but follows it with a reload rather than leaving the app empty.
      */
     private fun resetForProfileChange() {
-        resetVideoLibraryPagination()
         youtubeRepository.clearSessionScopedInstanceCaches()
         // Signed-in search is personalised, so serving one account's results
         // under another is the same mistake as replaying its visitorData.
@@ -1037,63 +716,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _youtubeSongs.value = homeRecommendationCache.load()
         _likedSongs.value = emptyList()
         _youtubePlaylists.value = emptyList()
-        _accountChannels.value = emptyList()
-        _subscriptionFeed.value = emptyList()
 
-        // Both modes are emptied, not just the visible one. Toggling modes
-        // refetches on its own (HomeScreen's LaunchedEffect(videoMode)), but
-        // the old list would stay on screen until that lands - so switching
-        // account and flipping to video mode would show the previous account's
-        // feed for as long as the fetch takes. These loaders also only assign
-        // when the result is non-empty, so clearing is what guarantees a failed
-        // refetch leaves nothing rather than the wrong account's videos.
-        _trendingVideos.value = emptyList()
-        clearShortsFeed()
-        clearSubscriptionMix()
-        _historyVideos.value = emptyList()
+        // The loaders only assign when the result is non-empty, so clearing is
+        // what guarantees a failed refetch leaves nothing rather than the
+        // previous account's feed.
         forgetHomeLoadTimes()
 
         checkYouTubeConnection(force = true)
-        loadSubscriptions(force = true)
-        loadSubscriptionFeed(force = true)
-
-        // Refresh whichever home the user is actually on. Same split the
-        // sign-in handler uses, so a switch and a fresh login behave alike.
-        // loadTrendingVideos already pulls the Shorts shelf itself.
-        if (themePreferences.videoMode.value) {
-            loadTrendingVideos()
-            loadSubscriptionMix(force = true)
-            loadYouTubeHistory()
-        } else {
-            loadYouTubeRecommendations(force = true)
-        }
+        loadYouTubeRecommendations(force = true)
     }
 
-    /**
-     * Load the account's subscribed channel list (FEchannels). Local
-     * subscriptions need no loading - they are already in memory - so this is
-     * a no-op when the source setting excludes the account or nobody is
-     * signed in.
-     */
-    fun loadSubscriptions(force: Boolean = false) {
-        // First, and outside every guard below: imported channels have no
-        // avatar until this runs, and the guards are all about the *account*
-        // half. Behind them, a signed-out user - the exact person most likely
-        // to have imported a list - never got any pictures.
-        backfillLocalChannelProfiles()
-
-        if (_isSubscriptionsLoading.value) return
-        if (!shouldUseAccountSubscriptions()) return
-        if (_accountChannels.value.isNotEmpty() && !force) return
-        viewModelScope.launch {
-            _isSubscriptionsLoading.value = true
-            try {
-                _accountChannels.value = youtubeRepository.getSubscribedChannels()
-            } finally {
-                _isSubscriptionsLoading.value = false
-            }
-        }
-    }
 
     /**
      * Load the subscriptions feed, newest first.
@@ -1146,119 +778,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun loadSubscriptionFeed(force: Boolean = false) {
-        if (_isSubscriptionFeedLoading.value) {
-            if (force) subscriptionFeedRefreshPending = true
-            return
-        }
-        if (subscriptionFeedAttempted && !force) return
-        // An explicit refresh during a hold must not spend the requests either:
-        // say so instead, and leave whatever is already on screen alone.
-        if (com.ivor.ivormusic.data.YouTubeRateLimit.isHeld()) {
-            _subscriptionFeedError.value = rateLimitMessage()
-            return
-        }
-        // Claim the refresh before launching so two callers in the same main-
-        // thread frame cannot both pass the guard and start duplicate work.
-        _isSubscriptionFeedLoading.value = true
-        viewModelScope.launch {
-            _subscriptionFeedError.value = null
-            // A refresh that was refused never ran, so it must not count as the
-            // one attempt this session gets - otherwise the tab stays stale
-            // even after the hold expires. Re-entering is free: the guard above
-            // turns a revisit during a hold back at the door.
-            var rateLimited = false
-            try {
-                val source = themePreferences.currentSubscriptionSource()
-                val useAccount = source != com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_LOCAL &&
-                    sessionManager.isLoggedIn()
-                val useLocal = source != com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_YOUTUBE
-
-                val accountFeed = if (useAccount) youtubeRepository.getSubscriptionsFeed() else emptyList()
-
-                val channels = if (useLocal) groupFilteredLocalChannels() else emptyList()
-                val localFeed = if (channels.isNotEmpty()) {
-                    _subscriptionFeedProgress.value = 0 to channels.size
-                    youtubeRepository.getLocalSubscriptionsFeed(
-                        channels = channels,
-                        fastMode = themePreferences.isFastSubscriptionFeedEnabled(),
-                        // Pull-to-refresh has to actually hit the network; the
-                        // feeds are cacheable for fifteen minutes and a refresh
-                        // that silently changes nothing is worse than the
-                        // traffic it saves.
-                        forceFresh = force,
-                    ) { done, total -> _subscriptionFeedProgress.value = done to total }
-                } else emptyList()
-
-                _subscriptionFeed.value = mergeFeeds(accountFeed, localFeed)
-                if (_subscriptionFeed.value.isEmpty() && (useAccount || channels.isNotEmpty())) {
-                    // Only blame the connection when nothing was reachable.
-                    // Channels that answer but have nothing recent are a normal
-                    // empty feed, and telling someone to check a connection that
-                    // is plainly working sends them fixing the wrong thing.
-                    _subscriptionFeedError.value = if (hasNetworkConnection()) {
-                        app.getString(R.string.hvm_subs_feed_empty)
-                    } else {
-                        app.getString(R.string.hvm_subs_feed_error)
-                    }
-                }
-            } catch (e: com.ivor.ivormusic.data.YouTubeRateLimitedException) {
-                // Not a network failure and not an empty feed. Telling someone
-                // to check a working connection sends them fixing the wrong
-                // thing; this is the one case where waiting is the fix.
-                KLog.w("HomeViewModel", "Subscription feed refresh rate limited", e)
-                rateLimited = true
-                _subscriptionFeedError.value = rateLimitMessage()
-            } catch (e: Exception) {
-                KLog.e("HomeViewModel", "Subscription feed refresh failed", e)
-                _subscriptionFeedError.value =
-                    app.getString(R.string.hvm_subs_feed_error)
-            } finally {
-                if (!rateLimited) subscriptionFeedAttempted = true
-                _subscriptionFeedProgress.value = null
-                _isSubscriptionFeedLoading.value = false
-                if (subscriptionFeedRefreshPending) {
-                    subscriptionFeedRefreshPending = false
-                    loadSubscriptionFeed(force = true)
-                }
-            }
-        }
-    }
 
     /**
      * Load the selected creator's Videos tab rather than filtering the recent
      * subscriptions snapshot. The latter may contain no recent item from a
      * channel that still has hundreds of uploads, which is not an empty feed.
      */
-    fun loadSelectedChannelFeed(channel: com.ivor.ivormusic.data.SubscribedChannel) {
-        selectedChannelFeedJob?.cancel()
-        selectedChannelFeedJob = viewModelScope.launch {
-            _selectedChannelFeed.value = emptyList()
-            _selectedChannelFeedError.value = null
-            _isSelectedChannelFeedLoading.value = true
-            try {
-                val videos = youtubeRepository.getChannelVideos(channel)
-                _selectedChannelFeed.value = videos
-                if (videos.isEmpty()) {
-                    _selectedChannelFeedError.value =
-                        app.getString(R.string.hvm_channel_feed_error, channel.name)
-                }
-            } catch (e: Exception) {
-                KLog.e("HomeViewModel", "Selected channel feed failed", e)
-                _selectedChannelFeedError.value =
-                    app.getString(R.string.hvm_channel_feed_error, channel.name)
-            } finally {
-                _isSelectedChannelFeedLoading.value = false
-            }
-        }
-    }
 
-    fun clearSelectedChannelFeed() {
-        selectedChannelFeedJob?.cancel()
-        _selectedChannelFeed.value = emptyList()
-        _selectedChannelFeedError.value = null
-        _isSelectedChannelFeedLoading.value = false
-    }
 
     // ---------------- Shuffled subscriptions (Home, recommendations off) ----------------
     //
@@ -1269,28 +795,14 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     // user scrolls and kept for the session, so a refresh reshuffles what is
     // already in hand and only the next unseen channels cost requests.
 
-    private val _subscriptionMix = MutableStateFlow<List<VideoItem>>(emptyList())
 
     /** The shuffled Home feed minus what the user asked not to see. */
-    val subscriptionMix: StateFlow<List<VideoItem>> =
-        combine(
-            _subscriptionMix,
-            notInterestedRepository.hiddenVideos,
-            notInterestedRepository.blockedChannels
-        ) { videos, _, _ -> notInterestedRepository.filter(videos) }
-            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
-    private val _isSubscriptionMixLoading = MutableStateFlow(false)
-    val isSubscriptionMixLoading: StateFlow<Boolean> = _isSubscriptionMixLoading.asStateFlow()
 
-    private val _isSubscriptionMixLoadingMore = MutableStateFlow(false)
-    val isSubscriptionMixLoadingMore: StateFlow<Boolean> = _isSubscriptionMixLoadingMore.asStateFlow()
 
     /** Pools already fetched this session, by channel id. Main-thread only. */
     private val mixPools = LinkedHashMap<String, com.ivor.ivormusic.data.ChannelMixPool>()
     private val mixShownIds = HashSet<String>()
-    private var mixChannelOrder: List<com.ivor.ivormusic.data.SubscribedChannel> = emptyList()
-    private var mixNextChannel = 0
     private var mixExhausted = false
     private var mixJob: Job? = null
     private var mixLoadedAtMs = 0L
@@ -1305,62 +817,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * profile switch, recommendations just turned off - it reshuffles: channel
      * order and picks start again, while pools already fetched are reused.
      */
-    fun loadSubscriptionMix(force: Boolean = false) {
-        if (themePreferences.areVideoRecommendationsEnabled()) return
-        if (themePreferences.isLocalOnlyModeEnabled()) return
-        if (!force && mixJob?.isActive == true) return
-        if (!force && _subscriptionMix.value.isNotEmpty() && loadedRecently(mixLoadedAtMs)) return
-        mixJob?.cancel()
-        _isSubscriptionMixLoadingMore.value = false
-        val generation = ++mixGeneration
-        _isSubscriptionMixLoading.value = true
-        mixJob = viewModelScope.launch {
-            try {
-                val channels = subscribedChannelsForMix()
-                if (generation != mixGeneration) return@launch
-                // Pools for channels no longer followed are dropped, so an
-                // unfollow does not keep a creator in the shuffle.
-                val followed = channels.mapTo(HashSet()) { it.channelId }
-                mixPools.keys.retainAll(followed)
-                mixChannelOrder = channels.shuffled(mixRandom)
-                mixNextChannel = 0
-                mixShownIds.clear()
-                mixExhausted = channels.isEmpty()
-                val page = nextMixPage(generation)
-                if (generation != mixGeneration) return@launch
-                _subscriptionMix.value = page
-                if (page.isNotEmpty()) mixLoadedAtMs = System.currentTimeMillis()
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (e: Exception) {
-                KLog.w("HomeViewModel", "Subscription mix failed", e)
-            } finally {
-                if (generation == mixGeneration) _isSubscriptionMixLoading.value = false
-            }
-        }
-    }
 
     /** Append the next shuffled page as the user reaches the end of Home. */
-    fun loadMoreSubscriptionMix() {
-        if (themePreferences.areVideoRecommendationsEnabled()) return
-        if (mixExhausted || _subscriptionMix.value.isEmpty()) return
-        if (mixJob?.isActive == true) return
-        val generation = mixGeneration
-        _isSubscriptionMixLoadingMore.value = true
-        mixJob = viewModelScope.launch {
-            try {
-                val page = nextMixPage(generation)
-                if (generation != mixGeneration) return@launch
-                if (page.isNotEmpty()) _subscriptionMix.value = _subscriptionMix.value + page
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (e: Exception) {
-                KLog.w("HomeViewModel", "Subscription mix page failed", e)
-            } finally {
-                if (generation == mixGeneration) _isSubscriptionMixLoadingMore.value = false
-            }
-        }
-    }
 
     /**
      * One page: the next [MIX_CHANNELS_PER_PAGE] channels in this shuffle's
@@ -1368,37 +826,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * channel has had its turn, pages keep drawing unseen videos from the pools
      * in hand at no network cost, until nothing unseen is left.
      */
-    private suspend fun nextMixPage(generation: Long): List<VideoItem> {
-        val order = mixChannelOrder
-        if (order.isEmpty()) {
-            mixExhausted = true
-            return emptyList()
-        }
-        val page = mutableListOf<VideoItem>()
-        // A batch whose channels all come back empty (a new channel, a failed
-        // browse) must not end the feed while later channels could fill it.
-        var batchesTried = 0
-        while (page.isEmpty() && mixNextChannel < order.size && batchesTried < MIX_EMPTY_BATCH_LIMIT) {
-            batchesTried++
-            val batch = order.subList(mixNextChannel, minOf(order.size, mixNextChannel + MIX_CHANNELS_PER_PAGE))
-            mixNextChannel += batch.size
-            fetchMissingMixPools(batch)
-            if (generation != mixGeneration) return emptyList()
-            val pools = batch.mapNotNull { mixPools[it.channelId] }
-            page += com.ivor.ivormusic.data.SubscriptionMix.buildPage(pools, mixShownIds, mixRandom)
-        }
-        if (page.isEmpty() && mixNextChannel >= order.size) {
-            // Every channel has had a turn: keep shuffling what is in hand.
-            val pools = order.mapNotNull { mixPools[it.channelId] }.shuffled(mixRandom)
-            page += com.ivor.ivormusic.data.SubscriptionMix.buildPage(pools, mixShownIds, mixRandom)
-            if (!com.ivor.ivormusic.data.SubscriptionMix.hasUnseen(pools, mixShownIds + page.map { it.videoId })) {
-                mixExhausted = true
-            }
-        }
-        page.mapTo(mixShownIds) { it.videoId }
-        if (page.isEmpty()) mixExhausted = true
-        return page
-    }
 
     /**
      * Fetch pools for [channels] not yet held, [MIX_FETCH_CONCURRENCY] at a
@@ -1406,33 +833,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * stops and the channels without pools simply contribute nothing this
      * page rather than being retried in a loop.
      */
-    private suspend fun fetchMissingMixPools(channels: List<com.ivor.ivormusic.data.SubscribedChannel>) {
-        val missing = channels.filter { it.channelId !in mixPools }
-        if (missing.isEmpty()) return
-        if (com.ivor.ivormusic.data.YouTubeRateLimit.isHeld()) return
-        val gate = kotlinx.coroutines.sync.Semaphore(MIX_FETCH_CONCURRENCY)
-        val fetched = kotlinx.coroutines.coroutineScope {
-            missing.map { channel ->
-                async {
-                    gate.acquire()
-                    try {
-                        if (com.ivor.ivormusic.data.YouTubeRateLimit.isHeld()) null
-                        else youtubeRepository.getChannelMixPool(channel)
-                    } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                        throw cancelled
-                    } catch (e: Exception) {
-                        KLog.w("HomeViewModel", "Mix pool failed for ${channel.channelId}", e)
-                        null
-                    } finally {
-                        gate.release()
-                    }
-                }
-            }.awaitAll()
-        }
-        // Stored only when something came back: an empty pool from a failed
-        // browse would otherwise hide the channel for the rest of the session.
-        fetched.filterNotNull().filterNot { it.isEmpty }.forEach { mixPools[it.channelId] = it }
-    }
 
     /**
      * The channels the mix draws from: the same list the Subscriptions tab
@@ -1440,39 +840,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * has not arrived yet is waited for rather than treated as following
      * nobody, which would end the feed before it started.
      */
-    private suspend fun subscribedChannelsForMix(): List<com.ivor.ivormusic.data.SubscribedChannel> {
-        if (shouldUseAccountSubscriptions() && _accountChannels.value.isEmpty()) {
-            if (_isSubscriptionsLoading.value) {
-                _isSubscriptionsLoading.first { !it }
-            } else {
-                _isSubscriptionsLoading.value = true
-                try {
-                    _accountChannels.value = youtubeRepository.getSubscribedChannels()
-                } finally {
-                    _isSubscriptionsLoading.value = false
-                }
-            }
-        }
-        val account = if (shouldUseAccountSubscriptions()) _accountChannels.value else emptyList()
-        val local = if (themePreferences.currentSubscriptionSource() !=
-            com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_YOUTUBE
-        ) localSubscriptions.value.map { it.toSubscribedChannel() } else emptyList()
-        return (local + account).distinctBy { it.channelId }
-    }
 
-    private fun clearSubscriptionMix() {
-        mixGeneration++
-        mixJob?.cancel()
-        mixPools.clear()
-        mixShownIds.clear()
-        mixChannelOrder = emptyList()
-        mixNextChannel = 0
-        mixExhausted = false
-        mixLoadedAtMs = 0L
-        _subscriptionMix.value = emptyList()
-        _isSubscriptionMixLoading.value = false
-        _isSubscriptionMixLoadingMore.value = false
-    }
 
     /**
      * Interleaves the account feed and the device feed on upload time.
@@ -1493,53 +861,18 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             }
     }
 
-    /** Local channels the selected group allows through, or all of them. */
-    private fun groupFilteredLocalChannels(): List<com.ivor.ivormusic.data.LocalSubscription> =
-        localSubscriptionsRepository.channelsInGroup(_selectedGroupId.value)
 
-    private fun shouldUseAccountSubscriptions(): Boolean =
-        themePreferences.currentSubscriptionSource() !=
-            com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_LOCAL &&
-            sessionManager.isLoggedIn()
 
     /** Filter the feed by a group. Passing null clears the filter. */
-    fun selectSubscriptionGroup(groupId: String?) {
-        if (_selectedGroupId.value == groupId) return
-        _selectedGroupId.value = groupId
-        loadSubscriptionFeed(force = true)
-    }
 
-    /**
-     * Fills in names and avatars for imported channels, which arrive with a
-     * name at best and never a picture. Capped per run inside the repository,
-     * so a large library fills in over a few visits instead of one burst of
-     * hundreds of channel browses.
-     */
-    fun backfillLocalChannelProfiles() {
-        val pending = localSubscriptions.value.filter { it.avatarUrl.isNullOrBlank() }
-        if (pending.isEmpty()) return
-        // A channel browse each, and nobody asked for them - exactly the
-        // discretionary work a hold exists to stand down. Pictures can wait.
-        if (com.ivor.ivormusic.data.YouTubeRateLimit.isHeld()) return
-        viewModelScope.launch {
-            val updated = youtubeRepository.fetchMissingChannelProfiles(pending)
-            localSubscriptionsRepository.updateProfiles(updated)
-        }
-    }
 
     /** Drop a locally followed channel. Account subscriptions are untouched. */
-    fun unsubscribeLocally(channelId: String) {
-        localSubscriptionsRepository.unsubscribe(channelId)
-        _subscriptionFeed.value = _subscriptionFeed.value.filterNot { it.channelId == channelId }
-    }
 
     fun isLocallySubscribed(channelId: String?): Boolean =
         localSubscriptionsRepository.isSubscribed(channelId)
 
     // ---------------- Subscription import / export ----------------
 
-    private val _isImportingSubscriptions = MutableStateFlow(false)
-    val isImportingSubscriptions: StateFlow<Boolean> = _isImportingSubscriptions.asStateFlow()
 
     /** "resolved 40 of 220" while an import runs. */
     private val _importProgress = MutableStateFlow<Pair<Int, Int>?>(null)
@@ -1556,317 +889,33 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * existing list: importing twice, or importing a second device's export,
      * adds what is missing and touches nothing else.
      */
-    fun importSubscriptions(
-        uri: android.net.Uri,
-        onResult: (com.ivor.ivormusic.data.SubscriptionImportResult) -> Unit
-    ) {
-        if (_isImportingSubscriptions.value) return
-        viewModelScope.launch {
-            _isImportingSubscriptions.value = true
-            _importProgress.value = null
-            try {
-                val imported = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                    val cacheDir = getApplication<Application>().cacheDir
-                    val source = java.io.File(cacheDir, "subscription-import.source")
-                    val database = java.io.File(cacheDir, "subscription-import.db")
-                    try {
-                        val opened = getApplication<Application>().contentResolver
-                            .openInputStream(uri) ?: return@withContext null
-                        opened.use { input ->
-                            com.ivor.ivormusic.data.SubscriptionTransfer.copyImport(input, source)
-                        }
-                        if (source.length() == 0L) null else {
-                            com.ivor.ivormusic.data.SubscriptionTransfer.read(source, database)
-                        }
-                    } finally {
-                        source.delete()
-                        database.delete()
-                    }
-                }
-                if (imported == null) {
-                    onResult(
-                        com.ivor.ivormusic.data.SubscriptionImportResult(
-                            0, 0, 0, error = app.getString(R.string.hvm_import_empty)
-                        )
-                    )
-                    return@launch
-                }
-
-                val entries = imported.channels
-                val foreign = imported.foreignServiceEntries
-                if (entries.isEmpty()) {
-                    onResult(
-                        com.ivor.ivormusic.data.SubscriptionImportResult(
-                            0, 0, 0, foreign,
-                            error = if (foreign > 0) {
-                                app.getString(R.string.hvm_import_foreign)
-                            } else {
-                                app.getString(R.string.hvm_import_no_channels)
-                            }
-                        )
-                    )
-                    return@launch
-                }
-
-                val (resolved, unresolved) = youtubeRepository.resolveImportedChannels(entries) { done, total ->
-                    _importProgress.value = done to total
-                }
-                val alreadyPresent = resolved.count { localSubscriptionsRepository.isSubscribed(it.channelId) }
-                val added = localSubscriptionsRepository.importAll(resolved)
-
-                // Groups come from Koda's own export, or from the feed groups
-                // inside a NewPipe-family backup - never from the JSON export,
-                // which has never carried them.
-                imported.groups.forEach { group ->
-                    val existing = subscriptionGroups.value.firstOrNull { it.name.equals(group.name, true) }
-                    if (existing == null) {
-                        localSubscriptionsRepository.createGroup(group.name, group.channelIds)
-                    } else {
-                        localSubscriptionsRepository.setGroupChannels(
-                            existing.id,
-                            existing.channelIds + group.channelIds
-                        )
-                    }
-                }
-
-                onResult(
-                    com.ivor.ivormusic.data.SubscriptionImportResult(
-                        added = added,
-                        alreadyPresent = alreadyPresent,
-                        unresolved = unresolved,
-                        skippedOtherService = foreign
-                    )
-                )
-                backfillLocalChannelProfiles()
-            } catch (e: Exception) {
-                KLog.e("HomeViewModel", "Subscription import failed", e)
-                onResult(
-                    com.ivor.ivormusic.data.SubscriptionImportResult(
-                        0, 0, 0, error = app.getString(R.string.hvm_import_read)
-                    )
-                )
-            } finally {
-                _importProgress.value = null
-                _isImportingSubscriptions.value = false
-            }
-        }
-    }
 
     /**
      * Copies the signed-in account's subscriptions onto the device, so they
      * survive signing out - the main reason someone would want a local copy
      * while still having an account.
      */
-    fun importSubscriptionsFromAccount(
-        onResult: (com.ivor.ivormusic.data.SubscriptionImportResult) -> Unit
-    ) {
-        if (_isImportingSubscriptions.value) return
-        if (!sessionManager.isLoggedIn()) {
-            onResult(
-                com.ivor.ivormusic.data.SubscriptionImportResult(
-                    0, 0, 0, error = app.getString(R.string.sm_sign_in_first)
-                )
-            )
-            return
-        }
-        viewModelScope.launch {
-            _isImportingSubscriptions.value = true
-            try {
-                val channels = youtubeRepository.getSubscribedChannels()
-                if (channels.isEmpty()) {
-                    onResult(
-                        com.ivor.ivormusic.data.SubscriptionImportResult(
-                            0, 0, 0, error = app.getString(R.string.hvm_copy_empty)
-                        )
-                    )
-                    return@launch
-                }
-                _accountChannels.value = channels
-                val asLocal = channels.map {
-                    com.ivor.ivormusic.data.LocalSubscription(
-                        channelId = it.channelId,
-                        name = it.name,
-                        avatarUrl = it.avatarUrl
-                    )
-                }
-                val alreadyPresent = asLocal.count { localSubscriptionsRepository.isSubscribed(it.channelId) }
-                val added = localSubscriptionsRepository.importAll(asLocal)
-                onResult(
-                    com.ivor.ivormusic.data.SubscriptionImportResult(
-                        added = added,
-                        alreadyPresent = alreadyPresent,
-                        unresolved = 0
-                    )
-                )
-            } catch (e: Exception) {
-                KLog.e("HomeViewModel", "Account subscription copy failed", e)
-                onResult(
-                    com.ivor.ivormusic.data.SubscriptionImportResult(
-                        0, 0, 0, error = app.getString(R.string.hvm_network)
-                    )
-                )
-            } finally {
-                _isImportingSubscriptions.value = false
-            }
-        }
-    }
 
     /**
      * Writes the local subscriptions to [uri] in the NewPipe-compatible shape,
      * so the file imports cleanly into NewPipe, PipePipe and Tubular as well
      * as back into Koda.
      */
-    fun exportSubscriptions(uri: android.net.Uri, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            val ok = kotlinx.coroutines.withContext(kotlinx.coroutines.Dispatchers.IO) {
-                try {
-                    val json = com.ivor.ivormusic.data.SubscriptionTransfer.buildExportJson(
-                        subscriptions = localSubscriptions.value,
-                        groups = subscriptionGroups.value,
-                        appVersionName = com.ivor.ivormusic.BuildConfig.VERSION_NAME
-                    )
-                    getApplication<Application>().contentResolver
-                        .openOutputStream(uri)?.use { it.write(json.toByteArray(Charsets.UTF_8)) }
-                    true
-                } catch (e: Exception) {
-                    KLog.e("HomeViewModel", "Subscription export failed", e)
-                    false
-                }
-            }
-            onResult(ok)
-        }
-    }
 
     // ---------------- Subscription groups ----------------
 
-    fun createSubscriptionGroup(name: String, channelIds: List<String> = emptyList()) {
-        if (name.isBlank()) return
-        localSubscriptionsRepository.createGroup(name, channelIds)
-    }
 
-    fun renameSubscriptionGroup(groupId: String, name: String) {
-        if (name.isBlank()) return
-        localSubscriptionsRepository.renameGroup(groupId, name)
-    }
 
-    fun deleteSubscriptionGroup(groupId: String) {
-        localSubscriptionsRepository.deleteGroup(groupId)
-        if (_selectedGroupId.value == groupId) selectSubscriptionGroup(null)
-    }
 
-    fun toggleChannelInGroup(groupId: String, channelId: String) {
-        localSubscriptionsRepository.toggleChannelInGroup(groupId, channelId)
-        if (_selectedGroupId.value == groupId) loadSubscriptionFeed(force = true)
-    }
 
     /** Wipes every local subscription and group. Account subscriptions survive. */
-    fun clearLocalSubscriptions() {
-        localSubscriptionsRepository.clearAll()
-        _selectedGroupId.value = null
-        loadSubscriptionFeed(force = true)
-    }
 
     /** Load the user's YouTube playlists for the video Library tab. Requires login. */
-    fun loadVideoPlaylists(force: Boolean = false) {
-        if (_isVideoPlaylistsLoading.value) return
-        if (_videoPlaylists.value.isNotEmpty() && !force) return
-        viewModelScope.launch {
-            _isVideoPlaylistsLoading.value = true
-            try {
-                _videoPlaylists.value = youtubeRepository.getVideoPlaylists()
-            } finally {
-                _isVideoPlaylistsLoading.value = false
-            }
-        }
-    }
 
-    /**
-     * Load one playlist's videos (also Watch Later "WL" / Liked videos "LL").
-     *
-     * A local playlist is already in memory, so it is served straight from the
-     * store rather than through a fetch that would fail signed out. It still
-     * goes through the same [_playlistVideos] state, which is what lets
-     * `VideoPlaylistDetail` snapshot it into a [com.ivor.ivormusic.data.VideoQueue]
-     * without knowing which kind it opened.
-     */
-    fun loadPlaylistVideos(playlistId: String) {
-        playlistLoadJob?.cancel()
-        playlistPagination.reset()
-        activeVideoPlaylistId = playlistId
-        playlistSession = sessionManager.captureSession()
-        _playlistVideos.value = emptyList()
-        _isPlaylistVideosLoading.value = false
-        if (com.ivor.ivormusic.data.LocalVideoPlaylistsRepository.isLocal(playlistId)) {
-            _playlistVideos.value = localVideoPlaylistsRepository.videosOf(playlistId)
-            return
-        }
-        val request = playlistPagination.first()
-        _isPlaylistVideosLoading.value = true
-        fetchVideoPlaylistPage(playlistId, request)
-    }
 
-    fun loadMorePlaylistVideos(playlistId: String) {
-        if (activeVideoPlaylistId != playlistId) return
-        val request = playlistPagination.more() ?: return
-        fetchVideoPlaylistPage(playlistId, request)
-    }
 
-    private fun fetchVideoPlaylistPage(
-        playlistId: String,
-        request: com.ivor.ivormusic.data.DemandPagination.Request<com.ivor.ivormusic.data.VideoPlaylistCursor>
-    ) {
-        val session = playlistSession
-        playlistLoadJob = viewModelScope.launch {
-            try {
-                val page = if (playlistId.startsWith("MPRE")) {
-                    com.ivor.ivormusic.data.VideoPlaylistPage(
-                        youtubeRepository.getAlbumSongs(playlistId).map { song ->
-                            VideoItem(videoId = song.id, title = song.title, channelName = song.artist,
-                                thumbnailUrl = song.thumbnailUrl ?: song.highResThumbnailUrl,
-                                duration = song.duration / 1000, viewCount = "")
-                        })
-                } else youtubeRepository.getPlaylistVideosPage(playlistId, request.continuation, session)
-                if (!playlistPagination.isCurrent(request)) return@launch
-                if (page == null) {
-                    playlistPagination.fail(request)
-                } else if (playlistPagination.complete(request, page.continuation)) {
-                    // Playlist duplicates are distinct occurrences; never deduplicate by video id.
-                    _playlistVideos.value = if (request.continuation == null) page.videos
-                        else _playlistVideos.value + page.videos
-                }
-                _isPlaylistVideosLoading.value = false
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (playlistPagination.isCurrent(request)) {
-                    playlistPagination.fail(request)
-                    _isPlaylistVideosLoading.value = false
-                }
-            } finally {
-                if (playlistPagination.isCurrent(request)) {
-                    playlistPagination.cancel(request)
-                    _isPlaylistVideosLoading.value = false
-                }
-            }
-        }
-    }
 
-    fun stopPlaylistVideoPagination(playlistId: String) {
-        if (activeVideoPlaylistId == playlistId) playlistLoadJob?.cancel()
-    }
 
-    private fun resetVideoLibraryPagination() {
-        historyLoadJob?.cancel()
-        playlistLoadJob?.cancel()
-        historyPagination.reset()
-        playlistPagination.reset()
-        historySession = null
-        playlistSession = null
-        activeVideoPlaylistId = null
-        _isHistoryLoading.value = false
-        _isPlaylistVideosLoading.value = false
-        _playlistVideos.value = emptyList()
-    }
 
     /**
      * Create a playlist from the video Library tab.
@@ -1875,113 +924,24 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * YouTube path needs a session and a create that silently does nothing is
      * exactly the failure this whole change exists to remove.
      */
-    fun createVideoPlaylist(name: String, onDevice: Boolean = !isYouTubeConnected.value) {
-        val trimmed = name.trim()
-        if (trimmed.isEmpty()) return
-        viewModelScope.launch {
-            if (onDevice || !isYouTubeConnected.value) {
-                localVideoPlaylistsRepository.create(trimmed)
-            } else if (youtubeRepository.createYouTubePlaylist(trimmed, music = false) != null) {
-                loadVideoPlaylists(force = true)
-            }
-        }
-    }
 
     /**
      * Delete a playlist. The local store owns its own list, so there is nothing
      * to roll back there; the account path stays optimistic-and-restore.
      */
-    fun deleteVideoPlaylist(playlistId: String) {
-        if (com.ivor.ivormusic.data.LocalVideoPlaylistsRepository.isLocal(playlistId)) {
-            viewModelScope.launch { localVideoPlaylistsRepository.delete(playlistId) }
-            return
-        }
-        val previous = _videoPlaylists.value
-        _videoPlaylists.value = previous.filterNot { it.playlistId == playlistId }
-        viewModelScope.launch {
-            if (!youtubeRepository.deleteYouTubePlaylist(playlistId, music = false)) {
-                _videoPlaylists.value = previous
-            }
-        }
-    }
 
     /** Rename a playlist held on this device. */
-    fun renameLocalVideoPlaylist(playlistId: String, name: String) {
-        if (!com.ivor.ivormusic.data.LocalVideoPlaylistsRepository.isLocal(playlistId)) return
-        viewModelScope.launch { localVideoPlaylistsRepository.rename(playlistId, name) }
-    }
 
     /**
      * Remove a video from a playlist, Watch Later ("WL") or Liked videos
      * ("LL", removes the like). Optimistic removal, restored on failure.
      */
-    fun removePlaylistVideo(playlistId: String, video: VideoItem) {
-        val previous = _playlistVideos.value
-        _playlistVideos.value = previous.filterNot { it.videoId == video.videoId }
-        if (com.ivor.ivormusic.data.LocalVideoPlaylistsRepository.isLocal(playlistId)) {
-            viewModelScope.launch {
-                localVideoPlaylistsRepository.removeVideo(playlistId, video.videoId)
-            }
-            return
-        }
-        viewModelScope.launch {
-            if (!youtubeRepository.removeFromYouTubePlaylist(playlistId, video.videoId, music = false)) {
-                _playlistVideos.value = previous
-            }
-        }
-    }
 
-    /**
-     * Add a video to a playlist. Reports the outcome on the main thread so the
-     * save sheet can show inline feedback.
-     *
-     * Three targets, decided here rather than at the five call sites that open
-     * the sheet: a local playlist, the account's Watch Later, and any other
-     * account playlist. Signed out "WL" is the device's Watch Later, created on
-     * first use - the pinned hero row used to post to an endpoint that answers
-     * 200 without a session and does nothing, so the sheet reported a save that
-     * had not happened.
-     */
-    fun addVideoToPlaylist(playlistId: String, video: VideoItem, onResult: (Boolean) -> Unit) {
-        viewModelScope.launch {
-            onResult(saveVideoToPlaylist(playlistId, video))
-        }
-    }
 
     /** Create a playlist on the device, from the save sheet. */
-    fun createLocalVideoPlaylist(name: String, onCreated: (String?) -> Unit) {
-        viewModelScope.launch { onCreated(localVideoPlaylistsRepository.create(name)) }
-    }
 
-    /** Mirrored by `VideoPlayerViewModel.addVideoToPlaylist`; keep them in step. */
-    private suspend fun saveVideoToPlaylist(playlistId: String, video: VideoItem): Boolean {
-        val local = com.ivor.ivormusic.data.LocalVideoPlaylistsRepository
-        return when {
-            local.isLocal(playlistId) ->
-                localVideoPlaylistsRepository.addVideo(playlistId, video)
-            playlistId == "WL" && !isYouTubeConnected.value ->
-                localVideoPlaylistsRepository.addVideo(
-                    localVideoPlaylistsRepository.ensureWatchLater(),
-                    video
-                )
-            else ->
-                youtubeRepository.addToYouTubePlaylist(playlistId, video.videoId, music = false)
-        }
-    }
 
     /** Load the notification inbox. Requires login. */
-    fun loadNotifications(force: Boolean = false) {
-        if (_isNotificationsLoading.value) return
-        if (_notifications.value.isNotEmpty() && !force) return
-        viewModelScope.launch {
-            _isNotificationsLoading.value = true
-            try {
-                _notifications.value = youtubeRepository.getNotifications()
-            } finally {
-                _isNotificationsLoading.value = false
-            }
-        }
-    }
     
     // --- Download Actions ---
     
@@ -2026,8 +986,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private fun forgetHomeLoadTimes() {
         accountLoadedAtMs = 0L
         recommendationsLoadedAtMs = 0L
-        videoFeedLoadedAtMs = 0L
-        shortsFeedLoadedAtMs = 0L
     }
 
     fun checkYouTubeConnection(force: Boolean = false) {
@@ -2104,21 +1062,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         com.ivor.ivormusic.data.SearchResultsCache<com.ivor.ivormusic.data.PlaylistDisplayItem>()
     private val playlistSearchCache =
         com.ivor.ivormusic.data.SearchResultsCache<com.ivor.ivormusic.data.PlaylistDisplayItem>()
-    private val videoSearchCache = com.ivor.ivormusic.data.SearchResultsCache<VideoItem>()
-    private val videoPlaylistSearchCache =
-        com.ivor.ivormusic.data.SearchResultsCache<com.ivor.ivormusic.data.VideoPlaylist>()
-    private val channelSearchCache =
-        com.ivor.ivormusic.data.SearchResultsCache<com.ivor.ivormusic.data.SubscribedChannel>()
 
     /** Case and surrounding space are not a different search. */
     private fun searchKey(query: String, vararg parts: String): String =
         (listOf(query.trim().lowercase()) + parts).joinToString("|")
 
-    private fun videoSearchKey(
-        query: String,
-        dateFilter: com.ivor.ivormusic.data.VideoSearchDateFilter,
-        sort: com.ivor.ivormusic.data.VideoSearchSort
-    ) = searchKey(query, dateFilter.name, sort.name)
 
     /**
      * Whether this exact search can be answered without the network.
@@ -2145,9 +1093,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         artistSearchCache.clear()
         albumSearchCache.clear()
         playlistSearchCache.clear()
-        videoSearchCache.clear()
-        videoPlaylistSearchCache.clear()
-        channelSearchCache.clear()
     }
 
     suspend fun searchYouTube(query: String): List<Song> {
@@ -2364,8 +1309,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     fun logout() {
-        resetVideoLibraryPagination()
-        clearShortsFeed()
         sessionManager.clearSession()
         _isYouTubeConnected.value = false
         _userAvatar.value = null
@@ -2379,13 +1322,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         _youtubePlaylists.value = emptyList()
         forgetHomeLoadTimes()
         accountLoadJob?.cancel()
-        clearSubscriptionMix()
         // The Subscriptions tab no longer empties itself on sign-out - local
         // subscriptions outlive the session - so the account's half has to be
         // dropped explicitly, or it would sit there unreachable and stale.
-        _accountChannels.value = emptyList()
-        _subscriptionFeed.value = emptyList()
-        loadSubscriptionFeed(force = true)
         loadYouTubeRecommendations(force = true)
     }
 
@@ -2440,9 +1379,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * Load trending/recommended videos for video mode home screen.
      * Also refreshes the Shorts shelf in parallel.
      */
-    private var videoHomeLoadJob: Job? = null
-    private var videoHomeRequest: kotlinx.coroutines.Deferred<com.ivor.ivormusic.data.VideoFeedPage>? = null
-    private var videoHomeLoadGeneration = 0L
 
     /**
      * One page of the video feed, or null if it did not arrive in time.
@@ -2459,56 +1395,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * pulls on a slow connection cannot pile network work on the server that is
      * already not answering.
      */
-    private suspend fun requestVideoFeedPage(): com.ivor.ivormusic.data.VideoFeedPage? {
-        val request = videoHomeRequest?.takeIf { it.isActive }
-            ?: viewModelScope.async(kotlinx.coroutines.Dispatchers.IO) {
-                youtubeRepository.getTrendingVideos()
-            }.also { videoHomeRequest = it }
-        return kotlinx.coroutines.withTimeoutOrNull(VIDEO_FEED_DEADLINE_MS) { request.await() }
-    }
 
-    fun loadTrendingVideos() {
-        val generation = ++videoHomeLoadGeneration
-        videoHomeLoadJob?.cancel()
-        if (!hasNetworkConnection() || themePreferences.isLocalOnlyModeEnabled()) {
-            _isVideoHomeOffline.value = true
-            _isVideoLoading.value = false
-            return
-        }
-        loadShortsFeed()
-        if (!themePreferences.areVideoRecommendationsEnabled()) {
-            _isVideoLoading.value = false
-            return
-        }
-        videoHomeLoadJob = viewModelScope.launch {
-            _isVideoLoading.value = true
-            try {
-                // The request belongs to the ViewModel, not the timeout scope:
-                // blocking NewPipe calls cannot hold the UI's deadline open.
-                // Reuse an outstanding request so repeated refreshes cannot
-                // accumulate network work while that call finishes.
-                val page = requestVideoFeedPage()
-                if (!themePreferences.areVideoRecommendationsEnabled()) return@launch
-                if (page != null && page.videos.isNotEmpty()) {
-                    _isVideoHomeOffline.value = false
-                    _trendingVideos.value = page.videos
-                    videoFeedLoadedAtMs = System.currentTimeMillis()
-                    videoFeedContinuation = page.continuation
-                    tasteSeedOffset = 6
-                    videoFeedExhausted = false
-                    rememberShown(page.videos)
-                } else {
-                    _isVideoHomeOffline.value = page == null || !hasNetworkConnection()
-                }
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (e: Exception) {
-                _isVideoHomeOffline.value = true
-            } finally {
-                if (generation == videoHomeLoadGeneration) _isVideoLoading.value = false
-            }
-        }
-    }
 
     // ---------------- "Don't recommend this" ----------------
 
@@ -2523,16 +1410,8 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         notInterestedRepository.blockedChannels
 
     /** Hide one video from every recommendation feed. */
-    fun markNotInterested(video: VideoItem) {
-        notInterestedActions.hideVideo(video, viewModelScope)
-        topUpFeedAfterFiltering()
-    }
 
     /** Stop recommending anything from this video's channel. */
-    fun blockChannelFor(video: VideoItem) {
-        notInterestedActions.blockChannel(video, viewModelScope)
-        topUpFeedAfterFiltering()
-    }
 
     /**
      * Music mode's two dismissals. Local only - see [NotInterestedActions] -
@@ -2561,29 +1440,12 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * left to scroll after a cut like that, so the feed would just sit there
      * looking broken until the user pulled to refresh.
      */
-    private fun topUpFeedAfterFiltering() {
-        val raw = _trendingVideos.value
-        if (raw.isEmpty()) return
-        // Recomputed here rather than read off [trendingVideos]: the block was
-        // written to the repository a moment ago, but the derived flow emits
-        // asynchronously, so its current value is still the pre-block list and
-        // the check would decide there was plenty left.
-        if (notInterestedRepository.filter(raw).size < FEED_TOP_UP_THRESHOLD) {
-            loadMoreTrendingVideos()
-        }
-    }
 
     /**
      * Record videos as seen, keeping the newest [SHOWN_VIDEO_MEMORY] ids.
      * Bounded because the set only exists to keep consecutive refreshes from
      * repeating themselves, not to be a second watch history.
      */
-    private fun rememberShown(videos: List<VideoItem>) {
-        videos.forEach { shownVideoIds.add(it.videoId) }
-        while (shownVideoIds.size > SHOWN_VIDEO_MEMORY) {
-            shownVideoIds.remove(shownVideoIds.first())
-        }
-    }
 
     /**
      * Load the next page of the video home feed. Called when the grid scrolls
@@ -2592,86 +1454,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * more related videos. No-op while a load is already running or once the
      * feed is exhausted.
      */
-    fun loadMoreTrendingVideos() {
-        if (!themePreferences.areVideoRecommendationsEnabled()) return
-        if (_isVideoHomeOffline.value || _isVideoLoading.value || _isVideoLoadingMore.value || videoFeedExhausted) return
-        if (_trendingVideos.value.isEmpty()) return
 
-        viewModelScope.launch {
-            _isVideoLoadingMore.value = true
-            try {
-                val token = videoFeedContinuation
-                val newVideos: List<VideoItem>
-                if (token != null) {
-                    val page = youtubeRepository.getVideoFeedContinuation(token)
-                    videoFeedContinuation = page.continuation
-                    newVideos = page.videos
-                    if (page.videos.isEmpty() && page.continuation == null) {
-                        videoFeedExhausted = true
-                    }
-                } else {
-                    newVideos = youtubeRepository.getTasteBasedVideos(tasteSeedOffset)
-                    tasteSeedOffset += 6
-                    if (newVideos.isEmpty()) {
-                        videoFeedExhausted = true
-                    }
-                }
-
-                val onScreen = _trendingVideos.value.mapTo(HashSet()) { it.videoId }
-                val fresh = newVideos.filterNot { it.videoId in onScreen }
-                if (!themePreferences.areVideoRecommendationsEnabled()) return@launch
-                if (fresh.isNotEmpty()) {
-                    _trendingVideos.value = _trendingVideos.value + fresh
-                    rememberShown(fresh)
-                }
-            } catch (e: Exception) {
-                // Handle error silently; the next scroll will retry
-            } finally {
-                _isVideoLoadingMore.value = false
-            }
-        }
-    }
-
-    /**
-     * Load the Shorts shelf (personalized when logged in, search-seeded
-     * otherwise). No-op unless the user enabled the Home shelf — fresh pref read,
-     * since the settings screen toggles through its own ThemePreferences
-     * instance. Failures leave the previous shelf in place.
-     */
-    fun loadShortsFeed(force: Boolean = false) {
-        if (!themePreferences.isShortsEnabled() || shortsFeedLoadJob?.isActive == true) return
-        if (!force && _shortsFeed.value.isNotEmpty() && loadedRecently(shortsFeedLoadedAtMs)) return
-        if (themePreferences.isLocalOnlyModeEnabled()) return
-        if (!hasNetworkConnection()) {
-            _shortsFeedFailed.value = true
-            return
-        }
-        val generation = ++shortsFeedGeneration
-        val profileId = com.ivor.ivormusic.data.ProfileManager(app).activeProfileId.value
-        val session = sessionManager.captureSession()
-        fun isCurrent(): Boolean = generation == shortsFeedGeneration &&
-            com.ivor.ivormusic.data.ProfileManager(app).activeProfileId.value == profileId &&
-            (if (session != null) sessionManager.currentSession(session) != null
-             else sessionManager.captureSession() == null)
-        _isShortsLoading.value = true
-        _shortsFeedFailed.value = false
-        shortsFeedLoadJob = viewModelScope.launch {
-            try {
-                val shorts = youtubeRepository.getShortsFeed()
-                if (isCurrent() && themePreferences.isShortsEnabled()) {
-                    _shortsFeed.value = shorts
-                    shortsFeedLoadedAtMs = System.currentTimeMillis()
-                }
-            } catch (cancelled: kotlinx.coroutines.CancellationException) {
-                throw cancelled
-            } catch (e: Exception) {
-                if (isCurrent()) _shortsFeedFailed.value = true
-                KLog.w("HomeViewModel", "Shorts refresh failed", e)
-            } finally {
-                if (generation == shortsFeedGeneration) _isShortsLoading.value = false
-            }
-        }
-    }
 
     /**
      * Load user's watch history. Logged in: YouTube account history
@@ -2680,8 +1463,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** A history entry just removed, kept so the snackbar can put it back. */
     data class HistoryRemoval(val video: VideoItem, val at: Int, val id: Long)
 
-    private val _lastHistoryRemoval = MutableStateFlow<HistoryRemoval?>(null)
-    val lastHistoryRemoval: StateFlow<HistoryRemoval?> = _lastHistoryRemoval.asStateFlow()
 
     /**
      * Take one video out of the watch history.
@@ -2690,31 +1471,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * is synchronous and local, and a row that lingers for a frame after being
      * removed is the thing this feature exists to fix.
      */
-    fun removeVideoFromHistory(video: VideoItem) {
-        val at = _historyVideos.value.indexOfFirst { it.videoId == video.videoId }
-        _historyVideos.value = _historyVideos.value.filterNot { it.videoId == video.videoId }
-        videoHistoryRepository.removeVideo(video.videoId)
-        // A fresh id every time, so removing two entries in a row re-shows the
-        // snackbar instead of the second one silently doing nothing.
-        _lastHistoryRemoval.value =
-            HistoryRemoval(video, at.coerceAtLeast(0), System.currentTimeMillis())
-    }
 
     /** Put the last removed entry back where it was. */
-    fun undoHistoryRemoval() {
-        val removal = _lastHistoryRemoval.value ?: return
-        _lastHistoryRemoval.value = null
-        videoHistoryRepository.restoreVideo(removal.video, removal.at)
-        val current = _historyVideos.value.toMutableList()
-        if (current.none { it.videoId == removal.video.videoId }) {
-            current.add(removal.at.coerceIn(0, current.size), removal.video)
-        }
-        _historyVideos.value = current
-    }
 
-    fun clearHistoryRemoval() {
-        _lastHistoryRemoval.value = null
-    }
 
     /**
      * Empty Koda's watch history.
@@ -2724,140 +1483,17 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      * left youtube.com untouched would be the more damaging half of a promise
      * it could not keep.
      */
-    fun clearVideoHistory() {
-        historyLoadJob?.cancel()
-        historyPagination.reset()
-        _isHistoryLoading.value = false
-        videoHistoryRepository.clearHistory()
-        _historyVideos.value = emptyList()
-        _lastHistoryRemoval.value = null
-    }
 
     /** True when this entry has already been taken out of history. */
-    fun isRemovedFromHistory(videoId: String): Boolean =
-        videoHistoryRepository.isRemoved(videoId)
 
     /** Library and refresh request one page only, irrespective of account age. */
-    fun loadYouTubeHistory() {
-        if (historyLoadJob?.isActive == true) return
-        historySession = sessionManager.captureSession()
-        if (historySession == null) {
-            historyPagination.reset()
-            _isHistoryLoading.value = false
-            _historyVideos.value = videoHistoryRepository.getHistory()
-            return
-        }
-        val request = historyPagination.first()
-        _isHistoryLoading.value = true
-        fetchHistoryPage(request)
-    }
 
-    fun loadMoreYouTubeHistory() {
-        val request = historyPagination.more() ?: return
-        fetchHistoryPage(request)
-    }
 
-    private fun fetchHistoryPage(request: com.ivor.ivormusic.data.DemandPagination.Request<String>) {
-        val session = historySession
-        historyLoadJob = viewModelScope.launch {
-            try {
-                val page = youtubeRepository.getWatchHistoryPage(request.continuation, session)
-                if (!historyPagination.isCurrent(request)) return@launch
-                if (page == null) {
-                    historyPagination.fail(request)
-                    if (_historyVideos.value.isEmpty()) _historyVideos.value = videoHistoryRepository.getHistory()
-                } else if (historyPagination.complete(request, page.continuation)) {
-                    // The history screen keys rows by video id, so every page is
-                    // deduplicated, including the first.
-                    val visible = videoHistoryRepository.withoutRemoved(page.videos)
-                    _historyVideos.value = if (request.continuation == null) {
-                        visible.ifEmpty { videoHistoryRepository.getHistory() }
-                            .distinctBy { it.videoId }
-                    } else (_historyVideos.value + visible).distinctBy { it.videoId }
-                }
-                _isHistoryLoading.value = false
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                if (historyPagination.isCurrent(request)) {
-                    historyPagination.fail(request)
-                    _isHistoryLoading.value = false
-                }
-            } finally {
-                if (historyPagination.isCurrent(request)) {
-                    historyPagination.cancel(request)
-                    _isHistoryLoading.value = false
-                }
-            }
-        }
-    }
 
-    fun stopHistoryPagination() {
-        // The initial page is also the root's preview; only cancel detail-page appends.
-        if (!_isHistoryLoading.value) historyLoadJob?.cancel()
-    }
 
-    /**
-     * Search for videos (for video mode search).
-     * [dateFilter] restricts results to the chosen upload-date window,
-     * [sort] picks the result order.
-     */
-    suspend fun searchVideos(
-        query: String,
-        dateFilter: com.ivor.ivormusic.data.VideoSearchDateFilter = com.ivor.ivormusic.data.VideoSearchDateFilter.ANY,
-        sort: com.ivor.ivormusic.data.VideoSearchSort = com.ivor.ivormusic.data.VideoSearchSort.RELEVANCE
-    ): List<VideoItem> {
-        if (query.isBlank()) return emptyList()
-        // The filters are part of the search, not a view of it, so they are
-        // part of the key: the same words with a different date window is a
-        // different question and has to reach the network.
-        val key = videoSearchKey(query, dateFilter, sort)
-        videoSearchCache.get(key)?.let { return it }
-        return try {
-            youtubeRepository.searchVideos(query, dateFilter, sort)
-                .also { videoSearchCache.put(key, it) }
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
 
     /** Next page for the same query, date window and sort as the displayed list. */
-    suspend fun loadMoreVideoResults(
-        query: String,
-        dateFilter: com.ivor.ivormusic.data.VideoSearchDateFilter = com.ivor.ivormusic.data.VideoSearchDateFilter.ANY,
-        sort: com.ivor.ivormusic.data.VideoSearchSort = com.ivor.ivormusic.data.VideoSearchSort.RELEVANCE
-    ): List<VideoItem> {
-        if (query.isBlank()) return emptyList()
-        return try {
-            youtubeRepository.searchVideosNext(query, dateFilter, sort).also { more ->
-                val key = videoSearchKey(query, dateFilter, sort)
-                videoSearchCache.get(key)?.let { existing ->
-                    videoSearchCache.put(key, (existing + more).distinctBy { it.videoId })
-                }
-            }
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
 
-    /**
-     * Search for YouTube playlists (for video mode search).
-     */
-    suspend fun searchVideoPlaylists(query: String): List<com.ivor.ivormusic.data.VideoPlaylist> {
-        if (query.isBlank()) return emptyList()
-        val key = searchKey(query)
-        videoPlaylistSearchCache.get(key)?.let { return it }
-        return try {
-            youtubeRepository.searchVideoPlaylists(query)
-                .also { videoPlaylistSearchCache.put(key, it) }
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
 
     /**
      * A creator's channel identity - banner, avatar, verified tick, subscriber
@@ -2879,128 +1515,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    /** Search for channels (video mode's Channels filter). */
-    suspend fun searchChannels(query: String): List<com.ivor.ivormusic.data.SubscribedChannel> {
-        if (query.isBlank()) return emptyList()
-        val key = searchKey(query)
-        channelSearchCache.get(key)?.let { return it }
-        return try {
-            youtubeRepository.searchChannels(query).also { channelSearchCache.put(key, it) }
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
 
-    /**
-     * Refresh video mode content.
-     */
-    /**
-     * Pull-to-refresh for the video home feed.
-     *
-     * Deliberately not a plain re-run of [loadTrendingVideos]. YouTube's
-     * FEwhat_to_watch page 1 is close to static between fetches, so replacing
-     * the list with it showed the user the videos they had just scrolled past
-     * and the refresh read as broken. Measured against the live feed in August
-     * 2026: a page-1 refetch returned 22 videos, 16 of them already on screen,
-     * while the continuation returned an entire page of new ones.
-     *
-     * So this takes whatever page 1 offers that is genuinely new, then walks
-     * forward through the feed until there is a screenful of unseen videos.
-     * When the feed really is exhausted it falls back to page 1 rather than
-     * emptying the screen.
-     */
-    fun refreshVideos() {
-        // The same refusal the initial load makes, for the same reason: a pull
-        // with no connection should answer with the downloads immediately
-        // rather than spin over them until a network call times out.
-        if (!hasNetworkConnection() || themePreferences.isLocalOnlyModeEnabled()) {
-            _isVideoHomeOffline.value = true
-            _isVideoLoading.value = false
-            return
-        }
-        loadShortsFeed(force = true)
-        if (!themePreferences.areVideoRecommendationsEnabled()) {
-            loadSubscriptions(force = true)
-            // A pull on the shuffled Home is a reshuffle, and it fetches pools
-            // only for channels not already held this session.
-            loadSubscriptionMix(force = true)
-            return
-        }
-        viewModelScope.launch {
-            _isVideoLoading.value = true
-            try {
-                // Bounded and detached exactly as the initial load is - a
-                // blocking extraction cannot hold this deadline open from
-                // inside, so the request cannot be a child of the timeout.
-                val page = requestVideoFeedPage()
-                if (!themePreferences.areVideoRecommendationsEnabled()) return@launch
-                if (page == null || page.videos.isEmpty()) {
-                    // Nothing new to show. Say offline only when there is also
-                    // nothing already on screen, so a refresh that comes back
-                    // empty does not replace a working feed with downloads.
-                    if (_trendingVideos.value.isEmpty()) {
-                        _isVideoHomeOffline.value = page == null || !hasNetworkConnection()
-                    }
-                    return@launch
-                }
-                // Reached the feed, so whatever put the offline list up is over.
-                // Without this a refresh could load videos into a screen that
-                // went on showing downloads until the tab was rebuilt.
-                _isVideoHomeOffline.value = false
-
-                val fresh = mutableListOf<VideoItem>()
-                val batchIds = HashSet<String>()
-                fun takeUnseen(videos: List<VideoItem>) {
-                    videos.forEach { video ->
-                        if (video.videoId !in shownVideoIds && batchIds.add(video.videoId)) {
-                            fresh += video
-                        }
-                    }
-                }
-                takeUnseen(page.videos)
-
-                var continuation = page.continuation
-                var pagesWalked = 0
-                while (fresh.size < MIN_FRESH_VIDEOS_ON_REFRESH &&
-                    pagesWalked < MAX_REFRESH_PAGES
-                ) {
-                    val token = continuation
-                    val more = if (token != null) {
-                        val next = youtubeRepository.getVideoFeedContinuation(token)
-                        continuation = next.continuation
-                        next.videos
-                    } else {
-                        // Logged out there is no token: page the taste-based
-                        // feed by seed window instead, wrapping back to the
-                        // newest history entries once the seeds run out.
-                        tasteSeedOffset += 6
-                        val seeded = youtubeRepository.getTasteBasedVideos(tasteSeedOffset)
-                        if (seeded.isEmpty()) {
-                            tasteSeedOffset = 0
-                            youtubeRepository.getTasteBasedVideos(0)
-                        } else {
-                            seeded
-                        }
-                    }
-                    pagesWalked++
-                    if (more.isEmpty()) break
-                    takeUnseen(more)
-                }
-
-                // Everything the feed has to offer is already seen. Showing
-                // page 1 again beats showing nothing.
-                val result = fresh.ifEmpty { page.videos }
-                _trendingVideos.value = result
-                videoFeedContinuation = continuation
-                videoFeedExhausted = false
-                rememberShown(result)
-            } catch (e: Exception) {
-                // Handle error silently; the list keeps its previous contents
-            } finally {
-                _isVideoLoading.value = false
-            }
-        }
-    }
 
     // ============= PASTED YOUTUBE LINK RESOLUTION =============
 
@@ -3028,13 +1543,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     /** Resolve a pasted playlist link into videos (video mode). */
-    suspend fun resolvePlaylistVideosFromLink(playlistId: String): List<VideoItem> {
-        return try {
-            youtubeRepository.getPlaylistVideos(playlistId)
-        } catch (e: Exception) {
-            emptyList()
-        }
-    }
 
     // ============= PLAYLIST MANAGEMENT =============
     

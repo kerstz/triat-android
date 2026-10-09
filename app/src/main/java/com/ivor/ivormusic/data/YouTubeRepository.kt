@@ -1498,22 +1498,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Get stream info including metadata.
-     * @param videoId The YouTube video ID
-     * @return StreamInfo or null if not found
-     */
-    suspend fun getStreamInfo(videoId: String): StreamInfo? = withContext(Dispatchers.IO) {
-        try {
-            val streamUrl = "https://www.youtube.com/watch?v=$videoId"
-            val streamExtractor = youtubeService.getStreamExtractor(streamUrl)
-            streamExtractor.fetchPage()
-            // This return type might need adjustment depending on what's expected
-            null 
-        } catch (e: Exception) {
-            null
-        }
-    }
 
 
     /**
@@ -1645,20 +1629,6 @@ class YouTubeRepository(private val context: Context) {
 
     private fun parsePlaylistPanelVideo(renderer: org.json.JSONObject): Song? = MusicMetadata.song(renderer)
 
-    private fun parseDurationTextToMs(text: String?): Long {
-        if (text.isNullOrBlank()) return 0L
-        return try {
-            val parts = text.split(":").map { it.trim().toLong() }
-            when (parts.size) {
-                3 -> (parts[0] * 3600 + parts[1] * 60 + parts[2]) * 1000
-                2 -> (parts[0] * 60 + parts[1]) * 1000
-                1 -> parts[0] * 1000
-                else -> 0L
-            }
-        } catch (e: Exception) {
-            0L
-        }
-    }
 
     /**
      * Get the user's playlists.
@@ -2928,14 +2898,6 @@ class YouTubeRepository(private val context: Context) {
 
     // --- JSON Helpers ---
 
-    // Optimized replacement for recursive searching when needed
-    // Only search 1 level deep for specific keys to avoid full recursion
-    private fun findObject(node: Any, key: String): org.json.JSONObject? {
-         if (node is org.json.JSONObject) {
-            if (node.has(key)) return node.getJSONObject(key)
-         }
-         return null
-    }
 
     private fun getRunText(formattedString: org.json.JSONObject?): String? {
         if (formattedString == null) return null
@@ -2950,11 +2912,6 @@ class YouTubeRepository(private val context: Context) {
         return sb.toString()
     }
 
-    private fun extractValueFromRuns(item: org.json.JSONObject, key: String): String? {
-        // Direct checkout instead of recursion
-        val nav = item.optJSONObject("navigationEndpoint")?.optJSONObject("watchEndpoint")
-        return nav?.optString(key)
-    }
 
 
     private fun extractVideoId(url: String): String {
@@ -3231,74 +3188,7 @@ class YouTubeRepository(private val context: Context) {
             }
         }
 
-    /**
-     * Search for playlists on regular YouTube (video mode search). Mapped to
-     * [VideoPlaylist] so results plug straight into the same playlist detail
-     * page and models the video Library tab uses.
-     */
-    suspend fun searchVideoPlaylists(query: String): List<VideoPlaylist> = withContext(Dispatchers.IO) {
-        try {
-            val searchExtractor = youtubeService.getSearchExtractor(query, listOf(FILTER_YOUTUBE_PLAYLISTS), "")
-            searchExtractor.fetchPage()
 
-            searchExtractor.initialPage.items.filterIsInstance<PlaylistInfoItem>().mapNotNull { item ->
-                val playlistId = item.url?.substringAfter("list=", "")
-                    ?.substringBefore("&")
-                    ?.takeIf { it.isNotBlank() }
-                    ?: return@mapNotNull null
-                VideoPlaylist(
-                    playlistId = playlistId,
-                    title = item.name?.takeIf { it.isNotBlank() } ?: "Unknown Playlist",
-                    thumbnailUrl = item.thumbnails?.maxByOrNull { it.width }?.url
-                        ?: item.thumbnails?.firstOrNull()?.url,
-                    videoCountText = item.streamCount.takeIf { it > 0 }?.let { "$it videos" },
-                    subtitle = item.uploaderName?.takeIf { it.isNotBlank() }
-                )
-            }
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "Error searching video playlists", e)
-            emptyList()
-        }
-    }
-
-    /**
-     * Channels matching [query], for video mode's Channels search filter.
-     *
-     * NewPipe's channel filter rather than an InnerTube search: it already
-     * returns the canonical UC id, the avatar, the subscriber count and the
-     * verified flag in one shape, and the channel page this feeds only needs
-     * the id. Mirrors [searchArtists], which does the same on the music side.
-     */
-    suspend fun searchChannels(query: String): List<SubscribedChannel> =
-        withContext(Dispatchers.IO) {
-            try {
-                val searchExtractor =
-                    youtubeService.getSearchExtractor(query, listOf(FILTER_YOUTUBE_CHANNELS), "")
-                searchExtractor.fetchPage()
-
-                searchExtractor.initialPage.items
-                    .filterIsInstance<ChannelInfoItem>()
-                    .mapNotNull { item ->
-                        // Every other call in the app keys off the canonical id,
-                        // so a result whose URL is a handle rather than /channel/
-                        // is dropped here instead of failing later on the page.
-                        val channelId = item.url?.substringAfterLast('/')
-                            ?.takeIf { it.startsWith("UC") } ?: return@mapNotNull null
-                        SubscribedChannel(
-                            channelId = channelId,
-                            name = item.name?.takeIf { it.isNotBlank() } ?: return@mapNotNull null,
-                            avatarUrl = item.thumbnails?.maxByOrNull { it.width }?.url
-                                ?: item.thumbnails?.firstOrNull()?.url,
-                            subscriberCountText = item.subscriberCount.takeIf { it >= 0 }
-                                ?.let { "${VideoItem.formatViewCount(it)} subscribers" }
-                        )
-                    }
-                    .distinctBy { it.channelId }
-            } catch (e: Exception) {
-                KLog.e("YouTubeRepo", "Error searching channels", e)
-                emptyList()
-            }
-        }
 
     /**
      * Base64url protobuf for the /search `params` field: sort order (field 1)
@@ -3595,30 +3485,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /** One history page; Library must never walk an account's entire history. */
-    internal suspend fun getWatchHistoryPage(
-        continuation: String? = null,
-        session: YouTubeSession? = sessionManager.captureSession()
-    ): VideoFeedPage? = withContext(Dispatchers.IO) {
-        if (session == null) return@withContext null
-        try {
-            val body = org.json.JSONObject().put("context", webContext())
-            if (continuation == null) body.put("browseId", "FEhistory")
-            else body.put("continuation", continuation)
-            val raw = postWatchApi("browse", body, session)
-                ?.takeIf { it.isNotBlank() } ?: return@withContext null
-            val root = org.json.JSONObject(raw)
-            if (root.has("error")) return@withContext null
-            val videos = parseVideosFromYouTubeJson(raw, limit = Int.MAX_VALUE)
-            KLog.d("YouTubeRepo", "History ${if (continuation == null) "first" else "next"} page: ${videos.size} videos")
-            VideoFeedPage(videos, videoListContinuationToken(root))
-        } catch (e: CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "Error fetching watch history page", e)
-            null
-        }
-    }
 
     /**
      * Resurrected helper for deep recursive search.
@@ -3757,79 +3623,9 @@ class YouTubeRepository(private val context: Context) {
     // API July 2026.
     // ============================================================
 
-    /**
-     * Signed-in Shorts use YouTube's seedless Shorts navigation, not a search
-     * query. FEwhat_to_watch can contain no Shorts even with logged_in=1.
-     * Seed and continuation shapes verified live September 2026.
-     * Signed-out profiles retain the local-history search fallback.
-     */
-    suspend fun getShortsFeed(): List<ShortsItem> = withContext(Dispatchers.IO) {
-        val session = sessionManager.captureSession()
-        if (session != null) {
-            val body = org.json.JSONObject()
-                .put("context", webContext())
-                .put("params", "CA8%3D")
-                .put("inputType", "REEL_WATCH_INPUT_TYPE_SEEDLESS")
-                .put("disablePlayerResponse", true)
-            val raw = postWatchApi("reel/reel_item_watch", body, session)
-                ?: throw java.io.IOException("Shorts recommendations request failed")
-            val root = org.json.JSONObject(raw)
-            if (LOGGED_IN_TRACKING_PARAM.find(raw)?.groupValues?.get(1) == "0") {
-                throw java.io.IOException("YouTube rejected the Shorts session")
-            }
-            val seed = parseShortsSeed(root)
-            if (sessionManager.currentSession(session) == null) {
-                throw kotlinx.coroutines.CancellationException("Shorts account changed")
-            }
-            val page = seed.continuation?.let { requestShortsSequence(it, session) }
-            val continuation = if (page != null) page.continuation else seed.continuation
-            // Every shelf tap continues after the loaded shelf, without replaying
-            // a search candidate list or dropping the account's sequence token.
-            return@withContext (seed.items + page?.items.orEmpty())
-                .distinctBy { it.videoId }
-                .map { it.copy(sequenceParams = continuation) }
-        }
-        val seedChannel = videoHistoryRepository.getHistory()
-            .firstOrNull { it.channelName.isNotBlank() && it.channelName != "Unknown Channel" }
-            ?.channelName
-        val body = org.json.JSONObject()
-            .put("context", webContext())
-            .put("query", seedChannel?.let { "$it shorts" } ?: "trending shorts")
-        val raw = postWatchApi("search", body)
-            ?: throw java.io.IOException("Shorts search request failed")
-        parseShortsLockups(org.json.JSONObject(raw))
-    }
 
-    /**
-     * One account-aware reel_watch_sequence page. Errors must propagate so the
-     * pager keeps its token for retry instead of treating a failure as exhaustion.
-     * Seed params and continuation tokens use the same field (verified September 2026).
-     */
-    suspend fun getShortsSequence(sequenceParams: String): ShortsFeedPage = withContext(Dispatchers.IO) {
-        requestShortsSequence(sequenceParams, sessionManager.captureSession())
-    }
 
-    private fun requestShortsSequence(sequenceParams: String, session: YouTubeSession?): ShortsFeedPage {
-        val body = org.json.JSONObject()
-            .put("context", webContext())
-            .put("sequenceParams", sequenceParams)
-        val raw = postWatchApi("reel/reel_watch_sequence", body, session)
-            ?: throw java.io.IOException("Shorts sequence request failed")
-        if (session != null &&
-            LOGGED_IN_TRACKING_PARAM.find(raw)?.groupValues?.get(1) == "0") {
-            throw java.io.IOException("YouTube rejected the Shorts session")
-        }
-        return parseShortsSequence(org.json.JSONObject(raw))
-    }
 
-    /** All shortsLockupViewModels of a response, deduped, in shelf order. */
-    private fun parseShortsLockups(root: org.json.JSONObject): List<ShortsItem> {
-        val lockups = mutableListOf<org.json.JSONObject>()
-        findObjectsByKey(root, "shortsLockupViewModel", lockups)
-        return lockups.mapNotNull { parseShortsLockup(it) }
-            .distinctBy { it.videoId }
-            .take(30)
-    }
 
     /**
      * shortsLockupViewModel: videoId + sequenceParams live in
@@ -4853,14 +4649,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    private fun formatSubscriberCount(count: Long): String {
-        return when {
-            count >= 1_000_000_000 -> String.format("%.1fB", count / 1_000_000_000.0)
-            count >= 1_000_000 -> String.format("%.1fM", count / 1_000_000.0)
-            count >= 1_000 -> String.format("%.1fK", count / 1_000.0)
-            else -> count.toString()
-        }
-    }
 
     /**
      * Recursively find all JSON objects with a specific key and add them to the results list.
@@ -5362,10 +5150,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Get available video qualities for a video.
-     */
-    suspend fun getVideoQualities(videoId: String): List<VideoQuality> = getVideoDetails(videoId).qualities
 
     // ============================================================
     // Video engagement: like/dislike, subscribe, comments
@@ -5479,31 +5263,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Resolve the creator of a feed video without resolving streams or touching
-     * either player. Used only when a feed lockup supplied an avatar/name but
-     * omitted its channel browse endpoint.
-     */
-    suspend fun getVideoChannelId(videoId: String): String? = withContext(Dispatchers.IO) {
-        if (videoId.length != 11) return@withContext null
-        try {
-            val root = fetchWatchNextRoot(videoId) ?: return@withContext null
-            val engagement = runCatching { parseEngagementFromWatchNext(videoId, root) }.getOrNull()
-            engagement?.channelId
-                ?: parseVideoMetadataFromWatchNext(videoId, root, null)?.channelId
-                // A collab upload names no owner at all - no title, no
-                // thumbnail, no browse endpoint - so both of the above are null
-                // and this used to answer "no such channel", which is what a
-                // feed card whose lockup carried no creator command (a channel
-                // tab's, for one) surfaced as a channel page that failed to
-                // load. The collaborators are listed uploader first, so the
-                // first of them is the channel the byline leads with.
-                ?: engagement?.collaborators?.firstOrNull()?.channelId
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "Channel lookup failed for $videoId", e)
-            null
-        }
-    }
 
     /**
      * Everything the video player needs from one watch-next call: engagement,
@@ -5586,31 +5345,6 @@ class YouTubeRepository(private val context: Context) {
     // Live chat (InnerTube WEB client against www.youtube.com)
     // ============================================================
 
-    /**
-     * Open a live chat stream for [videoId], returning the first continuation
-     * token and the send token.
-     *
-     * The entry point rides the same /next response the player already parses:
-     * contents.twoColumnWatchNextResults.conversationBar.liveChatRenderer, with
-     * the start token at continuations[0].reloadContinuationData.continuation.
-     * conversationBar is absent entirely when the video is not live or the
-     * creator disabled chat, which is the "no chat" signal - not an error.
-     *
-     * Reading chat needs no account: a signed-out poll returns the full
-     * backlog. Sending does, so [LiveChatSession.sendParams] is only meaningful
-     * alongside [isLoggedIn].
-     *
-     * Verified against the live /next API August 2026.
-     */
-    suspend fun getLiveChatSession(videoId: String): LiveChatSession? = withContext(Dispatchers.IO) {
-        try {
-            val root = fetchWatchNextRoot(videoId) ?: return@withContext null
-            parseLiveChatContinuation(root)?.let { LiveChatSession(continuation = it) }
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getLiveChatSession failed for $videoId", e)
-            null
-        }
-    }
 
     /**
      * Pull the chat start token out of an already-fetched watch-next response.
@@ -5767,100 +5501,7 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Post a message to a live chat. Requires login - the input renderer is
-     * present in the response even signed out, so its presence is not an auth
-     * signal.
-     *
-     * [params] is the opaque token from the poll response's
-     * actionPanel.liveChatMessageInputRenderer.sendButton, echoed back verbatim.
-     *
-     * An accepted message comes straight back as an addChatItemAction, so the
-     * result carries the parsed item: showing it at once is what makes sending
-     * feel instant instead of costing up to a full poll interval. Its id is the
-     * one the poll will hand back later, so the normal dedupe absorbs it.
-     */
-    suspend fun sendLiveChatMessage(params: String, text: String): LiveChatSendResult =
-        withContext(Dispatchers.IO) {
-            if (!isLoggedIn()) {
-                return@withContext LiveChatSendResult(false, error = "Sign in to chat")
-            }
-            try {
-                val body = org.json.JSONObject()
-                    .put("context", webContext())
-                    .put("params", params)
-                    .put(
-                        "richMessage",
-                        org.json.JSONObject().put(
-                            "textSegments",
-                            org.json.JSONArray().put(org.json.JSONObject().put("text", text))
-                        )
-                    )
-                    .put("clientMessageId", java.util.UUID.randomUUID().toString())
-                val raw = postWatchApi("live_chat/send_message", body)
-                    ?: return@withContext LiveChatSendResult(false, error = "Message not sent")
-                val root = org.json.JSONObject(raw)
 
-                val results = mutableListOf<org.json.JSONObject>()
-                findObjectsByKey(root, "addChatItemAction", results)
-                val echo = results.firstNotNullOfOrNull { action ->
-                    action.optJSONObject("item")?.let { parseLiveChatItem(it, fallbackOrder = 0) }
-                }
-                if (results.isNotEmpty()) {
-                    return@withContext LiveChatSendResult(true, echo = echo)
-                }
-
-                // A rejected message (slow mode, a word filter, a ban) answers
-                // 200 with an error string in place of the item.
-                val errors = mutableListOf<org.json.JSONObject>()
-                findObjectsByKey(root, "errorMessage", errors)
-                val reason = errors.firstNotNullOfOrNull { getRunText(it) }
-                    ?.takeIf { it.isNotBlank() }
-                LiveChatSendResult(false, error = reason ?: "Message not sent")
-            } catch (e: Exception) {
-                KLog.e("YouTubeRepo", "sendLiveChatMessage failed", e)
-                LiveChatSendResult(false, error = "Message not sent")
-            }
-        }
-
-    /**
-     * Concurrent viewers and the "Started streaming ..." line for a live video.
-     *
-     * The updated_metadata endpoint is what the web player polls to keep those
-     * counters fresh without re-running /next. It asks for a 5s tick, which is
-     * far more often than a phone needs - call it on the chat's 10s cadence or
-     * slower.
-     *
-     * Verified against the live updated_metadata API August 2026.
-     */
-    suspend fun getLiveMetadata(videoId: String): LiveMetadata? = withContext(Dispatchers.IO) {
-        try {
-            val body = org.json.JSONObject()
-                .put("context", webContext())
-                .put("videoId", videoId)
-            val raw = postWatchApi("updated_metadata", body) ?: return@withContext null
-            val root = org.json.JSONObject(raw)
-
-            val viewCounts = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "videoViewCountRenderer", viewCounts)
-            val viewCount = viewCounts.firstOrNull { it.optBoolean("isLive") } ?: viewCounts.firstOrNull()
-
-            val dateTexts = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "updateDateTextAction", dateTexts)
-
-            LiveMetadata(
-                viewerCountText = getRunText(viewCount?.optJSONObject("viewCount"))
-                    ?.takeIf { it.isNotBlank() },
-                shortViewerCount = getRunText(viewCount?.optJSONObject("extraShortViewCount"))
-                    ?.takeIf { it.isNotBlank() },
-                dateText = getRunText(dateTexts.firstOrNull()?.optJSONObject("dateText"))
-                    ?.takeIf { it.isNotBlank() },
-            )
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getLiveMetadata failed for $videoId", e)
-            null
-        }
-    }
 
     /**
      * Turn one addChatItemAction item into a [LiveChatMessage].
@@ -6139,59 +5780,7 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Caption/subtitle tracks for a video.
-     *
-     * Resolved with the ANDROID_VR client (IOS as fallback) — the same chain
-     * used for streams, and deliberately *not* WEB: a WEB /player call without
-     * account cookies comes back UNPLAYABLE ("Video unavailable") with no
-     * captions block at all, so every signed-out user saw an empty CC menu.
-     * The native clients answer with the full tracklist either way.
-     *
-     * Normally free: [runPlayerClientChain] already caches the tracklist from
-     * the /player response fetched to start playback, so this only hits the
-     * network when that cache missed or went stale.
-     */
-    suspend fun getCaptionTracks(videoId: String): List<CaptionTrack> = withContext(Dispatchers.IO) {
-        cachedCaptionTracks(videoId)?.let { return@withContext it }
-        try {
-            val visitorData = getVisitorData()
-            val vr = fetchPlayerResponse(
-                videoId = videoId,
-                clientName = "ANDROID_VR",
-                clientVersion = ANDROID_VR_VERSION,
-                clientNameId = ANDROID_VR_CLIENT_ID,
-                userAgent = ANDROID_VR_USER_AGENT,
-                visitorData = visitorData,
-                extraClientFields = androidVrClientFields(),
-            )
-            val tracks = vr.captionTracks.ifEmpty {
-                fetchPlayerResponse(
-                    videoId = videoId,
-                    clientName = "IOS",
-                    clientVersion = IOS_VERSION,
-                    clientNameId = IOS_CLIENT_ID,
-                    userAgent = IOS_USER_AGENT,
-                    visitorData = visitorData,
-                    extraClientFields = iosClientFields(),
-                ).captionTracks
-            }
-            cacheCaptionTracks(videoId, tracks)
-            tracks
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getCaptionTracks failed for $videoId", e)
-            emptyList()
-        }
-    }
 
-    private fun cachedCaptionTracks(videoId: String): List<CaptionTrack>? {
-        val entry = captionCache[videoId] ?: return null
-        if (System.currentTimeMillis() - entry.fetchedAt > CAPTION_CACHE_TTL_MS) {
-            captionCache.remove(videoId)
-            return null
-        }
-        return entry.tracks
-    }
 
     private fun cacheCaptionTracks(videoId: String, tracks: List<CaptionTrack>) {
         if (tracks.isEmpty()) return
@@ -6211,42 +5800,6 @@ class YouTubeRepository(private val context: Context) {
         TrackLoudnessStore.put(context, videoId, loudnessDb ?: return)
     }
 
-    /**
-     * Download and parse one caption track into cues the player overlay can
-     * render itself.
-     *
-     * Captions deliberately do not travel through ExoPlayer as a sideloaded
-     * text track: that made them part of the media source, so turning captions
-     * on or off rebuilt the source and discarded the entire video buffer. The
-     * timedtext endpoint lives on www.youtube.com rather than googlevideo, so a
-     * plain browser User-Agent is enough and no ranged chunking is needed - the
-     * payload is a few tens of KB.
-     *
-     * Returns an empty list on any failure; captions are best-effort and must
-     * never take playback down with them.
-     */
-    suspend fun getCaptionCues(track: CaptionTrack): List<VttCue> = withContext(Dispatchers.IO) {
-        try {
-            val request = okhttp3.Request.Builder()
-                .url(track.vttUrl)
-                .addHeader("User-Agent", BROWSER_USER_AGENT)
-                .build()
-            okHttpClient.newCall(request).execute().use { response ->
-                if (!response.isSuccessful) {
-                    KLog.w(
-                        "YouTubeRepo",
-                        "Caption fetch failed for ${track.languageCode}: HTTP ${response.code}"
-                    )
-                    return@withContext emptyList()
-                }
-                val body = response.body?.string().orEmpty()
-                WebVttParser.parse(body)
-            }
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getCaptionCues failed for ${track.languageCode}", e)
-            emptyList()
-        }
-    }
 
     /**
      * Enriched video metadata from a watch-next response, layered over
@@ -6575,209 +6128,9 @@ class YouTubeRepository(private val context: Context) {
         return false
     }
 
-    /**
-     * Fetch one page of comments (top-level or replies) from a continuation token.
-     * Parses the modern commentEntityPayload format (frameworkUpdates mutations).
-     */
-    suspend fun getCommentsPage(token: String): CommentsPage? = withContext(Dispatchers.IO) {
-        try {
-            val body = org.json.JSONObject()
-                .put("context", webContext())
-                .put("continuation", token)
-            val raw = postWatchApi("next", body) ?: return@withContext null
-            val root = org.json.JSONObject(raw)
 
-            // 1. Collect entity payloads: commentId -> payload, toolbar states and
-            // toolbar surfaces (like/reply actions) by their entity keys
-            val entities = mutableMapOf<String, org.json.JSONObject>()
-            val toolbarStates = mutableMapOf<String, org.json.JSONObject>()
-            val toolbarSurfaces = mutableMapOf<String, org.json.JSONObject>()
-            val replyParamsList = mutableListOf<String>()
-            val mutations = root.optJSONObject("frameworkUpdates")
-                ?.optJSONObject("entityBatchUpdate")
-                ?.optJSONArray("mutations")
-            if (mutations != null) {
-                for (i in 0 until mutations.length()) {
-                    val payload = mutations.optJSONObject(i)?.optJSONObject("payload") ?: continue
-                    payload.optJSONObject("commentEntityPayload")?.let { entity ->
-                        val id = entity.optJSONObject("properties")?.optString("commentId")
-                        if (!id.isNullOrBlank()) entities[id] = entity
-                    }
-                    payload.optJSONObject("engagementToolbarStateEntityPayload")?.let { state ->
-                        val key = state.optString("key")
-                        if (key.isNotBlank()) toolbarStates[key] = state
-                    }
-                    // Reply-box params and like/unlike actions live in the toolbar
-                    // surface entity, one per comment (matched via toolbarSurfaceKey)
-                    payload.optJSONObject("engagementToolbarSurfaceEntityPayload")?.let { surface ->
-                        val key = surface.optString("key")
-                        if (key.isNotBlank()) toolbarSurfaces[key] = surface
-                        val replyEndpoints = mutableListOf<org.json.JSONObject>()
-                        findObjectsByKey(surface, "createCommentReplyEndpoint", replyEndpoints)
-                        replyEndpoints.firstOrNull()?.optString("createReplyParams")
-                            ?.takeIf { it.isNotBlank() }?.let { replyParamsList.add(it) }
-                    }
-                }
-            }
-            // Match reply params to their comment: the decoded protobuf embeds the commentId
-            val replyParamsByCommentId = mutableMapOf<String, String>()
-            for (params in replyParamsList) {
-                val decoded = decodeInnerTubeParams(params) ?: continue
-                entities.keys.firstOrNull { decoded.contains(it) }?.let { id ->
-                    replyParamsByCommentId[id] = params
-                }
-            }
 
-            // Params for posting a new top-level comment (present on first pages only)
-            val createEndpoints = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "createCommentEndpoint", createEndpoints)
-            val createCommentParams = createEndpoints.firstOrNull()
-                ?.optString("createCommentParams")?.takeIf { it.isNotBlank() }
 
-            // 2. Walk continuationItems in order to keep YouTube's comment ordering
-            val comments = mutableListOf<CommentItem>()
-            var nextToken: String? = null
-            val endpoints = root.optJSONArray("onResponseReceivedEndpoints") ?: org.json.JSONArray()
-            for (i in 0 until endpoints.length()) {
-                val ep = endpoints.optJSONObject(i) ?: continue
-                val items = (ep.optJSONObject("reloadContinuationItemsCommand")
-                    ?: ep.optJSONObject("appendContinuationItemsAction"))
-                    ?.optJSONArray("continuationItems") ?: continue
-                for (j in 0 until items.length()) {
-                    val item = items.optJSONObject(j) ?: continue
-                    val thread = item.optJSONObject("commentThreadRenderer")
-                    // Top-level pages wrap comments in commentThreadRenderer;
-                    // reply pages carry bare commentViewModel items.
-                    val viewModel = (thread ?: item).optJSONObject("commentViewModel")
-                        ?.let { vm -> vm.optJSONObject("commentViewModel") ?: vm }
-                    if (viewModel != null) {
-                        val id = viewModel.optString("commentId")
-                        val entity = entities[id] ?: continue
-                        var repliesToken: String? = null
-                        thread?.optJSONObject("replies")?.let { replies ->
-                            val tokens = mutableListOf<String>()
-                            findContinuationTokens(replies, tokens)
-                            repliesToken = tokens.firstOrNull()
-                        }
-                        comments.add(
-                            parseCommentEntity(
-                                id, entity, viewModel, toolbarStates, repliesToken,
-                                replyParamsByCommentId[id], toolbarSurfaces
-                            )
-                        )
-                    } else if (item.has("continuationItemRenderer")) {
-                        val tokens = mutableListOf<String>()
-                        findContinuationTokens(item.getJSONObject("continuationItemRenderer"), tokens)
-                        if (nextToken == null) nextToken = tokens.firstOrNull()
-                    }
-                }
-            }
-
-            CommentsPage(comments, nextToken, createCommentParams)
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getCommentsPage failed", e)
-            null
-        }
-    }
-
-    /**
-     * Decode a URL-encoded, URL-safe base64 InnerTube params blob into a
-     * string for substring matching (embedded ids are plain ASCII).
-     */
-    private fun decodeInnerTubeParams(params: String): String? = try {
-        val unescaped = java.net.URLDecoder.decode(params, "UTF-8")
-        val bytes = android.util.Base64.decode(unescaped, android.util.Base64.URL_SAFE)
-        String(bytes, Charsets.ISO_8859_1)
-    } catch (e: Exception) {
-        null
-    }
-
-    private fun parseCommentEntity(
-        id: String,
-        entity: org.json.JSONObject,
-        viewModel: org.json.JSONObject,
-        toolbarStates: Map<String, org.json.JSONObject>,
-        repliesToken: String?,
-        replyParams: String? = null,
-        toolbarSurfaces: Map<String, org.json.JSONObject> = emptyMap()
-    ): CommentItem {
-        val props = entity.optJSONObject("properties")
-        val author = entity.optJSONObject("author")
-        val toolbar = entity.optJSONObject("toolbar")
-        val toolbarStateKey = props?.optString("toolbarStateKey").orEmpty()
-        val toolbarState = toolbarStates[toolbarStateKey]
-        val heartState = toolbarState?.optString("heartState")
-        val likeState = toolbarState?.optString("likeState")
-
-        // Like/unlike actions come from the comment's toolbar surface entity
-        // (signed-in responses only; signed out the commands are empty stubs)
-        val surface = toolbarSurfaces[viewModel.optString("toolbarSurfaceKey")]
-        fun surfaceAction(command: String): String? =
-            surface?.optJSONObject(command)?.let {
-                val endpoints = mutableListOf<org.json.JSONObject>()
-                findObjectsByKey(it, "performCommentActionEndpoint", endpoints)
-                endpoints.firstOrNull()?.optString("action")?.takeIf { a -> a.isNotBlank() }
-            }
-
-        // Own comments carry a "Delete" item in the surface's three-dot menu
-        // (menuCommand -> menuRenderer -> menuNavigationItemRenderer, label is
-        // stable because webContext pins hl=en); its confirm-dialog endpoint
-        // holds the perform_comment_action delete param. Verified July 2026.
-        val deleteParams = surface?.optJSONObject("menuCommand")?.let { menu ->
-            val menuItems = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(menu, "menuNavigationItemRenderer", menuItems)
-            menuItems.firstOrNull { getRunText(it.optJSONObject("text")) == "Delete" }
-                ?.let { item ->
-                    val endpoints = mutableListOf<org.json.JSONObject>()
-                    findObjectsByKey(item, "performCommentActionEndpoint", endpoints)
-                    endpoints.firstOrNull()?.optString("action")?.takeIf { a -> a.isNotBlank() }
-                }
-        }
-
-        // Comment bodies carry the same attributed-text shape as descriptions:
-        // timestamps arrive as watchEndpoint runs with startTimeSeconds, so the
-        // clickable ranges never have to be pattern-matched out of the prose.
-        val content = parseRichText(props?.optJSONObject("content"))
-
-        return CommentItem(
-            commentId = id,
-            text = content.text,
-            links = content.links,
-            author = author?.optString("displayName").orEmpty(),
-            authorAvatarUrl = author?.optString("avatarThumbnailUrl")?.takeIf { it.isNotBlank() },
-            publishedTime = props?.optString("publishedTime").orEmpty(),
-            likeCount = toolbar?.optString("likeCountNotliked").orEmpty().trim(),
-            replyCount = toolbar?.optString("replyCount").orEmpty().trim(),
-            isPinned = viewModel.has("pinnedText"),
-            isHearted = heartState == "TOOLBAR_HEART_STATE_HEARTED",
-            isCreator = author?.optBoolean("isCreator", false) ?: false,
-            isVerified = author?.optBoolean("isVerified", false) ?: false,
-            repliesToken = repliesToken,
-            replyParams = replyParams,
-            likeCountLiked = toolbar?.optString("likeCountLiked").orEmpty().trim(),
-            isLiked = likeState == "TOOLBAR_LIKE_STATE_LIKED",
-            likeParams = surfaceAction("likeCommand"),
-            unlikeParams = surfaceAction("unlikeCommand"),
-            deleteParams = deleteParams
-        )
-    }
-
-    /**
-     * Rate a video: LIKE, DISLIKE, or INDIFFERENT (removes existing rating).
-     * Requires login. Returns true on success.
-     */
-    suspend fun rateVideo(videoId: String, status: LikeStatus): Boolean = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) return@withContext false
-        val endpoint = when (status) {
-            LikeStatus.LIKE -> "like/like"
-            LikeStatus.DISLIKE -> "like/dislike"
-            LikeStatus.INDIFFERENT -> "like/removelike"
-        }
-        val body = org.json.JSONObject()
-            .put("context", webContext())
-            .put("target", org.json.JSONObject().put("videoId", videoId))
-        postWatchApi(endpoint, body) != null
-    }
 
     /**
      * Subscribe to / unsubscribe from a channel. Requires login and a
@@ -6865,29 +6218,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Create a playlist, optionally with initial videos. Returns the new
-     * playlist id or null. Requires login.
-     */
-    suspend fun createYouTubePlaylist(
-        title: String,
-        music: Boolean,
-        videoIds: List<String> = emptyList()
-    ): String? = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) return@withContext null
-        val body = org.json.JSONObject()
-            .put("context", playlistContext(music))
-            .put("title", title)
-        if (videoIds.isNotEmpty()) {
-            body.put("videoIds", org.json.JSONArray(videoIds))
-        }
-        val raw = postPlaylistApi(music, "playlist/create", body) ?: return@withContext null
-        try {
-            org.json.JSONObject(raw).optString("playlistId").takeIf { it.isNotBlank() }
-        } catch (e: Exception) {
-            null
-        }
-    }
 
     /**
      * Delete a playlist. playlist/delete only works on playlists the user
@@ -7068,118 +6398,10 @@ class YouTubeRepository(private val context: Context) {
         editStatusOk(postPlaylistApi(music, "browse/edit_playlist", body))
     }
 
-    /**
-     * Post a new top-level comment. createCommentParams comes from the first
-     * comments page (CommentsPage.createCommentParams). Returns the created
-     * comment parsed from the response, or null on failure. Requires login.
-     */
-    suspend fun createComment(createCommentParams: String, text: String): CommentItem? =
-        withContext(Dispatchers.IO) {
-            if (!sessionManager.isLoggedIn()) return@withContext null
-            val body = org.json.JSONObject()
-                .put("context", webContext())
-                .put("commentText", text)
-                .put("createCommentParams", createCommentParams)
-            parseCreatedComment(postWatchApi("comment/create_comment", body))
-        }
 
-    /**
-     * Post a reply to a comment. createReplyParams comes from the parent
-     * comment (CommentItem.replyParams). Requires login.
-     */
-    suspend fun createCommentReply(createReplyParams: String, text: String): CommentItem? =
-        withContext(Dispatchers.IO) {
-            if (!sessionManager.isLoggedIn()) return@withContext null
-            val body = org.json.JSONObject()
-                .put("context", webContext())
-                .put("commentText", text)
-                .put("createReplyParams", createReplyParams)
-            parseCreatedComment(postWatchApi("comment/create_comment_reply", body))
-        }
 
-    /**
-     * Execute a comment toolbar action (like/unlike). The action param comes
-     * from the comment's toolbar surface (CommentItem.likeParams /
-     * unlikeParams, present only on signed-in fetches). Requires login.
-     */
-    suspend fun performCommentAction(action: String): Boolean = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) return@withContext false
-        val body = org.json.JSONObject()
-            .put("context", webContext())
-            .put("actions", org.json.JSONArray().put(action))
-        val raw = postWatchApi("comment/perform_comment_action", body)
-            ?: return@withContext false
-        try {
-            val results = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(org.json.JSONObject(raw), "actionResult", results)
-            results.isEmpty() || results.any { it.optString("status") == "STATUS_SUCCEEDED" }
-        } catch (e: Exception) {
-            true
-        }
-    }
 
-    /**
-     * Parse the comment entity out of a create_comment / create_comment_reply
-     * response. Returns null unless the actionResult reports success.
-     */
-    private fun parseCreatedComment(raw: String?): CommentItem? {
-        if (raw == null) return null
-        return try {
-            val root = org.json.JSONObject(raw)
-            val results = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "actionResult", results)
-            if (results.none { it.optString("status") == "STATUS_SUCCEEDED" }) return null
 
-            val entities = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "commentEntityPayload", entities)
-            val entity = entities.firstOrNull() ?: return null
-            val id = entity.optJSONObject("properties")?.optString("commentId")
-                ?.takeIf { it.isNotBlank() } ?: return null
-
-            val replyEndpoints = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "createCommentReplyEndpoint", replyEndpoints)
-            val replyParams = replyEndpoints.firstOrNull()
-                ?.optString("createReplyParams")?.takeIf { it.isNotBlank() }
-
-            // The create response also carries the comment's viewModel and its
-            // toolbar surface — passing them through gives the fresh comment
-            // its like/delete params immediately (no page reload needed)
-            val viewModels = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "commentViewModel", viewModels)
-            val viewModel = viewModels
-                .map { it.optJSONObject("commentViewModel") ?: it }
-                .firstOrNull { it.optString("commentId") == id }
-                ?: org.json.JSONObject()
-
-            val surfaces = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "engagementToolbarSurfaceEntityPayload", surfaces)
-            val toolbarSurfaces = surfaces
-                .filter { it.optString("key").isNotBlank() }
-                .associateBy { it.optString("key") }
-
-            parseCommentEntity(
-                id, entity,
-                viewModel = viewModel,
-                toolbarStates = emptyMap(),
-                repliesToken = null,
-                replyParams = replyParams,
-                toolbarSurfaces = toolbarSurfaces
-            )
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "parseCreatedComment failed", e)
-            null
-        }
-    }
-
-    /**
-     * Record a regular (non-music) video playback into the user's YouTube
-     * watch history. Mirrors reportPlayback but uses the WEB client against
-     * www.youtube.com: the WEB_REMIX/music flow does not register plain
-     * videos. Requires login.
-     */
-    suspend fun reportVideoPlayback(videoId: String) {
-        beginVideoHistorySession(videoId, 0L)
-    }
 
     internal suspend fun beginVideoHistorySession(
         videoId: String,
@@ -7273,23 +6495,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * The user's subscriptions feed (FEsubscriptions): latest uploads from
-     * all subscribed channels, newest first. Requires login.
-     */
-    suspend fun getSubscriptionsFeed(): List<VideoItem> = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) return@withContext emptyList()
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject().put("context", webContext()).put("browseId", "FEsubscriptions")
-            ) ?: return@withContext emptyList()
-            parseVideosFromYouTubeJson(raw)
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getSubscriptionsFeed failed", e)
-            emptyList()
-        }
-    }
 
     /**
      * All channels the user is subscribed to, from the FEchannels browse
@@ -7392,48 +6597,7 @@ class YouTubeRepository(private val context: Context) {
         )
     }
 
-    /**
-     * One followed channel's contribution to the shuffled Home feed: its latest
-     * uploads and its all-time Popular order. Two requests - the Videos tab,
-     * which also carries the sort chips, then the Popular continuation - and
-     * nothing when the Popular order is not offered beyond the first.
-     *
-     * Only finished uploads are kept. A live stream or an upcoming premiere has
-     * no duration on these cards, and a shuffled list of videos from any point
-     * in a channel's history is not where either belongs.
-     *
-     * Throws [YouTubeRateLimitedException] rather than returning empty during a
-     * hold, so the caller can stop the whole batch instead of recording every
-     * channel as having nothing.
-     */
-    suspend fun getChannelMixPool(channel: SubscribedChannel): ChannelMixPool =
-        withContext(Dispatchers.IO) {
-            if (YouTubeRateLimit.isHeld()) {
-                throw YouTubeRateLimitedException(YouTubeRateLimit.remainingMs())
-            }
-            val tab = getChannelTab(channel.channelId, CHANNEL_VIDEOS_TAB_PARAMS)
-            val recent = tab.videos
-                .map { withSubscribedChannelIdentity(it, channel) }
-                .filter(::isFinishedUpload)
-            val popularToken = ChannelSortChips.popularToken(tab.sortOptions)
-            val catalogue = if (popularToken != null && !YouTubeRateLimit.isHeld()) {
-                getChannelContinuation(popularToken).videos
-                    .map { withSubscribedChannelIdentity(it, channel) }
-                    .filter(::isFinishedUpload)
-            } else emptyList()
-            if (YouTubeRateLimit.isHeld()) {
-                throw YouTubeRateLimitedException(YouTubeRateLimit.remainingMs())
-            }
-            ChannelMixPool(channelId = channel.channelId, recent = recent, catalogue = catalogue)
-        }
 
-    /**
-     * A card for a finished upload: not live, and either carrying a duration or
-     * an upload date. An upcoming premiere has neither, and the date half keeps
-     * a card whose duration badge simply failed to parse.
-     */
-    private fun isFinishedUpload(video: VideoItem): Boolean =
-        !video.isLive && (video.duration > 0 || !video.uploadedDate.isNullOrBlank())
 
     // ============================================================
     // The channel page. Verified against live responses, signed out,
@@ -7494,123 +6658,9 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /** One tab's first page, by the `params` the page handed out for it. */
-    suspend fun getChannelTab(
-        channelId: String,
-        params: String,
-        header: ChannelHeader? = null
-    ): ChannelTabPage = withContext(Dispatchers.IO) {
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject()
-                    .put("context", webContext())
-                    .put("browseId", channelId)
-                    .put("params", params)
-            ) ?: return@withContext ChannelTabPage()
-            val root = org.json.JSONObject(raw)
-            val scope = parseSelectedTab(root)?.second ?: root
-            parseChannelTabPage(scope, header)
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getChannelTab failed for $channelId", e)
-            ChannelTabPage()
-        }
-    }
 
-    /**
-     * The next page of a tab, or the same tab re-sorted - the two are the same
-     * call, because YouTube expresses both as a browse continuation. The
-     * response differs only in whether it says append or reload, and since the
-     * caller already knows which it asked for, that distinction stays with the
-     * caller rather than being guessed here.
-     */
-    suspend fun getChannelContinuation(
-        token: String,
-        header: ChannelHeader? = null
-    ): ChannelTabPage = withContext(Dispatchers.IO) {
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject().put("context", webContext()).put("continuation", token)
-            ) ?: return@withContext ChannelTabPage()
-            parseChannelTabPage(org.json.JSONObject(raw), header)
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getChannelContinuation failed", e)
-            ChannelTabPage()
-        }
-    }
 
-    /**
-     * Search a single channel's back catalogue.
-     *
-     * The one tab whose results come back as legacy `videoRenderer`s rather
-     * than lockups (verified August 2026), which the generic page parser
-     * already handles, so this is a browse with a query bolted on and nothing
-     * more.
-     */
-    suspend fun searchWithinChannel(
-        channelId: String,
-        params: String,
-        query: String,
-        header: ChannelHeader? = null
-    ): ChannelTabPage = withContext(Dispatchers.IO) {
-        if (query.isBlank()) return@withContext ChannelTabPage()
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject()
-                    .put("context", webContext())
-                    .put("browseId", channelId)
-                    .put("params", params)
-                    .put("query", query)
-            ) ?: return@withContext ChannelTabPage()
-            val root = org.json.JSONObject(raw)
-            parseChannelTabPage(parseSelectedTab(root)?.second ?: root, header)
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "searchWithinChannel failed for $channelId", e)
-            ChannelTabPage()
-        }
-    }
 
-    /**
-     * The About panel, behind the token the header carried.
-     *
-     * YouTube does not put the full description, the links, the join date or
-     * the lifetime view count in the channel response at all - they live in an
-     * engagement panel fetched by continuation - so About costs one request and
-     * only when someone opens it.
-     */
-    suspend fun getChannelAbout(token: String): ChannelAbout? = withContext(Dispatchers.IO) {
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject().put("context", webContext()).put("continuation", token)
-            ) ?: return@withContext null
-            val root = org.json.JSONObject(raw)
-            val about = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "aboutChannelViewModel", about)
-            val view = about.firstOrNull() ?: return@withContext null
-
-            val links = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(view, "channelExternalLinkViewModel", links)
-
-            ChannelAbout(
-                description = view.optString("description").takeIf { it.isNotBlank() },
-                links = links.mapNotNull { parseChannelExternalLink(it) },
-                joinedDateText = view.optJSONObject("joinedDateText")
-                    ?.optString("content")?.takeIf { it.isNotBlank() },
-                viewCountText = view.optString("viewCountText").takeIf { it.isNotBlank() },
-                subscriberCountText = view.optString("subscriberCountText")
-                    .takeIf { it.isNotBlank() },
-                videoCountText = view.optString("videoCountText").takeIf { it.isNotBlank() },
-                country = view.optString("country").takeIf { it.isNotBlank() },
-                canonicalUrl = view.optString("canonicalChannelUrl").takeIf { it.isNotBlank() }
-            )
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getChannelAbout failed", e)
-            null
-        }
-    }
 
     /**
      * Channel identity out of `pageHeaderViewModel`, with the metadata block as
@@ -8165,26 +7215,6 @@ class YouTubeRepository(private val context: Context) {
         return null
     }
 
-    /** One About-panel link, unwrapped out of YouTube's redirect. */
-    private fun parseChannelExternalLink(view: org.json.JSONObject): ChannelLink? {
-        val title = view.optJSONObject("title")?.optString("content")
-            ?.takeIf { it.isNotBlank() }
-        val link = view.optJSONObject("link")
-        val display = link?.optString("content")?.takeIf { it.isNotBlank() }
-        val url = link?.optJSONArray("commandRuns")?.optJSONObject(0)
-            ?.optJSONObject("onTap")?.optJSONObject("innertubeCommand")
-            ?.optJSONObject("urlEndpoint")?.optString("url")
-            ?.takeIf { it.isNotBlank() }
-            ?.let { unwrapYouTubeRedirect(it) }
-            ?: return null
-        return ChannelLink(
-            title = title ?: display ?: url,
-            url = url,
-            faviconUrl = bestImageSource(
-                view.optJSONObject("favicon")?.optJSONArray("sources")
-            )
-        )
-    }
 
     /**
      * The sort orders a tab offers, from either of the two mechanisms YouTube
@@ -8393,48 +7423,6 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * Name, avatar and handle for a channel. Used to fill in imported entries,
-     * which arrive carrying a name at best and never an avatar.
-     */
-    suspend fun getChannelProfile(channelId: String): ChannelProfile? = withContext(Dispatchers.IO) {
-        try {
-            val raw = postWatchApi(
-                "browse",
-                org.json.JSONObject().put("context", webContext()).put("browseId", channelId)
-            ) ?: return@withContext null
-            val root = org.json.JSONObject(raw)
-            val metadata = root.optJSONObject("metadata")?.optJSONObject("channelMetadataRenderer")
-            val id = metadata?.optString("externalId")?.takeIf { it.isNotBlank() } ?: channelId
-            val name = metadata?.optString("title")?.takeIf { it.isNotBlank() }
-                ?: return@withContext null
-            val thumbs = metadata.optJSONObject("avatar")?.optJSONArray("thumbnails")
-            val avatarUrl = thumbs?.optJSONObject((thumbs.length() - 1).coerceAtLeast(0))
-                ?.optString("url")?.takeIf { it.isNotBlank() }
-                ?.let { if (it.startsWith("//")) "https:$it" else it }
-            val handle = metadata.optString("vanityChannelUrl")
-                .substringAfterLast('/')
-                .takeIf { it.startsWith("@") }
-
-            // Subscriber count lives only in the visible header. The search is
-            // scoped to the header subtree on purpose: a whole channel page
-            // carries ~95 contentMetadataViewModels, all but one of them a
-            // video card, so a document-wide key search would be a coin flip.
-            // A miss here is not worth failing the whole profile over.
-            val subscriberCountText = runCatching {
-                val header = root.optJSONObject("header") ?: return@runCatching null
-                val texts = mutableListOf<org.json.JSONObject>()
-                findObjectsByKey(header, "text", texts)
-                texts.mapNotNull { it.optString("content").takeIf { c -> c.isNotBlank() } }
-                    .firstOrNull { it.contains("subscriber", ignoreCase = true) }
-            }.getOrNull()
-
-            ChannelProfile(id, name, avatarUrl, handle, subscriberCountText)
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "getChannelProfile failed for $channelId", e)
-            null
-        }
-    }
 
     /**
      * A channel's 15 most recent uploads from its public Atom feed.
@@ -8753,100 +7741,7 @@ class YouTubeRepository(private val context: Context) {
             .take(maxTotal)
     }
 
-    /**
-     * Turns parsed import entries into storable subscriptions, resolving the
-     * ones that only carried a handle or vanity URL.
-     *
-     * Entries that already have a UC id cost nothing - the common case, since
-     * both Takeout and every NewPipe-family export write canonical channel
-     * URLs. Only the leftovers hit the network, [FEED_CONCURRENCY] at a time,
-     * and an entry that cannot be resolved is dropped and counted rather than
-     * stored as a broken id that would fail silently on every refresh.
-     */
-    suspend fun resolveImportedChannels(
-        entries: List<ImportedChannel>,
-        onProgress: ((completed: Int, total: Int) -> Unit)? = null
-    ): Pair<List<LocalSubscription>, Int> = withContext(Dispatchers.IO) {
-        val resolved = mutableListOf<LocalSubscription>()
-        val needsNetwork = mutableListOf<ImportedChannel>()
 
-        for (entry in entries) {
-            val id = entry.channelId
-            if (id != null) {
-                resolved.add(LocalSubscription(id, entry.name, entry.avatarUrl))
-            } else if (entry.unresolvedPath != null) {
-                needsNetwork.add(entry)
-            }
-        }
-
-        if (needsNetwork.isEmpty()) {
-            onProgress?.invoke(entries.size, entries.size)
-            return@withContext resolved to 0
-        }
-
-        val gate = kotlinx.coroutines.sync.Semaphore(FEED_CONCURRENCY)
-        val completed = java.util.concurrent.atomic.AtomicInteger(resolved.size)
-        val total = entries.size
-        onProgress?.invoke(completed.get(), total)
-
-        val lookups = kotlinx.coroutines.coroutineScope {
-            needsNetwork.map { entry ->
-                async {
-                    gate.acquire()
-                    try {
-                        resolveChannelId(entry.unresolvedPath!!)?.let { id ->
-                            LocalSubscription(id, entry.name, entry.avatarUrl, handle = entry.unresolvedPath)
-                        }
-                    } finally {
-                        gate.release()
-                        onProgress?.invoke(completed.incrementAndGet(), total)
-                    }
-                }
-            }.map { it.await() }
-        }
-
-        (resolved + lookups.filterNotNull()).distinctBy { it.channelId } to lookups.count { it == null }
-    }
-
-    /**
-     * Fills in name and avatar for subscriptions that are missing them - the
-     * normal state right after an import, where the file gave at most a name
-     * and never a picture.
-     *
-     * Capped at [limit] channels per run because this is one browse per
-     * channel, i.e. the expensive shape the local feed deliberately avoids.
-     * It runs against whichever channels are actually on screen, so a
-     * 300-channel library fills in over a few visits rather than in one
-     * 300-request burst.
-     */
-    suspend fun fetchMissingChannelProfiles(
-        channels: List<LocalSubscription>,
-        limit: Int = PROFILE_BACKFILL_LIMIT
-    ): List<LocalSubscription> = withContext(Dispatchers.IO) {
-        val pending = channels.filter { it.avatarUrl.isNullOrBlank() }.take(limit)
-        if (pending.isEmpty()) return@withContext emptyList()
-        val gate = kotlinx.coroutines.sync.Semaphore(FEED_CONCURRENCY)
-        kotlinx.coroutines.coroutineScope {
-            pending.map { channel ->
-                async {
-                    gate.acquire()
-                    try {
-                        getChannelProfile(channel.channelId)?.let { profile ->
-                            channel.copy(
-                                name = profile.name,
-                                avatarUrl = profile.avatarUrl,
-                                handle = profile.handle ?: channel.handle
-                            )
-                        }
-                    } catch (e: Exception) {
-                        null
-                    } finally {
-                        gate.release()
-                    }
-                }
-            }.map { it.await() }
-        }.filterNotNull()
-    }
 
     /**
      * Tell the signed-in account about a dismissal, so the choice also cleans
@@ -8892,46 +7787,4 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    /**
-     * The user's notification inbox (new uploads from subscribed channels,
-     * replies, etc.). First page only. Requires login.
-     */
-    suspend fun getNotifications(): List<NotificationItem> = withContext(Dispatchers.IO) {
-        if (!sessionManager.isLoggedIn()) return@withContext emptyList()
-        try {
-            val raw = postWatchApi(
-                "notification/get_notification_menu",
-                org.json.JSONObject()
-                    .put("context", webContext())
-                    .put("notificationsMenuRequestType", "NOTIFICATIONS_MENU_REQUEST_TYPE_INBOX")
-            ) ?: return@withContext emptyList()
-            val root = org.json.JSONObject(raw)
-            val renderers = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "notificationRenderer", renderers)
-            renderers.mapNotNull { renderer ->
-                val message = renderer.optJSONObject("shortMessage")?.optString("simpleText")
-                    ?.takeIf { it.isNotBlank() } ?: return@mapNotNull null
-                fun lastThumb(key: String): String? {
-                    val thumbs = renderer.optJSONObject(key)?.optJSONArray("thumbnails") ?: return null
-                    var url = thumbs.optJSONObject((thumbs.length() - 1).coerceAtLeast(0))
-                        ?.optString("url")?.takeIf { it.isNotBlank() }
-                    if (url?.startsWith("//") == true) url = "https:$url"
-                    return url
-                }
-                NotificationItem(
-                    message = message,
-                    sentTime = renderer.optJSONObject("sentTimeText")?.optString("simpleText").orEmpty(),
-                    channelAvatarUrl = lastThumb("thumbnail"),
-                    videoThumbnailUrl = lastThumb("videoThumbnail"),
-                    videoId = renderer.optJSONObject("navigationEndpoint")
-                        ?.optJSONObject("watchEndpoint")?.optString("videoId")
-                        ?.takeIf { it.isNotBlank() },
-                    isRead = renderer.optBoolean("read", false)
-                )
-            }
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getNotifications failed", e)
-            emptyList()
-        }
-    }
 }

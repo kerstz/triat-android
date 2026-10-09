@@ -275,7 +275,6 @@ fun SearchScreen(
     // comes back marked instead of inviting them to save it twice. One store
     // behind both, read through each mode's own shape.
     val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsState()
-    val savedVideoPlaylistIds by viewModel.savedVideoPlaylistIds.collectAsState()
 
     // Pasted YouTube link handling: when the query is a URL, resolve it into
     // a directly playable result instead of running a text search.
@@ -1480,47 +1479,6 @@ enum class VideoSearchCategory {
     VIDEOS, PLAYLISTS, CHANNELS
 }
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-fun VideoSearchFilterChips(
-    selectedCategory: VideoSearchCategory,
-    onCategorySelected: (VideoSearchCategory) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Same M3 Expressive connected button group as the music-mode chips
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(androidx.compose.material3.ButtonGroupDefaults.ConnectedSpaceBetween)
-    ) {
-        VideoSearchCategory.entries.forEachIndexed { index, category ->
-            val selected = category == selectedCategory
-            androidx.compose.material3.ToggleButton(
-                checked = selected,
-                onCheckedChange = { onCategorySelected(category) },
-                modifier = Modifier
-                    .weight(1f)
-                    .height(44.dp),
-                shapes = when (index) {
-                    0 -> androidx.compose.material3.ButtonGroupDefaults.connectedLeadingButtonShapes()
-                    VideoSearchCategory.entries.lastIndex -> androidx.compose.material3.ButtonGroupDefaults.connectedTrailingButtonShapes()
-                    else -> androidx.compose.material3.ButtonGroupDefaults.connectedMiddleButtonShapes()
-                },
-                contentPadding = PaddingValues(horizontal = 8.dp)
-            ) {
-                Text(
-                    when (category) {
-                        VideoSearchCategory.VIDEOS -> stringResource(R.string.cat_videos)
-                        VideoSearchCategory.PLAYLISTS -> stringResource(R.string.cat_playlists)
-                        VideoSearchCategory.CHANNELS -> stringResource(R.string.cat_channels)
-                    },
-                    style = MaterialTheme.typography.labelLarge,
-                    fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                    maxLines = 1
-                )
-            }
-        }
-    }
-}
 
 @Composable
 fun ResultHeader(
@@ -1625,50 +1583,6 @@ fun SearchFilterChips(
 
 private fun String.capitalize() = replaceFirstChar { if (it.isLowerCase()) it.titlecase(java.util.Locale.getDefault()) else it.toString() }
 
-@Composable
-fun VideoFilterChipRow(
-    labels: List<String>,
-    selectedIndex: Int,
-    onSelected: (Int) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // Single-select filter row for video mode search (upload date, sort
-    // order). The option sets are too wide for a connected button group (the
-    // segmented row is only used where the whole set fits, like the music
-    // categories), so this is a scrollable row of pill FilterChips matching
-    // the explore topic chips above.
-    LazyRow(
-        modifier = modifier.fillMaxWidth(),
-        contentPadding = PaddingValues(horizontal = 20.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        itemsIndexed(labels) { index, label ->
-            val selected = index == selectedIndex
-            FilterChip(
-                selected = selected,
-                onClick = { onSelected(index) },
-                shape = CircleShape,
-                label = {
-                    Text(
-                        label,
-                        style = MaterialTheme.typography.labelLarge,
-                        fontWeight = if (selected) FontWeight.Bold else FontWeight.Medium,
-                        maxLines = 1
-                    )
-                },
-                leadingIcon = if (selected) {
-                    {
-                        Icon(
-                            Icons.Filled.Check,
-                            contentDescription = null,
-                            modifier = Modifier.size(FilterChipDefaults.IconSize)
-                        )
-                    }
-                } else null
-            )
-        }
-    }
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
@@ -2480,131 +2394,6 @@ private fun LinkErrorCard(
     }
 }
 
-/**
- * Playlist row for video mode search results: thumbnail with a stacked
- * playlist badge on the left, title/uploader/count on the right. Same
- * density as [CompactVideoRow] so mixed results read as one list.
- */
-@Composable
-private fun VideoPlaylistRow(
-    playlist: VideoPlaylist,
-    onClick: () -> Unit,
-    cardColor: Color,
-    textColor: Color,
-    secondaryTextColor: Color,
-    /**
-     * Saved state, or null when this row offers no save action. Visible rather
-     * than behind a long-press, matching the music results: nothing else in
-     * this list hides an action behind a hold.
-     */
-    isSaved: Boolean? = null,
-    onToggleSave: () -> Unit = {}
-) {
-    Surface(
-        onClick = onClick,
-        shape = RoundedCornerShape(16.dp),
-        color = cardColor,
-        tonalElevation = 1.dp,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .width(140.dp)
-                    .aspectRatio(16f / 9f)
-                    .clip(RoundedCornerShape(10.dp))
-                    .background(MaterialTheme.colorScheme.surfaceContainerHighest)
-            ) {
-                AsyncImage(
-                    model = playlist.thumbnailUrl,
-                    contentDescription = playlist.title,
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-                // Playlist badge, like YouTube's stacked-videos corner chip
-                Surface(
-                    modifier = Modifier
-                        .align(Alignment.BottomEnd)
-                        .padding(4.dp),
-                    shape = RoundedCornerShape(4.dp),
-                    color = Color.Black.copy(alpha = 0.8f)
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(3.dp),
-                        modifier = Modifier.padding(horizontal = 4.dp, vertical = 1.dp)
-                    ) {
-                        Icon(
-                            Icons.AutoMirrored.Rounded.PlaylistPlay,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(14.dp)
-                        )
-                        Text(
-                            text = playlist.videoCountText?.substringBefore(" ") ?: "",
-                            style = MaterialTheme.typography.labelSmall,
-                            color = Color.White
-                        )
-                    }
-                }
-            }
-
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(top = 2.dp, end = 4.dp)
-            ) {
-                Text(
-                    text = playlist.title,
-                    style = MaterialTheme.typography.bodyMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = textColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = buildString {
-                        append(stringResource(R.string.label_playlist))
-                        playlist.subtitle?.let { append(" • ").append(it) }
-                        playlist.videoCountText?.let { append(" • ").append(it) }
-                    },
-                    style = MaterialTheme.typography.bodySmall,
-                    color = secondaryTextColor,
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis
-                )
-            }
-
-            if (isSaved != null) {
-                val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-                IconButton(
-                    onClick = {
-                        haptics.performHapticFeedback(HapticFeedbackType.Confirm)
-                        onToggleSave()
-                    },
-                    // Centred against a 16:9 thumbnail rather than the top of
-                    // the row, so it does not float beside a one-line title.
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                ) {
-                    Icon(
-                        imageVector = if (isSaved) Icons.Rounded.Bookmark
-                            else Icons.Rounded.BookmarkBorder,
-                        contentDescription = if (isSaved) stringResource(R.string.cd_remove_from_library)
-                            else stringResource(R.string.cd_save_to_library),
-                        tint = if (isSaved) MaterialTheme.colorScheme.primary
-                            else secondaryTextColor
-                    )
-                }
-            }
-        }
-    }
-}
 
 /**
  * Compact video row for the video mode explore list: thumbnail on the
