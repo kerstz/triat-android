@@ -48,22 +48,6 @@
         android:requestLegacyExternalStorage="true"
         android:enableOnBackInvokedCallback="true"
         android:theme="@style/Theme.App.Starting">
-        <!--
-            singleTask so a link or a video file handed to Koda is delivered to
-            the running instance through onNewIntent, instead of stacking a
-            second MainActivity on top of the live players.
-
-            singleTop was not enough, and picture-in-picture is why: PiP moves
-            the activity into a task of its own, so an "open with" arriving from
-            a file manager - which launches into a new task - matched nothing
-            and started a second MainActivity. Two instances meant two
-            VideoPlayerViewModels and two ExoPlayers: the PiP window carried on
-            playing while the new copy opened the file and lost the audio focus
-            fight, which is the "it opens but does not play" case. singleTask
-            routes that launch to the existing instance and expands it out of
-            PiP. Koda is a single-activity app, so being the root of its task
-            costs nothing.
-        -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
@@ -72,7 +56,6 @@
             android:configChanges="orientation|screenSize|screenLayout|keyboardHidden|smallestScreenSize"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize"
-            android:supportsPictureInPicture="true"
             android:theme="@style/Theme.App.Starting"
             tools:ignore="LockedOrientationActivity">
             <intent-filter>
@@ -129,35 +112,6 @@
                 <data android:pathPrefix="/v/" />
             </intent-filter>
 
-            <!--
-                "Open with" for video files, so Koda is offered alongside the
-                gallery and other players. Both halves are needed: a file
-                manager sends ACTION_VIEW with the file in the data URI, while a
-                gallery's share sheet sends ACTION_SEND with it in EXTRA_STREAM.
-
-                The filters match by mime type only. Matching by extension as
-                well would need a pathPattern per container and would still miss
-                the many providers that serve a content URI with no name at all,
-                so the intent is checked again at handling time
-                (Intent.externalVideoUri) rather than trusted from the filter.
-            -->
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data android:scheme="content" />
-                <data android:scheme="file" />
-                <data android:mimeType="video/*" />
-            </intent-filter>
-            <intent-filter android:label="@string/app_name">
-                <action android:name="android.intent.action.SEND" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-
-                <data android:mimeType="video/*" />
-            </intent-filter>
         </activity>
 
         <!-- Launcher activity aliases for dynamic app icon switching -->
@@ -296,22 +250,6 @@
             <intent-filter>
                 <action android:name="androidx.media3.session.MediaLibraryService"/>
                 <action android:name="android.media.browse.MediaBrowserService"/>
-            </intent-filter>
-        </service>
-
-        <!--
-            Puts video playback on the lock screen, in the shade's media area
-            and on Bluetooth/headset transport buttons. The ExoPlayer itself
-            stays owned by VideoPlayerViewModel; this service only wraps it in
-            a MediaSession, which is also what makes background video audio a
-            legitimate foreground service rather than an unannounced one.
-        -->
-        <service
-            android:name=".service.VideoPlaybackService"
-            android:foregroundServiceType="mediaPlayback"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="androidx.media3.session.MediaSessionService"/>
             </intent-filter>
         </service>
 
