@@ -96,7 +96,6 @@ fun GesturePlayerSheetContent(
     onLoadMore: () -> Unit = {},
     onArtistClick: (String) -> Unit = {},
     /** Hand this song to the video player; null where there is no video pipeline. */
-    onWatchAsVideo: (() -> Unit)? = null,
     onAlbumClick: (String) -> Unit = {},
     onOpenAlbum: (com.ivor.ivormusic.data.PlaylistDisplayItem) -> Unit = {}
 ) {
@@ -234,7 +233,6 @@ fun GesturePlayerSheetContent(
                 viewModel = viewModel,
                 onDismiss = { showOptions = false },
                 onArtistClick = onArtistClick,
-                onWatchAsVideo = onWatchAsVideo,
                 onAlbumClick = onAlbumClick,
                 onOpenAlbum = onOpenAlbum
             )
@@ -581,12 +579,7 @@ private fun GestureNowPlayingView(
                     onSurfaceColor = onSurfaceColor
                 )
                 Spacer(modifier = Modifier.height(10.dp))
-                GesturePlayerToolbar(
-                    isFavorite = isFavorite,
-                    onShowOptions = onShowOptions,
-                    onToggleFavorite = onToggleFavorite,
-                    onSurfaceVariantColor = onSurfaceVariantColor
-                )
+                GesturePlayerToolbar(onShowOptions = onShowOptions)
 
                 Spacer(modifier = Modifier.height(56.dp))
             }
@@ -660,59 +653,25 @@ private fun CoverflowTransportRow(
 }
 
 /**
- * Floating toolbar using official Material 3 Expressive HorizontalFloatingToolbar
+ * The player's one control that is not playback: everything that can be done
+ * to the song that is playing - like, download, add to a playlist, radio,
+ * share, speed, volume, where it came from - lives behind this overflow, so
+ * the face of the player stays the artwork and the transport.
  */
-@OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class)
 @Composable
-private fun GesturePlayerToolbar(
-    isFavorite: Boolean,
-    onShowOptions: () -> Unit,
-    onToggleFavorite: () -> Unit,
-    onSurfaceVariantColor: Color
-) {
+private fun GesturePlayerToolbar(onShowOptions: () -> Unit) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 0.dp),
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        HorizontalFloatingToolbar(
-            expanded = true,
-            modifier = Modifier.scale(1.15f),
-            colors = FloatingToolbarDefaults.standardFloatingToolbarColors(),
-            floatingActionButton = {
-                // Use FAB for the favorite button (highlighted action)
-                FloatingToolbarDefaults.StandardFloatingActionButton(
-                    onClick = onToggleFavorite,
-                    containerColor = if (isFavorite) 
-                        MaterialTheme.colorScheme.primaryContainer 
-                    else 
-                        FloatingActionButtonDefaults.containerColor,
-                    contentColor = if (isFavorite) 
-                        MaterialTheme.colorScheme.primary 
-                    else 
-                        MaterialTheme.colorScheme.onSurfaceVariant
-                ) {
-                    com.ivor.ivormusic.ui.components.LikeBurstIcon(
-                        isFavorite = isFavorite,
-                        tint = if (isFavorite) MaterialTheme.colorScheme.primary else onSurfaceVariantColor
-                    )
-                }
-            },
-            content = {
-                // Pared back to the minimum: the like action is the FAB, and
-                // everything else (download, add to playlist, radio, share,
-                // speed, volume) lives one tap away under the overflow. Download
-                // and sleep timer were removed from the face to keep it quiet;
-                // download still has its tile inside the overflow sheet.
-                IconButton(onClick = onShowOptions) {
-                    Icon(
-                        imageVector = Icons.Rounded.MoreVert,
-                        contentDescription = stringResource(R.string.cd_more_options)
-                    )
-                }
-            }
-        )
+        IconButton(onClick = onShowOptions, modifier = Modifier.size(48.dp)) {
+            Icon(
+                imageVector = Icons.Rounded.MoreVert,
+                contentDescription = stringResource(R.string.cd_more_options),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                modifier = Modifier.size(26.dp)
+            )
+        }
     }
 }
 

@@ -144,7 +144,6 @@ fun NowPlayingOptionsSheet(
      * where the host has no video pipeline to hand it to; the pill also hides
      * itself for a song with no video behind it.
      */
-    onWatchAsVideo: (() -> Unit)? = null,
 ) {
     var showPlaylists by remember { mutableStateOf(false) }
     val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsState()
@@ -331,27 +330,14 @@ fun NowPlayingOptionsSheet(
             // Every one of these leaves the player or the app, so each closes
             // the sheet ahead of whatever replaces it. Pills rather than rows
             // because an artist's name and an album title are the label.
-            val watchAsVideo = onWatchAsVideo?.takeIf { song.hasWatchableVideo(context) }
             if (goToArtist != null || goToAlbum != null || goToStreamingAlbum != null ||
-                shareUrl != null || canBlockArtist || watchAsVideo != null
+                shareUrl != null || canBlockArtist
             ) {
                 FlowRow(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    // First, because it is the only pill here that changes what
-                    // the app is doing rather than where it is looking.
-                    if (watchAsVideo != null) {
-                        OptionPill(
-                            icon = Icons.Rounded.Movie,
-                            label = stringResource(R.string.np_pill_watch_video),
-                            onClick = {
-                                onDismiss()
-                                watchAsVideo()
-                            }
-                        )
-                    }
                     if (goToArtist != null && artist != null) {
                         OptionPill(
                             icon = Icons.Rounded.AccountCircle,

@@ -91,7 +91,6 @@ fun ExpandablePlayer(
     collapsedFollowOffsetPx: () -> Float = { 0f },
     onArtistClick: (String) -> Unit = {},
     /** Hand the playing song to the video player; null where there is none. */
-    onWatchAsVideo: (() -> Unit)? = null,
     onAlbumClick: (String) -> Unit = {},
     onOpenAlbum: (com.ivor.ivormusic.data.PlaylistDisplayItem) -> Unit = {},
     modifier: Modifier = Modifier
@@ -467,7 +466,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -481,7 +479,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -495,7 +492,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -509,7 +505,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -523,7 +518,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -537,7 +531,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -551,7 +544,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -565,7 +557,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
@@ -579,7 +570,6 @@ fun ExpandablePlayer(
                                         viewModel.loadMoreRecommendations()
                                     },
                                     onArtistClick = onArtistClick,
-                                    onWatchAsVideo = onWatchAsVideo,
                                     onAlbumClick = onAlbumClick,
                                     onOpenAlbum = onOpenAlbum
                                 )
