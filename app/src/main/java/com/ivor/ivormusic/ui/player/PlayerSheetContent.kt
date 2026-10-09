@@ -297,12 +297,10 @@ private fun ExpressiveNowPlayingView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Collapse button - static shape (no morphing needed for utility buttons)
-            FilledIconButton(
+            IconButton(
                 onClick = onCollapse,
-                shape = CircleShape,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.size(48.dp)
             ) {
@@ -324,7 +322,7 @@ private fun ExpressiveNowPlayingView(
                     .width(pillWidth.dp)
                     .clickable { showLyrics = !showLyrics },
                 shape = RoundedCornerShape(24.dp),
-                color = if (showLyrics) MaterialTheme.colorScheme.surfaceContainerHigh else primaryColor
+                color = if (showLyrics) primaryColor else Color.Transparent
             ) {
                 Row(
                     modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
@@ -335,7 +333,7 @@ private fun ExpressiveNowPlayingView(
                         Icon(
                             imageVector = if (isLyrics) Icons.AutoMirrored.Filled.QueueMusic else Icons.Rounded.Lyrics,
                             contentDescription = null,
-                            tint = if (isLyrics) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary,
+                            tint = if (isLyrics) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.size(18.dp)
                         )
                     }
@@ -344,7 +342,7 @@ private fun ExpressiveNowPlayingView(
                         Text(
                             text = if (isLyrics) stringResource(R.string.ps_now_playing) else stringResource(R.string.ps_lyrics),
                             style = MaterialTheme.typography.labelLarge,
-                            color = if (isLyrics) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onPrimary
+                            color = if (isLyrics) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -356,24 +354,20 @@ private fun ExpressiveNowPlayingView(
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 // Queue button
-                FilledIconButton(
+                IconButton(
                     onClick = onShowQueue,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
                     Icon(Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue), modifier = Modifier.size(24.dp))
                 }
 
-                FilledIconButton(
+                IconButton(
                     onClick = onShowOptions,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
@@ -621,6 +615,12 @@ private fun ExpressiveNowPlayingView(
                             checked = shuffleModeEnabled,
                             onCheckedChange = { viewModel.toggleShuffle() },
                             interactionSource = shuffleInteraction,
+                            colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
                             modifier = Modifier
                                 .weight(0.8f)
                                 .fillMaxHeight()
@@ -642,6 +642,10 @@ private fun ExpressiveNowPlayingView(
                         FilledTonalIconButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
                             shapes = stableShapes,
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
                             interactionSource = prevInteraction,
                             modifier = Modifier
                                 .weight(1f)
@@ -669,8 +673,8 @@ private fun ExpressiveNowPlayingView(
                             shapes = stableShapes,
                             interactionSource = playInteraction,
                             colors = IconButtonDefaults.filledIconButtonColors(
-                                containerColor = primaryContainerColor,
-                                contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                                containerColor = primaryColor,
+                                contentColor = MaterialTheme.colorScheme.onPrimary
                             ),
                             modifier = Modifier
                                 .weight(1.5f)
@@ -682,7 +686,7 @@ private fun ExpressiveNowPlayingView(
                                 // 🌟 Organic morphing loading with MaterialShapes
                                 LoadingIndicator(
                                     modifier = Modifier.size(40.dp),
-                                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                                    color = MaterialTheme.colorScheme.onPrimary,
                                     polygons = listOf(
                                         MaterialShapes.SoftBurst,
                                         MaterialShapes.Cookie9Sided,
@@ -708,6 +712,10 @@ private fun ExpressiveNowPlayingView(
                         FilledTonalIconButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },
                             shapes = stableShapes,
+                            colors = IconButtonDefaults.filledTonalIconButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurface
+                            ),
                             interactionSource = nextInteraction,
                             modifier = Modifier
                                 .weight(1f)
@@ -731,6 +739,12 @@ private fun ExpressiveNowPlayingView(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
                             onCheckedChange = { viewModel.toggleRepeat() },
                             interactionSource = repeatInteraction,
+                            colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                checkedContainerColor = MaterialTheme.colorScheme.primary,
+                                checkedContentColor = MaterialTheme.colorScheme.onPrimary
+                            ),
                             modifier = Modifier
                                 .weight(0.8f)
                                 .fillMaxHeight()
@@ -904,12 +918,10 @@ private fun ExpressiveQueueView(
             verticalAlignment = Alignment.CenterVertically
         ) {
             // Collapse button - static shape
-            FilledIconButton(
+            IconButton(
                 onClick = onCollapse,
-                shape = CircleShape,
-                colors = IconButtonDefaults.filledIconButtonColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                    contentColor = MaterialTheme.colorScheme.onSurface
+                colors = IconButtonDefaults.iconButtonColors(
+                    contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                 ),
                 modifier = Modifier.size(48.dp)
             ) {
@@ -961,12 +973,10 @@ private fun ExpressiveQueueView(
                         modifier = Modifier.size(24.dp)
                     )
                 }
-                FilledIconButton(
+                IconButton(
                     onClick = onBackToPlayer,
-                    shape = CircleShape,
-                    colors = IconButtonDefaults.filledIconButtonColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                        contentColor = MaterialTheme.colorScheme.onSurface
+                    colors = IconButtonDefaults.iconButtonColors(
+                        contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                     ),
                     modifier = Modifier.size(48.dp)
                 ) {
