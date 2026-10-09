@@ -29,8 +29,6 @@ data class SubscribedChannel(
 data class NotificationItem(
     val message: String,             // e.g. "penguinz0 uploaded: ..."
     val sentTime: String,            // e.g. "3 hours ago"
-    val channelAvatarUrl: String?,
-    val videoThumbnailUrl: String?,
     val videoId: String?,            // null for non-video notifications
     val isRead: Boolean
 )

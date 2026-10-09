@@ -145,8 +145,6 @@ class NotInterestedRepository(context: Context) {
     fun isVideoHidden(videoId: String?): Boolean =
         videoId != null && hiddenState.value.any { it.videoId == videoId }
 
-    fun isChannelBlocked(channelId: String?): Boolean =
-        channelId != null && blockedState.value.any { it.channelId == channelId }
 
     /**
      * Whether a creator - a channel or a music artist - is blocked.

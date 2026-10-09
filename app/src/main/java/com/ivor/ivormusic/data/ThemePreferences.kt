@@ -156,23 +156,12 @@ class ThemePreferences(context: Context) {
     val preferHdr: StateFlow<Boolean> = _preferHdr.asStateFlow()
 
     private val _captionTextSize = MutableStateFlow(getCaptionTextSizePreference())
-    val captionTextSize: StateFlow<Float> = _captionTextSize.asStateFlow()
 
     private val _captionTextColor = MutableStateFlow(getCaptionTextColorPreference())
-    val captionTextColor: StateFlow<CaptionTextColor> = _captionTextColor.asStateFlow()
 
     private val _captionBackground = MutableStateFlow(getCaptionBackgroundPreference())
-    val captionBackground: StateFlow<CaptionBackground> = _captionBackground.asStateFlow()
 
-    // Captions on/off and the chosen language ride the same persistence as the
-    // style above, so a user who watches everything subtitled does not have to
-    // tap CC again on every video.
-    private val _captionsEnabled = MutableStateFlow(prefs.getBoolean(KEY_CAPTIONS_ENABLED, false))
-    val captionsEnabled: StateFlow<Boolean> = _captionsEnabled.asStateFlow()
 
-    private val _captionLanguageCode =
-        MutableStateFlow(prefs.getString(KEY_CAPTION_LANGUAGE_CODE, null))
-    val captionLanguageCode: StateFlow<String?> = _captionLanguageCode.asStateFlow()
 
     private val _musicQualityWifi = MutableStateFlow(getMusicQualityWifiPreference())
     val musicQualityWifi: StateFlow<String> = _musicQualityWifi.asStateFlow()
@@ -302,13 +291,10 @@ class ThemePreferences(context: Context) {
     // the feed came back on "Any time" every time. A filter that forgets is
     // worse than no filter, because the user has to re-check it constantly.
     private val _subscriptionFeedPeriod = MutableStateFlow(getSubscriptionFeedPeriodPreference())
-    val subscriptionFeedPeriod: StateFlow<String> = _subscriptionFeedPeriod.asStateFlow()
 
     private val _subscriptionFeedOrder = MutableStateFlow(getSubscriptionFeedOrderPreference())
-    val subscriptionFeedOrder: StateFlow<String> = _subscriptionFeedOrder.asStateFlow()
 
     private val _hideWatchedInFeed = MutableStateFlow(getHideWatchedInFeedPreference())
-    val hideWatchedInFeed: StateFlow<Boolean> = _hideWatchedInFeed.asStateFlow()
 
     // Two ways the app suggests things you did not ask for. Stated as what is
     // shown rather than what is hidden, so the switch position and the sentence
@@ -1173,9 +1159,6 @@ class ThemePreferences(context: Context) {
         _videoHomeConfiguration.value = getVideoHomeConfiguration()
     }
 
-    /** Fresh read for HomeViewModel's fetch and pagination gates. */
-    fun areVideoRecommendationsEnabled(): Boolean =
-        getVideoHomeConfiguration().recommendationsEnabled
 
     /** Keep at least one destination visible so the navigation shell remains usable. */
     fun setVideoHomeDestinationVisible(destination: VideoHomeDestination, visible: Boolean) {
@@ -1344,10 +1327,6 @@ class ThemePreferences(context: Context) {
         return false
     }
 
-    /**
-     * Fresh read of the Shorts preference straight from SharedPreferences.
-     */
-    fun isShortsEnabled(): Boolean = false
 
     /**
      * Save the Home shelf / swipe-player preference and update the flow.
@@ -1411,15 +1390,6 @@ class ThemePreferences(context: Context) {
             ?: DEFAULT_VIDEO_QUALITY_MOBILE
     }
 
-    /**
-     * Fresh read of the default video quality for the current network,
-     * straight from SharedPreferences. The video player VMs hold their own
-     * ThemePreferences instances, so their StateFlow copies go stale when
-     * Settings changes a value — use this at playback time instead.
-     */
-    fun getDefaultVideoQuality(): String =
-        if (isNetworkMetered(appContext)) getVideoQualityMobilePreference()
-        else getVideoQualityWifiPreference()
 
     /**
      * Save the Wi-Fi video quality preference and update the flow.
@@ -1460,40 +1430,12 @@ class ThemePreferences(context: Context) {
             ?.let { stored -> CaptionBackground.entries.firstOrNull { it.name == stored } }
             ?: CaptionBackground.TRANSLUCENT
 
-    fun setCaptionTextSize(size: Float) {
-        val safeSize = size.coerceIn(CAPTION_TEXT_SCALE_MIN, CAPTION_TEXT_SCALE_MAX)
-        prefs.edit().putFloat(KEY_CAPTION_TEXT_SIZE, safeSize).apply()
-        _captionTextSize.value = safeSize
-    }
 
-    fun setCaptionTextColor(color: CaptionTextColor) {
-        prefs.edit().putString(KEY_CAPTION_TEXT_COLOR, color.name).apply()
-        _captionTextColor.value = color
-    }
 
-    fun setCaptionBackground(background: CaptionBackground) {
-        prefs.edit().putString(KEY_CAPTION_BACKGROUND, background.name).apply()
-        _captionBackground.value = background
-    }
 
-    fun setCaptionsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_CAPTIONS_ENABLED, enabled).apply()
-        _captionsEnabled.value = enabled
-    }
 
-    /** Fresh pref read for non-composable decision points (ViewModel workers). */
-    fun isCaptionsEnabled(): Boolean = prefs.getBoolean(KEY_CAPTIONS_ENABLED, false)
 
-    fun getCaptionLanguageCode(): String? = prefs.getString(KEY_CAPTION_LANGUAGE_CODE, null)
 
-    fun setCaptionLanguageCode(languageCode: String?) {
-        if (languageCode == null) {
-            prefs.edit().remove(KEY_CAPTION_LANGUAGE_CODE).apply()
-        } else {
-            prefs.edit().putString(KEY_CAPTION_LANGUAGE_CODE, languageCode).apply()
-        }
-        _captionLanguageCode.value = languageCode
-    }
 
     // ---------------- Subscriptions ----------------
 
@@ -1532,11 +1474,7 @@ class ThemePreferences(context: Context) {
     /** Fresh read for ViewModels deciding at tap time. */
     fun currentSubscribeTarget(): String = getSubscribeTargetPreference()
 
-    /** Fresh read for ViewModels deciding at refresh time. */
-    fun currentSubscriptionSource(): String = getSubscriptionSourcePreference()
 
-    /** Fresh read for ViewModels deciding at refresh time. */
-    fun isFastSubscriptionFeedEnabled(): Boolean = getFastSubscriptionFeedPreference()
 
     // ---------------- Bug reporting ----------------
 
@@ -1647,13 +1585,8 @@ class ThemePreferences(context: Context) {
         _sponsorBlockMinDurationMs.value = safe
     }
 
-    /** Fresh read for the player, which must not use this instance's stale flow. */
-    fun isSponsorBlockEnabled(): Boolean = getSponsorBlockEnabledPreference()
 
-    fun sponsorBlockActionsNow(): Map<SponsorCategory, SegmentAction> =
-        getSponsorBlockActionsPreference()
 
-    fun sponsorBlockMinDurationNow(): Long = getSponsorBlockMinDurationPreference()
 
     /**
      * Save the interface scale and update the flow.
@@ -1706,57 +1639,13 @@ class ThemePreferences(context: Context) {
         _privateDownloadsEnabled.value = enabled
     }
 
-    /**
-     * Whether the video player loops the current video (repeat) instead of
-     * auto-playing the next related one. Sticks across videos and app
-     * restarts. Defaults to off, i.e. auto-play.
-     */
-    fun isVideoRepeatEnabled(): Boolean = prefs.getBoolean(KEY_VIDEO_REPEAT, false)
 
-    fun setVideoRepeatEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_REPEAT, enabled).apply()
-    }
 
-    /**
-     * Whether a finished video may advance to the next playlist or related
-     * item. Defaults to on to preserve the player's historical behaviour.
-     * Loop is governed by the same end-of-video master switch in the player,
-     * so disabling autoplay also disables repeat there.
-     */
-    fun isVideoAutoplayEnabled(): Boolean = prefs.getBoolean(KEY_VIDEO_AUTOPLAY, true)
 
-    fun setVideoAutoplayEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_AUTOPLAY, enabled).apply()
-    }
 
-    /**
-     * The video playback rate the user last picked in the player sheet,
-     * re-applied to the next video instead of resetting to 1x. Stored like
-     * repeat/autoplay: read once when a video starts, written when the user
-     * changes it in the player itself, so there is no Settings UI for it.
-     * Live broadcasts always play at 1x and never overwrite the stored value.
-     */
-    fun getVideoPlaybackSpeed(): Float =
-        prefs.getFloat(KEY_VIDEO_PLAYBACK_SPEED, 1f).coerceIn(0.25f, 2f)
 
-    fun setVideoPlaybackSpeed(speed: Float) {
-        prefs.edit()
-            .putFloat(KEY_VIDEO_PLAYBACK_SPEED, speed.coerceIn(0.25f, 2f))
-            .apply()
-    }
 
-    /**
-     * Screen brightness (0..1) the user last dialed in with the fullscreen
-     * brightness drag, re-applied the next time a video goes fullscreen.
-     * [VIDEO_BRIGHTNESS_UNSET] means it was never set, so the window should
-     * keep following the system brightness.
-     */
-    fun getVideoBrightness(): Float =
-        prefs.getFloat(KEY_VIDEO_BRIGHTNESS, VIDEO_BRIGHTNESS_UNSET)
 
-    fun setVideoBrightness(value: Float) {
-        prefs.edit().putFloat(KEY_VIDEO_BRIGHTNESS, value.coerceIn(0f, 1f)).apply()
-    }
 
     /**
      * Whether the fullscreen brightness drag should carry over to the next
@@ -2154,31 +2043,14 @@ class ThemePreferences(context: Context) {
     private fun getSubscriptionFeedPeriodPreference(): String =
         prefs.getString(KEY_SUBSCRIPTION_FEED_PERIOD, "") ?: ""
 
-    /**
-     * Store the feed's age filter by enum name. Matched by name rather than
-     * ordinal at the call site, so a period removed in a later version falls
-     * back to "Any time" instead of throwing.
-     */
-    fun setSubscriptionFeedPeriod(periodName: String) {
-        prefs.edit().putString(KEY_SUBSCRIPTION_FEED_PERIOD, periodName).apply()
-        _subscriptionFeedPeriod.value = periodName
-    }
 
     private fun getSubscriptionFeedOrderPreference(): String =
         prefs.getString(KEY_SUBSCRIPTION_FEED_ORDER, "") ?: ""
 
-    fun setSubscriptionFeedOrder(orderName: String) {
-        prefs.edit().putString(KEY_SUBSCRIPTION_FEED_ORDER, orderName).apply()
-        _subscriptionFeedOrder.value = orderName
-    }
 
     private fun getHideWatchedInFeedPreference(): Boolean =
         prefs.getBoolean(KEY_HIDE_WATCHED_IN_FEED, false)
 
-    fun setHideWatchedInFeed(hide: Boolean) {
-        prefs.edit().putBoolean(KEY_HIDE_WATCHED_IN_FEED, hide).apply()
-        _hideWatchedInFeed.value = hide
-    }
 
     private fun getShowRecentSearchesPreference(): Boolean =
         prefs.getBoolean(KEY_SHOW_RECENT_SEARCHES, true)

@@ -166,9 +166,6 @@ fun DownloadsScreen(
     val musicProgress = activeDownloads.values
         .filter { it.request.type == DownloadMediaType.MUSIC }
         .sortedBy { it.status.ordinal }
-    val videoProgress = activeDownloads.values
-        .filter { it.request.type == DownloadMediaType.VIDEO }
-        .sortedBy { it.status.ordinal }
 
     val activeCount = activeDownloads.values.count {
         it.status == DownloadStatus.DOWNLOADING || it.status == DownloadStatus.QUEUED

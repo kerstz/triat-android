@@ -30,7 +30,6 @@ enum class LikeStatus { LIKE, DISLIKE, INDIFFERENT }
  * commentEntityPayload format used by InnerTube since 2024.
  */
 data class CommentItem(
-    val commentId: String,
     val text: String,
     // Spans YouTube marked clickable in [text] - timestamps and links. Empty
     // for the vast majority of comments, which are plain prose.

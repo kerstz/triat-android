@@ -395,7 +395,6 @@ fun SettingsScreen(
     val uploadCheckRepository = remember {
         com.ivor.ivormusic.data.UploadCheckRepository(context)
     }
-    val followedChannels by localSubscriptionsRepository.subscriptions.collectAsState()
     val mutedChannelIds by uploadCheckRepository.mutedChannelIds.collectAsState()
 
     // Check actual login status
@@ -553,7 +552,6 @@ fun SettingsScreen(
 
     // Dialog state for Folder Exclusion
     var showFolderExclusionDialog by remember { mutableStateOf(false) }
-    var showShortsButtonsDialog by remember { mutableStateOf(false) }
     var showAutoHelpDialog by remember { mutableStateOf(false) }
     // Importing playlists from TXT / YouTube links moved off the Library
     // header to keep that page light; it is hosted here and opened from the hub.

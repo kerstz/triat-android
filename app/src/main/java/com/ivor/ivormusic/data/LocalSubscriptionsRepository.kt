@@ -89,12 +89,6 @@ class LocalSubscriptionsRepository(context: Context) {
     fun getGroup(groupId: String): SubscriptionGroup? =
         groupsState.value.firstOrNull { it.id == groupId }
 
-    /** The channels in [groupId], or all subscriptions when the group is gone. */
-    fun channelsInGroup(groupId: String?): List<LocalSubscription> {
-        val group = groupId?.let { getGroup(it) } ?: return getAll()
-        val ids = group.channelIds.toSet()
-        return getAll().filter { it.channelId in ids }
-    }
 
     // ---------------- Writes ----------------
 
@@ -213,19 +207,7 @@ class LocalSubscriptionsRepository(context: Context) {
         saveGroups(groupsState.value.filterNot { it.id == groupId })
     }
 
-    fun setGroupChannels(groupId: String, channelIds: List<String>) {
-        saveGroups(groupsState.value.map {
-            if (it.id == groupId) it.copy(channelIds = channelIds.distinct()) else it
-        })
-    }
 
-    fun toggleChannelInGroup(groupId: String, channelId: String) {
-        saveGroups(groupsState.value.map { group ->
-            if (group.id != groupId) group
-            else if (channelId in group.channelIds) group.copy(channelIds = group.channelIds - channelId)
-            else group.copy(channelIds = group.channelIds + channelId)
-        })
-    }
 
     // ---------------- Persistence ----------------
 

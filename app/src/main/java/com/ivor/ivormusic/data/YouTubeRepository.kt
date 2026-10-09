@@ -44,7 +44,6 @@ class YouTubeRepository(private val context: Context) {
 
     private val sessionManager = SessionManager(context)
     private val videoHistoryRepository by lazy { VideoHistoryRepository(context) }
-    private val videoHistoryPreferences by lazy { ThemePreferences(context) }
 
     companion object {
         private const val YT_MUSIC_BASE_URL = "https://music.youtube.com"
@@ -6403,97 +6402,9 @@ class YouTubeRepository(private val context: Context) {
 
 
 
-    internal suspend fun beginVideoHistorySession(
-        videoId: String,
-        positionMs: Long,
-    ): VideoHistorySession? = withContext(Dispatchers.IO) {
-        val session = sessionManager.captureSession() ?: return@withContext null
-        if (!mayWriteVideoHistory()) return@withContext null
-        try {
-            val cpn = generateCpn()
-            val raw = postWatchApi("player", org.json.JSONObject()
-                .put("context", webContext()).put("videoId", videoId).put("cpn", cpn))
-                ?: return@withContext null
-            val tracking = org.json.JSONObject(raw).optJSONObject("playbackTracking")
-                ?: return@withContext null
-            val playback = tracking.optJSONObject("videostatsPlaybackUrl")?.optString("baseUrl")
-            val watchtime = tracking.optJSONObject("videostatsWatchtimeUrl")?.optString("baseUrl")
-            if (playback.isNullOrBlank() || watchtime.isNullOrBlank()) return@withContext null
-            val history = VideoHistorySession(videoId, session, cpn, playback, watchtime)
-            history.takeIf {
-                sendVideoHistoryPing(it, playback, positionMs, positionMs, false) == HistoryPingResult.SENT
-            }
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "Could not start video history reporting", e)
-            null
-        }
-    }
 
-    /** WEB watchtime and FEhistory readback verified September 2026 (60s of a 634s VOD -> 10%). */
-    internal suspend fun reportVideoWatchProgress(
-        session: VideoHistorySession,
-        startMs: Long,
-        positionMs: Long,
-        final: Boolean,
-    ): HistoryPingResult = withContext(Dispatchers.IO) {
-        try {
-            sendVideoHistoryPing(session, session.watchtimeUrl, startMs, positionMs, final)
-        } catch (e: kotlinx.coroutines.CancellationException) {
-            throw e
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "Could not report video watch progress", e)
-            HistoryPingResult.FAILED
-        }
-    }
 
-    /** The switches, as opposed to the session. Both have to hold at ping time. */
-    private fun mayWriteVideoHistory(): Boolean =
-        !IncognitoMode.isEnabled(context) && videoHistoryPreferences.isSaveVideoHistoryEnabled()
 
-    private fun sendVideoHistoryPing(
-        session: VideoHistorySession,
-        baseUrl: String,
-        startMs: Long,
-        positionMs: Long,
-        final: Boolean,
-    ): HistoryPingResult {
-        if (!mayWriteVideoHistory()) return HistoryPingResult.FAILED
-        // Deliberately not a comparison of cookie strings. Google rotates the
-        // session cookies mid-video, and a string compare read every rotation
-        // as a different login and silently stopped reporting for the rest of
-        // the video on a perfectly valid account. This asks the question that
-        // was meant - same profile, still active, still the same login - and
-        // hands back the refreshed cookies to sign this ping with.
-        val live = sessionManager.currentSession(session.login) ?: return HistoryPingResult.SESSION_ENDED
-        val url = baseUrl.toHttpUrlOrNull() ?: return HistoryPingResult.FAILED
-        // Credentials only go to the YouTube tracking hosts returned by /player.
-        if (url.scheme != "https" || url.host !in setOf("s.youtube.com", "www.youtube.com")) {
-            return HistoryPingResult.FAILED
-        }
-        val position = (positionMs.coerceAtLeast(0L) / 1000.0).toString()
-        val trackingUrl = url.newBuilder()
-            .setQueryParameter("cpn", session.cpn)
-            .setQueryParameter("ver", "2").setQueryParameter("c", "WEB")
-            .setQueryParameter("cver", WEB_VERSION)
-            .setQueryParameter("cmt", position)
-            .setQueryParameter("st", (startMs.coerceIn(0L, positionMs.coerceAtLeast(0L)) / 1000.0).toString())
-            .setQueryParameter("et", position)
-            .setQueryParameter("state", if (final) "paused" else "playing")
-            .setQueryParameter("final", if (final) "1" else "0")
-            .build()
-        val request = okhttp3.Request.Builder().url(trackingUrl)
-            .header("User-Agent", BROWSER_USER_AGENT)
-            .header("Origin", "https://www.youtube.com")
-            .header("Referer", "https://www.youtube.com/watch?v=${session.videoId}")
-            .authenticate(live, "https://www.youtube.com")
-            .build()
-        return okHttpClient.newCall(request).execute().use { response ->
-            if (!response.isSuccessful) KLog.w("YouTubeRepo", "Video history ping failed: ${response.code}")
-            if (response.isSuccessful) HistoryPingResult.SENT else HistoryPingResult.FAILED
-        }
-    }
 
 
     /**

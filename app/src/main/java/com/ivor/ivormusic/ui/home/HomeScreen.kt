@@ -441,10 +441,6 @@ fun HomeScreen(
     var viewedPlaylistFromHome by remember {
         mutableStateOf<com.ivor.ivormusic.data.PlaylistDisplayItem?>(null)
     }
-    // The video-mode counterpart, handed to VideoLibraryContent the same way.
-    var viewedVideoPlaylistFromHome by remember {
-        mutableStateOf<com.ivor.ivormusic.data.VideoPlaylist?>(null)
-    }
 
     // A playlist link shared or opened into the app, which lands at
     // MainActivity and cannot reach the tab state from there. Same hand-off as

@@ -99,8 +99,6 @@ class LocalVideoPlaylistsRepository(context: Context) {
     fun find(playlistId: String?): LocalVideoPlaylist? =
         playlistId?.let { id -> state.value.firstOrNull { it.id == id } }
 
-    /** The videos in [playlistId], or empty for an id this store does not hold. */
-    fun videosOf(playlistId: String?): List<VideoItem> = find(playlistId)?.videos.orEmpty()
 
     fun contains(playlistId: String?, videoId: String): Boolean =
         find(playlistId)?.videos?.any { it.videoId == videoId } == true
@@ -114,19 +112,6 @@ class LocalVideoPlaylistsRepository(context: Context) {
         playlist.id
     }
 
-    /**
-     * The device's own Watch Later, created the first time something is saved
-     * to it.
-     *
-     * Signed in, Watch Later is the account's and this is never reached. Signed
-     * out the save sheet's pinned row had nowhere to go, and a hero action that
-     * silently fails is worse than one that is not offered.
-     */
-    suspend fun ensureWatchLater(): String = withContext(Dispatchers.IO) {
-        find(WATCH_LATER_ID)?.let { return@withContext it.id }
-        persist(LocalVideoPlaylist(id = WATCH_LATER_ID, name = WATCH_LATER_NAME))
-        WATCH_LATER_ID
-    }
 
     /**
      * Append [video] to [playlistId].

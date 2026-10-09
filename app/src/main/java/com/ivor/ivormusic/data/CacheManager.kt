@@ -76,8 +76,6 @@ object CacheManager {
 
     private var videoCache: SimpleCache? = null
     private var videoDatabaseProvider: StandaloneDatabaseProvider? = null
-    private var videoCacheDir: File? = null
-    private val activeVideoOwners = mutableSetOf<String>()
     private val cacheScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private var videoCleanupJob: Job? = null
 
@@ -226,50 +224,8 @@ object CacheManager {
      */
     fun getCache(): SimpleCache? = simpleCache
 
-    /**
-     * Mark one player surface as using the transient video cache.
-     *
-     * Owners are names rather than a count so repeated play/open calls from a
-     * single ViewModel cannot leak an acquisition. A new video cancels a
-     * pending idle clear; closing the last surface starts the five-minute grace
-     * period requested for quick reopen and swipe-back.
-     */
-    @Synchronized
-    fun setVideoPlaybackActive(owner: String, active: Boolean) {
-        if (active) {
-            activeVideoOwners.add(owner)
-            videoCleanupJob?.cancel()
-            videoCleanupJob = null
-        } else {
-            activeVideoOwners.remove(owner)
-            if (activeVideoOwners.isEmpty()) scheduleVideoCacheClear()
-        }
-    }
 
-    @Synchronized
-    private fun scheduleVideoCacheClear() {
-        videoCleanupJob?.cancel()
-        videoCleanupJob = cacheScope.launch {
-            delay(VIDEO_CACHE_IDLE_CLEAR_MS)
-            val shouldClear = synchronized(this@CacheManager) {
-                activeVideoOwners.isEmpty()
-            }
-            if (shouldClear) clearVideoCache()
-        }
-    }
 
-    /** Clear transient video bytes only. Music and permanent downloads stay. */
-    @Synchronized
-    fun clearVideoCache(shorts: Boolean? = null) {
-        try {
-            val cache = videoCache ?: return
-            val keys = cache.keys.filter { shorts == null || isShortsCacheKey(it) == shorts }
-            keys.forEach(cache::removeResource)
-            KLog.d(TAG, "Transient video cache cleared: removed ${keys.size} items")
-        } catch (e: Exception) {
-            KLog.e(TAG, "Error clearing transient video cache", e)
-        }
-    }
 
     /**
      * One-time-compatible cleanup for builds that stored video in the music
@@ -360,100 +316,9 @@ object CacheManager {
         }
     }
 
-    /**
-     * Player factory for online video and Shorts.
-     *
-     * Video and Shorts have separate write policies and key namespaces while
-     * sharing the temporary store. The music size limit does not apply here.
-     * Cache failures (including a full disk) fall through to upstream so the
-     * act of caching can never stop an otherwise playable video.
-     */
-    @Synchronized
-    fun createVideoPlaybackDataSourceFactory(context: Context, shorts: Boolean = false): DataSource.Factory {
-        initializeVideoCache(context.applicationContext)
-        val directFactory = DefaultDataSource.Factory(
-            context,
-            createPerClientHttpFactory(context),
-        )
-        val cacheFactory = createVideoCacheDataSourceFactory(context, shorts)
-        val readOnlyFactory = createVideoCacheDataSourceFactory(context, shorts, writeEnabled = false)
-        return DataSource.Factory {
-            SwitchingPlaybackDataSource(
-                direct = directFactory.createDataSource(),
-                cached = cacheFactory?.createDataSource(),
-                isCacheEnabled = {
-                    if (shorts) ThemePreferences.isShortsCacheEnabled(context)
-                    else ThemePreferences.isVideoCacheEnabled(context)
-                },
-                readOnlyCache = readOnlyFactory?.createDataSource(),
-            )
-        }
-    }
 
-    /** Blocking, bounded Shorts warm. Call on IO; cancellation stops further reads. */
-    suspend fun cacheVideoRange(context: Context, dataSpec: DataSpec) {
-        if (!ThemePreferences.isShortsCacheEnabled(context) ||
-            !ThemePreferences.isPlaybackPreloadEnabled(context)) return
-        val factory = synchronized(this) {
-            initializeVideoCache(context.applicationContext)
-            createVideoCacheDataSourceFactory(context, shorts = true)
-        } ?: return
-        val taskContext = currentCoroutineContext()
-        taskContext.ensureActive()
-        // CacheWriter checks progress after each read (128 KiB maximum). Its
-        // exception path closes the source and releases the cache span lock.
-        CacheWriter(factory.createDataSource(), dataSpec, null) { _, _, _ ->
-            taskContext.ensureActive()
-            if (!ThemePreferences.isShortsCacheEnabled(context) ||
-                !ThemePreferences.isPlaybackPreloadEnabled(context)) {
-                throw kotlinx.coroutines.CancellationException("Shorts preload disabled")
-            }
-        }.cache()
-    }
 
-    private fun createVideoCacheDataSourceFactory(
-        context: Context,
-        shorts: Boolean,
-        writeEnabled: Boolean = true,
-    ): CacheDataSource.Factory? =
-        videoCache?.let { cache ->
-            CacheDataSource.Factory()
-                .setCache(cache)
-                .setUpstreamDataSourceFactory(createPerClientHttpFactory(context))
-                .setCacheKeyFactory { dataSpec ->
-                    val key = dataSpec.key ?: opaquePlaybackCacheKey(dataSpec.uri.toString())
-                    playbackCacheCategoryKey(key, shorts)
-                }
-                .setFlags(CacheDataSource.FLAG_IGNORE_CACHE_ON_ERROR)
-                .apply { if (!writeEnabled) setCacheWriteDataSinkFactory(null) }
-        }
 
-    @Synchronized
-    private fun initializeVideoCache(context: Context) {
-        if (videoCache != null) return
-        videoCacheDir = File(context.cacheDir, VIDEO_CACHE_DIR_NAME)
-        videoDatabaseProvider = StandaloneDatabaseProvider(context)
-        try {
-            videoCache = SimpleCache(
-                checkNotNull(videoCacheDir),
-                NoOpCacheEvictor(),
-                checkNotNull(videoDatabaseProvider),
-            )
-        } catch (e: Exception) {
-            KLog.e(TAG, "Video cache initialization failed, attempting recovery", e)
-            runCatching { videoCacheDir?.deleteRecursively() }
-            videoDatabaseProvider = StandaloneDatabaseProvider(context)
-            videoCache = runCatching {
-                SimpleCache(
-                    checkNotNull(videoCacheDir),
-                    NoOpCacheEvictor(),
-                    checkNotNull(videoDatabaseProvider),
-                )
-            }.onFailure {
-                KLog.e(TAG, "Video cache recovery failed; playback will stay direct", it)
-            }.getOrNull()
-        }
-    }
 
     /**
      * The HTTP factory for all stream fetches: ChunkedStreamDataSource picks

@@ -117,50 +117,8 @@ class VideoHistoryRepository(context: Context) {
         }
     }
 
-    /**
-     * Whether Koda has recorded a watch for [videoId].
-     *
-     * The local store rather than the account's own history, deliberately:
-     * this answers a feed filter and a menu row that both have to be correct
-     * the instant they are drawn, and the account's list is fetched lazily by
-     * whichever screen asked for it last. Signed in, the two agree for
-     * anything watched in Koda, which is the case the filter exists for.
-     */
-    fun isWatched(videoId: String?): Boolean =
-        videoId != null && state.value.any { it.videoId == videoId }
 
-    /**
-     * Mark a video watched because the user said so, rather than because they
-     * watched it.
-     *
-     * Not gated on incognito, and that is the point of it being separate from
-     * [addVideo]: incognito suppresses *recording*, not *doing*, and silently
-     * discarding something the user asked for by name would be a different
-     * feature wearing incognito's label. The same reasoning downloads,
-     * playlists and likes already follow.
-     */
-    fun markWatched(video: VideoItem) {
-        if (video.videoId.isBlank()) return
-        synchronized(LOCK) {
-            if (video.videoId in hiddenIds()) {
-                prefs.edit().putStringSet(hiddenKey(), hiddenIds() - video.videoId).apply()
-            }
-            val current = load().toMutableList()
-            current.removeAll { it.videoId == video.videoId }
-            current.add(0, video)
-            save(current.take(MAX_ENTRIES))
-        }
-    }
 
-    /**
-     * The inverse: forget that this was watched.
-     *
-     * Routed through [removeVideo] rather than only dropping the local entry,
-     * because signed in the history list comes from the account's FEhistory
-     * and a local-only removal would be undone by the next refresh - the video
-     * would go back to counting as watched with no explanation.
-     */
-    fun markUnwatched(videoId: String) = removeVideo(videoId)
 
     /**
      * Take one video out of the watch history for good.
@@ -195,22 +153,6 @@ class VideoHistoryRepository(context: Context) {
         return if (hidden.isEmpty()) videos else videos.filterNot { it.videoId in hidden }
     }
 
-    /**
-     * Put a removed entry back where it was, for the undo snackbar.
-     *
-     * Re-inserting at [at] rather than at the top, because history is ordered
-     * by when things were watched and undoing a mis-tap must not claim the
-     * video was watched again just now.
-     */
-    fun restoreVideo(video: VideoItem, at: Int) {
-        synchronized(LOCK) {
-            prefs.edit().putStringSet(hiddenKey(), hiddenIds() - video.videoId).apply()
-            val current = load().toMutableList()
-            current.removeAll { it.videoId == video.videoId }
-            current.add(at.coerceIn(0, current.size), video)
-            save(current.take(MAX_ENTRIES))
-        }
-    }
 
     /**
      * Empty the history.
@@ -267,24 +209,6 @@ class VideoHistoryRepository(context: Context) {
         }
     }
 
-    /** Update in place: checkpoints must not reorder history or resurrect a removed row. */
-    fun saveWatchProgress(videoId: String, positionMs: Long, durationMs: Long) {
-        if (durationMs <= 0L || IncognitoMode.isEnabled(appContext) ||
-            !preferences.isSaveVideoHistoryEnabled()) return
-        synchronized(LOCK) {
-            val current = load()
-            val index = current.indexOfFirst { it.videoId == videoId }
-            if (index < 0) return
-            val progress = (positionMs.toDouble() / durationMs).toFloat().coerceIn(0f, 1f)
-            if (current[index].watchedProgress == progress) return
-            save(current.toMutableList().apply {
-                this[index] = this[index].copy(
-                    watchedProgress = progress,
-                    watchProgressUpdatedAtMs = System.currentTimeMillis(),
-                )
-            })
-        }
-    }
 
     fun clearResumePosition(videoId: String) {
         if (videoId.isBlank()) return

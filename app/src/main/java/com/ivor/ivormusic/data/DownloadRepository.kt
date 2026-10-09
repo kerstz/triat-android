@@ -640,19 +640,6 @@ class DownloadRepository private constructor(private val context: Context) {
         return remoteMediaSize(url)
     }
 
-    /**
-     * Exact media bytes for a downloadable quality. Adaptive video is the sum
-     * of its separate video and audio files; a progressive stream is one file.
-     * Returning null when either half is unknown avoids presenting a confident
-     * underestimate in the confirmation sheet.
-     */
-    suspend fun estimateVideoDownloadBytes(quality: VideoQuality): Long? = coroutineScope {
-        val urls = listOfNotNull(quality.url, quality.audioUrl).distinct()
-        val sizes = urls.map { url -> async { remoteMediaSize(url) } }.map { it.await() }
-        sizes.takeIf { values -> values.isNotEmpty() && values.all { it != null } }
-            ?.sumOf { it ?: 0L }
-            ?.takeIf { it > 0L }
-    }
 
     /**
      * Queue several videos at once with one quality cap for the batch.

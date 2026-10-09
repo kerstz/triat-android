@@ -190,6 +190,5 @@ data class LiveChatSendResult(
  */
 data class LiveMetadata(
     val viewerCountText: String? = null,
-    val shortViewerCount: String? = null,
     val dateText: String? = null,
 )
