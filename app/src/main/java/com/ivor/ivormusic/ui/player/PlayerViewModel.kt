@@ -179,6 +179,16 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     private var lastRecordedSongId: String? = null
     private var playRecordingJob: Job? = null
 
+    /**
+     * The track the player is leaving, and when it started being heard.
+     *
+     * Held because a skip can only be recognised on the way out: the player
+     * reports the item it has moved *to*, so by the time the transition
+     * arrives the track that was turned away from is no longer current.
+     */
+    private var outgoingSong: Song? = null
+    private var outgoingStartedAtMs: Long = 0L
+
     // In-flight radio fill for the last playSongRadio() seed
     private var radioJob: Job? = null
     private var radioSeedId: String? = null
@@ -213,6 +223,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     
     // Stats Repository
     private val statsRepository = com.ivor.ivormusic.data.StatsRepository(context)
+    private val tasteSignals = com.ivor.ivormusic.data.TasteSignals(context)
 
     // Playback session snapshots for resume-on-reopen
     private val playbackSessionRepository = com.ivor.ivormusic.data.PlaybackSessionRepository(context)
@@ -565,6 +576,25 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                         themePreferences.saveLastPlayedSong(it)
                         savePlaybackSession()
 
+                        // The track being left, before anything overwrites
+                        // what it was. A deliberate move - a tap on Next, a
+                        // row in the queue - inside the first fifteen seconds
+                        // is the listener turning the music away rather than
+                        // the queue advancing on its own, which is the one
+                        // negative signal the engine gets.
+                        val leaving = outgoingSong
+                        if (
+                            leaving != null && leaving.id != it.id &&
+                            reason == Player.MEDIA_ITEM_TRANSITION_REASON_SEEK &&
+                            outgoingStartedAtMs > 0L &&
+                            System.currentTimeMillis() - outgoingStartedAtMs <
+                                com.ivor.ivormusic.data.TasteSignals.SKIP_WINDOW_MS
+                        ) {
+                            viewModelScope.launch { tasteSignals.recordSkip(leaving) }
+                        }
+                        outgoingSong = it
+                        outgoingStartedAtMs = System.currentTimeMillis()
+
                         // STATS RECORDING WITH THRESHOLD
                         // Cancel previous job if any
                         playRecordingJob?.cancel()
@@ -594,6 +624,12 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                                     if (themePreferences.isSaveMusicHistoryEnabled()) {
                                         statsRepository.addPlayEvent(it)
                                     }
+                                    // Played through: whatever earlier skips
+                                    // said about this track, it was wrong, and
+                                    // leaving them to decay would go on
+                                    // damping something now demonstrably
+                                    // wanted.
+                                    tasteSignals.forget(currentSongId)
                                 }
                             }
                         }
