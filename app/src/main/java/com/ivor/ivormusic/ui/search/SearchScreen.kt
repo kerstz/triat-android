@@ -192,7 +192,6 @@ fun SearchScreen(
     onPlayQueue: (List<Song>, Song) -> Unit = { _, song -> onSongClick(song) },
     /** Long-press a song result: opens the shared song options sheet. */
     onSongLongPress: ((Song) -> Unit)? = null,
-    /** Queue a video result, next or at the end. */
     /**
      * Play a single YouTube result and continue into its radio. Used instead of
      * [onPlayQueue] for loose result lists, where the neighbouring entries are
@@ -202,7 +201,6 @@ fun SearchScreen(
     onArtistClick: (ArtistItem) -> Unit = {},
     onAlbumClick: (PlaylistDisplayItem) -> Unit = {},
     onPlaylistClick: (PlaylistDisplayItem) -> Unit = {},
-    /** Open a creator's page, from a Channels result or the long-press sheet. */
     onProfileClick: () -> Unit = {},
     contentPadding: PaddingValues,
     viewModel: HomeViewModel,

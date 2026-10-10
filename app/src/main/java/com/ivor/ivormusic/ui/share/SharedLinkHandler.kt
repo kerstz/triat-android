@@ -69,14 +69,7 @@ fun SharedLinkHandler(
     localOnlyMode: Boolean,
     homeViewModel: HomeViewModel,
     playerViewModel: PlayerViewModel,
-    onNavigateHome: () -> Unit,
-    /**
-     * Open a shared channel link. Takes the reference as the link named it -
-     * a `UC…` id, an `@handle` or a legacy vanity name - because the channel
-     * screen resolves whichever it is given, and resolving here would spend a
-     * request before anything is on screen.
-     */
-    onOpenChannel: (String) -> Unit = {}
+    onNavigateHome: () -> Unit
 ) {
     val context = LocalContext.current
 
@@ -112,10 +105,9 @@ fun SharedLinkHandler(
         val channelRef = link.channelRef
 
         when {
-            // A channel link, in any of its four shapes. The manifest has
-            // always claimed these; until there was a channel screen to land
-            // on, Koda accepted the tap and did nothing with it.
-            channelRef != null -> onOpenChannel(channelRef)
+            // A channel link has nothing a music player can play: Koda draws
+            // no channel page, so say so rather than open an empty screen.
+            channelRef != null -> toast(context.getString(R.string.share_open_link_failed))
 
             // A music playlist with no track named: open the playlist's page.
             // Playing it straight off was the whole list arriving with nowhere

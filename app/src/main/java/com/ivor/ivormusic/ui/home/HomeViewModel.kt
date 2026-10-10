@@ -1509,7 +1509,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     ): com.ivor.ivormusic.data.ChannelHeader? {
         if (!channelId.startsWith("UC")) return null
         return try {
-            youtubeRepository.getChannelPage(channelId)?.header
+            youtubeRepository.getChannelHeader(channelId)
         } catch (e: Exception) {
             null
         }

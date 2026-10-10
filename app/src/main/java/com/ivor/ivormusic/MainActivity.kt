@@ -578,19 +578,6 @@ fun MusicApp(
     }
     val homeViewModel: HomeViewModel = viewModel()
 
-    /**
-     * Opens a creator's page from anywhere: a feed card, a search result, the
-     * player's channel row or a shared link.
-     *
-     * `launchSingleTop` is deliberately absent: opening channel B from channel
-     * A's "Featured channels" shelf has to push a second entry, or back from B
-     * would leave the app rather than return to A.
-     */
-    val openChannel: (String) -> Unit = openChannel@{ channelId ->
-        if (channelId.isBlank()) return@openChannel
-        navController.navigate("channel/${android.net.Uri.encode(channelId)}")
-    }
-
     val isMusicPlaying by playerViewModel.isPlaying.collectAsStateWithLifecycle()
     val pendingSongDownload by playerViewModel.pendingSongDownload.collectAsStateWithLifecycle()
 
@@ -608,8 +595,7 @@ fun MusicApp(
                 popUpTo("home") { inclusive = false }
                 launchSingleTop = true
             }
-        },
-        onOpenChannel = openChannel
+        }
     )
 
     Box(
@@ -660,7 +646,6 @@ fun MusicApp(
                     onNavigateToDownloads = { navController.navigate("downloads") },
                     onNavigateToStats = { navController.navigate("stats") },
                     onNavigateToUpdate = { navController.navigate("update") },
-                    onOpenChannel = openChannel,
                     loadLocalSongs = loadLocalSongs,
                     excludedFolders = excludedFolders,
                     ambientBackground = ambientBackground,

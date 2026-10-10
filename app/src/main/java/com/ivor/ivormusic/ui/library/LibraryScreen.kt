@@ -162,7 +162,6 @@ fun LibraryContent(
     onSongClick: (Song) -> Unit,
     onPlaylistClick: (PlaylistDisplayItem) -> Unit = {},
     /** Open a musician's video-mode channel page, from the artist screen. */
-    onOpenChannel: ((String) -> Unit)? = null,
     onPlayQueue: (List<Song>, Song?) -> Unit,
     /** Play a collection with shuffle mode on; see PlayerViewModel.playQueueShuffled. */
     onShuffleQueue: (List<Song>) -> Unit,
@@ -455,7 +454,6 @@ fun LibraryContent(
                         },
                         viewModel = viewModel,
                         onSongLongPress = onSongLongPress,
-                        onOpenChannel = onOpenChannel,
                         onOpenArtist = { name, id ->
                             selectedArtistName = name
                             selectedArtistId = id

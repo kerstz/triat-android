@@ -320,7 +320,6 @@ fun ArtistScreen(
      * tick and follower count, so arriving at a musician from either mode does
      * not feel like arriving at two different people.
      */
-    onOpenChannel: ((channelId: String) -> Unit)? = null
 ) {
     // Theme colors
     val backgroundColor = MaterialTheme.colorScheme.background
@@ -602,9 +601,7 @@ fun ArtistScreen(
                         // ========== ACTIONS ==========
                         // On the sheet rather than over the photo, so the photo
                         // carries only the name - the reference's whole point.
-                        val channelId = resolvedChannelId
-                        val showChannelLink = onOpenChannel != null && channelId != null
-                        if (artistSongs.isNotEmpty() || showChannelLink) {
+                        if (artistSongs.isNotEmpty()) {
                             item(key = "actions") {
                                 Row(
                                     modifier = Modifier
@@ -620,29 +617,6 @@ fun ArtistScreen(
                                             onShuffle = shuffleAll,
                                             onStartRadio = startRadio
                                         )
-                                    }
-                                    Spacer(Modifier.weight(1f))
-                                    // Only offered once a real channel id has
-                                    // resolved. A local-library artist is a tag
-                                    // on a file and has no channel to open.
-                                    if (onOpenChannel != null && channelId != null) {
-                                        FilledIconButton(
-                                            onClick = { onOpenChannel(channelId) },
-                                            modifier = Modifier.size(48.dp),
-                                            shape = CircleShape,
-                                            colors = IconButtonDefaults.filledIconButtonColors(
-                                                containerColor = MaterialTheme.colorScheme
-                                                    .surfaceContainerHighest,
-                                                contentColor = MaterialTheme.colorScheme
-                                                    .onSurfaceVariant
-                                            )
-                                        ) {
-                                            Icon(
-                                                Icons.Rounded.SmartDisplay,
-                                                contentDescription = stringResource(R.string.ar_open_youtube_channel),
-                                                modifier = Modifier.size(22.dp)
-                                            )
-                                        }
                                     }
                                 }
                             }

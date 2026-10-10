@@ -194,31 +194,6 @@ fun HomeScreen(
     onNavigateToDownloads: () -> Unit = {},
     onNavigateToStats: () -> Unit = {},
     onNavigateToUpdate: () -> Unit = {},
-    /** Play completed video downloads as a local queue, without URL resolution. */
-    /** The same, for the device's own video files from the Library tab. */
-    /**
-     * Open the video player on a whole playlist rather than one video, so the
-     * rest of it plays after this one and is browsable from the player.
-     *
-     * Nullable rather than defaulting to `{}`: the playlist screens fall back to
-     * [onNavigateToVideoPlayer] when this is absent, and a do-nothing default
-     * would make a tap on a playlist row silently do nothing at all.
-     */
-    /**
-     * Queue a video from a long press, either next or at the end. Routed to the
-     * video player's ViewModel, which owns the queue.
-     */
-    /**
-     * Open a creator's channel page. Threaded down to every surface that shows
-     * a channel name, so tapping one means the same thing everywhere.
-     */
-    onOpenChannel: (String) -> Unit = {},
-    /** Cards on the video feed play a silent preview when rested on. */
-    /**
-     * Hand the playing song to the video player, from the player's overflow.
-     * Null where the host has no video pipeline, which is every caller but
-     * MainActivity.
-     */
     loadLocalSongs: Boolean = false,
     excludedFolders: Set<String> = emptySet(),
     ambientBackground: Boolean = true,
@@ -227,12 +202,10 @@ fun HomeScreen(
     onPlayerStyleChange: (PlayerStyle) -> Unit = {},
     manualScan: Boolean = false,
     localOnly: Boolean = false,
-    /** Prevent a rebuilt Search tab from focusing behind the full video player. */
     /** Spotlight: the alternative music Home. Off by default. */
     spotlightHome: Boolean = false,
     /** Use Material 3's compact bar instead of the default floating toolbar. */
     nonExpressiveNavigationBar: Boolean = false,
-    /** Visibility, order and recommendation policy for Video mode. */
     /**
      * Hoisted so the video mini player - an overlay above the NavHost, outside
      * this composable - can follow the same toolbar this shell hides on scroll.
@@ -763,7 +736,6 @@ fun HomeScreen(
                             showPlayerSheet = true
                         },
                         onProfileClick = onProfileClick,
-                        onOpenChannel = onOpenChannel,
                         onSongLongPress = { song -> songOptionsTarget = song },
                         onEnqueueSong = { song, playNext ->
                             if (playNext) playerViewModel.playNext(song)
@@ -814,7 +786,6 @@ fun HomeScreen(
                             initialAlbum = viewedAlbumFromPlayer,
                             onInitialAlbumConsumed = { viewedAlbumFromPlayer = null },
                             onStatsClick = onNavigateToStats,
-                            onOpenChannel = onOpenChannel,
                             onSongLongPress = { song -> songOptionsTarget = song },
                             onEnqueueSong = { song, playNext ->
                                 if (playNext) playerViewModel.playNext(song)
@@ -2023,8 +1994,6 @@ fun SearchContent(
      */
     onEnqueueSong: ((Song, Boolean) -> Unit)? = null,
     onProfileClick: () -> Unit = {},
-    /** Open a creator's page, from a Channels result or the long-press sheet. */
-    onOpenChannel: (String) -> Unit = {},
     contentPadding: PaddingValues,
     viewModel: HomeViewModel,
     isDarkMode: Boolean,
@@ -2128,7 +2097,6 @@ fun SearchContent(
                         onOpenAlbum = { albumItem -> viewedPlaylist = albumItem },
                         viewModel = viewModel,
                         onSongLongPress = onSongLongPress,
-                        onOpenChannel = onOpenChannel,
                         // Another artist replaces this one in place, as in the
                         // Library; a playlist stacks over it and pops back here.
                         onOpenArtist = { name, id ->
