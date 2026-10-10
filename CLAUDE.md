@@ -10,11 +10,9 @@ Markers: **[verified <month year>]** probed live, trust until YouTube changes; *
 | `docs/rules.md` | The reasoning behind every invariant and settled decision below |
 | `docs/youtube-data.md` | `YouTubeRepository`, InnerTube parsers, clients, visitorData, rate limiting |
 | `docs/playback-music.md` | `MusicService`, queue occurrences, crossfade/AutoMix, speed, visualizer, lyrics |
-| `docs/playback-streams.md` | Stream resolution, NewPipe budgets, ranged requests, caches, quality/HDR, seeking |
-| `docs/playback-video.md` | `VideoPlayerViewModel`, minimize transition, video queue/resume, captions, SponsorBlock, live, Shorts |
-| `docs/screens.md` | Navigation, Home tabs, overlays, device videos, the three playlist kinds, video options sheet |
-| `docs/subscriptions.md` | Subscriptions (account + local), RSS feed, import/export, "Don't recommend" |
-| `docs/channels.md` | Channel pages, tabs, grids, artist cross-links |
+| `docs/playback-streams.md` | Stream resolution, NewPipe budgets, ranged requests, caching, seeking |
+| `docs/screens.md` | Navigation, Home tabs, the player overlay, the three playlist kinds |
+| `docs/moderation.md` | The blocklist ("Don't recommend"), shared by music |
 | `docs/settings.md` | Adding a setting, settings pages, app icon, updater, theming |
 | `docs/lastfm.md` | Last.fm credentials, browser authorization, scrobbling, privacy and sync |
 | `docs/identity.md` | Auth, profiles/switching, incognito, backup and restore |
@@ -38,7 +36,7 @@ Shipped consumer app with real users. The bar is "would someone using this daily
 - **Probe rather than reason, on the artifact actually running.** InnerTube: the probe recipe in `docs/youtube-data.md`. Libraries: `javap -c -p` on the AAR under `~/.gradle/caches/modules-2/files-2.1/<group>/<artifact>/<version>/`.
 - **Bug reports: read history before theorising.** `git log -S"<symbol>" -- <file>`. Recent commits, including your own, are the leading suspects.
 - **Refuse to invent an InnerTube shape.** If an endpoint cannot be probed, say "blocked, here is what I need" rather than writing a parser from recall.
-- **Think the feature through first:** the real use case, every state (loading, empty, error, offline, signed out, one item, hundreds, long titles, missing art), what it does to mini-player / video overlay / PiP / nav bar / sheets / landscape / back, and feel (springs, M3 Expressive, hit targets, haptics).
+- **Think the feature through first:** the real use case, every state (loading, empty, error, offline, signed out, one item, hundreds, long titles, missing art), what it does to the mini-player / nav bar / sheets / landscape / back, and feel (springs, M3 Expressive, hit targets, haptics).
 - **Ask once, up front, batched, with 2-3 concrete options** - only where the answer changes the size of the work or leaves a real design decision open. Never ask what the code or convention settles.
 - **Do not do the minimum.** If the real problem is a layer below the symptom, fix it there and say why.
 - **Mechanical multi-file edits go through a Python script** that asserts each anchor matches exactly once and asserts post-conditions. **Read the result before compiling** - it compiling proves nothing. [scar]
@@ -70,7 +68,7 @@ Changelog:
 
 ## 2. Orientation
 
-**Koda** (package `com.ivor.ivormusic`, GitHub `ivorisnoob/Koda`): Android music and video player over YouTube Music. Kotlin + Compose + Material 3 Expressive. No official API keys - NewPipe Extractor plus direct InnerTube calls.
+**Koda** (package `com.ivor.ivormusic`, GitHub `ivorisnoob/Koda`): Android music player over YouTube Music. Triat removed the video half of the fork. Kotlin + Compose + Material 3 Expressive. No official API keys - NewPipe Extractor plus direct InnerTube calls.
 
 **This repository is Triat for Android**, a fork of Koda (GPL-3.0) with application id `org.triat.mobile`. The Kotlin package keeps Koda's name on purpose. Triat adds a Wi-Fi sync with the Triat desktop app (`sync/`, `docs/sync.md`).
 
@@ -80,13 +78,11 @@ MVVM with StateFlow and **no DI framework**: ViewModels build repositories direc
 |---|---|---|
 | Stream resolution, feeds, parsers | `data/YouTubeRepository.kt` | `youtube-data.md`, `playback-streams.md` |
 | Music playback, queue, notification, crossfade | `service/MusicService.kt`, `CrossfadeEngine` | `playback-music.md` |
-| Video playback, PiP, captions, chapters | `ui/video/VideoPlayerViewModel.kt` | `playback-video.md` |
 | Screens, tabs, overlays | `MainActivity.kt`, `ui/home/HomeScreen.kt` | `screens.md` |
 | Adding a setting | `data/ThemePreferences.kt` + 4 files + search index | `settings.md` |
 | Sign-in, accounts, incognito, backup | `SessionManager`, `ProfileManager`, `AccountSwitcher`, `IncognitoMode`, `BackupRepository` | `identity.md` |
-| Device video files | `data/LocalVideoRepository.kt`, `ui/video/DeviceVideosPage.kt` | `screens.md` |
-| Subscriptions, blocklist | `SubscriptionActions`, `NotInterestedRepository` | `subscriptions.md` |
-| Channels | `ui/channel/` | `channels.md` |
+| Blocklist | `NotInterestedRepository`, `NotInterestedActions` | `moderation.md` |
+| SponsorBlock | `SponsorBlockRepository`, the skip engine in `MusicService` | `playback-music.md` |
 | Player look-and-feel, queue rows | `ui/player/`, `ui/components/QueueReorder.kt` | `player-ui.md` |
 | Widgets | `widget/` | `widgets.md` |
 | Wi-Fi sync with Triat desktop | `sync/DesktopSyncRepository.kt`, `sync/AutoSync.kt`, `ui/settings/DesktopSyncSettings.kt` | `sync.md` |
@@ -103,7 +99,7 @@ Breaking one is a bug even when it compiles. Reasons: `docs/rules.md`.
 3. **Every googlevideo media fetch is a bounded ranged request** (`ChunkedStreamDataSource`). Never a plain `DefaultHttpDataSource` or unbounded GET.
 4. **Never route a live stream through the progressive path.** The HLS manifest is the only usable source.
 5. **A `MediaController` is touched only on its application thread.** From Glance, go through `withController`.
-6. **Process-wide repository state is a closed list of twelve**: `LocalSubscriptionsRepository`, `NotInterestedRepository`, `SavedPlaylistsRepository`, `LocalVideoPlaylistsRepository`, `VideoHistoryRepository`, `HiddenPlaylistsRepository`, `IncognitoMode`, the `visitorData` cache, `YouTubeRateLimit`, the video stream-resolution cache, `LastFmRepository` (settings/service cancellation and queue coordination), and `DesktopSyncRepository` (the desktop pairing and the one-at-a-time sync, shared by Settings and the automatic sync). A thirteenth needs the same justification (a write on one surface must be visible on another holding its own instance), not convenience. Shared OkHttp transport and transient buses (`VisualizerBus`, `WaveformStore`) are not repository state.
+6. **Process-wide repository state is a closed list of eight**: `NotInterestedRepository`, `SavedPlaylistsRepository`, `HiddenPlaylistsRepository`, `IncognitoMode`, the `visitorData` cache, `YouTubeRateLimit`, `LastFmRepository` (settings/service cancellation and queue coordination), and `DesktopSyncRepository` (the desktop pairing and the one-at-a-time sync, shared by Settings and the automatic sync). A ninth needs the same justification (a write on one surface must be visible on another holding its own instance), not convenience. Shared OkHttp transport and transient buses (`VisualizerBus`, `WaveformStore`) are not repository state.
 7. **A ViewModel needing a setting at decision time does a fresh pref read.** `ThemePreferences` flows do not cross instances.
 8. **`SettingsScreen`'s signature is the contract with `MainActivity`.** Add parameters; never reorder or restructure.
 9. **Persisted enum constants and stored ids are frozen** (`PlayerStyle`, `SponsorCategory.apiName`, `MotionArtworkQuality`, `IconShape` ids...). Renaming resets every user's choice.
@@ -119,14 +115,11 @@ Compile-clean, fail-at-runtime traps. Each is a scar; the doc has the story.
 |---|---|---|
 | Bottom sheet content that does not scroll | Rows clipped away, nothing logged, identical at 0 and 300 items | `screens.md`, `player-ui.md` |
 | Widget content overrunning its size bucket | Silent clipping; `LocalSize.current` reports the bucket, not the cell | `widgets.md` |
-| `LazyGridScope.items` member shadows the list extension | Fails on argument names rather than falling through | `channels.md` |
 | A setting missing from `buildSettingsSearchIndex` | Unfindable by search, no compile error | `settings.md` |
 | A store renamed but not renamed in `BackupRepository` | Silently drops out of every backup taken afterwards | `identity.md` |
 | NewPipe's playlist extractor signed out | Returns zero items and throws nothing | `youtube-data.md` |
-| `subscription/subscribe` and `youtubei/v1/feedback` signed out | Answer HTTP 200 having done nothing | `youtube-data.md`, `subscriptions.md` |
-| Timedtext `&fmt=` appended rather than replaced | Returns srv3 XML under a `text/vtt` MIME type | `youtube-data.md` |
+| `youtubei/v1/feedback` signed out | Answers HTTP 200 having done nothing | `youtube-data.md`, `moderation.md` |
 | A per-call-site wiring parameter defaulting to null | Feature ships half-wired, nothing compile-fails | `screens.md`, `player-ui.md` |
-| A tab-index hand-off assigned across the video toggle | Tab 2 is two different screens, and `selectedTab`'s `videoMode` key discards the write; use `goToTab` | `screens.md` |
 | Queue row keys qualified by index | `animateItem` has nothing to animate | `player-ui.md` |
 | A queue screen reading `currentQueue` rather than `playOrderQueue` | Draws the order songs were added in while the player plays another; a `MediaController`'s timeline cannot see a `ShuffleOrder` | `playback-music.md` |
 | A new history/search/stats write not gated on `IncognitoMode` | Records silently while the switch says it is paused | `identity.md` |
@@ -135,7 +128,6 @@ Compile-clean, fail-at-runtime traps. Each is a scar; the doc has the story.
 | A login identified by its cookie string | Google rotates cookies hourly, so the first rotation reads as a different account and the write stops | `identity.md` |
 | A response applied to the active profile rather than the session it was sent for | A switch mid-flight files one account's cookies, expiry verdict or name onto another | `identity.md` |
 | An adaptive manifest or playlist served from the playback cache | Live stalls at the live edge; seeking behind it still works | `playback-streams.md` |
-| Behind-live measured from the window end rather than the target live offset | A live stream reads a permanent -0:15 and never says LIVE | `playback-video.md` |
 | Removing core library desugaring | Every search throws `NoSuchMethodError` on API 30-32, compiles fine | section 6 below |
 | A queue index held across a suspension point | The queue is replaced under it; playback lands on the wrong track | `playback-music.md` |
 | A start song absent from the list it is played from | Clamped to index 0, so a tap on one song plays another | `playback-music.md` |
@@ -188,59 +180,41 @@ One line each; the reasoning is in `docs/rules.md`.
 The rules most often needed in each area. Each is a summary; open the doc before editing.
 
 ### YouTube data layer -> `docs/youtube-data.md`
-- Two mechanisms: **NewPipe** (video/artist/playlist search, stream URLs, fallbacks) and **raw InnerTube JSON over OkHttp** parsed by hand with `org.json` (`findObjectsByKey`, `findContinuationTokens`, `getRunText()`), no kotlinx-serialization.
+- Two mechanisms: **NewPipe** (artist/playlist search, stream URLs, fallbacks) and **raw InnerTube JSON over OkHttp** parsed by hand with `org.json` (`findObjectsByKey`, `findContinuationTokens`, `getRunText()`), no kotlinx-serialization.
 - **Probe first, never parse from memory**: `py .probe/probe.py <endpoint> '<json>' [--music]` (never commit `.probe/`). Signed-in probes sign SAPISIDHASH **per origin**; confirm a session by `logged_in: 1`, never HTTP 200. Note "verified <month year>" in the parser's KDoc.
-- Clients: WEB for browse/next/engagement, WEB_REMIX for music.youtube.com, NewPipe's Android-reel/visionOS chain for VOD streams, ANDROID_VR -> IOS only as direct fallback and caption source. **Plain `ANDROID` is SABR-only - no URLs.** Pinned client versions need periodic bumps (HTTP 400 on browse = too old).
+- Clients: WEB for browse/next/engagement, WEB_REMIX for music.youtube.com, NewPipe's Android-reel/visionOS chain for VOD streams, ANDROID_VR -> IOS only as a direct fallback. **Plain `ANDROID` is SABR-only - no URLs.** Pinned client versions need periodic bumps (HTTP 400 on browse = too old).
 - **`visitorData` rides on every InnerTube call**; a missing one now gets `LOGIN_REQUIRED`, and a googlevideo 403 means remint (`refreshVisitorDataAfterPlaybackFailure`), not a UA problem.
 - Music metadata comes from **links and page types** (`MUSIC_PAGE_TYPE_ARTIST/ALBUM`), never subtitle positions; release type/year are data (`Song.albumId`, `releaseType`, `releaseYear`).
 - Signed out: public browse ids work anonymously, **account browse ids return a valid empty shell** (gate on `isLoggedIn()`), playlists come back as `lockupViewModel`s. Continuations answer under `appendContinuationItemsAction` (`continuationItemsOrNull`), and token scoping matters.
-- **Only HTTP 429 arms `YouTubeRateLimit`**, which gates discretionary fan-out and Shorts prefetch only. One `/next` feeds many features - be frugal per user action.
+- **Only HTTP 429 arms `YouTubeRateLimit`**, which gates discretionary fan-out only. One `/next` feeds many features - be frugal per user action.
 
 ### Music playback -> `docs/playback-music.md`
-- `MusicService` (Media3 `MediaLibraryService`) + `PlayerViewModel` over a `MediaController`. Video is a separate pipeline: the ViewModel owns the player and `VideoPlaybackService` only wraps it in a media session.
+- `MusicService` (Media3 `MediaLibraryService`) + `PlayerViewModel` over a `MediaController`. One pipeline - the video one is gone.
 - **A queue screen draws `playOrderQueue`, never `currentQueue`**: the shuffle order does not cross the session boundary, so the service publishes it and positions coming back from those screens go through `movePlayOrderItem`. A Shuffle button sets the mode (`playQueueShuffled`), it does not play a shuffled copy.
 - **Anchor on the queue occurrence (`MusicQueueItem.id`), never an index or media id**, for anything planned across a suspension: crossfades, pending skips, prefetch, validation, error retries. Read `MusicServiceOccurrenceTest` and `CrossfadeEngineTest` before touching this.
 - `replaceMusicSource` keeps index, position and play intent - replacing a stream is not a restart. Queue replacement is one atomic `setMediaItems`.
 - Crossfades cancel on seeks and mode changes; clock checks use a net-displacement budget (1100ms), not a tight absolute cap - two earlier caps abandoned every fade. [scar]
 - AutoMix: a failed silence probe is unknown audio (0), not silence; `TransitionPlanner` only does long overlaps with reliable tempo evidence.
 - The user's speed is the engine's baseline (`setBaseSpeed`, floor 0.1x from Media3); session extras are replaced, not merged - publish via `publishSessionState`.
-- Visualizer reads Koda's own PCM (`VisualizerAudioProcessor`), so no RECORD_AUDIO. Lyrics layout belongs to `SyncedLyricsView`. `notify()` catches `SecurityException`.
+- Visualizer reads Koda's own PCM (`VisualizerAudioProcessor`), so no RECORD_AUDIO. `notify()` catches `SecurityException`.
+- **SponsorBlock lives here now.** Segments are fetched per track from `onMediaItemTransition`, the skip rides the 250ms sample loop, and only a media id shaped like a YouTube video id is eligible. Opt-in, a hash prefix is all that is sent, read-only. A category set to Ask behaves as Ignore: no in-segment button exists.
 
 ### Streams, caching, quality -> `docs/playback-streams.md`
 - NewPipe `fetchPage()` blocks; **bound the wait, not the work** (`resolveAudioUrlWithinBudget` detaches on `newPipeScope`). Rethrow `CancellationException` ahead of general catches.
 - `DeferredSingleFlight`: no resolution work inside `ConcurrentHashMap.compute*`.
 - All googlevideo bytes go through bounded ranged requests (10 MB chunks); downloads use their own ranged loop with resumable checkpoints.
-- **Music and video have separate caches.** Music is the user-sized LRU; video/Shorts is an uncapped transient cache. Turning a cache switch off makes it read-only, not bypassed; the preload switch gates work.
+- Music is the user-sized LRU, the one cache Settings shows. Turning the cache switch off makes it read-only, not bypassed; the preload switch gates work.
 - **Adaptive manifests, playlists and live segments never touch a playback cache** (`isUncacheablePlaybackUrl`). [scar]
-- Scrubs seek `CLOSEST_SYNC`, precise jumps `EXACT`. Quality ladders are highest-first; HDR is opt-in, merged from a raw visionOS `/player`, and `dynamicRange` is part of a quality's identity. `VideoStreamResolutionCache` shares ladders across surfaces.
-
-### Video playback -> `docs/playback-video.md`
-- `VideoPlayerViewModel` owns its `ExoPlayer` (built lazily); `VideoPlaybackService` borrows it for the media session and never releases it. Load is two phases: stream qualities, then one `/next` for everything else - add no extractions.
-- `VideoWatchTracker` owns history qualification, local progress and authenticated watch-time reports, rechecking history-off/incognito/profile before remote writes.
-- Mini-to-expanded is the music player's container transform (`PlayerContainerTransform.kt`, shared with `ExpandablePlayer`); portrait uses a TextureView except HDR and vertical live, which keep the curtain (`supportsAnimatedMinimize`). Never read transition progress in composition; only one view holds the surface.
-- `VideoQueue` is index-addressed; `playQueue` establishes it and `playVideo` clears it. Resume has two stores (active session vs per-video history). Chromecast is gone; do not reintroduce a `Player` indirection.
-- Every `PlayerView` Koda draws captions over calls `disableBuiltInSubtitles()`.
-- SponsorBlock: opt-in, sends only a hash prefix, per-category skip/manual/ignore, read-only, not on live.
-- Live: detected by formats, not by `hlsManifestUrl`; behind-live measured from `liveTargetOffsetMs`; quality is a track cap; comments hidden on live; a live item in Shorts is handed off (emit before `close()`).
+- Scrubs seek `CLOSEST_SYNC`, precise jumps `EXACT`.
 
 ### Navigation and screens -> `docs/screens.md`
-- `NavHost` in `MainActivity`; the `home` route has its own tab system (`AnimatedContent` keyed on `HomeTabKey(tab, videoMode)`) and a floating toolbar using M3's scroll behaviour. Read `hiddenFraction()` only in deferred lambdas.
-- Both players are **overlays above the NavHost**. Something that owns the whole window must hide the other layer's mini bar (`miniBarHidden` via `isPlayerExpanded`). A mode switch pauses the other player, it does not dismantle it.
+- `NavHost` in `MainActivity`; the `home` route has its own tab system (`AnimatedContent`) and a floating toolbar using M3's scroll behaviour. Read `hiddenFraction()` only in deferred lambdas.
+- The player is an **overlay above the NavHost**, so a NavHost destination cannot draw over it.
 - Library sub-screens are opened by hand-off (`initialArtist`/`initialPlaylist` + consumed callbacks).
-- Device videos use `device:` ids through the local-playback path; `singleTask` exists because of PiP; quality/HDR come from the decoder.
-- **Three playlist kinds**: local, the account's own, saved (references). A `PL` prefix does not mean yours - use `savedPlaylistIds`. Local video playlists use the `localvp_` prefix; routing lives in `addVideoToPlaylist`. Hidden playlists are a filter over the merged list.
-- `VideoOptionsSheet` is two panes; every surface uses `VideoOptionsSheetHost`.
+- **Three playlist kinds**: local, the account's own, saved (references). A `PL` prefix does not mean yours - use `savedPlaylistIds`. Hidden playlists are a filter over the merged list.
 
-### Subscriptions and blocklist -> `docs/subscriptions.md`
-- Account and device subscription stores; `SubscriptionActions` alone decides what a tap means. Unsubscribe clears both; the button binds to `isSubscribedToChannel`.
-- The local feed is per-channel Atom RSS with a browse fallback (never on 429), 6 at a time, namespace-unaware parser.
-- Imports are sniffed by content (NewPipe JSON, PipePipe/NewPipe zip, Takeout CSV, OPML); handles resolve to UC ids.
-- `NotInterestedRepository` is the engine, applied as a **derived filter, never a write into the fetch** (Shorts filter on ingestion). Signed-in dismissals also go to YouTube, fire-and-forget. Music shares the store; the device library is never filtered.
-
-### Channels -> `docs/channels.md`
-- **Tabs come from the response**, classified by `params` prefix, never title; no hardcoded tab list.
-- One `LazyVerticalGrid` on a six-column base; use `spanItems` to avoid the `items` member-shadowing trap.
-- Playlists open in-screen; another channel is a real navigation through `openChannel`. `accountSubscribed == null` means unknown.
+### The blocklist -> `docs/moderation.md`
+- `NotInterestedRepository` is the engine, applied as a **derived filter, never a write into the fetch**. Signed-in dismissals also go to YouTube, fire-and-forget. Music shares the store; the device library is never filtered.
 
 ### Settings -> `docs/settings.md`
 - A new setting threads through five files (`ThemePreferences`, `ThemeViewModel`, `MainActivity`, `SettingsScreen`, `SettingsPages`) **plus `buildSettingsSearchIndex`**. Backups need nothing.

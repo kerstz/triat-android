@@ -45,7 +45,7 @@ enum class NotInterestedScope { VIDEO, CHANNEL }
  * synchronous; it only carries the undo token through to the snackbar.
  *
  * The backing flows are process-wide, for the same reason
- * [LocalSubscriptionsRepository]'s are: hiding a video from the player's
+ * [SavedPlaylistsRepository]'s are: hiding a video from the player's
  * related list has to remove it from the home grid behind it, and those are
  * different ViewModels holding different instances.
  */

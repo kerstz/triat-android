@@ -43,7 +43,7 @@ data class HiddenPlaylist(
  * and downloads are device-wide. A hidden id from another account simply never
  * matches anything, which costs nothing.
  *
- * The flow is process-wide for the reason [LocalSubscriptionsRepository]'s is:
+ * The flow is process-wide for the reason [NotInterestedRepository]'s is:
  * hiding a playlist from its own page has to remove it from the Library grid
  * behind it and from the add-to-playlist sheet the player opens, and those are
  * different ViewModels holding different instances of everything.

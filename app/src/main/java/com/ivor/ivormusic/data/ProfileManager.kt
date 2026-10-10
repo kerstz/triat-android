@@ -66,7 +66,7 @@ data class Profile(
  * need doing is invalidation, and that is [AccountSwitcher]'s job.
  *
  * State is companion-scoped for the usual reason (see
- * [LocalSubscriptionsRepository]): with no DI, every ViewModel news up its own
+ * [NotInterestedRepository]): with no DI, every ViewModel news up its own
  * instance, and a switch has to reach all of them at once.
  */
 class ProfileManager(context: Context) {

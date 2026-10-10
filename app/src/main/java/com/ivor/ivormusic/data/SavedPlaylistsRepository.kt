@@ -109,7 +109,7 @@ data class SavedPlaylist(
  * not be the one thing that demands a Google login.
  *
  * **The backing state is process-wide**, for the same reason
- * [LocalSubscriptionsRepository]'s is: the save is taken on the playlist page,
+ * [NotInterestedRepository]'s is: the save is taken on the playlist page,
  * which the search stack, Spotlight and the Library tab all open, and it has to
  * be visible in the Library the moment the user gets back there. With no DI
  * there is no shared instance to rely on, and a per-instance flow would leave
