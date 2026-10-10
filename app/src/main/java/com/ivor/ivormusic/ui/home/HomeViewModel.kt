@@ -245,6 +245,19 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             emptyList()
         )
 
+    /**
+     * Why each discovery is here: song id to the listened-to artist it was
+     * reached through.
+     *
+     * A parallel map rather than a field on [Song], which is the model the
+     * whole app passes around and has no business carrying a recommendation's
+     * provenance. A recommendation that can name where it came from is one the
+     * listener can agree or disagree with; without it the shelf is a list of
+     * strangers and the only available reaction is to scroll past.
+     */
+    private val _discoveryReasons = MutableStateFlow<Map<String, String>>(emptyMap())
+    val discoveryReasons: StateFlow<Map<String, String>> = _discoveryReasons.asStateFlow()
+
     private val _discoveryCollections =
         MutableStateFlow(com.ivor.ivormusic.data.RecommendationEngine.DiscoveryCollections())
 
@@ -307,7 +320,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                 // them on a second pass would make the tab grow under the
                 // finger a second or two after it looked finished.
                 val discoveredSongs = async {
-                    recommendationEngine.getDiscoveryRecommendations(known)
+                    recommendationEngine.getDiscoveryFeed(known)
                 }
                 val collections = async {
                     recommendationEngine.getDiscoveryCollections(
@@ -327,12 +340,16 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
                         }
                     )
                 }
-                val discovered = discoveredSongs.await()
+                val feed = discoveredSongs.await()
+                val discovered = feed.map { it.song }
                 // An empty result must not wipe a shelf that is already showing
                 // something usable - a failed refresh should look like nothing
                 // happened, not like the feature broke.
                 if (discovered.isNotEmpty() || _discoverySongs.value.isEmpty()) {
                     _discoverySongs.value = discovered
+                    _discoveryReasons.value = feed.mapNotNull { item ->
+                        item.becauseOf?.let { item.song.id to it }
+                    }.toMap()
                 }
                 val fetchedCollections = collections.await()
                 if (!fetchedCollections.isEmpty() || _discoveryCollections.value.isEmpty()) {

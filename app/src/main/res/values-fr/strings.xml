@@ -418,6 +418,7 @@
     <string name="sp_spotlight_home">Accueil en vedette</string>
     <string name="sp_display_size">Taille d\'affichage</string>
     <string name="sb_title">SponsorBlock</string>
+    <string name="sp_because_you_play">Parce que tu écoutes %1$s</string>
     <string name="sb_skipped">%1$s ignoré</string>
     <string name="sb_skip">Ignorer : %1$s</string>
     <string name="sb_enable">Activer SponsorBlock</string>

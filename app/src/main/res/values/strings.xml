@@ -267,6 +267,7 @@
 
     <!-- SponsorBlock -->
     <string name="sb_title">SponsorBlock</string>
+    <string name="sp_because_you_play">Because you play %1$s</string>
     <string name="sb_skipped">Skipped %1$s</string>
     <string name="sb_skip">Skip %1$s</string>
     <string name="sb_enable">Enable SponsorBlock</string>

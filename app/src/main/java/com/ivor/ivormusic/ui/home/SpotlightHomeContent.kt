@@ -132,6 +132,7 @@ fun SpotlightHomeContent(
     var filter by rememberSaveable { mutableStateOf(SpotlightFilter.All) }
 
     val discoverySongs by viewModel.discoverySongs.collectAsStateWithLifecycle()
+    val discoveryReasons by viewModel.discoveryReasons.collectAsStateWithLifecycle()
     val discoveryCollections by viewModel.discoveryCollections.collectAsStateWithLifecycle()
     val isDiscoveryLoading by viewModel.isDiscoveryLoading.collectAsStateWithLifecycle()
 
@@ -230,6 +231,11 @@ fun SpotlightHomeContent(
                 item(key = "quick-picks") {
                     SpotlightQuickPicks(
                         songs = quickPicks,
+                        reasons = if (filter == SpotlightFilter.Recommended) {
+                            discoveryReasons
+                        } else {
+                            emptyMap()
+                        },
                         onSongClick = { onPlaySongs(quickPicks, it) },
                         onSongLongPress = onSongLongPress,
                     )
@@ -603,6 +609,7 @@ private fun SpotlightQuickPicks(
     songs: List<Song>,
     onSongClick: (Song) -> Unit,
     onSongLongPress: ((Song) -> Unit)? = null,
+    reasons: Map<String, String> = emptyMap(),
 ) {
     val pages = songs.chunked(QUICK_PICK_ROWS)
     val pagerState = rememberPagerState(pageCount = { pages.size })
@@ -619,7 +626,8 @@ private fun SpotlightQuickPicks(
                     SpotlightQuickPickRow(
                         song = song,
                         onClick = { onSongClick(song) },
-                        onLongClick = onSongLongPress?.let { press -> { press(song) } }
+                        onLongClick = onSongLongPress?.let { press -> { press(song) } },
+                        reason = reasons[song.id],
                     )
                 }
             }
@@ -657,7 +665,9 @@ private fun SpotlightQuickPicks(
 private fun SpotlightQuickPickRow(
     song: Song,
     onClick: () -> Unit,
-    onLongClick: (() -> Unit)? = null
+    onLongClick: (() -> Unit)? = null,
+    /** The listened-to artist this was reached through, when it is a discovery. */
+    reason: String? = null,
 ) {
     Row(
         modifier = Modifier
@@ -689,7 +699,14 @@ private fun SpotlightQuickPickRow(
                 overflow = TextOverflow.Ellipsis,
             )
             Text(
-                text = song.artist,
+                // The artist is who this is; the reason is why it is here, and
+                // on a discovery row the second is the more useful of the two
+                // - the row is of someone unfamiliar, so their name alone
+                // settles nothing. It replaces the artist line rather than
+                // adding a third, which would make the row taller than every
+                // other row on the screen for the sake of a hint.
+                text = reason?.let { stringResource(R.string.sp_because_you_play, it) }
+                    ?: song.artist,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,
