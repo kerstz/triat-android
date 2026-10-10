@@ -365,12 +365,17 @@ private fun GestureNowPlayingView(
             // "Playing From / album" header removed to keep the player minimal.
 
             // ========== CENTER CONTENT (vertically centered) ==========
+            // Centred in the space it is given, not pinned to the top of it.
+            // Artwork, title and bar are one block, and with the overflow row
+            // gone the slack all fell between that block and the transport -
+            // a hole in the middle of the screen. Centred, the slack splits
+            // above and below and reads as breathing room.
             Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.Center
             ) {
                 // Push album down slightly
                 Spacer(modifier = Modifier.height(16.dp))
@@ -555,7 +560,11 @@ private fun GestureNowPlayingView(
                     primaryColor = primaryColor,
                     onSurfaceVariantColor = onSurfaceVariantColor
                 )
-                Spacer(modifier = Modifier.height(56.dp))
+                // Lifts the transport toward the bar it belongs to. The
+                // column spreads its slack between the two, so the way to
+                // close the gap above the controls is to leave more below
+                // them - and the gesture bar wants that room anyway.
+                Spacer(modifier = Modifier.height(96.dp))
             }
         }
         }
