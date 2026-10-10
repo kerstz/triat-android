@@ -705,8 +705,15 @@ private fun SpotlightQuickPickRow(
                 // settles nothing. It replaces the artist line rather than
                 // adding a third, which would make the row taller than every
                 // other row on the screen for the sake of a hint.
-                text = reason?.let { stringResource(R.string.sp_because_you_play, it) }
-                    ?: song.artist,
+                text = reason?.let {
+                    // The name comes out of a title, so its casing is whatever
+                    // the uploader typed - "sophie" reads as a typo in a
+                    // sentence the app is saying.
+                    stringResource(
+                        R.string.sp_because_you_play,
+                        it.replaceFirstChar { c -> c.uppercase() },
+                    )
+                } ?: song.artist,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 maxLines = 1,

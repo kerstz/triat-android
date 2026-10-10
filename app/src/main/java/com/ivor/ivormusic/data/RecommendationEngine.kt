@@ -161,10 +161,15 @@ class RecommendationEngine(
             .take(MAX_TOP_SONGS)
             .toList()
 
+        // The musician, not the channel. A YouTube history records uploaders
+        // - "nn", "convar HUN", "Music EDM 2022" - and seeding the artist
+        // graph with those is what made it return nothing: no uploader has a
+        // YouTube Music artist page to walk out of.
         val artistScores = HashMap<String, Double>()
         for ((id, score) in songScores) {
-            val artist = entryById[id]?.artist ?: continue
-            if (isUnknownArtist(artist)) continue
+            val entry = entryById[id] ?: continue
+            val artist = musicArtistOf(entry.title, entry.artist)
+            if (isUnknownArtist(artist) || artist.isBlank()) continue
             artistScores.merge(artist, score, Double::plus)
         }
         val rankedArtists = artistScores.entries
@@ -207,7 +212,15 @@ class RecommendationEngine(
         if (results.count { it.id !in excludeIds } < limit) {
             val profile = buildTasteProfile()
             val neighbours = runCatching {
-                tasteGraph.neighbours(profile.artistAffinity, maxSeeds = 3, limit = 4)
+                tasteGraph.neighbours(
+                    profile.artistAffinity,
+                    maxSeeds = 3,
+                    limit = 4,
+                    seedTracks = profile.topSongs.associateBy(
+                        { musicArtistOf(it.title, it.artist) },
+                        { it.songId },
+                    ),
+                )
             }.getOrDefault(emptyList())
             if (neighbours.isNotEmpty()) {
                 results += tasteGraph.songsFrom(neighbours.shuffled().take(2)).map { it.song }
@@ -380,13 +393,27 @@ class RecommendationEngine(
                 .filter { it.id !in excludeIds }
                 .distinctBy { it.id }
                 .take(limit)
-                .map { TasteGraph.Recommendation(it, 0.0, null, it.artist) }
+                .map {
+                    TasteGraph.Recommendation(
+                        song = it,
+                        score = 0.0,
+                        becauseOf = null,
+                        viaArtist = musicArtistOf(it.title, it.artist),
+                    )
+                }
         }
 
         // Round one of the graph: who sits next to the artists being played.
         // Awaited before round two because round two asks about the answers.
+        // One played track per seed artist, so the graph can ask that track
+        // who its artist is rather than searching for the name and landing on
+        // a channel.
+        val tracksByArtist = profile.topSongs.associateBy(
+            { musicArtistOf(it.title, it.artist) },
+            { it.songId },
+        )
         val neighbours = runCatching {
-            tasteGraph.neighbours(profile.artistAffinity)
+            tasteGraph.neighbours(profile.artistAffinity, seedTracks = tracksByArtist)
         }.getOrDefault(emptyList())
 
         // Most of the budget on the best neighbours, the rest on a random pick
@@ -406,8 +433,9 @@ class RecommendationEngine(
                         TasteGraph.Recommendation(
                             song = song,
                             score = RADIO_WEIGHT,
-                            becauseOf = seed.artist.takeIf { !isUnknownArtist(it) },
-                            viaArtist = song.artist,
+                            becauseOf = musicArtistOf(seed.title, seed.artist)
+                                .takeIf { !isUnknownArtist(it) && it.isNotBlank() },
+                            viaArtist = musicArtistOf(song.title, song.artist),
                         )
                     }
             }
@@ -417,7 +445,12 @@ class RecommendationEngine(
                 runCatching { youTubeRepository.search(query, YouTubeRepository.FILTER_SONGS) }
                     .getOrDefault(emptyList())
                     .map { song ->
-                        TasteGraph.Recommendation(song, SEARCH_WEIGHT, null, song.artist)
+                        TasteGraph.Recommendation(
+                            song = song,
+                            score = SEARCH_WEIGHT,
+                            becauseOf = null,
+                            viaArtist = musicArtistOf(song.title, song.artist),
+                        )
                     }
             }
         }

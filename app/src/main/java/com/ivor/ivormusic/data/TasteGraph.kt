@@ -69,6 +69,17 @@ class TasteGraph(
         seeds: List<Pair<String, Double>>,
         maxSeeds: Int = MAX_SEEDS,
         limit: Int = MAX_NEIGHBOURS,
+        /**
+         * A played track per seed artist, when one is known.
+         *
+         * **This is the reliable bridge to a music artist id.** [verified on
+         * device, October 2026] An artist *search* answers with youtube.com
+         * channels: ten of them resolved, every one browsed back with zero
+         * songs and no similar-artists shelf, because a channel is not an
+         * artist. A track's own music metadata names its artist properly, so
+         * where a seed came with a track, that is what is asked.
+         */
+        seedTracks: Map<String, String> = emptyMap(),
     ): List<Neighbour> = coroutineScope {
         if (seeds.isEmpty()) return@coroutineScope emptyList()
 
@@ -77,10 +88,19 @@ class TasteGraph(
 
         val pages = chosen.map { (name, affinity) ->
             async {
-                val id = resolveArtistId(name) ?: return@async null
+                val id = resolveArtistId(name, seedTracks[name]) ?: return@async null
+                if (isBarren(id)) return@async null
                 val page = gate.withPermit {
                     runCatching { youTubeRepository.getArtistPage(id) }.getOrNull()
                 } ?: return@async null
+                // An id that resolves but carries no music is a channel, not
+                // an artist: a reuploader, a compilation account, somebody's
+                // own upload. It will be barren again tomorrow, so remember it
+                // rather than spending a browse on it every refresh.
+                if (page.songs.isEmpty() && page.similarArtists.isEmpty()) {
+                    markBarren(id)
+                    return@async null
+                }
                 name to (affinity to page)
             }
         }.mapNotNull { it.await() }
@@ -164,8 +184,25 @@ class TasteGraph(
             async {
                 val page = gate.withPermit {
                     runCatching { youTubeRepository.getArtistPage(neighbour.artistId) }.getOrNull()
-                } ?: return@async emptyList()
-                page.topSongs.take(perArtist).map { song ->
+                }
+                // An artist page that comes back without its top-songs shelf -
+                // which signed out is most of them [verified on device,
+                // October 2026: one shelf in ten carried songs] - would
+                // otherwise cost a browse and contribute nothing, and the
+                // graph's whole answer would quietly fall back to searches.
+                // Searching the neighbour's name is a different thing from
+                // the searches this replaced: the name was *discovered*, not
+                // one the listener already plays.
+                val songs = page?.topSongs?.takeIf { it.isNotEmpty() }
+                    ?: gate.withPermit {
+                        runCatching {
+                            youTubeRepository.search(
+                                neighbour.name,
+                                YouTubeRepository.FILTER_SONGS,
+                            )
+                        }.getOrDefault(emptyList())
+                    }
+                songs.take(perArtist).map { song ->
                     Recommendation(
                         song = song,
                         score = neighbour.score,
@@ -205,29 +242,54 @@ class TasteGraph(
      * a local file's tag, a mis-spelling - would otherwise cost a search on
      * every pass forever.
      */
-    private suspend fun resolveArtistId(name: String): String? = withContext(Dispatchers.IO) {
+    private suspend fun resolveArtistId(
+        name: String,
+        knownTrackId: String?,
+    ): String? = withContext(Dispatchers.IO) {
         val key = KEY_ID_PREFIX + name.lowercase()
         prefs.getString(key, null)?.let { return@withContext it.takeIf { id -> id.isNotBlank() } }
 
-        val found = runCatching { youTubeRepository.searchArtists(name) }
+        // The track first: its music metadata names the artist that YouTube
+        // Music itself files it under, which is the id an artist browse
+        // answers for. The name search below is the fallback for a seed with
+        // no track to ask about.
+        val fromTrack = knownTrackId
+            ?.let { runCatching { youTubeRepository.getSongAlbumRef(it) }.getOrNull() }
+            ?.artistId
+            ?.takeIf { it.isNotBlank() }
+
+        val found = fromTrack ?: runCatching { youTubeRepository.searchArtists(name) }
             .getOrDefault(emptyList())
             // The first exact name match, not merely the first result: an
             // artist search for a common name returns covers, tributes and
             // topic channels above the artist often enough to matter.
             .firstOrNull { it.name.equals(name, ignoreCase = true) && it.id.startsWith("UC") }
-            ?: runCatching { youTubeRepository.searchArtists(name) }
-                .getOrDefault(emptyList())
-                .firstOrNull { it.id.startsWith("UC") }
+            ?.id
 
-        prefs.edit().putString(key, found?.id.orEmpty()).apply()
+        prefs.edit().putString(key, found.orEmpty()).apply()
         if (found == null) KLog.d(TAG, "No artist id for $name")
-        found?.id
+        found
+    }
+
+    /**
+     * Whether this id has already been found to carry no music.
+     *
+     * Kept per id rather than per name because the name is what varies: the
+     * same channel is written three ways across a history, and all three
+     * resolve to one id.
+     */
+    private fun isBarren(id: String): Boolean = prefs.getBoolean(KEY_BARREN_PREFIX + id, false)
+
+    private fun markBarren(id: String) {
+        KLog.d(TAG, "No music on $id, not asking again")
+        prefs.edit().putBoolean(KEY_BARREN_PREFIX + id, true).apply()
     }
 
     companion object {
         private const val TAG = "TasteGraph"
         private const val PREFS = "taste_graph"
         private const val KEY_ID_PREFIX = "artist_id:"
+        private const val KEY_BARREN_PREFIX = "barren:"
 
         /**
          * Seeds asked about per build. Each is one browse, and the top few
