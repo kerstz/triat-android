@@ -8,30 +8,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 
-/** Stable destinations in Video mode's bottom navigation. Persist [storageId], never the ordinal. */
-enum class VideoHomeDestination(val tabId: Int, val storageId: String) {
-    HOME(0, "home"),
-    SEARCH(1, "search"),
-    SUBSCRIPTIONS(2, "subscriptions"),
-    LIBRARY(3, "library");
-
-    companion object {
-        val defaultOrder: List<VideoHomeDestination> = entries.toList()
-
-        fun fromStorageId(value: String): VideoHomeDestination? =
-            entries.firstOrNull { it.storageId == value }
-    }
-}
-
-/** One atomic snapshot so navigation never observes a new order with an old visibility set. */
-data class VideoHomeConfiguration(
-    val recommendationsEnabled: Boolean = true,
-    val destinationOrder: List<VideoHomeDestination> = VideoHomeDestination.defaultOrder,
-    val visibleDestinations: Set<VideoHomeDestination> = VideoHomeDestination.entries.toSet(),
-) {
-    val orderedVisibleDestinations: List<VideoHomeDestination>
-        get() = destinationOrder.filter { it in visibleDestinations }
-}
 
 /**
  * Manages app preferences (theme, local songs toggle, etc.).
@@ -77,15 +53,7 @@ class ThemePreferences(context: Context) {
     private val _playerArtworkColors = MutableStateFlow(getPlayerArtworkColorsPreference())
     val playerArtworkColors: StateFlow<Boolean> = _playerArtworkColors.asStateFlow()
     
-    private val _videoMode = MutableStateFlow(getVideoModePreference())
-    val videoMode: StateFlow<Boolean> = _videoMode.asStateFlow()
 
-    private val _homeModeToggleEnabled = MutableStateFlow(getHomeModeToggleEnabledPreference())
-    val homeModeToggleEnabled: StateFlow<Boolean> = _homeModeToggleEnabled.asStateFlow()
-
-    private val _videoHomeConfiguration = MutableStateFlow(getVideoHomeConfiguration())
-    val videoHomeConfiguration: StateFlow<VideoHomeConfiguration> =
-        _videoHomeConfiguration.asStateFlow()
 
     private val _playerStyle = MutableStateFlow(getPlayerStylePreference())
     val playerStyle: StateFlow<PlayerStyle> = _playerStyle.asStateFlow()
@@ -308,12 +276,6 @@ class ThemePreferences(context: Context) {
             KEY_MOTION_ARTWORK_QUALITY -> _motionArtworkQuality.value = getMotionArtworkQualityPreference()
             KEY_WAVEFORM_SEEK_BAR -> _waveformSeekBar.value = getWaveformSeekBarPreference()
             KEY_PLAYER_ARTWORK_COLORS -> _playerArtworkColors.value = getPlayerArtworkColorsPreference()
-            KEY_VIDEO_MODE -> _videoMode.value = getVideoModePreference()
-            KEY_HOME_MODE_TOGGLE_ENABLED -> _homeModeToggleEnabled.value = getHomeModeToggleEnabledPreference()
-            KEY_VIDEO_RECOMMENDATIONS_ENABLED,
-            KEY_VIDEO_HOME_DESTINATION_ORDER,
-            KEY_VIDEO_HOME_VISIBLE_DESTINATIONS ->
-                _videoHomeConfiguration.value = getVideoHomeConfiguration()
             KEY_PLAYER_STYLE -> _playerStyle.value = getPlayerStylePreference()
             KEY_CONTENT_SOURCE -> _contentSource.value = getContentSourcePreference()
             KEY_MIX_ON_HOME -> _mixSourcesOnHome.value = prefs.getBoolean(KEY_MIX_ON_HOME, true)
@@ -440,16 +402,7 @@ class ThemePreferences(context: Context) {
         private const val KEY_MOTION_ARTWORK_QUALITY = "motion_artwork_quality"
         private const val KEY_WAVEFORM_SEEK_BAR = "waveform_seek_bar"
         private const val KEY_PLAYER_ARTWORK_COLORS = "player_artwork_colors"
-        private const val KEY_VIDEO_MODE = "video_mode"
         private const val KEY_LAST_MUSIC_TAB = "last_music_tab"
-        private const val KEY_LAST_VIDEO_TAB = "last_video_tab"
-        private const val KEY_HOME_MODE_TOGGLE_ENABLED = "home_mode_toggle_enabled"
-        private const val KEY_VIDEO_RECOMMENDATIONS_ENABLED =
-            "video_recommendations_enabled"
-        private const val KEY_VIDEO_HOME_DESTINATION_ORDER =
-            "video_home_destination_order"
-        private const val KEY_VIDEO_HOME_VISIBLE_DESTINATIONS =
-            "video_home_visible_destinations"
         private const val KEY_PLAYER_STYLE = "player_style"
         private const val KEY_CONTENT_SOURCE = "content_source"
         private const val KEY_MIX_ON_HOME = "mix_sources_on_home"
@@ -1026,27 +979,8 @@ class ThemePreferences(context: Context) {
         setAmbientBackground(!_ambientBackground.value)
     }
     
-    /**
-     * Get the stored video mode preference. Locked to false (Full Music mode).
-     */
-    private fun getVideoModePreference(): Boolean {
-        return false
-    }
     
-    /**
-     * Save video mode preference and update the flow.
-     */
-    fun setVideoMode(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_MODE, false).apply()
-        _videoMode.value = false
-    }
     
-    /**
-     * Toggle video mode setting.
-     */
-    fun toggleVideoMode() {
-        setVideoMode(false)
-    }
 
     /** Root Home destination restored after Koda is recreated. */
     fun getLastHomeTab(): Int {
@@ -1057,78 +991,6 @@ class ThemePreferences(context: Context) {
         prefs.edit().putInt(KEY_LAST_MUSIC_TAB, tab.coerceIn(0, 2)).apply()
     }
 
-    /**
-     * Get the stored home mode toggle preference. Defaults to true (the
-     * music/video switch is shown in the Home screen top bar).
-     */
-    private fun getHomeModeToggleEnabledPreference(): Boolean {
-        return prefs.getBoolean(KEY_HOME_MODE_TOGGLE_ENABLED, true)
-    }
-
-    /**
-     * Save home mode toggle preference and update the flow.
-     */
-    fun setHomeModeToggleEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_HOME_MODE_TOGGLE_ENABLED, enabled).apply()
-        _homeModeToggleEnabled.value = enabled
-    }
-
-    private fun getVideoHomeConfiguration(): VideoHomeConfiguration {
-        val defaults = VideoHomeDestination.defaultOrder
-        val storedOrder = prefs.getString(KEY_VIDEO_HOME_DESTINATION_ORDER, null)
-            ?.split(',')
-            .orEmpty()
-            .mapNotNull(VideoHomeDestination::fromStorageId)
-            .distinct()
-        val order = storedOrder + defaults.filterNot { it in storedOrder }
-
-        val visible = prefs.getStringSet(KEY_VIDEO_HOME_VISIBLE_DESTINATIONS, null)
-            ?.mapNotNull(VideoHomeDestination::fromStorageId)
-            ?.toSet()
-            ?.takeIf { it.isNotEmpty() }
-            ?: defaults.toSet()
-
-        return VideoHomeConfiguration(
-            recommendationsEnabled = prefs.getBoolean(KEY_VIDEO_RECOMMENDATIONS_ENABLED, true),
-            destinationOrder = order,
-            visibleDestinations = visible,
-        )
-    }
-
-    /** Hide the network recommendation feed without removing Home itself. */
-    fun setVideoRecommendationsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_RECOMMENDATIONS_ENABLED, enabled).apply()
-        _videoHomeConfiguration.value = getVideoHomeConfiguration()
-    }
-
-
-    /** Keep at least one destination visible so the navigation shell remains usable. */
-    fun setVideoHomeDestinationVisible(destination: VideoHomeDestination, visible: Boolean) {
-        val current = getVideoHomeConfiguration().visibleDestinations
-        val updated = if (visible) current + destination else current - destination
-        if (updated.isEmpty()) return
-        prefs.edit().putStringSet(
-            KEY_VIDEO_HOME_VISIBLE_DESTINATIONS,
-            updated.mapTo(mutableSetOf()) { it.storageId }
-        ).apply()
-        _videoHomeConfiguration.value = getVideoHomeConfiguration()
-    }
-
-    /** Move one destination by one place; hidden destinations keep their relative order. */
-    fun moveVideoHomeDestination(destination: VideoHomeDestination, delta: Int) {
-        if (delta == 0) return
-        val order = getVideoHomeConfiguration().destinationOrder.toMutableList()
-        val from = order.indexOf(destination)
-        if (from < 0) return
-        val to = (from + delta).coerceIn(0, order.lastIndex)
-        if (to == from) return
-        order.add(to, order.removeAt(from))
-        prefs.edit().putString(
-            KEY_VIDEO_HOME_DESTINATION_ORDER,
-            order.joinToString(",") { it.storageId }
-        ).apply()
-        _videoHomeConfiguration.value = getVideoHomeConfiguration()
-    }
 
     /**
      * Get the stored player style preference. Defaults to GESTURE (coverflow).

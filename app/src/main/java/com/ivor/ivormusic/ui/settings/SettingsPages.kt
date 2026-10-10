@@ -122,8 +122,6 @@ import com.ivor.ivormusic.data.MotionArtworkQuality
 import com.ivor.ivormusic.data.PlayerStyle
 import com.ivor.ivormusic.data.SessionManager
 import com.ivor.ivormusic.data.ThemePreferences
-import com.ivor.ivormusic.data.VideoHomeConfiguration
-import com.ivor.ivormusic.data.VideoHomeDestination
 import com.ivor.ivormusic.ui.player.PlayerStylePicker
 import com.ivor.ivormusic.ui.player.VisualizerSettingsSection
 import com.ivor.ivormusic.ui.theme.ThemeMode
@@ -1482,107 +1480,6 @@ internal fun ContentSettingsPage(
 /* Video Home                                                         */
 /* ------------------------------------------------------------------ */
 
-/**
- * One destination, with its two independent controls.
- *
- * The switch is the primary action and the whole row drives it, matching every
- * other toggle row in Settings. Reordering is a pair of small steppers rather
- * than a drag handle: this list is four rows inside a `LazyColumn` item, so a
- * drag would need the queue's frame-loop machinery for a gesture that is at
- * most three steps - and the steppers are reachable with a screen reader, which
- * a drag is not.
- *
- * Hidden destinations stay in the list and stay movable, so the order the
- * viewer sets survives switching one back on.
- */
-@Composable
-private fun VideoHomeDestinationRow(
-    destination: VideoHomeDestination,
-    visible: Boolean,
-    canHide: Boolean,
-    canMoveUp: Boolean,
-    canMoveDown: Boolean,
-    onVisibleChange: (Boolean) -> Unit,
-    onMoveUp: () -> Unit,
-    onMoveDown: () -> Unit,
-) {
-    val title = when (destination) {
-        VideoHomeDestination.HOME -> stringResource(R.string.tab_home)
-        VideoHomeDestination.SEARCH -> stringResource(R.string.tab_search)
-        VideoHomeDestination.SUBSCRIPTIONS -> stringResource(R.string.tab_subs)
-        VideoHomeDestination.LIBRARY -> stringResource(R.string.tab_library)
-    }
-    val icon = when (destination) {
-        VideoHomeDestination.HOME -> Icons.Rounded.Home
-        VideoHomeDestination.SEARCH -> Icons.Rounded.Search
-        VideoHomeDestination.SUBSCRIPTIONS -> Icons.Rounded.Subscriptions
-        VideoHomeDestination.LIBRARY -> Icons.Rounded.VideoLibrary
-    }
-    // The last visible destination cannot be hidden, so its row is not a toggle
-    // either - a row that animates a press and then does nothing reads as a bug.
-    val canToggle = !visible || canHide
-    val haptics = com.ivor.ivormusic.util.rememberKodaHaptics()
-    val contentTint = if (visible) {
-        MaterialTheme.colorScheme.onBackground
-    } else {
-        MaterialTheme.colorScheme.onSurfaceVariant
-    }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(18.dp))
-            .clickable(enabled = canToggle) {
-                haptics.toggle(!visible)
-                onVisibleChange(!visible)
-            }
-            .padding(start = 16.dp, end = 8.dp, top = 8.dp, bottom = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = if (visible) MaterialTheme.colorScheme.primary else contentTint,
-            modifier = Modifier.size(24.dp),
-        )
-        Spacer(Modifier.width(14.dp))
-        Text(
-            text = title,
-            fontSize = 16.sp,
-            fontWeight = FontWeight.SemiBold,
-            color = contentTint,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.weight(1f),
-        )
-        DestinationStepper(
-            icon = Icons.Rounded.ArrowUpward,
-            contentDescription = stringResource(R.string.vhc_move_up, title),
-            enabled = canMoveUp,
-            onClick = onMoveUp,
-        )
-        DestinationStepper(
-            icon = Icons.Rounded.ArrowDownward,
-            contentDescription = stringResource(R.string.vhc_move_down, title),
-            enabled = canMoveDown,
-            onClick = onMoveDown,
-        )
-        Spacer(Modifier.width(4.dp))
-        Switch(
-            checked = visible,
-            onCheckedChange = { onVisibleChange(it) },
-            enabled = canToggle,
-            colors = SwitchDefaults.colors(
-                checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-                checkedTrackColor = MaterialTheme.colorScheme.primary,
-                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                uncheckedTrackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                uncheckedBorderColor = Color.Transparent,
-                checkedBorderColor = Color.Transparent,
-            ),
-        )
-    }
-}
 
 /**
  * A reorder step, drawn narrower than a default [IconButton] because two of

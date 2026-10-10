@@ -120,7 +120,6 @@ fun SpotlightHomeContent(
     viewModel: HomeViewModel,
     excludedFolders: Set<String> = emptySet(),
     manualScan: Boolean = false,
-    videoMode: Boolean = false,
     onVideoModeToggle: (Boolean) -> Unit = {},
     showModeToggle: Boolean = true,
     listState: LazyListState = rememberLazyListState(),

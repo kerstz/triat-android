@@ -142,9 +142,7 @@ import androidx.compose.material3.MaterialShapes
 import androidx.compose.animation.with
 import kotlinx.coroutines.launch
 import com.ivor.ivormusic.data.VideoItem
-import com.ivor.ivormusic.data.VideoHomeConfiguration
 import com.ivor.ivormusic.ui.components.hiddenFraction
-import com.ivor.ivormusic.data.VideoHomeDestination
 import com.ivor.ivormusic.ui.library.LibraryContent
 import androidx.compose.animation.ExperimentalAnimationApi
 import com.ivor.ivormusic.BuildConfig
@@ -165,22 +163,6 @@ private val VIDEO_SHELL_TOP_BAR_HEIGHT = 76.dp
 /** Gap the mini player keeps above the system navigation bar once the floating toolbar is gone. */
 private val MINI_PLAYER_RESTING_GAP = 16.dp
 
-/**
- * What the Home shell is currently showing. The mode rides along with the tab
- * because switching mode replaces the content behind the same tab index, and
- * the transition between the two is not the one a tab move deserves.
- */
-private data class HomeTabKey(val tab: Int, val videoMode: Boolean)
-
-/**
- * A tab a hand-off asked for, and the mode that tab belongs to.
- *
- * The mode is half the destination rather than a detail: tab 2 is the music
- * Library with the video toggle off and the Subscriptions feed with it on, so a
- * request that named only the index would be ambiguous - and is exactly how the
- * player's artist row ended up opening Subscriptions.
- */
-private data class TabRequest(val tab: Int, val videoMode: Boolean)
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class, ExperimentalMaterial3Api::class, ExperimentalAnimationApi::class)
 @Composable
@@ -984,17 +966,9 @@ fun HomeScreen(
             collapsedBottomSpacing = miniPlayerCollapsedSpacing,
             collapsedFollowOffsetPx = miniPlayerFollowOffsetPx,
             onArtistClick = { artistName ->
-                // Collapse the player and open the artist inside the music
-                // Library tab. The origin tab is remembered so back returns to
-                // it rather than stranding the user in the Library, and
-                // noteLibraryReturn() runs before goToTab because it reads
-                // videoMode to decide whether back has a tab to go to.
-                //
-                // goToTab rather than an assignment is load-bearing: the music
-                // player outlives a switch to video mode - its mini bar stays,
-                // and expanding it from there is an ordinary thing to do - and
-                // in that mode tab 2 is the Subscriptions feed, so this has to
-                // switch modes and then land, in that order. See goToTab.
+                // Collapse the player and open the artist inside the Library
+                // tab. The origin tab is remembered so back returns to it
+                // rather than stranding the user in the Library.
                 noteLibraryReturn()
                 showPlayerSheet = false
                 viewedArtistFromPlayer = artistName
@@ -1208,7 +1182,6 @@ fun YourMixContent(
     viewModel: HomeViewModel,
     excludedFolders: Set<String> = emptySet(),
     manualScan: Boolean = false,
-    videoMode: Boolean = false,
     onVideoModeToggle: (Boolean) -> Unit = {},
     showModeToggle: Boolean = true,
     /** Hoisted by HomeScreen: survives tab switches, reachable by the nav bar. */
@@ -1997,7 +1970,6 @@ fun SearchContent(
     contentPadding: PaddingValues,
     viewModel: HomeViewModel,
     isDarkMode: Boolean,
-    videoMode: Boolean = false,
     localOnly: Boolean = false,
     onSongLongPress: ((Song) -> Unit)? = null,
     requestInitialFocus: Boolean = true,

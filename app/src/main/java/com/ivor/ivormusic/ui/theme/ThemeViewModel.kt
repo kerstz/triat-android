@@ -33,10 +33,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     fun setWaveformSeekBar(enabled: Boolean) = themePreferences.setWaveformSeekBar(enabled)
 
     val playerArtworkColors: StateFlow<Boolean> = themePreferences.playerArtworkColors
-    val videoMode: StateFlow<Boolean> = themePreferences.videoMode
-    val homeModeToggleEnabled: StateFlow<Boolean> = themePreferences.homeModeToggleEnabled
-    val videoHomeConfiguration: StateFlow<com.ivor.ivormusic.data.VideoHomeConfiguration> =
-        themePreferences.videoHomeConfiguration
     val playerStyle: StateFlow<PlayerStyle> = themePreferences.playerStyle
     val contentSource: StateFlow<com.ivor.ivormusic.data.ContentSource> =
         themePreferences.contentSource
@@ -134,35 +130,8 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.toggleAmbientBackground()
     }
     
-    fun setVideoMode(enabled: Boolean) {
-        themePreferences.setVideoMode(enabled)
-    }
     
-    fun toggleVideoMode() {
-        themePreferences.toggleVideoMode()
-    }
 
-    fun setHomeModeToggleEnabled(enabled: Boolean) {
-        themePreferences.setHomeModeToggleEnabled(enabled)
-    }
-
-    fun setVideoRecommendationsEnabled(enabled: Boolean) {
-        themePreferences.setVideoRecommendationsEnabled(enabled)
-    }
-
-    fun setVideoHomeDestinationVisible(
-        destination: com.ivor.ivormusic.data.VideoHomeDestination,
-        visible: Boolean,
-    ) {
-        themePreferences.setVideoHomeDestinationVisible(destination, visible)
-    }
-
-    fun moveVideoHomeDestination(
-        destination: com.ivor.ivormusic.data.VideoHomeDestination,
-        delta: Int,
-    ) {
-        themePreferences.moveVideoHomeDestination(destination, delta)
-    }
 
     fun setPlayerStyle(style: PlayerStyle) {
         themePreferences.setPlayerStyle(style)
