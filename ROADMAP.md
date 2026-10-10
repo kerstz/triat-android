@@ -10,16 +10,22 @@ For how the app is built, see [`CLAUDE.md`](CLAUDE.md). For the design system an
 
 ## Triat for Android
 
-This repository is Triat for Android, a fork of Koda. Everything after this section is Koda's own roadmap, kept as it was for reference.
+This repository is Triat for Android, a fork of Koda.
+
+**Everything after this section is Koda's own roadmap, kept as it was for reference, and it describes the fork as it arrived.** Triat is a music player: it has no video mode, no Shorts, no channel pages, no subscriptions, no lyrics and no sleep timer. Where the sections below plan or describe any of those, they are a record of upstream's intent, not of this app. `CLAUDE.md` and `docs/` describe what is actually here.
 
 **Shipped in Triat**
 - New name, icon and application id (`org.triat.mobile`), and a dark "Nothing" palette by default.
 - Import a plain `.txt` list of songs into a playlist.
-- Wi-Fi sync with the Triat desktop app: pairing by code; playlists, likes and listening history; the YouTube session when both sides allow it; automatic on Wi-Fi. See `docs/sync.md`.
+- Wi-Fi sync with the Triat desktop app: pairing by code or by scanning a QR code; playlists, likes and listening history; the YouTube session when both sides allow it; automatic on Wi-Fi. See `docs/sync.md`.
 - Downloads saved under Downloads/Triat.
+- Fully French: every string translated, tutoiement throughout, with a parity check over the locale files.
+- A quieter home and a flatter bottom bar: ghost chips and icons, artwork shelves kept, the top bar reduced to the greeting.
+- **Video removed.** The video player, Shorts, channel pages, subscriptions and the watch history are gone, along with lyrics and the sleep timer, which went with the same pass. About 13,000 lines.
+- SponsorBlock rebuilt for music: its skipping engine lived in the video player, so it now runs in `MusicService` and skips segments during audio playback.
 
 **Planned**
-- Pairing by QR code.
+- An in-segment button for a SponsorBlock category set to Ask, plus the skip notice and the seek-bar markers the settings page still offers inertly.
 - Syncing what is playing and where, to carry on from one device to the other.
 - Syncing the few settings the phone and the desktop share.
 
