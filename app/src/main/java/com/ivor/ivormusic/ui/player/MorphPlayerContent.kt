@@ -47,7 +47,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.CircularWavyProgressIndicator
@@ -142,11 +141,9 @@ fun MorphPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
 
     // Swipe-to-skip, shared by the morphing hero and the title/artist block
     // so both commit at the same threshold with the same spring home.
@@ -157,7 +154,6 @@ fun MorphPlayerSheetContent(
     var showOptions by remember { mutableStateOf(false) }
 
     // Morph runs on the theme's own roles, so the picker needs no overrides.
-    val sleepTimer = rememberSleepTimerControl(viewModel = viewModel)
     var controlsVisible by remember { mutableStateOf(true) }
 
     val surfaceColor = MaterialTheme.colorScheme.background
@@ -216,86 +212,28 @@ fun MorphPlayerSheetContent(
                 Column(modifier = Modifier.fillMaxSize()) {
 
                     // ========== TOP BAR ==========
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 16.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        MorphUtilityButton(onClick = onCollapse) {
-                            Icon(
-                                Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse),
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            MorphUtilityButton(
-                                onClick = sleepTimer.open,
-                                active = sleepTimer.active
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            MorphUtilityButton(onClick = { showLyrics = !showLyrics }) {
-                                Icon(
-                                    Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            MorphUtilityButton(onClick = { showQueue = true }) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            MorphUtilityButton(onClick = { showOptions = true }) {
-                                Icon(
-                                    Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                        }
-                    }
 
-                    // ========== HERO SHAPE / LYRICS ==========
+                    // ========== HERO SHAPE ==========
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-                        Crossfade(targetState = showLyrics, label = "MorphLyrics") { lyricsVisible ->
-                            if (lyricsVisible) {
-                                SyncedLyricsView(
-                                    lyricsResult = lyricsResult,
-                                    currentPositionMs = progress,
-                                    isPlaying = isPlaying,
-                                    onSeekTo = { viewModel.seekTo(it) },
-                                    primaryColor = primaryColor,
-                                    onSurfaceColor = onSurfaceColor,
-                                    onSurfaceVariantColor = onSurfaceVariantColor
-                                )
-                            } else {
-                                MorphHero(
-                                    currentSong = currentSong,
-                                    isPlaying = isPlaying,
-                                    isBuffering = isBuffering && playWhenReady && !isPlaying,
-                                    progressFraction = if (duration > 0) {
-                                        (progress.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
-                                    } else 0f,
-                                    onPlayPause = {
-                                        playerHaptics.playPause(!viewModel.isPlaying.value)
-                                        viewModel.togglePlayPause()
-                                    },
-                                    swipeToSkip = swipeToSkip,
-                                    ringColor = primaryColor,
-                                    ringTrackColor = onSurfaceVariantColor.copy(alpha = 0.2f)
-                                )
-                            }
-                        }
+                        MorphHero(
+                            currentSong = currentSong,
+                            isPlaying = isPlaying,
+                            isBuffering = isBuffering && playWhenReady && !isPlaying,
+                            progressFraction = if (duration > 0) {
+                                (progress.toFloat() / duration.toFloat()).coerceIn(0f, 1f)
+                            } else 0f,
+                            onPlayPause = {
+                                playerHaptics.playPause(!viewModel.isPlaying.value)
+                                viewModel.togglePlayPause()
+                            },
+                            swipeToSkip = swipeToSkip,
+                            ringColor = primaryColor,
+                            ringTrackColor = onSurfaceVariantColor.copy(alpha = 0.2f)
+                        )
                     }
 
                     // ========== TITLE / ARTIST ==========

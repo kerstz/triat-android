@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Danh sách phát bạn tạo hoặc lưu sẽ hiện ở đây.</string>
     <string name="spotlight_hint_all">Phát một bản nhạc và trang chủ sẽ dần đầy lên.</string>
 
-    <string name="sleep_timer_title">Hẹn giờ ngủ</string>
-    <string name="sleep_timer_status_track">Bản này</string>
-    <string name="sleep_timer_detail_track">Phát sẽ dừng khi bài hiện tại kết thúc</string>
-    <string name="sleep_timer_detail_duration">Âm lượng sẽ giảm dần và tạm dừng khi hết giờ</string>
     <string name="minutes_short">%1$d phút</string>
-    <string name="sleep_timer_end_of_track">Kết thúc bản này</string>
-    <string name="sleep_timer_turn_off">Tắt</string>
 
     <string name="cd_drag_to_reorder">Kéo để sắp xếp lại</string>
     <string name="cd_favorite">Yêu thích</string>
@@ -225,7 +219,6 @@
     <string name="cd_volume_mute">Tắt tiếng</string>
     <string name="cd_volume_unmute">Bật tiếng</string>
     <string name="ps_now_playing">Đang phát</string>
-    <string name="ps_lyrics">Lời bài hát</string>
     <string name="ps_up_next">Tiếp theo</string>
     <string name="ps_queue_empty">Hàng đợi trống</string>
     <string name="ps_queue">HÀNG ĐỢI</string>

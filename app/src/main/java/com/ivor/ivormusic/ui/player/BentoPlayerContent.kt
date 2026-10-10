@@ -45,7 +45,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -126,11 +125,9 @@ fun BentoPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     // Swipe-to-skip, shared by the art tile and the title tile so both
@@ -145,11 +142,6 @@ fun BentoPlayerSheetContent(
     val onTile = MaterialTheme.colorScheme.onSurface
 
     // Bento's own emphasis colour, the one BentoToggleTile lights up with.
-    val sleepTimer = rememberSleepTimerControl(
-        viewModel = viewModel,
-        accent = MaterialTheme.colorScheme.tertiaryContainer,
-        onAccent = MaterialTheme.colorScheme.onTertiaryContainer
-    )
     val onTileVariant = MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
@@ -210,23 +202,6 @@ fun BentoPlayerSheetContent(
                         // playing screen is a tile saying nothing.
                         Spacer(modifier = Modifier.weight(1f))
                         BentoTile(
-                            onClick = sleepTimer.open,
-                            color = if (sleepTimer.active) {
-                                MaterialTheme.colorScheme.tertiaryContainer
-                            } else tileColor,
-                            contentColor = if (sleepTimer.active) {
-                                MaterialTheme.colorScheme.onTertiaryContainer
-                            } else onTile,
-                            modifier = Modifier
-                                .width(56.dp)
-                                .fillMaxHeight()
-                        ) {
-                            Icon(
-                                Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                modifier = Modifier.size(24.dp)
-                            )
-                        }
-                        BentoTile(
                             onClick = { showOptions = true },
                             color = tileColor,
                             contentColor = onTile,
@@ -278,43 +253,29 @@ fun BentoPlayerSheetContent(
                                     viewModel.togglePlayPause()
                                 })
                             }
-                            // Off while lyrics are up: that view scrolls and seeks.
-                            .swipeToSkip(swipeToSkip, enabled = !showLyrics)
+                            // Off while a scrolling overlay is up.
+                            .swipeToSkip(swipeToSkip)
                             .styleWheelHold(styleWheel)
                     ) {
-                        Crossfade(targetState = showLyrics, label = "BentoArtLyrics") { lyricsVisible ->
-                            if (lyricsVisible) {
-                                SyncedLyricsView(
-                                    lyricsResult = lyricsResult,
-                                    currentPositionMs = progress,
-                                    isPlaying = isPlaying,
-                                    onSeekTo = { viewModel.seekTo(it) },
-                                    primaryColor = MaterialTheme.colorScheme.primary,
-                                    onSurfaceColor = onTile,
-                                    onSurfaceVariantColor = onTileVariant
+                        val artSong = currentSong?.takeIf { it.thumbnailUrl != null || it.albumArtUri != null }
+                        if (artSong != null) {
+                            PlayerArtwork(
+                                song = artSong,
+                                contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_album_art),
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Rounded.MusicNote,
+                                    contentDescription = null,
+                                    tint = onTileVariant.copy(alpha = 0.4f),
+                                    modifier = Modifier.size(96.dp)
                                 )
-                            } else {
-                                val artSong = currentSong?.takeIf { it.thumbnailUrl != null || it.albumArtUri != null }
-                                if (artSong != null) {
-                                    PlayerArtwork(
-                                        song = artSong,
-                                        contentDescription = androidx.compose.ui.res.stringResource(com.ivor.ivormusic.R.string.cd_album_art),
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentScale = ContentScale.Crop
-                                    )
-                                } else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        Icon(
-                                            imageVector = Icons.Rounded.MusicNote,
-                                            contentDescription = null,
-                                            tint = onTileVariant.copy(alpha = 0.4f),
-                                            modifier = Modifier.size(96.dp)
-                                        )
-                                    }
-                                }
                             }
                         }
                     }
@@ -464,14 +425,6 @@ fun BentoPlayerSheetContent(
                                 stringResource(R.string.cd_repeat),
                                 modifier = Modifier.size(22.dp)
                             )
-                        }
-                        BentoToggleTile(
-                            checked = showLyrics,
-                            onClick = { showLyrics = !showLyrics },
-                            uncheckedColor = tileColor,
-                            uncheckedContent = onTileVariant
-                        ) {
-                            Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(22.dp))
                         }
                         // Up-next peek tile: expands into the queue.
                         Surface(

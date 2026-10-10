@@ -74,13 +74,7 @@
     <string name="spotlight_hint_playlists">Les playlists que vous créez ou enregistrez apparaissent ici.</string>
     <string name="spotlight_hint_all">Lancez une lecture et votre accueil se remplira.</string>
 
-    <string name="sleep_timer_title">Minuterie de sommeil</string>
-    <string name="sleep_timer_status_track">Ce morceau</string>
-    <string name="sleep_timer_detail_track">La lecture s\'arrête à la fin du morceau en cours</string>
-    <string name="sleep_timer_detail_duration">La lecture s\'estompe et se met en pause à la fin de la minuterie</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Fin de ce morceau</string>
-    <string name="sleep_timer_turn_off">Désactiver</string>
 
     <string name="cd_drag_to_reorder">Faire glisser pour réorganiser</string>
     <string name="cd_favorite">Favori</string>
@@ -256,7 +250,6 @@
     <string name="cd_volume_mute">Couper le son</string>
     <string name="cd_volume_unmute">Rétablir le son</string>
     <string name="ps_now_playing">Lecture en cours</string>
-    <string name="ps_lyrics">Paroles</string>
     <string name="ps_up_next">À suivre</string>
     <string name="ps_queue_empty">La file est vide</string>
     <string name="ps_queue">FILE</string>
@@ -1169,31 +1162,6 @@
     <string name="sp_visualizer_sensitivity_hint">À quel point les passages calmes font bouger la bande</string>
     <string name="si_visualizer">Affiche une bande animée sous la ligne de progression dans tous les styles de lecteur agrandi. Elle lit l\'audio que Triat est déjà en train de lire, donc elle ne nécessite aucune autorisation de microphone et n\'enregistre rien. Elle danse pendant la lecture et se calme en pause, suit les couleurs de l\'app, et reste immobile avec le mouvement réduit ou l\'Économiseur de batterie.</string>
     <string name="cd_visualizer">Visualiseur audio</string>
-    <string name="lyrics_settings_title">Paroles</string>
-    <string name="lyrics_settings_intro">Choisis les services en qui tu as confiance et place tes préférés en premier.</string>
-    <string name="lyrics_remote">Paroles en ligne</string>
-    <string name="lyrics_remote_sub">Rechercher les paroles manquantes avec tes fournisseurs activés.</string>
-    <string name="lyrics_matching">Recherche des bonnes paroles</string>
-    <string name="lyrics_prefer_synced_sub">Favorise la synchro mot à mot, puis ligne par ligne. Ton ordre départage les égalités.</string>
-    <string name="lyrics_strict_order_sub">Utiliser la première correspondance de ton ordre, même si une source suivante a une meilleure synchro.</string>
-    <string name="lyrics_plain">Autoriser le texte brut</string>
-    <string name="lyrics_provider_order">Priorité des fournisseurs</string>
-    <string name="lyrics_local_only">Paroles locales uniquement</string>
-    <string name="lyrics_local_only_note">La recherche en ligne est désactivée. Seules les paroles enregistrées avec tes titres seront utilisées ; tu peux quand même organiser tes fournisseurs ci-dessous.</string>
-    <string name="lyrics_move_up">Monter %1$s</string>
-    <string name="lyrics_move_down">Descendre %1$s</string>
-    <string name="lyrics_reset">Rétablir les paroles par défaut</string>
-    <string name="lyrics_provider_summary">%1$d activé(s) · %2$s en premier</string>
-    <string name="lyrics_drag_hint">Fais glisser pour réordonner. Désactive une source pour l\'ignorer.</string>
-    <string name="lyrics_reorder_provider">Réordonner %1$s</string>
-    <string name="lyrics_source_disabled">Désactivé</string>
-    <string name="lyrics_first_choice">Premier choix</string>
-    <string name="lyrics_priority_number">Priorité %1$d</string>
-    <string name="lyrics_selection_title">Choisis une correspondance</string>
-    <string name="lyrics_synced_first">Synchronisées d\'abord</string>
-    <string name="lyrics_my_order">Mon ordre</string>
-    <string name="lyrics_plain_short">Inclure les paroles sans synchro.</string>
-    <string name="lyrics_footer">Les paroles enregistrées avec un titre passent toujours en premier. Les changements s\'appliquent à la prochaine recherche et aux nouveaux téléchargements.</string>
     <string name="lastfm_title">Last.fm</string>
     <string name="lastfm_off">Désactivé</string>
     <string name="lastfm_not_connected">Non connecté</string>
@@ -1317,7 +1285,6 @@
     <string name="import_all_added">Tout ce qui est ici est déjà dans cette playlist</string>
     <string name="cd_import_sort">Trier les titres</string>
     <!-- Hardcoded labels lifted into resources -->
-    <string name="cd_sleep_timer">Minuteur de veille</string>
     <string name="cd_play_all">Tout lire</string>
     <string name="cd_finish_editing">Terminer l\'édition</string>
     <string name="st_tile_songs_played">Titres écoutés</string>
@@ -1356,10 +1323,6 @@
     <string name="onb_step_of">Étape %1$d sur %2$d</string>
     <string name="player_more_caps">PLUS</string>
     <string name="cd_collapse">Réduire</string>
-    <string name="lyrics_fetching">Recherche des paroles...</string>
-    <string name="lyrics_none">Aucune parole disponible</string>
-    <string name="lyrics_not_found">Les paroles de ce titre sont introuvables</string>
-    <string name="lyrics_load_failed">Impossible de charger les paroles</string>
     <plurals name="report_log_lines">
         <item quantity="one">%1$d ligne de journal enregistrée pendant cette session</item>
         <item quantity="other">%1$d lignes de journal enregistrées pendant cette session</item>

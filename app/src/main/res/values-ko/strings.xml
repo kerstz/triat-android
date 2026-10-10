@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">만들거나 저장한 재생목록이 여기에 표시돼요.</string>
     <string name="spotlight_hint_all">음악을 틀면 홈이 차오르기 시작해요.</string>
 
-    <string name="sleep_timer_title">수면 타이머</string>
-    <string name="sleep_timer_status_track">이 트랙</string>
-    <string name="sleep_timer_detail_track">지금 재생 중인 곡이 끝나면 재생이 멈춰요</string>
-    <string name="sleep_timer_detail_duration">타이머가 끝나면 서서히 줄어들며 일시정지돼요</string>
     <string name="minutes_short">%1$d분</string>
-    <string name="sleep_timer_end_of_track">이 트랙의 끝</string>
-    <string name="sleep_timer_turn_off">끄기</string>
 
     <string name="cd_drag_to_reorder">길게 눌러 순서 변경</string>
     <string name="cd_favorite">즐겨찾기</string>
@@ -224,7 +218,6 @@
     <string name="cd_volume_mute">음소거</string>
     <string name="cd_volume_unmute">음소거 해제</string>
     <string name="ps_now_playing">재생 중</string>
-    <string name="ps_lyrics">가사</string>
     <string name="ps_up_next">다음 곡</string>
     <string name="ps_queue_empty">대기열이 비어 있어요</string>
     <string name="ps_queue">대기열</string>

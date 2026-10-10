@@ -39,7 +39,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Pause
@@ -125,11 +124,9 @@ fun PosterPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     val playerHaptics = rememberPlayerHaptics()
@@ -164,13 +161,6 @@ fun PosterPlayerSheetContent(
     // Canvas is white type on black over the artwork, and the picker keeps
     // that: a light themed sheet under a full-bleed cover reads as a different
     // app opening on top of this one.
-    val sleepTimer = rememberSleepTimerControl(
-        viewModel = viewModel,
-        accent = glyph,
-        onAccent = scrim,
-        container = scrim,
-        onContainer = glyph
-    )
 
     Box(
         modifier = Modifier
@@ -201,8 +191,8 @@ fun PosterPlayerSheetContent(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        // Off while lyrics are up: that view scrolls and seeks.
-                        .swipeToSkip(swipeToSkip, enabled = !showLyrics)
+                        // Off while a scrolling overlay is up.
+                        .swipeToSkip(swipeToSkip)
                         // Last in the chain: consumes the post-long-press
                         // hold stream before the tap and swipe detectors.
                         .styleWheelHold(styleWheel)
@@ -297,29 +287,6 @@ fun PosterPlayerSheetContent(
                             )
                     )
 
-                    // ========== LYRICS OVERLAY ==========
-                    AnimatedVisibility(
-                        visible = showLyrics,
-                        enter = fadeIn(),
-                        exit = fadeOut(),
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(scrim.copy(alpha = 0.6f))
-                        ) {
-                            SyncedLyricsView(
-                                lyricsResult = lyricsResult,
-                                currentPositionMs = progress,
-                                isPlaying = isPlaying,
-                                onSeekTo = { viewModel.seekTo(it) },
-                                primaryColor = glyph,
-                                onSurfaceColor = glyph.copy(alpha = 0.9f),
-                                onSurfaceVariantColor = glyph.copy(alpha = 0.6f)
-                            )
-                        }
-                    }
 
                     // ========== TOP BAR ==========
                     Box(modifier = Modifier.align(Alignment.TopCenter)) {
@@ -344,17 +311,6 @@ fun PosterPlayerSheetContent(
                             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                 // Solid fill while armed - the only contrast
                                 // available over artwork is the scrim's alpha.
-                                EditorialCircleButton(
-                                    onClick = sleepTimer.open,
-                                    accent = if (sleepTimer.active) glyph else Color.Transparent,
-                                    field = if (sleepTimer.active) scrim else glyph,
-                                    size = 44.dp
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
                                 EditorialGhostButton(
                                     onClick = { showQueue = true },
                                     accent = glyph,
@@ -388,7 +344,7 @@ fun PosterPlayerSheetContent(
                                 .navigationBarsPadding()
                                 .padding(bottom = 16.dp)
                         ) {
-                            // Title + like/lyrics chips
+                            // Title + like chip
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Column(
                                     modifier = Modifier
@@ -428,14 +384,6 @@ fun PosterPlayerSheetContent(
                                     field = scrim
                                 ) {
                                     LikeBurstIcon(isFavorite = isFavorite, iconSize = 20.dp)
-                                }
-                                EditorialChip(
-                                    checked = showLyrics,
-                                    onClick = { showLyrics = !showLyrics },
-                                    accent = glyph,
-                                    field = scrim
-                                ) {
-                                    Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                                 }
                             }
 

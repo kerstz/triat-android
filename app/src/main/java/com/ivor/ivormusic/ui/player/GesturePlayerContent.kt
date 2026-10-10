@@ -68,7 +68,6 @@ import com.ivor.ivormusic.ui.components.rememberQueueRemoval
 import com.ivor.ivormusic.ui.components.rememberQueueReorderState
 import com.ivor.ivormusic.ui.components.rememberFocusedQueueListState
 import com.ivor.ivormusic.ui.components.SongArtwork
-import com.ivor.ivormusic.data.LyricsResult
 import com.ivor.ivormusic.data.isUnknownAlbum
 import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
@@ -117,18 +116,13 @@ fun GesturePlayerSheetContent(
     val playWhenReady by viewModel.playWhenReady.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
     
-    // Lyrics state
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
-    
     // Load more state
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
     
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     // Sleep timer
-    val sleepTimer = rememberSleepTimerControl(viewModel = viewModel)
 
     val surfaceColor = MaterialTheme.colorScheme.background
     val primaryColor = MaterialTheme.colorScheme.primary
@@ -182,9 +176,6 @@ fun GesturePlayerSheetContent(
                     shuffleModeEnabled = shuffleModeEnabled,
                     repeatMode = repeatMode,
                     isFavorite = isFavorite,
-                    lyricsResult = lyricsResult,
-                    showLyrics = showLyrics,
-                    onToggleLyrics = { showLyrics = !showLyrics },
                     onSeekTo = { viewModel.seekTo(it) },
                     ambientBackground = ambientBackground,
                     onCollapse = onCollapse,
@@ -195,8 +186,6 @@ fun GesturePlayerSheetContent(
                     onToggleRepeat = { viewModel.toggleRepeat() },
                     onToggleFavorite = { viewModel.toggleCurrentSongLike() },
                     onToggleDownload = { currentSong?.let { viewModel.toggleDownload(it) } },
-                    sleepTimerActive = sleepTimer.active,
-                    onSleepTimerClick = sleepTimer.open,
                     onPlayPauseToggle = {
                         playerHaptics.playPause(!viewModel.isPlaying.value)
                         viewModel.togglePlayPause()
@@ -257,9 +246,6 @@ private fun GestureNowPlayingView(
     shuffleModeEnabled: Boolean,
     repeatMode: Int,
     isFavorite: Boolean,
-    lyricsResult: LyricsResult,
-    showLyrics: Boolean,
-    onToggleLyrics: () -> Unit,
     onSeekTo: (Long) -> Unit,
     ambientBackground: Boolean,
     onCollapse: () -> Unit,
@@ -270,8 +256,6 @@ private fun GestureNowPlayingView(
     onToggleRepeat: () -> Unit,
     onToggleFavorite: () -> Unit,
     onToggleDownload: () -> Unit,
-    sleepTimerActive: Boolean,
-    onSleepTimerClick: () -> Unit,
     onPlayPauseToggle: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
@@ -353,7 +337,6 @@ private fun GestureNowPlayingView(
                     )
                 }
 
-                // Lyrics toggle removed from the face to keep the player minimal.
 
                 IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
                     Icon(
@@ -378,7 +361,7 @@ private fun GestureNowPlayingView(
                 // Push album down slightly
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                // ========== 3. ALBUM ART / LYRICS (Crossfade) ==========
+                // ========== 3. ALBUM ART ==========
                 BoxWithConstraints(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -398,42 +381,24 @@ private fun GestureNowPlayingView(
                         modifier = Modifier.size(albumSize),
                         contentAlignment = Alignment.Center
                     ) {
-                        Crossfade(targetState = showLyrics, label = "AlbumLyricsCrossfade") { isLyricsVisible ->
-                            if (isLyricsVisible) {
-                                // Key on song ID to force complete reset when song changes
-                                key(currentSong?.id) {
-                                    // Synced Lyrics View
-                                    SyncedLyricsView(
-                                        lyricsResult = lyricsResult,
-                                        currentPositionMs = progress,
-                                        isPlaying = isPlaying,
-                                        onSeekTo = onSeekTo,
-                                        primaryColor = primaryColor,
-                                        onSurfaceColor = onSurfaceColor,
-                                        onSurfaceVariantColor = onSurfaceVariantColor
-                                    )
-                                }
-                            } else {
-                                // Album Art Carousel
-                                if (queue.isNotEmpty()) {
-                                    SwipeableAlbumCarousel(
-                                        queue = queue,
-                                        currentIndex = currentIndex,
-                                        isPlaying = isPlaying,
-                                        isBuffering = isBuffering,
-                                        onPlayPauseToggle = onPlayPauseToggle,
-                                        onQueueItemChange = onQueueItemChange
-                                    )
-                                } else if (currentSong != null) {
-                                    // Single album art
-                                    SingleAlbumArt(
-                                        song = currentSong,
-                                        isPlaying = isPlaying,
-                                        isBuffering = isBuffering,
-                                        onPlayPauseToggle = onPlayPauseToggle
-                                    )
-                                }
-                            }
+                        // Album Art Carousel
+                        if (queue.isNotEmpty()) {
+                            SwipeableAlbumCarousel(
+                                queue = queue,
+                                currentIndex = currentIndex,
+                                isPlaying = isPlaying,
+                                isBuffering = isBuffering,
+                                onPlayPauseToggle = onPlayPauseToggle,
+                                onQueueItemChange = onQueueItemChange
+                            )
+                        } else if (currentSong != null) {
+                            // Single album art
+                            SingleAlbumArt(
+                                song = currentSong,
+                                isPlaying = isPlaying,
+                                isBuffering = isBuffering,
+                                onPlayPauseToggle = onPlayPauseToggle
+                            )
                         }
                     }
                 }

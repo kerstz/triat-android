@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Созданные и сохранённые плейлисты появятся здесь.</string>
     <string name="spotlight_hint_all">Включите музыку, и главная заполнится.</string>
 
-    <string name="sleep_timer_title">Таймер сна</string>
-    <string name="sleep_timer_status_track">Этот трек</string>
-    <string name="sleep_timer_detail_track">Воспроизведение остановится, когда закончится текущая песня</string>
-    <string name="sleep_timer_detail_duration">Воспроизведение плавно затухнет и остановится по окончании таймера</string>
     <string name="minutes_short">%1$d мин</string>
-    <string name="sleep_timer_end_of_track">Конец этого трека</string>
-    <string name="sleep_timer_turn_off">Выключить</string>
 
     <string name="cd_drag_to_reorder">Потяните, чтобы изменить порядок</string>
     <string name="cd_favorite">Избранное</string>
@@ -234,7 +228,6 @@
     <string name="cd_volume_mute">Выключить звук</string>
     <string name="cd_volume_unmute">Включить звук</string>
     <string name="ps_now_playing">Сейчас играет</string>
-    <string name="ps_lyrics">Текст песни</string>
     <string name="ps_up_next">Далее</string>
     <string name="ps_queue_empty">Очередь пуста</string>
     <string name="ps_queue">ОЧЕРЕДЬ</string>

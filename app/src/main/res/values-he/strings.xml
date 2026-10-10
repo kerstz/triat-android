@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">רשימות שתיצור או תשמור יופיעו כאן.</string>
     <string name="spotlight_hint_all">נגן משהו ודף הבית שלך יתמלא.</string>
 
-    <string name="sleep_timer_title">טיימר שינה</string>
-    <string name="sleep_timer_status_track">הרצועה הזאת</string>
-    <string name="sleep_timer_detail_track">ההשמעה תיעצר כשהשיר הנוכחי יסתיים</string>
-    <string name="sleep_timer_detail_duration">ההשמעה תדעך ותושהה כשהטיימר יסתיים</string>
     <string name="minutes_short">%1$d דק\'</string>
-    <string name="sleep_timer_end_of_track">סוף הרצועה הזאת</string>
-    <string name="sleep_timer_turn_off">כיבוי</string>
 
     <string name="cd_drag_to_reorder">גרור כדי לסדר מחדש</string>
     <string name="cd_favorite">מועדף</string>
@@ -233,7 +227,6 @@
     <string name="cd_volume_mute">השתק</string>
     <string name="cd_volume_unmute">בטל השתקה</string>
     <string name="ps_now_playing">מתנגן כעת</string>
-    <string name="ps_lyrics">מילים</string>
     <string name="ps_up_next">הבא בתור</string>
     <string name="ps_queue_empty">התור ריק</string>
     <string name="ps_queue">תור</string>

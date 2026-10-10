@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">作成・保存したプレイリストがここに表示されます。</string>
     <string name="spotlight_hint_all">何か再生すると、ホームが育っていきます。</string>
 
-    <string name="sleep_timer_title">スリープタイマー</string>
-    <string name="sleep_timer_status_track">このトラック</string>
-    <string name="sleep_timer_detail_track">再生中の曲が終わると再生を停止します</string>
-    <string name="sleep_timer_detail_duration">タイマーが終わるとフェードアウトして一時停止します</string>
     <string name="minutes_short">%1$d 分</string>
-    <string name="sleep_timer_end_of_track">このトラックの終わり</string>
-    <string name="sleep_timer_turn_off">オフにする</string>
 
     <string name="cd_drag_to_reorder">ドラッグして並べ替え</string>
     <string name="cd_favorite">お気に入り</string>
@@ -224,7 +218,6 @@
     <string name="cd_volume_mute">ミュート</string>
     <string name="cd_volume_unmute">ミュート解除</string>
     <string name="ps_now_playing">再生中</string>
-    <string name="ps_lyrics">歌詞</string>
     <string name="ps_up_next">次に再生</string>
     <string name="ps_queue_empty">キューは空です</string>
     <string name="ps_queue">キュー</string>

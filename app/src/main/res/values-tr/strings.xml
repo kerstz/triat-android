@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Oluşturduğun veya kaydettiğin listeler burada görünür.</string>
     <string name="spotlight_hint_all">Bir şey çal, ana sayfan dolmaya başlasın.</string>
 
-    <string name="sleep_timer_title">Uyku zamanlayıcısı</string>
-    <string name="sleep_timer_status_track">Bu parça</string>
-    <string name="sleep_timer_detail_track">Çalan şarkı bittiğinde oynatma durur</string>
-    <string name="sleep_timer_detail_duration">Süre dolduğunda oynatma kısılır ve duraklar</string>
     <string name="minutes_short">%1$d dk</string>
-    <string name="sleep_timer_end_of_track">Bu parçanın sonu</string>
-    <string name="sleep_timer_turn_off">Kapat</string>
 
     <string name="cd_drag_to_reorder">Yeniden sıralamak için sürükle</string>
     <string name="cd_favorite">Favori</string>
@@ -228,7 +222,6 @@
     <string name="cd_volume_mute">Sesi kapat</string>
     <string name="cd_volume_unmute">Sesi aç</string>
     <string name="ps_now_playing">Şimdi çalıyor</string>
-    <string name="ps_lyrics">Şarkı sözleri</string>
     <string name="ps_up_next">Sıradaki</string>
     <string name="ps_queue_empty">Sıra boş</string>
     <string name="ps_queue">SIRA</string>

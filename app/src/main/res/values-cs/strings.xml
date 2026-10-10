@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlisty, které vytvoříte nebo uložíte, se zobrazí zde.</string>
     <string name="spotlight_hint_all">Něco si přehrajte a vaše domácí stránka se zaplní.</string>
 
-    <string name="sleep_timer_title">Časovač spánku</string>
-    <string name="sleep_timer_status_track">Tato skladba</string>
-    <string name="sleep_timer_detail_track">Přehrávání se zastaví po dokončení aktuální skladby</string>
-    <string name="sleep_timer_detail_duration">Přehrávání postupně zeslabí a pozastaví se po vypršení časovače</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Konec této skladby</string>
-    <string name="sleep_timer_turn_off">Vypnout</string>
 
     <string name="cd_drag_to_reorder">Přetažením změníte pořadí</string>
     <string name="cd_favorite">Oblíbené</string>
@@ -234,7 +228,6 @@
     <string name="cd_volume_mute">Ztlumit</string>
     <string name="cd_volume_unmute">Zapnout zvuk</string>
     <string name="ps_now_playing">Právě hraje</string>
-    <string name="ps_lyrics">Texty</string>
     <string name="ps_up_next">Další na řadě</string>
     <string name="ps_queue_empty">Fronta je prázdná</string>
     <string name="ps_queue">FRONTA</string>

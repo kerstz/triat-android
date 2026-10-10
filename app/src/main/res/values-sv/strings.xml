@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Spellistor du skapar eller sparar visas här.</string>
     <string name="spotlight_hint_all">Spela något så fylls ditt hem på.</string>
 
-    <string name="sleep_timer_title">Insomningstimer</string>
-    <string name="sleep_timer_status_track">Det här spåret</string>
-    <string name="sleep_timer_detail_track">Uppspelningen stoppar när den aktuella låten är slut</string>
-    <string name="sleep_timer_detail_duration">Uppspelningen tonar ut och pausar när timern löper ut</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Slutet av detta spår</string>
-    <string name="sleep_timer_turn_off">Stäng av</string>
 
     <string name="cd_drag_to_reorder">Dra för att ordna om</string>
     <string name="cd_favorite">Favorit</string>
@@ -228,7 +222,6 @@
     <string name="cd_volume_mute">Stäng av ljudet</string>
     <string name="cd_volume_unmute">Sätt på ljudet</string>
     <string name="ps_now_playing">Spelas nu</string>
-    <string name="ps_lyrics">Låttext</string>
     <string name="ps_up_next">Kommer härnäst</string>
     <string name="ps_queue_empty">Kön är tom</string>
     <string name="ps_queue">KÖ</string>

@@ -35,7 +35,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -122,11 +121,9 @@ fun DialPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
 
     // Swipe-to-skip, shared by the dial's puck art and the title/artist
     // block so both commit at the same threshold with the same spring home.
@@ -143,7 +140,6 @@ fun DialPlayerSheetContent(
     val chipColor = MaterialTheme.colorScheme.surfaceContainerHigh
 
     // The dial's instrument accent carries into the picker.
-    val sleepTimer = rememberSleepTimerControl(viewModel = viewModel, accent = accent)
 
     Box(
         modifier = Modifier
@@ -191,16 +187,6 @@ fun DialPlayerSheetContent(
                             )
                         }
                         Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            EditorialGhostButton(
-                                onClick = sleepTimer.open,
-                                accent = if (sleepTimer.active) accent else ink,
-                                size = 44.dp
-                            ) {
-                                Icon(
-                                    Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
                             EditorialGhostButton(onClick = { showQueue = true }, accent = ink, size = 44.dp) {
                                 Icon(
                                     Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue),
@@ -216,39 +202,25 @@ fun DialPlayerSheetContent(
                         }
                     }
 
-                    // ========== THE DIAL / LYRICS ==========
+                    // ========== THE DIAL ==========
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-                        Crossfade(targetState = showLyrics, label = "DialLyrics") { lyricsVisible ->
-                            if (lyricsVisible) {
-                                SyncedLyricsView(
-                                    lyricsResult = lyricsResult,
-                                    currentPositionMs = progress,
-                                    isPlaying = isPlaying,
-                                    onSeekTo = { viewModel.seekTo(it) },
-                                    primaryColor = accent,
-                                    onSurfaceColor = ink,
-                                    onSurfaceVariantColor = inkVariant
-                                )
-                            } else {
-                                RotaryDial(
-                                    currentSong = currentSong,
-                                    isPlaying = isPlaying,
-                                    isBuffering = isBuffering && playWhenReady && !isPlaying,
-                                    progress = progress,
-                                    duration = duration,
-                                    onSeekTo = { viewModel.seekTo(it) },
-                                    onPlayPause = {
-                                        playerHaptics.playPause(!viewModel.isPlaying.value)
-                                        viewModel.togglePlayPause()
-                                    },
-                                    swipeToSkip = swipeToSkip
-                                )
-                            }
-                        }
+                        RotaryDial(
+                            currentSong = currentSong,
+                            isPlaying = isPlaying,
+                            isBuffering = isBuffering && playWhenReady && !isPlaying,
+                            progress = progress,
+                            duration = duration,
+                            onSeekTo = { viewModel.seekTo(it) },
+                            onPlayPause = {
+                                playerHaptics.playPause(!viewModel.isPlaying.value)
+                                viewModel.togglePlayPause()
+                            },
+                            swipeToSkip = swipeToSkip
+                        )
                     }
 
                     // ========== READOUT ==========
@@ -356,15 +328,6 @@ fun DialPlayerSheetContent(
                                 stringResource(R.string.cd_repeat),
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
-                        EditorialChip(
-                            checked = showLyrics,
-                            onClick = { showLyrics = !showLyrics },
-                            accent = accent,
-                            field = MaterialTheme.colorScheme.onPrimary,
-                            idle = inkVariant
-                        ) {
-                            Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                         }
                         EditorialGhostButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },

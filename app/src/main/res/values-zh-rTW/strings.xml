@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">你建立或儲存的播放清單會顯示在這裡。</string>
     <string name="spotlight_hint_all">播放一些音樂，你的首頁就會豐富起來。</string>
 
-    <string name="sleep_timer_title">睡眠計時器</string>
-    <string name="sleep_timer_status_track">這首曲目</string>
-    <string name="sleep_timer_detail_track">目前歌曲播畢後停止播放</string>
-    <string name="sleep_timer_detail_duration">計時結束時，播放會淡出並暫停</string>
     <string name="minutes_short">%1$d 分鐘</string>
-    <string name="sleep_timer_end_of_track">這首曲目結束時</string>
-    <string name="sleep_timer_turn_off">關閉</string>
 
     <string name="cd_drag_to_reorder">拖曳以重新排序</string>
     <string name="cd_favorite">收藏</string>
@@ -224,7 +218,6 @@
     <string name="cd_volume_mute">靜音</string>
     <string name="cd_volume_unmute">取消靜音</string>
     <string name="ps_now_playing">正在播放</string>
-    <string name="ps_lyrics">歌詞</string>
     <string name="ps_up_next">接下來播放</string>
     <string name="ps_queue_empty">待播清單是空的</string>
     <string name="ps_queue">待播清單</string>

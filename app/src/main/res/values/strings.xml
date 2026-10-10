@@ -146,13 +146,7 @@
     <string name="spotlight_hint_all">Play something and your home fills in around it.</string>
 
     <!-- Sleep timer -->
-    <string name="sleep_timer_title">Sleep timer</string>
-    <string name="sleep_timer_status_track">This track</string>
-    <string name="sleep_timer_detail_track">Playback stops when the song playing now finishes</string>
-    <string name="sleep_timer_detail_duration">Playback fades out and pauses when the timer ends</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">End of this track</string>
-    <string name="sleep_timer_turn_off">Turn off</string>
 
     <!-- Mini player / shared component content descriptions -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>
@@ -557,7 +551,6 @@
 
     <!-- Player sheet -->
     <string name="ps_now_playing">Now Playing</string>
-    <string name="ps_lyrics">Lyrics</string>
     <string name="cd_shuffle">Shuffle</string>
     <string name="cd_previous">Previous</string>
     <string name="cd_repeat">Repeat</string>
@@ -1201,31 +1194,6 @@
     <string name="sp_visualizer_sensitivity_hint">How strongly quiet passages move the strip</string>
     <string name="si_visualizer">Shows an animated strip under the progress row in every expanded player style. It reads the audio Triat is already playing, so it needs no microphone permission and records nothing. It dances while music plays and settles when paused, follows the app colors, and stands still under reduced motion or Battery Saver.</string>
     <string name="cd_visualizer">Audio visualizer</string>
-    <string name="lyrics_settings_title">Lyrics</string>
-    <string name="lyrics_settings_intro">Choose the services you trust and put your favorites first.</string>
-    <string name="lyrics_remote">Online lyrics</string>
-    <string name="lyrics_remote_sub">Look up missing lyrics using your enabled providers.</string>
-    <string name="lyrics_matching">Finding the right lyrics</string>
-    <string name="lyrics_prefer_synced_sub">Favor word timing, then line timing. Your order breaks ties.</string>
-    <string name="lyrics_strict_order_sub">Use the first match in your order, even if a later source has better timing.</string>
-    <string name="lyrics_plain">Allow plain text</string>
-    <string name="lyrics_provider_order">Provider priority</string>
-    <string name="lyrics_local_only">Local lyrics only</string>
-    <string name="lyrics_local_only_note">Online lookup is off. Only lyrics saved with your songs will be used; you can still arrange your providers below.</string>
-    <string name="lyrics_move_up">Move %1$s up</string>
-    <string name="lyrics_move_down">Move %1$s down</string>
-    <string name="lyrics_reset">Restore lyrics defaults</string>
-    <string name="lyrics_provider_summary">%1$d enabled · %2$s first</string>
-    <string name="lyrics_drag_hint">Drag to reorder. Switch off any source to skip it.</string>
-    <string name="lyrics_reorder_provider">Reorder %1$s</string>
-    <string name="lyrics_source_disabled">Off</string>
-    <string name="lyrics_first_choice">First choice</string>
-    <string name="lyrics_priority_number">Priority %1$d</string>
-    <string name="lyrics_selection_title">Choose a match</string>
-    <string name="lyrics_synced_first">Synced first</string>
-    <string name="lyrics_my_order">My order</string>
-    <string name="lyrics_plain_short">Include lyrics without timing.</string>
-    <string name="lyrics_footer">Lyrics saved with a song always come first. Changes apply to the next lookup and new downloads.</string>
     <string name="lastfm_title">Last.fm</string>
     <string name="lastfm_off">Off</string>
     <string name="lastfm_not_connected">Not connected</string>
@@ -1437,7 +1405,6 @@
         <item quantity="other">%1$d plays added</item>
     </plurals>
     <!-- Hardcoded labels lifted into resources -->
-    <string name="cd_sleep_timer">Sleep timer</string>
     <string name="cd_play_all">Play all</string>
     <string name="cd_finish_editing">Finish editing</string>
     <string name="st_tile_songs_played">Songs played</string>
@@ -1476,10 +1443,6 @@
     <string name="onb_step_of">Step %1$d of %2$d</string>
     <string name="player_more_caps">MORE</string>
     <string name="cd_collapse">Collapse</string>
-    <string name="lyrics_fetching">Fetching lyrics...</string>
-    <string name="lyrics_none">No lyrics available</string>
-    <string name="lyrics_not_found">Lyrics couldn\'t be found for this track</string>
-    <string name="lyrics_load_failed">Couldn\'t load lyrics</string>
     <plurals name="report_log_lines">
         <item quantity="one">%1$d log line recorded this session</item>
         <item quantity="other">%1$d log lines recorded this session</item>

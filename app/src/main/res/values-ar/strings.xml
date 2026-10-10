@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">تظهر هنا قوائم التشغيل التي تنشئها أو تحفظها.</string>
     <string name="spotlight_hint_all">شغّل شيئًا وستمتلئ صفحتك الرئيسية.</string>
 
-    <string name="sleep_timer_title">مؤقت النوم</string>
-    <string name="sleep_timer_status_track"> هذا المقطع</string>
-    <string name="sleep_timer_detail_track">يتوقف التشغيل عند انتهاء الأغنية الحالية</string>
-    <string name="sleep_timer_detail_duration">يتلاشى التشغيل ويُوقف مؤقتًا عند انتهاء المؤقت</string>
     <string name="minutes_short">%1$d د</string>
-    <string name="sleep_timer_end_of_track">نهاية هذا المقطع</string>
-    <string name="sleep_timer_turn_off">إيقاف</string>
 
     <string name="cd_drag_to_reorder">اسحب لإعادة الترتيب</string>
     <string name="cd_favorite">المفضلة</string>
@@ -240,7 +234,6 @@
     <string name="cd_volume_mute">كتم الصوت</string>
     <string name="cd_volume_unmute">إلغاء الكتم</string>
     <string name="ps_now_playing">قيد التشغيل</string>
-    <string name="ps_lyrics">كلمات الأغنية</string>
     <string name="ps_up_next">التالي</string>
     <string name="ps_queue_empty">قائمة الانتظار فارغة</string>
     <string name="ps_queue">قائمة الانتظار</string>

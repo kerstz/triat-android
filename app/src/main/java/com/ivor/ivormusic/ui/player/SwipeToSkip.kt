@@ -122,7 +122,7 @@ fun rememberSwipeToSkip(
 }
 
 /**
- * Attaches the gesture. [enabled] is how a style switches it off while lyrics
+ * Attaches the gesture. [enabled] is how a style switches it off while an overlay
  * or another overlay own the same area.
  */
 fun Modifier.swipeToSkip(state: SwipeToSkipState, enabled: Boolean = true): Modifier =

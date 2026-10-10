@@ -50,7 +50,6 @@ import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.DragHandle
 import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.Smartphone
@@ -103,7 +102,6 @@ import androidx.graphics.shapes.Morph
 import androidx.graphics.shapes.RoundedPolygon
 import androidx.graphics.shapes.toPath
 import androidx.media3.common.Player
-import com.ivor.ivormusic.data.LyricsResult
 import com.ivor.ivormusic.data.MusicQueueItem
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.isUnknownArtist
@@ -165,11 +163,9 @@ fun EditorialPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     // The two-tone contract: field + accent, nothing else.
@@ -178,13 +174,6 @@ fun EditorialPlayerSheetContent(
 
     // The picker follows the same two tones, so it reads as another page of
     // this player rather than a sheet borrowed from somewhere else.
-    val sleepTimer = rememberSleepTimerControl(
-        viewModel = viewModel,
-        accent = accent,
-        onAccent = field,
-        container = field,
-        onContainer = accent
-    )
 
     Box(
         modifier = Modifier
@@ -222,9 +211,6 @@ fun EditorialPlayerSheetContent(
                     shuffleModeEnabled = shuffleModeEnabled,
                     repeatMode = repeatMode,
                     isFavorite = isFavorite,
-                    showLyrics = showLyrics,
-                    lyricsResult = lyricsResult,
-                    onToggleLyrics = { showLyrics = !showLyrics },
                     onPlayPause = {
                         playerHaptics.playPause(!viewModel.isPlaying.value)
                         viewModel.togglePlayPause()
@@ -242,8 +228,6 @@ fun EditorialPlayerSheetContent(
                     onCollapse = onCollapse,
                     onShowQueue = { showQueue = true },
                     onShowOptions = { showOptions = true },
-                    onShowSleepTimer = sleepTimer.open,
-                    sleepTimerActive = sleepTimer.active,
                     onArtistClick = onArtistClick,
                     field = field,
                     accent = accent
@@ -279,9 +263,6 @@ private fun EditorialNowPlayingView(
     shuffleModeEnabled: Boolean,
     repeatMode: Int,
     isFavorite: Boolean,
-    showLyrics: Boolean,
-    lyricsResult: LyricsResult,
-    onToggleLyrics: () -> Unit,
     onPlayPause: () -> Unit,
     onPrevious: () -> Unit,
     onNext: () -> Unit,
@@ -296,8 +277,6 @@ private fun EditorialNowPlayingView(
     onCollapse: () -> Unit,
     onShowQueue: () -> Unit,
     onShowOptions: () -> Unit,
-    onShowSleepTimer: () -> Unit,
-    sleepTimerActive: Boolean,
     onArtistClick: (String) -> Unit,
     field: Color,
     accent: Color
@@ -305,83 +284,33 @@ private fun EditorialNowPlayingView(
     Column(modifier = Modifier.fillMaxSize()) {
 
         // ========== TOP BAR ==========
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(horizontal = 20.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            EditorialGhostButton(onClick = onCollapse, accent = accent, size = 44.dp) {
-                Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(26.dp))
-            }
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                // A running timer is the one piece of state up here, so it is
-                // the one button that still takes a fill.
-                if (sleepTimerActive) {
-                    EditorialCircleButton(
-                        onClick = onShowSleepTimer,
-                        accent = accent,
-                        field = field,
-                        size = 44.dp
-                    ) {
-                        Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
-                    }
-                } else {
-                    EditorialGhostButton(onClick = onShowSleepTimer, accent = accent, size = 44.dp) {
-                        Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
-                    }
-                }
-                EditorialGhostButton(onClick = onShowQueue, accent = accent, size = 44.dp) {
-                    Icon(Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue), modifier = Modifier.size(22.dp))
-                }
-                EditorialGhostButton(onClick = onShowOptions, accent = accent, size = 44.dp) {
-                    Icon(Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options), modifier = Modifier.size(22.dp))
-                }
-            }
-        }
 
-        // ========== DIE-CUT ART / LYRICS ==========
+        // ========== DIE-CUT ART ==========
         // Swipe-to-skip: the die-cut art follows the finger and springs
         // back if the drag is abandoned; past the threshold it commits a
-        // previous/next skip. Inactive while lyrics are shown. The headline
-        // below shares this state, so both read as one gesture.
+        // previous/next skip. The headline below shares this state, so both
+        // read as one gesture.
         val swipeToSkip = rememberSwipeToSkip(onNext = onNext, onPrevious = onPrevious)
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                .swipeToSkip(swipeToSkip, enabled = !showLyrics),
+                .swipeToSkip(swipeToSkip),
             contentAlignment = Alignment.Center
         ) {
-            Crossfade(targetState = showLyrics, label = "EditorialArtLyrics") { lyricsVisible ->
-                if (lyricsVisible) {
-                    SyncedLyricsView(
-                        lyricsResult = lyricsResult,
-                        currentPositionMs = progress,
-                        isPlaying = isPlaying,
-                        onSeekTo = onSeekTo,
-                        primaryColor = accent,
-                        onSurfaceColor = accent,
-                        onSurfaceVariantColor = accent.copy(alpha = 0.6f)
-                    )
-                } else {
-                    Box(
-                        modifier = Modifier.graphicsLayer {
-                            translationX = swipeToSkip.offset * SwipeToSkipDefaults.ArtFollow
-                            rotationZ = swipeToSkip.offset / 80f
-                        }
-                    ) {
-                        EditorialDieCutArt(
-                            currentSong = currentSong,
-                            isPlaying = isPlaying,
-                            onTap = onPlayPause,
-                            accent = accent,
-                            field = field
-                        )
-                    }
+            Box(
+                modifier = Modifier.graphicsLayer {
+                    translationX = swipeToSkip.offset * SwipeToSkipDefaults.ArtFollow
+                    rotationZ = swipeToSkip.offset / 80f
                 }
+            ) {
+                EditorialDieCutArt(
+                    currentSong = currentSong,
+                    isPlaying = isPlaying,
+                    onTap = onPlayPause,
+                    accent = accent,
+                    field = field
+                )
             }
         }
 
@@ -629,14 +558,6 @@ private fun EditorialNowPlayingView(
                         stringResource(R.string.cd_repeat),
                         modifier = Modifier.size(20.dp)
                     )
-                }
-                EditorialChip(
-                    checked = showLyrics,
-                    onClick = onToggleLyrics,
-                    accent = accent,
-                    field = field
-                ) {
-                    Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                 }
             }
         }

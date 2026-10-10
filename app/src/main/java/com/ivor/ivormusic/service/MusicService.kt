@@ -324,10 +324,6 @@ class MusicService : MediaLibraryService() {
 
         // --- Sleep timer: the contract with PlayerViewModel ---
 
-        /** Arm the timer. Carries [ARG_SLEEP_TIMER_MINUTES]; 0 = end of track. */
-        const val CMD_SLEEP_TIMER_SET = "com.ivor.ivormusic.SLEEP_TIMER_SET"
-        const val CMD_SLEEP_TIMER_CANCEL = "com.ivor.ivormusic.SLEEP_TIMER_CANCEL"
-        const val ARG_SLEEP_TIMER_MINUTES = "sleep_timer_minutes"
 
         const val CMD_SKIP_NEXT = "com.ivor.ivormusic.SKIP_NEXT"
         const val CMD_SKIP_PREVIOUS = "com.ivor.ivormusic.SKIP_PREVIOUS"
@@ -369,8 +365,6 @@ class MusicService : MediaLibraryService() {
         const val EXTRA_SONG_SOURCE = "com.ivor.ivormusic.SONG_SOURCE"
 
         /** Session-extras keys the timer state is published under. */
-        const val EXTRA_SLEEP_TIMER_ENDS_AT = "sleep_timer_ends_at"
-        const val EXTRA_SLEEP_TIMER_END_OF_TRACK = "sleep_timer_end_of_track"
 
         /** Session-extras key the current playback rate is published under. */
         const val EXTRA_PLAYBACK_SPEED = "playback_speed"
@@ -405,14 +399,12 @@ class MusicService : MediaLibraryService() {
          * as drifting off rather than as a glitch, short enough that the last
          * thing heard is not a minute of near-silence.
          */
-        private const val SLEEP_TIMER_FADE_MS = 5_000L
 
         /**
          * Longest a single slice of the countdown sleeps for. Bounded so the
          * job re-checks the real deadline regularly instead of trusting one
          * long delay that deep sleep can stretch.
          */
-        private const val SLEEP_TIMER_TICK_MS = 30_000L
     }
 
     /**
@@ -467,8 +459,6 @@ class MusicService : MediaLibraryService() {
         // 4. Initialize Player
         initializePlayer()
         restorePlaybackModes()
-        restoreSleepTimer()
-
         // 5. Initialize Session
         initializeSession()
 
@@ -549,7 +539,6 @@ class MusicService : MediaLibraryService() {
         transitionJob?.cancel()
         headsetButtonJob?.cancel()
         headsetButtonSequence.clear()
-        sleepTimerJob?.cancel()
         audioFocus.abandon()
         // Cancel the scopes themselves — they host the preference collectors and
         // any in-flight resolutions, which would otherwise outlive the service.
@@ -1049,12 +1038,6 @@ class MusicService : MediaLibraryService() {
          */
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             super.onPlayWhenReadyChanged(playWhenReady, reason)
-            if (!playWhenReady &&
-                reason == Player.PLAY_WHEN_READY_CHANGE_REASON_END_OF_MEDIA_ITEM &&
-                sleepTimerEndOfTrack
-            ) {
-                clearSleepTimer()
-            }
             if (!playWhenReady && !audioFocus.isPausedByFocusLoss) {
                 audioFocus.abandon()
             }
@@ -1674,8 +1657,6 @@ class MusicService : MediaLibraryService() {
 
             val availableSessionCommands =
                 MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
-                    .add(SessionCommand(CMD_SLEEP_TIMER_SET, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SLEEP_TIMER_CANCEL, Bundle.EMPTY))
                     .add(SessionCommand(CMD_SKIP_NEXT, Bundle.EMPTY))
                     .add(SessionCommand(CMD_SKIP_PREVIOUS, Bundle.EMPTY))
                     .add(SessionCommand(CMD_SKIP_TO_INDEX, Bundle.EMPTY))
@@ -1737,14 +1718,6 @@ class MusicService : MediaLibraryService() {
             customCommand: SessionCommand,
             args: Bundle
         ): ListenableFuture<SessionResult> = when (customCommand.customAction) {
-            CMD_SLEEP_TIMER_SET -> {
-                startSleepTimer(args.getInt(ARG_SLEEP_TIMER_MINUTES, 0))
-                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-            }
-            CMD_SLEEP_TIMER_CANCEL -> {
-                clearSleepTimer()
-                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
-            }
             CMD_SKIP_NEXT -> {
                 requestManualSkip(forward = true)
                 Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
@@ -2326,13 +2299,8 @@ class MusicService : MediaLibraryService() {
     // well. State is published back through the session's extras, which is how
     // every connected controller - the UI, and anything else - learns about it.
 
-    private var sleepTimerJob: Job? = null
 
-    /** Wall-clock ms when the timer fires, or 0 when no duration timer is set. */
-    private var sleepTimerEndsAt: Long = 0L
 
-    /** True while the player is set to stop when the current track finishes. */
-    private var sleepTimerEndOfTrack: Boolean = false
 
     /**
      * The rate music plays at, 1f being the recorded speed. Held here rather
@@ -2342,93 +2310,10 @@ class MusicService : MediaLibraryService() {
      */
     private var playbackSpeed: Float = ThemePreferences.DEFAULT_PLAYBACK_SPEED
 
-    /**
-     * Arm the sleep timer. [minutes] of 0 or less means "at the end of the
-     * current track" instead of a duration.
-     */
-    private fun startSleepTimer(minutes: Int) {
-        clearSleepTimer(publish = false)
 
-        if (minutes <= 0) {
-            // Media3 has exactly this behaviour built in, and it is more precise
-            // than watching for the track to end ourselves: the player stops on
-            // the item boundary rather than a callback or two later, and a
-            // later play() still moves on to the next track normally.
-            sleepTimerEndOfTrack = true
-            engine.setPauseAtEndOfMediaItems(true)
-            themePreferences.saveSleepTimer(endsAt = 0L, endOfTrack = true)
-        } else {
-            val durationMs = minutes * 60_000L
-            armDurationSleepTimer(System.currentTimeMillis() + durationMs)
-        }
-        publishSessionState()
-    }
 
-    private fun armDurationSleepTimer(endsAt: Long) {
-        sleepTimerEndOfTrack = false
-        sleepTimerEndsAt = endsAt
-        engine.setPauseAtEndOfMediaItems(false)
-        themePreferences.saveSleepTimer(endsAt = endsAt, endOfTrack = false)
-        sleepTimerJob = serviceScope.launch {
-            while (true) {
-                val remaining = sleepTimerEndsAt - System.currentTimeMillis()
-                if (remaining <= 0L) break
-                delay(remaining.coerceAtMost(SLEEP_TIMER_TICK_MS))
-            }
-            fadeOutAndPause()
-            clearSleepTimer()
-        }
-    }
 
-    /** Re-arm a timer after the media service itself was recreated. */
-    private fun restoreSleepTimer() {
-        val endOfTrack = themePreferences.isSleepTimerEndOfTrack()
-        val endsAt = themePreferences.getSleepTimerEndsAt()
-        when {
-            endOfTrack -> {
-                sleepTimerEndOfTrack = true
-                sleepTimerEndsAt = 0L
-                engine.setPauseAtEndOfMediaItems(true)
-            }
-            endsAt > System.currentTimeMillis() -> armDurationSleepTimer(endsAt)
-            else -> {
-                engine.setPauseAtEndOfMediaItems(false)
-                themePreferences.clearSleepTimer()
-            }
-        }
-    }
 
-    /**
-     * Ease the volume down before pausing.
-     *
-     * A sleep timer that cuts the audio dead is worse than one that does not
-     * fire: the silence is what wakes people. Runs on [fadeVolumeJob] so it and
-     * the crossfade fade-in can never drive the volume at the same time.
-     */
-    private fun fadeOutAndPause() {
-        launchVolumeFade {
-            val steps = 20
-            for (i in steps - 1 downTo 0) {
-                player.volume = trackGain * (i / steps.toFloat())
-                delay(SLEEP_TIMER_FADE_MS / steps)
-            }
-            player.pause()
-            // launchVolumeFade restores the current gain, including ducking.
-        }
-    }
-
-    /** Disarm, whether it fired or the user cancelled it. */
-    private fun clearSleepTimer(publish: Boolean = true) {
-        sleepTimerJob?.cancel()
-        sleepTimerJob = null
-        sleepTimerEndsAt = 0L
-        sleepTimerEndOfTrack = false
-        // Both engines matter. The standby becomes audible at the next
-        // crossfade and must not carry an old end-of-track instruction.
-        engine.setPauseAtEndOfMediaItems(false)
-        themePreferences.clearSleepTimer()
-        if (publish) publishSessionState()
-    }
 
     /**
      * Apply the user's playback rate to both engines.
@@ -2516,8 +2401,6 @@ class MusicService : MediaLibraryService() {
         runCatching {
             session.setSessionExtras(
                 Bundle().apply {
-                    putLong(EXTRA_SLEEP_TIMER_ENDS_AT, sleepTimerEndsAt)
-                    putBoolean(EXTRA_SLEEP_TIMER_END_OF_TRACK, sleepTimerEndOfTrack)
                     putFloat(EXTRA_PLAYBACK_SPEED, playbackSpeed)
                     putIntArray(EXTRA_PLAY_ORDER, currentPlayOrder())
                 }
@@ -2789,7 +2672,6 @@ class MusicService : MediaLibraryService() {
         // retire the old player while the session still points at that player.
         mediaLibrarySession?.setPlayer(newActive)
         trackGain = gainForPlayer(newActive)
-        engine.setPauseAtEndOfMediaItems(sleepTimerEndOfTrack)
         prefetchUpcomingSongs()
         newActive.currentMediaItem?.let { maybeProfile(it, newActive.duration) }
     }
@@ -2812,9 +2694,6 @@ class MusicService : MediaLibraryService() {
                 // Repeat-one means the "next" track is this one, and an overlap
                 // of a track with itself is comb filtering, not a crossfade.
                 if (current.repeatMode == Player.REPEAT_MODE_ONE) continue
-                // The sleep timer wants this track to be the last one; starting
-                // the next would be the app arguing with it.
-                if (sleepTimerEndOfTrack) continue
                 if (!current.hasNextMediaItem()) continue
 
                 val duration = current.duration

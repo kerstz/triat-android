@@ -30,9 +30,7 @@ data class Song(
     val albumArtUri: Uri? = null, // Album art URI
     val thumbnailUrl: String? = null, // YouTube thumbnail URL
     val source: SongSource = SongSource.LOCAL,
-    val filePath: String? = null, // Local file path for folder filtering and embedded lyrics
-    @Serializable(with = UriAsStringSerializer::class)
-    val lyricsUri: Uri? = null, // Downloaded LRC companion in shared storage
+    val filePath: String? = null, // Local file path for folder filtering
     // When this song entered the user's library, epoch millis. Each source
     // stamps its own notion of "added": MediaStore DATE_ADDED for device
     // files, download completion time for downloads, like time for likes.

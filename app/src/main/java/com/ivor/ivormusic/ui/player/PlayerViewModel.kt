@@ -21,8 +21,6 @@ import com.ivor.ivormusic.data.arrangedBy
 import com.ivor.ivormusic.data.queueIndexForPlayOrder
 import com.ivor.ivormusic.data.queueStartIndex
 import com.ivor.ivormusic.data.LikedSongsRepository
-import com.ivor.ivormusic.data.LyricsRepository
-import com.ivor.ivormusic.data.LyricsResult
 import com.ivor.ivormusic.service.MusicService
 import com.ivor.ivormusic.service.EXTRA_QUEUE_ITEM_ID
 import com.ivor.ivormusic.service.toPlaybackMediaItem
@@ -184,8 +182,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     private val _isLoadingMore = MutableStateFlow(false)
     val isLoadingMore: StateFlow<Boolean> = _isLoadingMore.asStateFlow()
     
-    // Lyrics Repository and State
-    private val lyricsRepository = LyricsRepository(context)
     
     // Stats Repository
     private val statsRepository = com.ivor.ivormusic.data.StatsRepository(context)
@@ -193,8 +189,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     // Playback session snapshots for resume-on-reopen
     private val playbackSessionRepository = com.ivor.ivormusic.data.PlaybackSessionRepository(context)
 
-    private val _lyricsResult = MutableStateFlow<LyricsResult>(LyricsResult.Loading)
-    val lyricsResult: StateFlow<LyricsResult> = _lyricsResult.asStateFlow()
     
     // Playlist Repository (Local Playlists)
     private val playlistRepository = com.ivor.ivormusic.data.PlaylistRepository(context)
@@ -340,7 +334,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                 player.prepare()
             }
 
-            fetchLyrics(song)
         }
     }
 
@@ -364,8 +357,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         controller?.setMediaItem(mediaItem)
         controller?.prepare()
 
-        // Fetch lyrics for this song
-        fetchLyrics(song)
     }
 
     private fun initializeController() {
@@ -379,7 +370,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                     controller: MediaController,
                     extras: android.os.Bundle
                 ) {
-                    applySleepTimerExtras(extras)
                     applyPlaybackSpeedExtras(extras)
                     applyPlayOrderExtras(extras)
                 }
@@ -541,7 +531,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                         _currentSong.value = it
                         resolvePlaceholderSongIfNeeded(it)
                         updateCurrentSongLikedStatus()
-                        fetchLyrics(it)
                         
                         // Save as last played song for restoration
                         themePreferences.saveLastPlayedSong(it)
@@ -675,7 +664,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                 _currentQueueItemId.value = currentItem?.id
                 _currentSong.value = it
                 updateCurrentSongLikedStatus()
-                fetchLyrics(it)
             }
         }
         
@@ -912,7 +900,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         if (startPositionMs > 0) _progress.value = startPositionMs
         if (currentSong.duration > 0) _duration.value = currentSong.duration
         updateCurrentSongLikedStatus()
-        fetchLyrics(currentSong)
         
         val player = controller
         if (player == null) {
@@ -1054,7 +1041,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         _isBuffering.value = false
         _duration.value = 0L
         updateCurrentSongLikedStatus()
-        fetchLyrics(song)
 
         sendSkipCommand(MusicService.CMD_SKIP_TO_INDEX, index)
     }
@@ -1406,38 +1392,11 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     // sleep timer does. It died silently and playback ran on. Everything below
     // is a remote control for the service's copy.
 
-    /** Wall-clock time when the sleep timer fires, or null when inactive. */
-    private val _sleepTimerEndsAt = MutableStateFlow<Long?>(null)
-    val sleepTimerEndsAt: StateFlow<Long?> = _sleepTimerEndsAt.asStateFlow()
 
-    /** True while playback is set to stop at the end of the current track. */
-    private val _sleepTimerEndOfTrack = MutableStateFlow(false)
-    val sleepTimerEndOfTrack: StateFlow<Boolean> = _sleepTimerEndOfTrack.asStateFlow()
 
-    /** Stop playback after [minutes]; playback fades out rather than cutting. */
-    fun startSleepTimer(minutes: Int) {
-        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_SET, minutes)
-    }
 
-    /** Stop playback when the track that is playing now finishes. */
-    fun startSleepTimerEndOfTrack() {
-        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_SET, 0)
-    }
 
-    fun cancelSleepTimer() {
-        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_CANCEL, 0)
-    }
 
-    private fun sendSleepTimerCommand(action: String, minutes: Int) {
-        val ctrl = controller ?: return
-        val args = android.os.Bundle().apply {
-            putInt(MusicService.ARG_SLEEP_TIMER_MINUTES, minutes)
-        }
-        ctrl.sendCustomCommand(
-            androidx.media3.session.SessionCommand(action, android.os.Bundle.EMPTY),
-            args
-        )
-    }
 
     /**
      * The rate music is playing at, 1f being the recorded speed. The service
@@ -1496,18 +1455,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         )
     }
 
-    /**
-     * Adopt the timer state the service published. Also called on connect, so
-     * a player reopened after the activity was destroyed picks the running
-     * countdown back up instead of showing nothing.
-     */
-    private fun applySleepTimerExtras(extras: android.os.Bundle) {
-        if (!extras.containsKey(MusicService.EXTRA_SLEEP_TIMER_ENDS_AT)) return
-        val endsAt = extras.getLong(MusicService.EXTRA_SLEEP_TIMER_ENDS_AT, 0L)
-        _sleepTimerEndsAt.value = endsAt.takeIf { it > 0L }
-        _sleepTimerEndOfTrack.value =
-            extras.getBoolean(MusicService.EXTRA_SLEEP_TIMER_END_OF_TRACK, false)
-    }
 
     fun skipToNext() {
         controller?.let { player ->
@@ -1710,35 +1657,8 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         downloadRepository.deleteDownload(songId)
     }
     
-    // --- Lyrics Actions ---
     
-    private var lyricsFetchJob: Job? = null
 
-    /**
-     * Fetch synced lyrics for the given song.
-     */
-    private fun fetchLyrics(song: Song) {
-        // Cancel the in-flight fetch: on a quick skip A -> B, A's slower
-        // response would otherwise land last and show A's lyrics over B.
-        lyricsFetchJob?.cancel()
-
-        _lyricsResult.value = LyricsResult.Loading
-
-        lyricsFetchJob = viewModelScope.launch {
-            val result = lyricsRepository.fetchLyrics(
-                song = song,
-                // Local lyrics are always checked first. Local-only mode only
-                // disables the provider fallback; it must not disable files
-                // already stored on the device.
-                allowRemote = !themePreferences.isLocalOnlyModeEnabled()
-            )
-            // Belt and braces for the same race: only apply the result if
-            // this is still the song on screen.
-            if (_currentSong.value?.id == song.id) {
-                _lyricsResult.value = result
-            }
-        }
-    }
     
     // --- Playlist Actions ---
 
@@ -1849,7 +1769,6 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         _playWhenReady.value = false
         _progress.value = 0L
         _duration.value = 0L
-        _lyricsResult.value = LyricsResult.Loading
         
         // Clear stored last played song and session so neither restores
         themePreferences.clearLastPlayedSong()

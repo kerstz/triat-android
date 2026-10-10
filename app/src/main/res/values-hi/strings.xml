@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">आपकी बनाई या सहेजी प्लेलिस्ट यहाँ दिखेगी।</string>
     <string name="spotlight_hint_all">कुछ चलाएं, और आपका होम भर जाएगा।</string>
 
-    <string name="sleep_timer_title">स्लीप टाइमर</string>
-    <string name="sleep_timer_status_track">यह ट्रैक</string>
-    <string name="sleep_timer_detail_track">मौजूदा गाना खत्म होने पर प्लेबैक रुक जाएगा</string>
-    <string name="sleep_timer_detail_duration">टाइमर खत्म होने पर प्लेबैक धीरे होकर रुक जाएगा</string>
     <string name="minutes_short">%1$d मिनट</string>
-    <string name="sleep_timer_end_of_track">इस ट्रैक का अंत</string>
-    <string name="sleep_timer_turn_off">बंद करें</string>
 
     <string name="cd_drag_to_reorder">क्रम बदलने के लिए खींचें</string>
     <string name="cd_favorite">पसंदीदा</string>
@@ -228,7 +222,6 @@
     <string name="cd_volume_mute">म्यूट करें</string>
     <string name="cd_volume_unmute">अनम्यूट करें</string>
     <string name="ps_now_playing">अब चल रहा है</string>
-    <string name="ps_lyrics">बोल</string>
     <string name="ps_up_next">आगे है</string>
     <string name="ps_queue_empty">कतार खाली है</string>
     <string name="ps_queue">कतार</string>

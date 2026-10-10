@@ -29,7 +29,6 @@ import androidx.compose.material.icons.rounded.Download
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material.icons.rounded.Smartphone
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
 import androidx.compose.material.icons.automirrored.rounded.PlaylistAdd
 import androidx.compose.material.icons.rounded.MoreVert
@@ -60,7 +59,6 @@ import com.ivor.ivormusic.ui.components.rememberQueueRemoval
 import com.ivor.ivormusic.ui.components.rememberQueueReorderState
 import com.ivor.ivormusic.ui.components.rememberFocusedQueueListState
 import com.ivor.ivormusic.ui.components.SongArtwork
-import com.ivor.ivormusic.data.LyricsResult
 import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
 import com.ivor.ivormusic.data.PlaylistDisplayItem
@@ -110,9 +108,6 @@ fun PlayerSheetContent(
     // Download states
     val downloadingIds by viewModel.downloadingIds.collectAsStateWithLifecycle()
     val downloadedSongs by viewModel.downloadedSongs.collectAsStateWithLifecycle()
-    
-    // Lyrics state
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     
     var showQueue by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
@@ -181,8 +176,6 @@ fun PlayerSheetContent(
                     isDownloaded = currentSong?.let { viewModel.isDownloaded(it.id) } ?: false,
                     isDownloading = currentSong?.let { viewModel.isDownloading(it.id) } ?: false,
                     isLocalOriginal = currentSong?.let { viewModel.isLocalOriginal(it) } ?: false,
-                    // Lyrics
-                    lyricsResult = lyricsResult,
                     onSeekTo = { viewModel.seekTo(it) },
                     ambientBackground = ambientBackground,
                     
@@ -239,7 +232,6 @@ private fun ExpressiveNowPlayingView(
     isDownloaded: Boolean,
     isDownloading: Boolean,
     isLocalOriginal: Boolean,
-    lyricsResult: LyricsResult,
     onSeekTo: (Long) -> Unit,
     ambientBackground: Boolean,
     onCollapse: () -> Unit,
@@ -255,8 +247,6 @@ private fun ExpressiveNowPlayingView(
     onSurfaceVariantColor: Color,
     stableShapes: IconButtonShapes
 ) {
-    // State for toggling between album art and lyrics
-    var showLyrics by remember { mutableStateOf(false) }
     val playerHaptics = rememberPlayerHaptics()
 
     // Swipe-to-skip, shared by the album art and the title/artist block so
@@ -307,47 +297,8 @@ private fun ExpressiveNowPlayingView(
                 Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(28.dp))
             }
             
-            // Expressive center toggle - morphs between "Now Playing" and "Lyrics" with animation
-            val pillWidth by animateFloatAsState(
-                targetValue = if (showLyrics) 140f else 160f,
-                animationSpec = spring(
-                    dampingRatio = Spring.DampingRatioMediumBouncy,
-                    stiffness = Spring.StiffnessMedium
-                ),
-                label = "PillWidth"
-            )
-            
-            Surface(
-                modifier = Modifier
-                    .width(pillWidth.dp)
-                    .clickable { showLyrics = !showLyrics },
-                shape = RoundedCornerShape(24.dp),
-                color = if (showLyrics) primaryColor else Color.Transparent
-            ) {
-                Row(
-                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    Crossfade(targetState = showLyrics, label = "PillIcon") { isLyrics ->
-                        Icon(
-                            imageVector = if (isLyrics) Icons.AutoMirrored.Filled.QueueMusic else Icons.Rounded.Lyrics,
-                            contentDescription = null,
-                            tint = if (isLyrics) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
-                    Spacer(modifier = Modifier.width(8.dp))
-                    Crossfade(targetState = showLyrics, label = "PillText") { isLyrics ->
-                        Text(
-                            text = if (isLyrics) stringResource(R.string.ps_now_playing) else stringResource(R.string.ps_lyrics),
-                            style = MaterialTheme.typography.labelLarge,
-                            color = if (isLyrics) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-            }
-            
+            Spacer(modifier = Modifier.weight(1f))
+
             // Right Side Group: Queue, then the overflow menu last
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -376,109 +327,93 @@ private fun ExpressiveNowPlayingView(
             }
         }
         
-        // ========== 2. ALBUM ART / LYRICS (Fills available space) ==========
+        // ========== 2. ALBUM ART (Fills available space) ==========
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .weight(1f)
-                // Off while lyrics are up: that view scrolls and seeks.
-                .swipeToSkip(swipeToSkip, enabled = !showLyrics),
+                .swipeToSkip(swipeToSkip),
             contentAlignment = Alignment.Center
         ) {
-            Crossfade(targetState = showLyrics, label = "AlbumLyricsCrossfade") { isLyricsVisible ->
-                if (isLyricsVisible) {
-                    // Synced Lyrics View
-                    SyncedLyricsView(
-                        lyricsResult = lyricsResult,
-                        currentPositionMs = progress,
-                        isPlaying = isPlaying,
-                        onSeekTo = onSeekTo,
-                        primaryColor = primaryColor,
-                        onSurfaceColor = onSurfaceColor,
-                        onSurfaceVariantColor = onSurfaceVariantColor
-                    )
-                } else {
-                    // Album Art
-                    BoxWithConstraints(
+            // Album Art
+            BoxWithConstraints(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                // Guard against invalid dimensions during transitions
+                // Use minimum usable size (not just zero) for high DPI compatibility
+                if (maxWidth < 50.dp || maxHeight < 50.dp) {
+                    return@BoxWithConstraints
+                }
+                        
+                val albumSize = minOf(maxWidth, maxHeight) * 0.9f
+                val cornerRadius = albumSize * 0.15f
+                        
+                Box(contentAlignment = Alignment.Center) {
+                    // Main album art container with expressive squircle shape
+                    val styleWheel = LocalPlayerStyleWheelController.current
+                    Surface(
                         modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = 24.dp),
-                        contentAlignment = Alignment.Center
+                            .size(albumSize)
+                            .swipeToSkipFollow(swipeToSkip, SwipeToSkipDefaults.ArtFollow)
+                            .styleWheelHold(styleWheel),
+                        shape = RoundedCornerShape(cornerRadius),
+                        color = MaterialTheme.colorScheme.surfaceContainerHigh
                     ) {
-                        // Guard against invalid dimensions during transitions
-                        // Use minimum usable size (not just zero) for high DPI compatibility
-                        if (maxWidth < 50.dp || maxHeight < 50.dp) {
-                            return@BoxWithConstraints
-                        }
-                        
-                        val albumSize = minOf(maxWidth, maxHeight) * 0.9f
-                        val cornerRadius = albumSize * 0.15f
-                        
-                        Box(contentAlignment = Alignment.Center) {
-                            // Main album art container with expressive squircle shape
-                            val styleWheel = LocalPlayerStyleWheelController.current
-                            Surface(
-                                modifier = Modifier
-                                    .size(albumSize)
-                                    .swipeToSkipFollow(swipeToSkip, SwipeToSkipDefaults.ArtFollow)
-                                    .styleWheelHold(styleWheel),
-                                shape = RoundedCornerShape(cornerRadius),
-                                color = MaterialTheme.colorScheme.surfaceContainerHigh
-                            ) {
-                                Box(modifier = Modifier.fillMaxSize()) {
-                                    // Album Art
-                                    val artSong = currentSong?.takeIf { it.albumArtUri != null || it.thumbnailUrl != null }
-                                    if (artSong != null) {
-                                        PlayerArtwork(
-                                            song = artSong,
-                                            contentDescription = stringResource(R.string.cd_album_art),
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .clip(RoundedCornerShape(cornerRadius)),
-                                            contentScale = ContentScale.Crop
-                                        )
-                                    } else {
-                                        // Placeholder with expressive shape
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxSize()
-                                                .background(
-                                                    Brush.verticalGradient(
-                                                        colors = listOf(
-                                                            primaryContainerColor.copy(alpha = 0.5f),
-                                                            MaterialTheme.colorScheme.surfaceContainerHigh
-                                                        )
-                                                    )
-                                                ),
-                                            contentAlignment = Alignment.Center
-                                        ) {
-                                            Icon(
-                                                imageVector = Icons.Rounded.MusicNote,
-                                                contentDescription = null,
-                                                modifier = Modifier.size(albumSize * 0.35f),
-                                                tint = onSurfaceVariantColor.copy(alpha = 0.3f)
-                                            )
-                                        }
-                                    }
-                                    
-                                    // Subtle inner gradient for depth
-                                    Box(
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .clip(RoundedCornerShape(cornerRadius))
-                                            .background(
-                                                Brush.verticalGradient(
-                                                    colors = listOf(
-                                                        Color.Transparent,
-                                                        Color.Black.copy(alpha = 0.1f)
-                                                    ),
-                                                    startY = 0f,
-                                                    endY = Float.POSITIVE_INFINITY
+                        Box(modifier = Modifier.fillMaxSize()) {
+                            // Album Art
+                            val artSong = currentSong?.takeIf { it.albumArtUri != null || it.thumbnailUrl != null }
+                            if (artSong != null) {
+                                PlayerArtwork(
+                                    song = artSong,
+                                    contentDescription = stringResource(R.string.cd_album_art),
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(cornerRadius)),
+                                    contentScale = ContentScale.Crop
+                                )
+                            } else {
+                                // Placeholder with expressive shape
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            Brush.verticalGradient(
+                                                colors = listOf(
+                                                    primaryContainerColor.copy(alpha = 0.5f),
+                                                    MaterialTheme.colorScheme.surfaceContainerHigh
                                                 )
                                             )
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Rounded.MusicNote,
+                                        contentDescription = null,
+                                        modifier = Modifier.size(albumSize * 0.35f),
+                                        tint = onSurfaceVariantColor.copy(alpha = 0.3f)
                                     )
                                 }
                             }
+                                    
+                            // Subtle inner gradient for depth
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(cornerRadius))
+                                    .background(
+                                        Brush.verticalGradient(
+                                            colors = listOf(
+                                                Color.Transparent,
+                                                Color.Black.copy(alpha = 0.1f)
+                                            ),
+                                            startY = 0f,
+                                            endY = Float.POSITIVE_INFINITY
+                                        )
+                                    )
+                            )
                         }
                     }
                 }
@@ -767,8 +702,6 @@ private fun ExpressiveNowPlayingView(
             Spacer(modifier = Modifier.height(24.dp))
             
             // 🌟 Favorite / Download / Sleep Timer - connected button group
-            val sleepTimer = rememberSleepTimerControl(viewModel = viewModel)
-            val sleepTimerActive = sleepTimer.active
             val groupButtonColors = ToggleButtonDefaults.toggleButtonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentColor = onSurfaceVariantColor
@@ -827,21 +760,6 @@ private fun ExpressiveNowPlayingView(
                 }
 
                 // Sleep timer (checked while a timer is running; tap opens the dialog)
-                ToggleButton(
-                    checked = sleepTimerActive,
-                    onCheckedChange = { sleepTimer.open() },
-                    modifier = Modifier
-                        .weight(1f)
-                        .fillMaxHeight(),
-                    shapes = ButtonGroupDefaults.connectedTrailingButtonShapes(),
-                    colors = groupButtonColors
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Bedtime,
-                        contentDescription = stringResource(R.string.sleep_timer_title),
-                        modifier = Modifier.size(22.dp)
-                    )
-                }
             }
 
         }

@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlists, die du erstellst oder speicherst, erscheinen hier.</string>
     <string name="spotlight_hint_all">Spiel etwas ab und dein Startbildschirm füllt sich.</string>
 
-    <string name="sleep_timer_title">Sleep-Timer</string>
-    <string name="sleep_timer_status_track">Dieser Titel</string>
-    <string name="sleep_timer_detail_track">Die Wiedergabe stoppt, wenn der aktuelle Song endet</string>
-    <string name="sleep_timer_detail_duration">Die Wiedergabe blendet aus und pausiert, wenn der Timer abläuft</string>
     <string name="minutes_short">%1$d Min.</string>
-    <string name="sleep_timer_end_of_track">Ende dieses Titels</string>
-    <string name="sleep_timer_turn_off">Ausschalten</string>
 
     <string name="cd_drag_to_reorder">Zum Umsortieren ziehen</string>
     <string name="cd_favorite">Favorit</string>
@@ -227,7 +221,6 @@
     <string name="cd_volume_mute">Stummschalten</string>
     <string name="cd_volume_unmute">Stummschaltung aufheben</string>
     <string name="ps_now_playing">Läuft gerade</string>
-    <string name="ps_lyrics">Songtext</string>
     <string name="ps_up_next">Als Nächstes</string>
     <string name="ps_queue_empty">Warteschlange ist leer</string>
     <string name="ps_queue">WARTESCHLANGE</string>

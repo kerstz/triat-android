@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Οι λίστες που δημιουργείτε ή αποθηκεύετε εμφανίζονται εδώ.</string>
     <string name="spotlight_hint_all">Παίξτε κάτι και η αρχική σας σελίδα θα γεμίσει.</string>
 
-    <string name="sleep_timer_title">Χρονοδιακόπτης ύπνου</string>
-    <string name="sleep_timer_status_track">Αυτό το κομμάτι</string>
-    <string name="sleep_timer_detail_track">Η αναπαραγωγή σταματά όταν τελειώσει το τρέχον τραγούδι</string>
-    <string name="sleep_timer_detail_duration">Η αναπαραγωγή σβήνει σταδιακά και κάνει παύση όταν λήξει ο χρονοδιακόπτης</string>
     <string name="minutes_short">%1$d λεπ</string>
-    <string name="sleep_timer_end_of_track">Τέλος αυτού του κομματιού</string>
-    <string name="sleep_timer_turn_off">Απενεργοποίηση</string>
 
     <string name="cd_drag_to_reorder">Σύρετε για αναδιάταξη</string>
     <string name="cd_favorite">Αγαπημένο</string>
@@ -228,7 +222,6 @@
     <string name="cd_volume_mute">Σίγαση</string>
     <string name="cd_volume_unmute">Κατάργηση σίγασης</string>
     <string name="ps_now_playing">Παίζει τώρα</string>
-    <string name="ps_lyrics">Στίχοι</string>
     <string name="ps_up_next">Επόμενα</string>
     <string name="ps_queue_empty">Η ουρά είναι άδεια</string>
     <string name="ps_queue">ΟΥΡΑ</string>

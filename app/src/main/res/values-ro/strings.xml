@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlisturile pe care le creezi sau salvezi apar aici.</string>
     <string name="spotlight_hint_all">Redă ceva și pagina ta principală se va umple.</string>
 
-    <string name="sleep_timer_title">Temporizator de somn</string>
-    <string name="sleep_timer_status_track">Această piesă</string>
-    <string name="sleep_timer_detail_track">Redarea se oprește când se termină melodia curentă</string>
-    <string name="sleep_timer_detail_duration">Redarea se estompează și se pune pe pauză când temporizatorul expiră</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Sfârșitul acestei piese</string>
-    <string name="sleep_timer_turn_off">Dezactivează</string>
 
     <string name="cd_drag_to_reorder">Trage pentru a reordona</string>
     <string name="cd_favorite">Favorit</string>
@@ -231,7 +225,6 @@
     <string name="cd_volume_mute">Oprește sunetul</string>
     <string name="cd_volume_unmute">Pornește sunetul</string>
     <string name="ps_now_playing">Se redă acum</string>
-    <string name="ps_lyrics">Versuri</string>
     <string name="ps_up_next">Urmează</string>
     <string name="ps_queue_empty">Coada e goală</string>
     <string name="ps_queue">COADĂ</string>

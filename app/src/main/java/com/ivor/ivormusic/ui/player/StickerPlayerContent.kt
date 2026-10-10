@@ -44,7 +44,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -138,11 +137,9 @@ fun StickerPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
 
     // Swipe-to-skip on the song information. The sticker itself keeps its own
     // peel: that gesture throws the art off the canvas and slaps the next one
@@ -164,11 +161,6 @@ fun StickerPlayerSheetContent(
 
     // Same chip pair the sticker's own controls use, so the picker looks cut
     // from the same sheet.
-    val sleepTimer = rememberSleepTimerControl(
-        viewModel = viewModel,
-        accent = chipColor,
-        onAccent = onChip
-    )
     val accent = MaterialTheme.colorScheme.primary
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -212,74 +204,6 @@ fun StickerPlayerSheetContent(
                 Column(modifier = Modifier.fillMaxSize()) {
 
                     // ========== TOP BAR ==========
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding()
-                            .padding(horizontal = 20.dp, vertical = 12.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        EditorialGhostButton(
-                            onClick = onCollapse,
-                            accent = ink,
-                            size = 44.dp
-                        ) {
-                            Icon(
-                                Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse),
-                                modifier = Modifier.size(26.dp)
-                            )
-                        }
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                            // The fill is the state, not the button: a timer
-                            // that is not running looks like the rest of the
-                            // chrome.
-                            if (sleepTimer.active) {
-                                EditorialCircleButton(
-                                    onClick = sleepTimer.open,
-                                    accent = ink,
-                                    field = chipColor,
-                                    size = 44.dp
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                            } else {
-                                EditorialGhostButton(
-                                    onClick = sleepTimer.open,
-                                    accent = ink,
-                                    size = 44.dp
-                                ) {
-                                    Icon(
-                                        Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer),
-                                        modifier = Modifier.size(22.dp)
-                                    )
-                                }
-                            }
-                            EditorialGhostButton(
-                                onClick = { showQueue = true },
-                                accent = ink,
-                                size = 44.dp
-                            ) {
-                                Icon(
-                                    Icons.AutoMirrored.Filled.QueueMusic, stringResource(R.string.cd_queue),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                            EditorialGhostButton(
-                                onClick = { showOptions = true },
-                                accent = ink,
-                                size = 44.dp
-                            ) {
-                                Icon(
-                                    Icons.Rounded.MoreVert, stringResource(R.string.cd_more_options),
-                                    modifier = Modifier.size(22.dp)
-                                )
-                            }
-                        }
-                    }
 
                     // ========== THE STICKER ==========
                     Box(
@@ -287,35 +211,21 @@ fun StickerPlayerSheetContent(
                             .fillMaxWidth()
                             .weight(1f)
                     ) {
-                        Crossfade(targetState = showLyrics, label = "StickerLyrics") { lyricsVisible ->
-                            if (lyricsVisible) {
-                                SyncedLyricsView(
-                                    lyricsResult = lyricsResult,
-                                    currentPositionMs = progress,
-                                    isPlaying = isPlaying,
-                                    onSeekTo = { viewModel.seekTo(it) },
-                                    primaryColor = accent,
-                                    onSurfaceColor = ink,
-                                    onSurfaceVariantColor = inkVariant
-                                )
-                            } else {
-                                DraggableSticker(
-                                    currentSong = currentSong,
-                                    isPlaying = isPlaying,
-                                    isBuffering = isBuffering && playWhenReady && !isPlaying,
-                                    onPlayPause = {
-                                        playerHaptics.playPause(!viewModel.isPlaying.value)
-                                        viewModel.togglePlayPause()
-                                    },
-                                    onLike = { viewModel.toggleCurrentSongLike() },
-                                    onNext = { playerHaptics.skip(); viewModel.skipToNext() },
-                                    onPrevious = { playerHaptics.skip(); viewModel.skipToPrevious() },
-                                    ringColor = chipColor,
-                                    placeholderColor = chipColor,
-                                    placeholderIconColor = onChip
-                                )
-                            }
-                        }
+                        DraggableSticker(
+                            currentSong = currentSong,
+                            isPlaying = isPlaying,
+                            isBuffering = isBuffering && playWhenReady && !isPlaying,
+                            onPlayPause = {
+                                playerHaptics.playPause(!viewModel.isPlaying.value)
+                                viewModel.togglePlayPause()
+                            },
+                            onLike = { viewModel.toggleCurrentSongLike() },
+                            onNext = { playerHaptics.skip(); viewModel.skipToNext() },
+                            onPrevious = { playerHaptics.skip(); viewModel.skipToPrevious() },
+                            ringColor = chipColor,
+                            placeholderColor = chipColor,
+                            placeholderIconColor = onChip
+                        )
                     }
 
                     // ========== TITLE / ARTIST ==========
@@ -482,15 +392,6 @@ fun StickerPlayerSheetContent(
                                 stringResource(R.string.cd_repeat),
                                 modifier = Modifier.size(20.dp)
                             )
-                        }
-                        EditorialChip(
-                            checked = showLyrics,
-                            onClick = { showLyrics = !showLyrics },
-                            accent = chipColor,
-                            field = onChip,
-                            idle = inkVariant
-                        ) {
-                            Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(20.dp))
                         }
                     }
 

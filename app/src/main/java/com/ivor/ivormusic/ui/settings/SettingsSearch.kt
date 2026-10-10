@@ -190,11 +190,6 @@ internal fun buildSettingsSearchIndex(
         action: () -> Unit
     ) = add(SettingsSearchEntry(id, title, category, icon, keywords, action))
 
-    entry(
-        "lyrics_providers", stringResource(R.string.lyrics_settings_title), stringResource(R.string.lyrics_settings_title), Icons.Rounded.MusicNote,
-        listOf("lyrics", "providers", "priority", "order", "karaoke", "synced", "plain text", "offline", "YouLyPlus", "BetterLyrics", "NetEase", "SimpMusic", "LRCLIB", "KuGou", "Unison")
-    ) { onOpenPage(SettingsPage.LYRICS) }
-
     entry("import_links", stringResource(R.string.import_links_title), stringResource(R.string.settings_content_and_feeds), Icons.Rounded.AddLink,
         listOf("import", "importer", "txt", "links", "liens", "youtube", "playlist", "paste", "coller", "file", "fichier")) {
         onImportTxt()

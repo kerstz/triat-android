@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlists que você criar ou salvar aparecem aqui.</string>
     <string name="spotlight_hint_all">Toque algo e sua página inicial se preenche.</string>
 
-    <string name="sleep_timer_title">Temporizador de sono</string>
-    <string name="sleep_timer_status_track">Esta faixa</string>
-    <string name="sleep_timer_detail_track">A reprodução para quando a música atual terminar</string>
-    <string name="sleep_timer_detail_duration">A reprodução diminui e pausa quando o temporizador acabar</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Fim desta faixa</string>
-    <string name="sleep_timer_turn_off">Desligar</string>
 
     <string name="cd_drag_to_reorder">Arraste para reordenar</string>
     <string name="cd_favorite">Favorito</string>
@@ -227,7 +221,6 @@
     <string name="cd_volume_mute">Silenciar</string>
     <string name="cd_volume_unmute">Ativar som</string>
     <string name="ps_now_playing">Tocando agora</string>
-    <string name="ps_lyrics">Letra</string>
     <string name="ps_up_next">A seguir</string>
     <string name="ps_queue_empty">A fila está vazia</string>
     <string name="ps_queue">FILA</string>

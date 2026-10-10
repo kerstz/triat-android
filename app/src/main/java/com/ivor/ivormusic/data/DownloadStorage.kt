@@ -96,10 +96,6 @@ class DownloadStorage(private val context: Context) {
         return "${safeBaseName(title, artist)}.${type.extension}"
     }
 
-    /** A cover or LRC that intentionally shares the audio file's stem. */
-    fun buildMusicCompanionFileName(title: String, artist: String, extension: String): String =
-        "${safeBaseName(title, artist)}.${extension.trimStart('.')}"
-
     private fun safeBaseName(title: String, artist: String): String {
         val base = if (artist.isBlank()) title else "$title - $artist"
         return ILLEGAL_FILENAME_CHARS.replace(base, "")
@@ -127,21 +123,6 @@ class DownloadStorage(private val context: Context) {
         }
     }
 
-    /**
-     * Create lyric data beside a music download. It follows the audio's chosen
-     * visibility, unlike artwork which is always private.
-     */
-    fun createPendingMusicCompanion(
-        displayName: String,
-        mimeType: String,
-        privateStorage: Boolean = false
-    ): Uri? {
-        return if (privateStorage) {
-            createPrivatePending(displayName, DownloadMediaType.MUSIC)
-        } else {
-            createMediaStorePending(displayName, mimeType, DownloadMediaType.MUSIC.relativePath)
-        }
-    }
 
     /**
      * Album artwork never belongs in shared storage. The cover is embedded in

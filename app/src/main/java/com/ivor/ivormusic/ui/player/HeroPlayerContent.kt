@@ -41,7 +41,6 @@ import androidx.compose.material.icons.filled.Shuffle
 import androidx.compose.material.icons.filled.SkipNext
 import androidx.compose.material.icons.filled.SkipPrevious
 import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Lyrics
 import androidx.compose.material.icons.rounded.MoreVert
 import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -141,11 +140,9 @@ fun HeroPlayerSheetContent(
     val currentQueue by viewModel.playOrderQueue.collectAsStateWithLifecycle()
     val currentQueueItemId by viewModel.currentQueueItemId.collectAsStateWithLifecycle()
     val isFavorite by viewModel.isCurrentSongLiked.collectAsStateWithLifecycle()
-    val lyricsResult by viewModel.lyricsResult.collectAsStateWithLifecycle()
     val isLoadingMore by viewModel.isLoadingMore.collectAsStateWithLifecycle()
 
     var showQueue by remember { mutableStateOf(false) }
-    var showLyrics by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
     // Swipe-to-skip, shared by the art and the title on it so both commit at
@@ -159,7 +156,6 @@ fun HeroPlayerSheetContent(
     val ink = MaterialTheme.colorScheme.onPrimaryContainer
     val accent = MaterialTheme.colorScheme.primary
     val onAccent = MaterialTheme.colorScheme.onPrimary
-    val sleepTimer = rememberSleepTimerControl(viewModel = viewModel)
 
     val togglePlay: () -> Unit = {
         playerHaptics.playPause(!viewModel.isPlaying.value)
@@ -206,81 +202,61 @@ fun HeroPlayerSheetContent(
                                 .pointerInput(Unit) {
                                     detectTapGestures(onTap = { togglePlay() })
                                 }
-                                // Off while lyrics are up: that view scrolls and seeks.
-                                .swipeToSkip(swipeToSkip, enabled = !showLyrics)
+                                // Off while a scrolling overlay is up.
+                                .swipeToSkip(swipeToSkip)
                                 .styleWheelHold(styleWheel)
                         ) {
-                            Crossfade(targetState = showLyrics, label = "HeroArtLyrics") { lyricsVisible ->
-                                if (lyricsVisible) {
-                                    SyncedLyricsView(
-                                        lyricsResult = lyricsResult,
-                                        currentPositionMs = progress,
-                                        isPlaying = isPlaying,
-                                        onSeekTo = { viewModel.seekTo(it) },
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .statusBarsPadding()
-                                            // Clear of the top bar above and
-                                            // the title below.
-                                            .padding(top = 60.dp, bottom = 132.dp),
-                                        primaryColor = accent,
-                                        onSurfaceColor = ink,
-                                        onSurfaceVariantColor = ink.copy(alpha = 0.6f)
+                            Box(modifier = Modifier.fillMaxSize()) {
+                                val artSong = currentSong
+                                    ?.takeIf { it.thumbnailUrl != null || it.albumArtUri != null }
+                                if (artSong != null) {
+                                    PlayerArtwork(
+                                        song = artSong,
+                                        contentDescription = stringResource(R.string.cd_album_art),
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Crop
                                     )
                                 } else {
-                                    Box(modifier = Modifier.fillMaxSize()) {
-                                        val artSong = currentSong
-                                            ?.takeIf { it.thumbnailUrl != null || it.albumArtUri != null }
-                                        if (artSong != null) {
-                                            PlayerArtwork(
-                                                song = artSong,
-                                                contentDescription = stringResource(R.string.cd_album_art),
-                                                modifier = Modifier.fillMaxSize(),
-                                                contentScale = ContentScale.Crop
-                                            )
-                                        } else {
-                                            Icon(
-                                                imageVector = Icons.Rounded.MusicNote,
-                                                contentDescription = null,
-                                                tint = ink.copy(alpha = 0.4f),
-                                                modifier = Modifier
-                                                    .align(Alignment.Center)
-                                                    .size(120.dp)
-                                            )
-                                        }
-                                        // Top fade: the status bar and the top
-                                        // bar's buttons need something to sit
-                                        // on whatever the cover is.
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(132.dp)
-                                                .align(Alignment.TopCenter)
-                                                .background(
-                                                    Brush.verticalGradient(
-                                                        listOf(field.copy(alpha = 0.5f), field.copy(alpha = 0f))
-                                                    )
-                                                )
-                                        )
-                                        // Foot fade: the art hands over to the
-                                        // deck and carries the title. Faded to
-                                        // the field at zero alpha, never to
-                                        // Transparent, which greys the band.
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .fillMaxHeight(0.55f)
-                                                .align(Alignment.BottomCenter)
-                                                .background(
-                                                    Brush.verticalGradient(
-                                                        0f to field.copy(alpha = 0f),
-                                                        0.55f to field.copy(alpha = 0.6f),
-                                                        1f to field
-                                                    )
-                                                )
-                                        )
-                                    }
+                                    Icon(
+                                        imageVector = Icons.Rounded.MusicNote,
+                                        contentDescription = null,
+                                        tint = ink.copy(alpha = 0.4f),
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .size(120.dp)
+                                    )
                                 }
+                                // Top fade: the status bar and the top
+                                // bar's buttons need something to sit
+                                // on whatever the cover is.
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(132.dp)
+                                        .align(Alignment.TopCenter)
+                                        .background(
+                                            Brush.verticalGradient(
+                                                listOf(field.copy(alpha = 0.5f), field.copy(alpha = 0f))
+                                            )
+                                        )
+                                )
+                                // Foot fade: the art hands over to the
+                                // deck and carries the title. Faded to
+                                // the field at zero alpha, never to
+                                // Transparent, which greys the band.
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .fillMaxHeight(0.55f)
+                                        .align(Alignment.BottomCenter)
+                                        .background(
+                                            Brush.verticalGradient(
+                                                0f to field.copy(alpha = 0f),
+                                                0.55f to field.copy(alpha = 0.6f),
+                                                1f to field
+                                            )
+                                        )
+                                )
                             }
 
                             // ========== TITLE ON THE ART ==========
@@ -356,26 +332,6 @@ fun HeroPlayerSheetContent(
                                 Icon(Icons.Default.KeyboardArrowDown, stringResource(R.string.cd_collapse), modifier = Modifier.size(26.dp))
                             }
                             Spacer(Modifier.weight(1f))
-                            HeroChromeButton(
-                                onClick = { showLyrics = !showLyrics },
-                                field = field,
-                                ink = ink,
-                                checked = showLyrics,
-                                accent = accent,
-                                onAccent = onAccent
-                            ) {
-                                Icon(Icons.Rounded.Lyrics, stringResource(R.string.ps_lyrics), modifier = Modifier.size(22.dp))
-                            }
-                            HeroChromeButton(
-                                onClick = sleepTimer.open,
-                                field = field,
-                                ink = ink,
-                                checked = sleepTimer.active,
-                                accent = accent,
-                                onAccent = onAccent
-                            ) {
-                                Icon(Icons.Rounded.Bedtime, stringResource(R.string.cd_sleep_timer), modifier = Modifier.size(22.dp))
-                            }
                             HeroChromeButton(onClick = { showOptions = true }, field = field, ink = ink) {
                                 Icon(
                                     Icons.Rounded.MoreVert,

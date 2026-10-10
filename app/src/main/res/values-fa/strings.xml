@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">فهرست‌های پخشی که می‌سازید یا ذخیره می‌کنید اینجا ظاهر می‌شوند.</string>
     <string name="spotlight_hint_all">چیزی پخش کنید تا صفحه اصلی‌تان پر شود.</string>
 
-    <string name="sleep_timer_title">تایمر خواب</string>
-    <string name="sleep_timer_status_track">این قطعه</string>
-    <string name="sleep_timer_detail_track">پخش وقتی تمام شود متوقف می‌شود</string>
-    <string name="sleep_timer_detail_duration">پخش در پایان تایمر محو شده و متوقف می‌شود</string>
     <string name="minutes_short">%1$d دقیقه</string>
-    <string name="sleep_timer_end_of_track">پایان این قطعه</string>
-    <string name="sleep_timer_turn_off">خاموش کردن</string>
 
     <string name="cd_drag_to_reorder">برای تغییر ترتیب بکشید</string>
     <string name="cd_favorite">مورد علاقه</string>
@@ -230,7 +224,6 @@
     <string name="cd_volume_mute">بی‌صدا</string>
     <string name="cd_volume_unmute">با صدا</string>
     <string name="ps_now_playing">در حال پخش</string>
-    <string name="ps_lyrics">متن آهنگ</string>
     <string name="ps_up_next">بعدی</string>
     <string name="ps_queue_empty">صف خالی است</string>
     <string name="ps_queue">صف</string>

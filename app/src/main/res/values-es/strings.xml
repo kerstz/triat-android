@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Las playlists que crees o guardes aparecerán aquí.</string>
     <string name="spotlight_hint_all">Reproduce algo y tu página de inicio se irá llenando.</string>
 
-    <string name="sleep_timer_title">Temporizador de apagado</string>
-    <string name="sleep_timer_status_track">Esta pista</string>
-    <string name="sleep_timer_detail_track">La reproducción se detiene al terminar la canción actual</string>
-    <string name="sleep_timer_detail_duration">La reproducción se desvanece y pausa cuando termine el temporizador</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Al final de esta pista</string>
-    <string name="sleep_timer_turn_off">Desactivar</string>
 
     <string name="cd_drag_to_reorder">Arrastrar para reordenar</string>
     <string name="cd_favorite">Favorito</string>
@@ -229,7 +223,6 @@
     <string name="cd_volume_mute">Silenciar</string>
     <string name="cd_volume_unmute">Activar sonido</string>
     <string name="ps_now_playing">Reproduciendo ahora</string>
-    <string name="ps_lyrics">Letra</string>
     <string name="ps_up_next">A continuación</string>
     <string name="ps_queue_empty">La cola está vacía</string>
     <string name="ps_queue">COLA</string>

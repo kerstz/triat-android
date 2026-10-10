@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlist yang kamu buat atau simpan muncul di sini.</string>
     <string name="spotlight_hint_all">Putar sesuatu dan berandamu akan terisi.</string>
 
-    <string name="sleep_timer_title">Timer tidur</string>
-    <string name="sleep_timer_status_track">Lagu ini</string>
-    <string name="sleep_timer_detail_track">Pemutaran berhenti saat lagu yang sedang diputar selesai</string>
-    <string name="sleep_timer_detail_duration">Pemutaran memudar dan jeda saat timer berakhir</string>
     <string name="minutes_short">%1$d mnt</string>
-    <string name="sleep_timer_end_of_track">Akhir lagu ini</string>
-    <string name="sleep_timer_turn_off">Matikan</string>
 
     <string name="cd_drag_to_reorder">Tarik untuk mengurutkan ulang</string>
     <string name="cd_favorite">Favorit</string>
@@ -224,7 +218,6 @@
     <string name="cd_volume_mute">Bisukan</string>
     <string name="cd_volume_unmute">Bunyikan</string>
     <string name="ps_now_playing">Sedang Diputar</string>
-    <string name="ps_lyrics">Lirik</string>
     <string name="ps_up_next">Berikutnya</string>
     <string name="ps_queue_empty">Antrean kosong</string>
     <string name="ps_queue">ANTREAN</string>

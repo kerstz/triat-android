@@ -145,7 +145,6 @@ class DownloadRepository private constructor(private val context: Context) {
         .build()
 
     private val youtubeRepository = YouTubeRepository(context)
-    private val lyricsRepository = LyricsRepository(context)
     private val notificationHelper = DownloadNotificationHelper(context)
     private val storage = DownloadStorage(context)
 
@@ -335,9 +334,6 @@ class DownloadRepository private constructor(private val context: Context) {
                 val storedArtUri = obj.optString("albumArtUri")
                     .takeIf(String::isNotBlank)
                     ?.let(Uri::parse)
-                val storedLyricsUri = obj.optString("lyricsUri")
-                    .takeIf(String::isNotBlank)
-                    ?.let(Uri::parse)
 
                 val uri: Uri? = when {
                     mediaUri != null -> Uri.parse(mediaUri).takeIf { it in liveUris }
@@ -346,7 +342,7 @@ class DownloadRepository private constructor(private val context: Context) {
                 }
 
                 if (uri == null) {
-                    listOfNotNull(storedArtUri, storedLyricsUri)
+                    listOfNotNull(storedArtUri)
                         .filter(storage::isMusicCompanion)
                         .forEach(storage::delete)
                     prunedAny = true
@@ -357,9 +353,7 @@ class DownloadRepository private constructor(private val context: Context) {
                     it.isNotBlank() && !obj.isNull("albumArtUrl")
                 }?.takeIf { Uri.parse(it).scheme in setOf("http", "https") }
                 val localArtUri = storedArtUri?.takeIf { it in liveUris }
-                val lyricsUri = storedLyricsUri?.takeIf { it in liveUris }
                 if (storedArtUri != null && localArtUri == null) companionStateChanged = true
-                if (storedLyricsUri != null && lyricsUri == null) companionStateChanged = true
                 val addedAt = obj.optLong("addedAt").takeIf { it > 0 } ?: run {
                     backfilledAny = true
                     backfillAnchor - (entryCount - i) * 1000L
@@ -377,7 +371,6 @@ class DownloadRepository private constructor(private val context: Context) {
                         // artwork disappears exactly when the user goes offline.
                         thumbnailUrl = localArtUri?.toString() ?: artUrl,
                         source = SongSource.LOCAL,
-                        lyricsUri = lyricsUri,
                         dateAdded = addedAt,
                         albumId = obj.optString("albumId").takeIf { it.isNotBlank() },
                         releaseYear = obj.optInt("releaseYear").takeIf { it in 1900..2099 },
@@ -453,7 +446,6 @@ class DownloadRepository private constructor(private val context: Context) {
                     song.albumArtUri?.takeIf(storage::isMusicCompanion)?.let {
                         put("albumArtUri", it.toString())
                     }
-                    song.lyricsUri?.let { put("lyricsUri", it.toString()) }
                     song.dateAdded?.let { put("addedAt", it) }
                 }
                 jsonArray.put(obj)
@@ -630,7 +622,7 @@ class DownloadRepository private constructor(private val context: Context) {
 
     /**
      * Resolve the exact byte length of the audio stream that would be selected
-     * for [song]. Artwork, lyrics and metadata are deliberately not guessed;
+     * for [song]. Artwork and metadata are deliberately not guessed;
      * the confirmation UI labels this as an estimate because those small
      * companions are fetched only while the real download runs.
      */
@@ -872,11 +864,6 @@ class DownloadRepository private constructor(private val context: Context) {
                     // These are best-effort enrichments and run under the audio
                     // transfer rather than extending every playlist item by up
                     // to two provider timeouts after its bytes have arrived.
-                    val lyricsDeferred = async {
-                        (lyricsRepository.fetchLyrics(song, allowRemote = !ThemePreferences(context).isLocalOnlyModeEnabled()) as? LyricsResult.Success)
-                            ?.toDownloadLyrics()
-                            ?.takeIf(String::isNotBlank)
-                    }
                     val artworkDeferred = async { loadDownloadArtwork(song) }
 
                     audioTemp = downloadStream(request, streamUrl, "music", 0.1f, 0.82f)
@@ -884,9 +871,6 @@ class DownloadRepository private constructor(private val context: Context) {
                     ensureActive()
                     updateProgress(request, 0.84f, DownloadStatus.DOWNLOADING)
 
-                    val lyrics = runCatching { lyricsDeferred.await() }
-                        .onFailure { KLog.w(TAG, "Lyrics unavailable for ${song.title}", it) }
-                        .getOrNull()
                     val artwork = runCatching { artworkDeferred.await() }
                         .onFailure { KLog.w(TAG, "Artwork unavailable for ${song.title}", it) }
                         .getOrNull()
@@ -899,15 +883,14 @@ class DownloadRepository private constructor(private val context: Context) {
                         tempDirectory = context.cacheDir,
                         song = song,
                         artworkFile = artworkTemp,
-                        lyrics = lyrics
                     )
                     taggedAudioTemp = metadataCopy.getOrNull()
                     val audioToPublish = metadataCopy.getOrElse { error ->
                         // Portable tags are enrichment, not the song itself.
                         // In particular, jaudiotagger cannot grow the metadata
                         // atom in every YouTube M4A layout. Keep the untouched
-                        // download and publish the companion artwork/lyrics
-                        // instead of transferring the same audio three times.
+                        // download and publish the companion artwork instead
+                        // of transferring the same audio three times.
                         KLog.w(
                             TAG,
                             "Portable metadata unavailable for ${song.title}; " +
@@ -941,24 +924,6 @@ class DownloadRepository private constructor(private val context: Context) {
                         } ?: throw java.io.IOException("Could not create artwork storage entry")
                     }
 
-                    val lyricsTarget = lyrics?.let { body ->
-                        val name = storage.buildMusicCompanionFileName(
-                            request.title,
-                            request.subtitle,
-                            "lrc"
-                        )
-                        storage.createPendingMusicCompanion(
-                            name,
-                            "text/plain",
-                            privateStorage
-                        )?.also { target ->
-                            pendingTargets += target
-                            storage.openOutput(target)?.bufferedWriter(Charsets.UTF_8)?.use {
-                                it.write(body)
-                            } ?: throw java.io.IOException("Could not write lyric storage entry")
-                        } ?: throw java.io.IOException("Could not create lyric storage entry")
-                    }
-
                     ensureActive()
                     updateProgress(request, 0.98f, DownloadStatus.DOWNLOADING)
 
@@ -967,9 +932,6 @@ class DownloadRepository private constructor(private val context: Context) {
                     // was successfully fetched for it is visible beside it.
                     if (artworkTarget != null && !storage.publish(artworkTarget)) {
                         throw java.io.IOException("Could not publish artwork storage entry")
-                    }
-                    if (lyricsTarget != null && !storage.publish(lyricsTarget)) {
-                        throw java.io.IOException("Could not publish lyric storage entry")
                     }
                     if (!storage.publish(audioTarget)) {
                         throw java.io.IOException("Could not publish audio storage entry")
@@ -984,7 +946,6 @@ class DownloadRepository private constructor(private val context: Context) {
                             ?: song.thumbnailUrl
                             ?: song.albumArtUri?.toString(),
                         source = SongSource.LOCAL,
-                        lyricsUri = lyricsTarget,
                         dateAdded = System.currentTimeMillis()
                     )
                     _downloadedSongs.value = _downloadedSongs.value + downloaded
@@ -1479,7 +1440,7 @@ class DownloadRepository private constructor(private val context: Context) {
                 storage.delete(uri)
             }
         }
-        listOfNotNull(songToDelete.albumArtUri, songToDelete.lyricsUri)
+        listOfNotNull(songToDelete.albumArtUri)
             .filter(storage::isMusicCompanion)
             .forEach(storage::delete)
 

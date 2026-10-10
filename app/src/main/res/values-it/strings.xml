@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Le playlist che crei o salvi appaiono qui.</string>
     <string name="spotlight_hint_all">Riproduci qualcosa e la tua home si riempie.</string>
 
-    <string name="sleep_timer_title">Timer di spegnimento</string>
-    <string name="sleep_timer_status_track">Questo brano</string>
-    <string name="sleep_timer_detail_track">La riproduzione si interrompe alla fine del brano corrente</string>
-    <string name="sleep_timer_detail_duration">La riproduzione sfuma e va in pausa quando il timer termina</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Fine di questo brano</string>
-    <string name="sleep_timer_turn_off">Disattiva</string>
 
     <string name="cd_drag_to_reorder">Trascina per riordinare</string>
     <string name="cd_favorite">Preferito</string>
@@ -227,7 +221,6 @@
     <string name="cd_volume_mute">Silenzia</string>
     <string name="cd_volume_unmute">Riattiva l\'audio</string>
     <string name="ps_now_playing">In riproduzione</string>
-    <string name="ps_lyrics">Testo</string>
     <string name="ps_up_next">In arrivo</string>
     <string name="ps_queue_empty">La coda è vuota</string>
     <string name="ps_queue">CODA</string>

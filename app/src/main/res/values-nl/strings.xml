@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Afspeellijsten die je maakt of opslaat verschijnen hier.</string>
     <string name="spotlight_hint_all">Speel iets af en je startpagina vult zich.</string>
 
-    <string name="sleep_timer_title">Slaaptimer</string>
-    <string name="sleep_timer_status_track">Dit nummer</string>
-    <string name="sleep_timer_detail_track">Het afspelen stopt als het huidige nummer is afgelopen</string>
-    <string name="sleep_timer_detail_duration">Het afspelen fadet uit en pauzeert wanneer de timer eindigt</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Einde van dit nummer</string>
-    <string name="sleep_timer_turn_off">Uitschakelen</string>
 
     <string name="cd_drag_to_reorder">Sleep om te herordenen</string>
     <string name="cd_favorite">Favoriet</string>
@@ -228,7 +222,6 @@
     <string name="cd_volume_mute">Dempen</string>
     <string name="cd_volume_unmute">Dempen opheffen</string>
     <string name="ps_now_playing">Speelt nu</string>
-    <string name="ps_lyrics">Songteksten</string>
     <string name="ps_up_next">Hierna</string>
     <string name="ps_queue_empty">Wachtrij is leeg</string>
     <string name="ps_queue">WACHTRIJ</string>

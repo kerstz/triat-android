@@ -65,13 +65,7 @@
     <string name="spotlight_hint_playlists">Playlisty, które utworzysz lub zapiszesz, pojawią się tutaj.</string>
     <string name="spotlight_hint_all">Puść coś, a strona główna się wypełni.</string>
 
-    <string name="sleep_timer_title">Minutnik snu</string>
-    <string name="sleep_timer_status_track">Ten utwór</string>
-    <string name="sleep_timer_detail_track">Odtwarzanie zatrzyma się po bieżącym utworze</string>
-    <string name="sleep_timer_detail_duration">Odtwarzanie wyciszy się i zatrzyma po upływie minutnika</string>
     <string name="minutes_short">%1$d min</string>
-    <string name="sleep_timer_end_of_track">Koniec tego utworu</string>
-    <string name="sleep_timer_turn_off">Wyłącz</string>
 
     <string name="cd_drag_to_reorder">Przeciągnij, aby zmienić kolejność</string>
     <string name="cd_favorite">Ulubione</string>
@@ -234,7 +228,6 @@
     <string name="cd_volume_mute">Wycisz</string>
     <string name="cd_volume_unmute">Wyłącz wyciszenie</string>
     <string name="ps_now_playing">Teraz odtwarzane</string>
-    <string name="ps_lyrics">Tekst</string>
     <string name="ps_up_next">Następne</string>
     <string name="ps_queue_empty">Kolejka jest pusta</string>
     <string name="ps_queue">KOLEJKA</string>
