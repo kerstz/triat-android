@@ -22,10 +22,9 @@ This repository is Triat for Android, a fork of Koda.
 - Fully French: every string translated, tutoiement throughout, with a parity check over the locale files.
 - A quieter home and a flatter bottom bar: ghost chips and icons, artwork shelves kept, the top bar reduced to the greeting.
 - **Video removed.** The video player, Shorts, channel pages, subscriptions and the watch history are gone, along with lyrics and the sleep timer, which went with the same pass. About 13,000 lines.
-- SponsorBlock rebuilt for music: its skipping engine lived in the video player, so it now runs in `MusicService` and skips segments during audio playback.
+- SponsorBlock rebuilt for music: its skipping engine lived in the video player, so it now runs in `MusicService` and skips segments during audio playback, with the Ask button, the skip notice and its undo, and the coloured marks on the seek bar.
 
 **Planned**
-- An in-segment button for a SponsorBlock category set to Ask, plus the skip notice and the seek-bar markers the settings page still offers inertly.
 - Syncing what is playing and where, to carry on from one device to the other.
 - Syncing the few settings the phone and the desktop share.
 

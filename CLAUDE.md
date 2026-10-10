@@ -197,7 +197,7 @@ The rules most often needed in each area. Each is a summary; open the doc before
 - AutoMix: a failed silence probe is unknown audio (0), not silence; `TransitionPlanner` only does long overlaps with reliable tempo evidence.
 - The user's speed is the engine's baseline (`setBaseSpeed`, floor 0.1x from Media3); session extras are replaced, not merged - publish via `publishSessionState`.
 - Visualizer reads Koda's own PCM (`VisualizerAudioProcessor`), so no RECORD_AUDIO. `notify()` catches `SecurityException`.
-- **SponsorBlock lives here now.** Segments are fetched per track from `onMediaItemTransition`, the skip rides the 250ms sample loop, and only a media id shaped like a YouTube video id is eligible. Opt-in, a hash prefix is all that is sent, read-only. A category set to Ask behaves as Ignore: no in-segment button exists.
+- **SponsorBlock lives here now.** Segments are fetched per track from `onMediaItemTransition`, the skip rides the 250ms sample loop, and only a media id shaped like a YouTube video id is eligible. Opt-in, a hash prefix is all that is sent, read-only. The service publishes the segments, the Ask segment and the last skip through the session extras, and `CMD_SPONSOR_SKIP`/`CMD_SPONSOR_UNDO` send the decisions back; the marks reach every player style through `LocalScrubberMarks`, never a per-style parameter.
 
 ### Streams, caching, quality -> `docs/playback-streams.md`
 - NewPipe `fetchPage()` blocks; **bound the wait, not the work** (`resolveAudioUrlWithinBudget` detaches on `newPipeScope`). Rethrow `CancellationException` ahead of general catches.
