@@ -366,7 +366,6 @@ class YouTubeRepository(private val context: Context) {
             cachedVisitorData = null
             visitorDataFetchedAt = 0L
             botCheckVerdictAtMs = 0L
-            VideoStreamResolutionCache.clear()
             val editor = context.applicationContext
                 .getSharedPreferences("ivor_visitor_data", Context.MODE_PRIVATE)
                 .edit().remove("visitor_data").remove("visitor_data_at")
@@ -1343,10 +1342,6 @@ class YouTubeRepository(private val context: Context) {
      * Safe to call speculatively; a no-op when there is no token to replace.
      */
     suspend fun refreshVisitorDataAfterPlaybackFailure() {
-        // Every cached ladder contains signed URLs minted before the failure.
-        // They must not win the retry after identity or network conditions
-        // change, even when there is no persisted visitor token to replace.
-        VideoStreamResolutionCache.clear()
         val flagged = cachedVisitorData ?: loadPersistedVisitorData() ?: return
         try {
             remintVisitorData(flagged)
