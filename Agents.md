@@ -10,7 +10,7 @@ If you are about to add project knowledge here, add it to `CLAUDE.md` instead.
 
 ## Quick facts
 
-- **Koda**, repo dir `TheMusicApp`, package `com.ivor.ivormusic`. Android music and video player over YouTube Music, Kotlin + Compose + Material 3 Expressive, no official API keys.
+- **Koda**, repo dir `TheMusicApp`, package `com.ivor.ivormusic`. Android music player over YouTube Music, Kotlin + Compose + Material 3 Expressive, no official API keys.
 - Build commands, the test suite, emulator setup and the desugaring constraint: `CLAUDE.md` §6.
 - **Never run a `gradlew` build unless the user explicitly asks.**
 - **Never add AI attribution to a git commit** - no `Co-Authored-By: Claude`, no "Generated with" footer, no session link.

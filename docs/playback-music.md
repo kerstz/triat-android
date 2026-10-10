@@ -2,7 +2,7 @@
 
 Reference detail moved out of `CLAUDE.md` so it loads only when needed. `CLAUDE.md` keeps the summary, the invariants and the silent-failure index; this file keeps the reasoning and the scars. Markers (`[verified]`, `[scar]`, `[judgement]`, `[drifts]`) mean what `CLAUDE.md` says they mean. If a change contradicts a sentence here, fix the sentence in the same commit.
 
-Two entirely separate pipelines. **Music**: `MusicService` (Media3 `MediaLibraryService`) plus `PlayerViewModel` over a `MediaController` - background playback, notifications, queue. **Video**: `VideoPlayerViewModel` owns its own `ExoPlayer` directly - DASH or merged progressive, PiP in `VideoPlayerOverlay`. `service/VideoPlaybackService.kt` only borrows that player to publish a media session (lock screen, notification, headset buttons, foreground status); it never owns or releases it.
+One pipeline: `MusicService` (Media3 `MediaLibraryService`) plus `PlayerViewModel` over a `MediaController` - background playback, notifications, queue. The second pipeline that used to sit beside it, a `VideoPlayerViewModel` owning its own `ExoPlayer`, is gone with video mode.
 
 **Music modes are service-owned and durable.** Shuffle uses one persisted seed and the same explicit `ShuffleOrder` on both crossfade players, so swapping players cannot silently generate a new order and replay songs. Shuffle, repeat and an active sleep timer survive process recreation; end-of-track sleep applies to both players while duration sleep stores a wall-clock deadline. Sessions checkpoint every 15 seconds and on backgrounding. Restoring a music placeholder must preserve its saved seek when the real stream replaces it. Video sessions restore queue, item and position but deliberately exclude live and completed videos.
 
@@ -42,7 +42,7 @@ Two entirely separate pipelines. **Music**: `MusicService` (Media3 `MediaLibrary
 
 ## Android Auto browser contract
 
-**The connection must grant library commands.** [verified September 2026 against the cached Media3 1.11.0 AAR] `DEFAULT_SESSION_COMMANDS` contains session commands only; it does not authorize root, children, item lookup, subscriptions or search. `MusicService.onConnect` uses `DEFAULT_SESSION_AND_LIBRARY_COMMANDS` plus Koda's existing custom commands. The manifest already declares both browser intent filters; a correct manifest cannot repair missing session permissions.
+**The connection must grant library commands.** [verified September 2026 against the cached Media3 1.11.0 AAR] `DEFAULT_SESSION_COMMANDS` contains session commands only; it does not authorize root, children, item lookup or search. `MusicService.onConnect` uses `DEFAULT_SESSION_AND_LIBRARY_COMMANDS` plus Koda's existing custom commands. The manifest already declares both browser intent filters; a correct manifest cannot repair missing session permissions.
 
 **Search completion is a notification, not just a returned future.** [verified September 2026 against Media3 1.11.0 source] `MediaLibraryServiceLegacyStub.onSearch` detaches the legacy result and ignores the callback future; `notifySearchResultChanged` releases that pending request and triggers result retrieval. Koda now publishes a terminal result before notifying on the session thread, including zero matches and failures. Results are keyed by browser and query, bounded, cleared on disconnect/profile switch, and paginated without integer overflow. Source: https://github.com/androidx/media/blob/1.11.0/libraries/session/src/main/java/androidx/media3/session/MediaLibraryServiceLegacyStub.java
 
