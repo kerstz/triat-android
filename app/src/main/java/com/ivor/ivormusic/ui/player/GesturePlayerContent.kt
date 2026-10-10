@@ -338,13 +338,27 @@ private fun GestureNowPlayingView(
                 }
 
 
-                IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.QueueMusic,
-                        stringResource(R.string.cd_queue),
-                        modifier = Modifier.size(24.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
+                // Queue and overflow sit together because they are the same
+                // kind of thing - ways out of the now-playing screen - and the
+                // overflow used to hold a whole row of its own below the
+                // transport for one glyph.
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.QueueMusic,
+                            stringResource(R.string.cd_queue),
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
+                    IconButton(onClick = onShowOptions, modifier = Modifier.size(48.dp)) {
+                        Icon(
+                            Icons.Rounded.MoreVert,
+                            stringResource(R.string.cd_more_options),
+                            modifier = Modifier.size(24.dp),
+                            tint = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
             
@@ -425,7 +439,12 @@ private fun GestureNowPlayingView(
                         ) {
                             Text(
                                 text = currentSong?.title?.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
-                                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+                                // The artwork is this player's subject; a bold
+                                // headline over it made two things shout at
+                                // once and neither won.
+                                style = MaterialTheme.typography.headlineSmall.copy(
+                                    fontWeight = FontWeight.SemiBold
+                                ),
                                 maxLines = 1,
                                 overflow = TextOverflow.Ellipsis,
                                 color = onSurfaceColor,
@@ -435,7 +454,7 @@ private fun GestureNowPlayingView(
                             val artistName = currentSong?.artist?.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)
                             Text(
                                 text = artistName,
-                                style = MaterialTheme.typography.titleMedium,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = onSurfaceVariantColor,
                                 modifier = Modifier
                                     .clickable(enabled = artistName != stringResource(R.string.unknown_artist)) { onArtistClick(artistName) },
@@ -443,7 +462,7 @@ private fun GestureNowPlayingView(
                             )
                         }
                         
-                        Spacer(modifier = Modifier.height(30.dp))
+                        Spacer(modifier = Modifier.height(20.dp))
                         // ========== 5. WAVY PROGRESS BAR (Expressive Style) ==========
                         
                         Column(
@@ -502,15 +521,18 @@ private fun GestureNowPlayingView(
                                     .padding(horizontal = 4.dp),
                                 horizontalArrangement = Arrangement.SpaceBetween
                             ) {
+                                // Reference, not content: small and quiet, so
+                                // the eye reads the bar and finds the numbers
+                                // only when it goes looking for them.
                                 Text(
                                     text = formatDuration(displayedProgress),
-                                    style = MaterialTheme.typography.labelMedium,
-                                    color = onSurfaceVariantColor
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = onSurfaceVariantColor.copy(alpha = 0.7f)
                                 )
                                 Text(
-                                    text = formatDuration(duration), 
-                                    style = MaterialTheme.typography.labelMedium, 
-                                    color = onSurfaceVariantColor
+                                    text = formatDuration(duration),
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = onSurfaceVariantColor.copy(alpha = 0.7f)
                                 )
                             }
                         }
@@ -531,11 +553,8 @@ private fun GestureNowPlayingView(
                     onNext = onNext,
                     onPrevious = onPrevious,
                     primaryColor = primaryColor,
-                    onSurfaceColor = onSurfaceColor
+                    onSurfaceVariantColor = onSurfaceVariantColor
                 )
-                Spacer(modifier = Modifier.height(10.dp))
-                GesturePlayerToolbar(onShowOptions = onShowOptions)
-
                 Spacer(modifier = Modifier.height(56.dp))
             }
         }
@@ -556,7 +575,7 @@ private fun CoverflowTransportRow(
     onNext: () -> Unit,
     onPrevious: () -> Unit,
     primaryColor: Color,
-    onSurfaceColor: Color
+    onSurfaceVariantColor: Color
 ) {
     Row(
         modifier = Modifier
@@ -569,16 +588,18 @@ private fun CoverflowTransportRow(
             Icon(
                 imageVector = Icons.Rounded.SkipPrevious,
                 contentDescription = stringResource(R.string.cd_previous),
-                tint = onSurfaceColor,
-                modifier = Modifier.size(32.dp)
+                tint = onSurfaceVariantColor,
+                modifier = Modifier.size(28.dp)
             )
         }
+        // No elevation: this is the only filled shape on the screen, so the
+        // fill already carries it, and a drop shadow was the one place the
+        // player stopped being flat.
         Surface(
             onClick = onPlayPauseToggle,
             shape = CircleShape,
             color = primaryColor,
-            modifier = Modifier.size(68.dp),
-            shadowElevation = 10.dp
+            modifier = Modifier.size(64.dp),
         ) {
             Box(contentAlignment = Alignment.Center) {
                 if (isBuffering) {
@@ -600,35 +621,13 @@ private fun CoverflowTransportRow(
             Icon(
                 imageVector = Icons.Rounded.SkipNext,
                 contentDescription = stringResource(R.string.cd_next),
-                tint = onSurfaceColor,
-                modifier = Modifier.size(32.dp)
+                tint = onSurfaceVariantColor,
+                modifier = Modifier.size(28.dp)
             )
         }
     }
 }
 
-/**
- * The player's one control that is not playback: everything that can be done
- * to the song that is playing - like, download, add to a playlist, radio,
- * share, speed, volume, where it came from - lives behind this overflow, so
- * the face of the player stays the artwork and the transport.
- */
-@Composable
-private fun GesturePlayerToolbar(onShowOptions: () -> Unit) {
-    Box(
-        modifier = Modifier.fillMaxWidth(),
-        contentAlignment = Alignment.Center
-    ) {
-        IconButton(onClick = onShowOptions, modifier = Modifier.size(48.dp)) {
-            Icon(
-                imageVector = Icons.Rounded.MoreVert,
-                contentDescription = stringResource(R.string.cd_more_options),
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.size(26.dp)
-            )
-        }
-    }
-}
 
 /**
  * Custom Swipeable Album Carousel with smooth sliding animations
