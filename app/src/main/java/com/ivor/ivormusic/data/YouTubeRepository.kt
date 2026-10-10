@@ -3722,8 +3722,6 @@ class YouTubeRepository(private val context: Context) {
                 uploadedDate = uploadDate,
                 isLive = isLive,
                 dismissal = parseDismissalTokens(metadata),
-                watchedProgress = parseVideoWatchProgress(lockupViewModel),
-                watchProgressUpdatedAtMs = System.currentTimeMillis()
             )
         } catch (e: Exception) {
             return null
@@ -4508,13 +4506,8 @@ class YouTubeRepository(private val context: Context) {
                     ?.takeIf { it.isNotBlank() }
             val subscriberCount = getRunText(owner?.optJSONObject("subscriberCountText"))
                 ?.takeIf { it.isNotBlank() }
-            // attributedDescription carries commandRuns marking every link,
-            // hashtag and timestamp with exact UTF-16 offsets, so the
-            // description arrives already linkified (see parseRichText).
-            val richDescription = parseRichText(
-                secondaryInfo?.optJSONObject("attributedDescription")
-            )
-            val description = richDescription.text.takeIf { it.isNotBlank() }
+            val description = secondaryInfo?.optJSONObject("attributedDescription")
+                ?.optString("content")?.takeIf { it.isNotBlank() }
 
             VideoItem(
                 videoId = videoId,
@@ -4537,9 +4530,6 @@ class YouTubeRepository(private val context: Context) {
                 isLive = baseVideo?.isLive ?: false,
                 description = description ?: baseVideo?.description,
                 subscriberCount = subscriberCount ?: baseVideo?.subscriberCount,
-                // Only valid alongside the description they were measured
-                // against; a fallback description has no matching offsets.
-                descriptionLinks = if (description != null) richDescription.links else emptyList()
             )
         } catch (e: Exception) {
             KLog.w("YouTubeRepo", "watch-next metadata parse failed for $videoId", e)

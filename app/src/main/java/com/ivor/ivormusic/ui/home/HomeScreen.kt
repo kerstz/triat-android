@@ -1953,13 +1953,6 @@ fun SearchContent(
      */
     onShuffleQueue: (List<Song>) -> Unit = { songs -> onPlayQueue(songs, null) },
     onPlayRadio: (Song) -> Unit = { song -> onPlayQueue(listOf(song), song) },
-    onVideoClick: (VideoItem) -> Unit = {},
-    /**
-     * Play a playlist found through search as a queue. Null falls back to
-     * [onVideoClick], which plays the tapped video alone.
-     */
-    onPlayVideoQueue: ((com.ivor.ivormusic.data.VideoQueue) -> Unit)? = null,
-    onEnqueueVideo: ((com.ivor.ivormusic.data.VideoItem, Boolean) -> Unit)? = null,
     /**
      * Queue a song from a playlist opened through search. Hoisted like
      * [onSongLongPress]: the queue lives in HomeScreen's PlayerViewModel.

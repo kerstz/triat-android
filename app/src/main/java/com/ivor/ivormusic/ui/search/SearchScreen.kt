@@ -129,7 +129,6 @@ import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.SongSource
 import com.ivor.ivormusic.ui.library.songRowClick
 import com.ivor.ivormusic.data.VideoItem
-import com.ivor.ivormusic.data.VideoSearchDateFilter
 import com.ivor.ivormusic.data.VideoSearchSort
 import com.ivor.ivormusic.data.YouTubeLinkParser
 import com.ivor.ivormusic.data.ArtistItem
