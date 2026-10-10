@@ -340,22 +340,6 @@ class YouTubeRepository(private val context: Context) {
             }
         }
 
-        private class CachedCaptions(val tracks: List<CaptionTrack>, val fetchedAt: Long)
-
-        // Caption tracklists harvested from the /player response already made to
-        // start playback, so tapping CC costs no extra request. Companion-level
-        // for the same reason visitorData is: the player VM and the repository
-        // that resolved the stream can be different instances. Timedtext URLs
-        // are signed with a ~6h expiry, so entries are dropped well before that.
-        private const val CAPTION_CACHE_TTL_MS = 30 * 60 * 1000L // 30 minutes
-        private const val CAPTION_CACHE_MAX_ENTRIES = 16
-        private val captionCache = java.util.Collections.synchronizedMap(
-            object : LinkedHashMap<String, CachedCaptions>(CAPTION_CACHE_MAX_ENTRIES, 0.75f, true) {
-                override fun removeEldestEntry(
-                    eldest: MutableMap.MutableEntry<String, CachedCaptions>,
-                ): Boolean = size > CAPTION_CACHE_MAX_ENTRIES
-            }
-        )
 
         /**
          * Drop the process-wide caches that belong to one profile, so a switch
@@ -2115,7 +2099,6 @@ class YouTubeRepository(private val context: Context) {
     private class PlayerResponse(
         val streamingData: org.json.JSONObject?,
         val visitorDataSuspect: Boolean,
-        val captionTracks: List<CaptionTrack> = emptyList(),
         /**
          * `playerConfig.audioConfig.loudnessDb`: how far this track's master
          * sits above YouTube's -14 LKFS target, so the playback correction is a
@@ -2235,9 +2218,6 @@ class YouTubeRepository(private val context: Context) {
             visitorData = visitorData,
             extraClientFields = androidVrClientFields(),
         )
-        // The /player response carries the caption tracklist alongside the
-        // streams, so harvesting it here makes a later CC tap free.
-        cacheCaptionTracks(videoId, vr.captionTracks)
         cacheTrackLoudness(videoId, vr.loudnessDb)
         vr.streamingData?.let { return vr }
 
@@ -2250,12 +2230,10 @@ class YouTubeRepository(private val context: Context) {
             visitorData = visitorData,
             extraClientFields = iosClientFields(),
         )
-        cacheCaptionTracks(videoId, ios.captionTracks)
         cacheTrackLoudness(videoId, ios.loudnessDb)
         return PlayerResponse(
             streamingData = ios.streamingData,
             visitorDataSuspect = vr.visitorDataSuspect || ios.visitorDataSuspect,
-            captionTracks = vr.captionTracks.ifEmpty { ios.captionTracks },
             // The measurement is the track's, not the client's, so whichever
             // response carried one is as good as the other.
             loudnessDb = vr.loudnessDb ?: ios.loudnessDb,
@@ -2427,7 +2405,6 @@ class YouTubeRepository(private val context: Context) {
                 return@withContext PlayerResponse(null, status == "LOGIN_REQUIRED")
             }
 
-            val captionTracks = parseCaptionTracks(root)
             val loudnessDb = root.optJSONObject("playerConfig")
                 ?.optJSONObject("audioConfig")
                 ?.let { audio ->
@@ -2446,9 +2423,9 @@ class YouTubeRepository(private val context: Context) {
                 )
                 // Status OK with no streamingData is the other known signature
                 // of a stale/missing visitorData.
-                return@withContext PlayerResponse(null, true, captionTracks, loudnessDb)
+                return@withContext PlayerResponse(null, true, loudnessDb)
             }
-            PlayerResponse(streamingData, false, captionTracks, loudnessDb)
+            PlayerResponse(streamingData, false, loudnessDb)
         } catch (e: CancellationException) {
             // Swallowing this would report a cancelled call as a client that
             // has no streams, sending the chain on to the next client inside a
@@ -4420,52 +4397,8 @@ class YouTubeRepository(private val context: Context) {
         return best
     }
 
-    /**
-     * Parse captions.playerCaptionsTracklistRenderer.captionTracks out of a
-     * /player response. Each entry carries a signed timedtext baseUrl, a
-     * languageCode, a display name (runs on the native clients, simpleText on
-     * WEB) and, for auto-captions, kind == "asr" / a vssId prefixed "a.".
-     * Manually authored tracks are listed before auto-generated ones.
-     * Verified against the live /player API July 2026.
-     */
-    private fun parseCaptionTracks(root: org.json.JSONObject): List<CaptionTrack> {
-        return try {
-            val tracks = root.optJSONObject("captions")
-                ?.optJSONObject("playerCaptionsTracklistRenderer")
-                ?.optJSONArray("captionTracks")
-                ?: return emptyList()
-
-            (0 until tracks.length()).mapNotNull { i ->
-                val t = tracks.optJSONObject(i) ?: return@mapNotNull null
-                val baseUrl = t.optString("baseUrl").takeIf { it.isNotBlank() }
-                    ?: return@mapNotNull null
-                val languageCode = t.optString("languageCode").takeIf { it.isNotBlank() }
-                    ?: return@mapNotNull null
-                val name = getRunText(t.optJSONObject("name"))?.takeIf { it.isNotBlank() }
-                    ?: languageCode
-                CaptionTrack(
-                    languageCode = languageCode,
-                    name = name,
-                    baseUrl = baseUrl,
-                    // vssId is the more reliable marker: the native clients
-                    // sometimes omit "kind" while still prefixing vssId "a.".
-                    isAutoGenerated = t.optString("kind") == "asr" ||
-                        t.optString("vssId").startsWith("a."),
-                )
-            }
-                .distinctBy { it.languageCode to it.isAutoGenerated }
-                .sortedBy { it.isAutoGenerated }
-        } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "parseCaptionTracks failed", e)
-            emptyList()
-        }
-    }
 
 
-    private fun cacheCaptionTracks(videoId: String, tracks: List<CaptionTrack>) {
-        if (tracks.isEmpty()) return
-        captionCache[videoId] = CachedCaptions(tracks, System.currentTimeMillis())
-    }
 
     /**
      * Persist the track's loudness alongside the captions harvested from the
