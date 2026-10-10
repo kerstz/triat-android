@@ -24,7 +24,6 @@
 
     <string name="tab_home">الرئيسية</string>
     <string name="tab_search">بحث</string>
-    <string name="tab_subs">الاشتراكات</string>
     <string name="tab_library">المكتبة</string>
 
     <string name="local_only_title">وضع «محلي فقط» مفعّل</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">تظهر هنا قوائم التشغيل التي تنشئها أو تحفظها.</string>
     <string name="spotlight_hint_all">شغّل شيئًا وستمتلئ صفحتك الرئيسية.</string>
 
-    <string name="minutes_short">%1$d د</string>
 
     <string name="cd_drag_to_reorder">اسحب لإعادة الترتيب</string>
     <string name="cd_favorite">المفضلة</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">الوصف (اختياري)</string>
 
     <string name="video_options_share">مشاركة</string>
-    <string name="video_options_not_interested">غير مهتم</string>
     <string name="cd_back">رجوع</string>
     <string name="cd_saved">تم الحفظ</string>
 
@@ -160,18 +157,7 @@
         <item quantity="many">%1$d قائمة تشغيل</item>
         <item quantity="other">%1$d قائمة تشغيل</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="zero">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقيقة تقريبًا.</item>
-        <item quantity="one">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقيقة تقريبًا.</item>
-        <item quantity="two">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقيقتين تقريبًا.</item>
-        <item quantity="few">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقائق تقريبًا.</item>
-        <item quantity="many">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقيقة تقريبًا.</item>
-        <item quantity="other">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى خلال %1$d دقيقة تقريبًا.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">يحد YouTube من الطلبات الواردة من هذه الشبكة. حاول مرة أخرى بعد قليل.</string>
 
-    <string name="vhc_move_up">نقل %1$s للأعلى</string>
-    <string name="vhc_move_down">نقل %1$s للأسفل</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">انقر للاستماع</string>
@@ -203,7 +189,6 @@
     <string name="action_close">إغلاق</string>
     <string name="action_check_updates">التحقق من التحديثات</string>
     <string name="action_got_it">فهمت</string>
-    <string name="action_like">أعجبني</string>
     <string name="spotlight_new_for_you">جديد لك</string>
     <string name="spotlight_new_for_you_caption">أغانٍ لم تشغّلها من فنانين تستمع إليهم</string>
     <string name="spotlight_discovery_empty">لا جديد لاقتراحه بعد</string>
@@ -233,7 +218,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">كتم الصوت</string>
     <string name="cd_volume_unmute">إلغاء الكتم</string>
-    <string name="ps_now_playing">قيد التشغيل</string>
     <string name="ps_up_next">التالي</string>
     <string name="ps_queue_empty">قائمة الانتظار فارغة</string>
     <string name="ps_queue">قائمة الانتظار</string>

@@ -24,7 +24,6 @@
 
     <string name="tab_home">Αρχική</string>
     <string name="tab_search">Αναζήτηση</string>
-    <string name="tab_subs">Συνδρομές</string>
     <string name="tab_library">Βιβλιοθήκη</string>
 
     <string name="local_only_title">Η λειτουργία Μόνο τοπικά είναι ενεργή</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Οι λίστες που δημιουργείτε ή αποθηκεύετε εμφανίζονται εδώ.</string>
     <string name="spotlight_hint_all">Παίξτε κάτι και η αρχική σας σελίδα θα γεμίσει.</string>
 
-    <string name="minutes_short">%1$d λεπ</string>
 
     <string name="cd_drag_to_reorder">Σύρετε για αναδιάταξη</string>
     <string name="cd_favorite">Αγαπημένο</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Περιγραφή (προαιρετικό)</string>
 
     <string name="video_options_share">Κοινοποίηση</string>
-    <string name="video_options_not_interested">Δεν με ενδιαφέρει</string>
     <string name="cd_back">Πίσω</string>
     <string name="cd_saved">Αποθηκεύτηκε</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d λίστα</item>
         <item quantity="other">%1$d λίστες</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">Το YouTube περιορίζει τα αιτήματα από αυτό το δίκτυο. Δοκίμασε ξανά σε περίπου %1$d λεπτό.</item>
-        <item quantity="other">Το YouTube περιορίζει τα αιτήματα από αυτό το δίκτυο. Δοκίμασε ξανά σε περίπου %1$d λεπτά.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">Το YouTube περιορίζει τα αιτήματα από αυτό το δίκτυο. Δοκίμασε ξανά σε λίγο.</string>
 
-    <string name="vhc_move_up">Μετακίνηση %1$s επάνω</string>
-    <string name="vhc_move_down">Μετακίνηση %1$s κάτω</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Πατήστε για ακρόαση</string>
@@ -191,7 +181,6 @@
     <string name="action_close">Κλείσιμο</string>
     <string name="action_check_updates">Έλεγχος ενημερώσεων</string>
     <string name="action_got_it">Εντάξει</string>
-    <string name="action_like">Μου αρέσει</string>
     <string name="spotlight_new_for_you">Νέο για εσάς</string>
     <string name="spotlight_new_for_you_caption">Τραγούδια που δεν έχετε παίξει, από καλλιτέχνες που ακούτε</string>
     <string name="spotlight_discovery_empty">Τίποτα νέο για πρόταση ακόμη</string>
@@ -221,7 +210,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Σίγαση</string>
     <string name="cd_volume_unmute">Κατάργηση σίγασης</string>
-    <string name="ps_now_playing">Παίζει τώρα</string>
     <string name="ps_up_next">Επόμενα</string>
     <string name="ps_queue_empty">Η ουρά είναι άδεια</string>
     <string name="ps_queue">ΟΥΡΑ</string>

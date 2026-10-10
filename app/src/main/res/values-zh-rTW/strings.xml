@@ -24,7 +24,6 @@
 
     <string name="tab_home">首頁</string>
     <string name="tab_search">搜尋</string>
-    <string name="tab_subs">訂閱項目</string>
     <string name="tab_library">媒體庫</string>
 
     <string name="local_only_title">「僅本機」模式已開啟</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">你建立或儲存的播放清單會顯示在這裡。</string>
     <string name="spotlight_hint_all">播放一些音樂，你的首頁就會豐富起來。</string>
 
-    <string name="minutes_short">%1$d 分鐘</string>
 
     <string name="cd_drag_to_reorder">拖曳以重新排序</string>
     <string name="cd_favorite">收藏</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">說明（選填）</string>
 
     <string name="video_options_share">分享</string>
-    <string name="video_options_not_interested">沒興趣</string>
     <string name="cd_back">返回</string>
     <string name="cd_saved">已儲存</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">%1$d 份播放清單</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube 正在限制此網路的要求。請在大約 %1$d 分鐘後重試。</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube 正在限制此網路的要求。請稍後再試。</string>
 
-    <string name="vhc_move_up">將%1$s上移</string>
-    <string name="vhc_move_down">將%1$s下移</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">輕觸以聆聽</string>
     <string name="widget_pulse_label">脈搏</string>
@@ -187,7 +178,6 @@
     <string name="action_close">關閉</string>
     <string name="action_check_updates">檢查更新</string>
     <string name="action_got_it">知道了</string>
-    <string name="action_like">喜歡</string>
     <string name="spotlight_new_for_you">為你上新</string>
     <string name="spotlight_new_for_you_caption">你常聽演出者尚未播放過的歌曲</string>
     <string name="spotlight_discovery_empty">暫無新的推薦</string>
@@ -217,7 +207,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">靜音</string>
     <string name="cd_volume_unmute">取消靜音</string>
-    <string name="ps_now_playing">正在播放</string>
     <string name="ps_up_next">接下來播放</string>
     <string name="ps_queue_empty">待播清單是空的</string>
     <string name="ps_queue">待播清單</string>

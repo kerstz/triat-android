@@ -24,7 +24,6 @@
 
     <string name="tab_home">Início</string>
     <string name="tab_search">Buscar</string>
-    <string name="tab_subs">Inscritos</string>
     <string name="tab_library">Biblioteca</string>
 
     <string name="local_only_title">O modo Somente local está ativado</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Playlists que você criar ou salvar aparecem aqui.</string>
     <string name="spotlight_hint_all">Toque algo e sua página inicial se preenche.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Arraste para reordenar</string>
     <string name="cd_favorite">Favorito</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Descrição (opcional)</string>
 
     <string name="video_options_share">Compartilhar</string>
-    <string name="video_options_not_interested">Não tenho interesse</string>
     <string name="cd_back">Voltar</string>
     <string name="cd_saved">Salvo</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d playlist</item>
         <item quantity="other">%1$d playlists</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">O YouTube está limitando solicitações desta rede. Tente novamente em cerca de %1$d minuto.</item>
-        <item quantity="other">O YouTube está limitando solicitações desta rede. Tente novamente em cerca de %1$d minutos.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">O YouTube está limitando solicitações desta rede. Tente novamente daqui a pouco.</string>
 
-    <string name="vhc_move_up">Mover %1$s para cima</string>
-    <string name="vhc_move_down">Mover %1$s para baixo</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Toque para ouvir</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -190,7 +180,6 @@
     <string name="action_close">Fechar</string>
     <string name="action_check_updates">Verificar atualizações</string>
     <string name="action_got_it">Entendi</string>
-    <string name="action_like">Curtir</string>
     <string name="spotlight_new_for_you">Novo para você</string>
     <string name="spotlight_new_for_you_caption">Músicas que você ainda não tocou, de artistas que você ouve</string>
     <string name="spotlight_discovery_empty">Nada novo para sugerir ainda</string>
@@ -220,7 +209,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Silenciar</string>
     <string name="cd_volume_unmute">Ativar som</string>
-    <string name="ps_now_playing">Tocando agora</string>
     <string name="ps_up_next">A seguir</string>
     <string name="ps_queue_empty">A fila está vazia</string>
     <string name="ps_queue">FILA</string>

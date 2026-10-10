@@ -24,7 +24,6 @@
 
     <string name="tab_home">Główna</string>
     <string name="tab_search">Szukaj</string>
-    <string name="tab_subs">Subskrypcje</string>
     <string name="tab_library">Biblioteka</string>
 
     <string name="local_only_title">Tryb „tylko lokalnie” jest włączony</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Playlisty, które utworzysz lub zapiszesz, pojawią się tutaj.</string>
     <string name="spotlight_hint_all">Puść coś, a strona główna się wypełni.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Przeciągnij, aby zmienić kolejność</string>
     <string name="cd_favorite">Ulubione</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Opis (opcjonalnie)</string>
 
     <string name="video_options_share">Udostępnij</string>
-    <string name="video_options_not_interested">Nie interesuje mnie</string>
     <string name="cd_back">Wstecz</string>
     <string name="cd_saved">Zapisano</string>
 
@@ -156,16 +153,7 @@
         <item quantity="many">%1$d playlist</item>
         <item quantity="other">%1$d playlisty</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube ogranicza liczbę żądań z tej sieci. Spróbuj ponownie za około %1$d minutę.</item>
-        <item quantity="few">YouTube ogranicza liczbę żądań z tej sieci. Spróbuj ponownie za około %1$d minuty.</item>
-        <item quantity="many">YouTube ogranicza liczbę żądań z tej sieci. Spróbuj ponownie za około %1$d minut.</item>
-        <item quantity="other">YouTube ogranicza liczbę żądań z tej sieci. Spróbuj ponownie za około %1$d minuty.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube ogranicza liczbę żądań z tej sieci. Spróbuj ponownie za chwilę.</string>
 
-    <string name="vhc_move_up">Przenieś %1$s w górę</string>
-    <string name="vhc_move_down">Przenieś %1$s w dół</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Dotknij, aby słuchać</string>
@@ -197,7 +185,6 @@
     <string name="action_close">Zamknij</string>
     <string name="action_check_updates">Sprawdź aktualizacje</string>
     <string name="action_got_it">Jasne</string>
-    <string name="action_like">Lubię</string>
     <string name="spotlight_new_for_you">Nowości dla Ciebie</string>
     <string name="spotlight_new_for_you_caption">Utwory, których jeszcze nie słuchałeś, od wykonawców, których słuchasz</string>
     <string name="spotlight_discovery_empty">Na razie brak nowych propozycji</string>
@@ -227,7 +214,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Wycisz</string>
     <string name="cd_volume_unmute">Wyłącz wyciszenie</string>
-    <string name="ps_now_playing">Teraz odtwarzane</string>
     <string name="ps_up_next">Następne</string>
     <string name="ps_queue_empty">Kolejka jest pusta</string>
     <string name="ps_queue">KOLEJKA</string>

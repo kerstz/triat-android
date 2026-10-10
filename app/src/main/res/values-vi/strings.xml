@@ -24,7 +24,6 @@
 
     <string name="tab_home">Trang chủ</string>
     <string name="tab_search">Tìm kiếm</string>
-    <string name="tab_subs">Đăng ký</string>
     <string name="tab_library">Thư viện</string>
 
     <string name="local_only_title">Chế độ chỉ phát nội bộ đang bật</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Danh sách phát bạn tạo hoặc lưu sẽ hiện ở đây.</string>
     <string name="spotlight_hint_all">Phát một bản nhạc và trang chủ sẽ dần đầy lên.</string>
 
-    <string name="minutes_short">%1$d phút</string>
 
     <string name="cd_drag_to_reorder">Kéo để sắp xếp lại</string>
     <string name="cd_favorite">Yêu thích</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Mô tả (không bắt buộc)</string>
 
     <string name="video_options_share">Chia sẻ</string>
-    <string name="video_options_not_interested">Không quan tâm</string>
     <string name="cd_back">Quay lại</string>
     <string name="cd_saved">Đã lưu</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">%1$d danh sách phát</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube đang giới hạn yêu cầu từ mạng này. Thử lại sau khoảng %1$d phút.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube đang giới hạn yêu cầu từ mạng này. Thử lại sau một chút.</string>
 
-    <string name="vhc_move_up">Di chuyển %1$s lên</string>
-    <string name="vhc_move_down">Di chuyển %1$s xuống</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Chạm để nghe</string>
@@ -188,7 +179,6 @@
     <string name="action_close">Đóng</string>
     <string name="action_check_updates">Kiểm tra cập nhật</string>
     <string name="action_got_it">Đã hiểu</string>
-    <string name="action_like">Thích</string>
     <string name="spotlight_new_for_you">Mới dành cho bạn</string>
     <string name="spotlight_new_for_you_caption">Bài bạn chưa phát, từ nghệ sĩ bạn hay nghe</string>
     <string name="spotlight_discovery_empty">Chưa có gợi ý mới</string>
@@ -218,7 +208,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Tắt tiếng</string>
     <string name="cd_volume_unmute">Bật tiếng</string>
-    <string name="ps_now_playing">Đang phát</string>
     <string name="ps_up_next">Tiếp theo</string>
     <string name="ps_queue_empty">Hàng đợi trống</string>
     <string name="ps_queue">HÀNG ĐỢI</string>

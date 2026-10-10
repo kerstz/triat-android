@@ -24,7 +24,6 @@
 
     <string name="tab_home">首页</string>
     <string name="tab_search">搜索</string>
-    <string name="tab_subs">订阅</string>
     <string name="tab_library">媒体库</string>
 
     <string name="local_only_title">已开启“仅本地”模式</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">你创建或保存的歌单会显示在这里。</string>
     <string name="spotlight_hint_all">播放一些音乐，你的首页就会丰富起来。</string>
 
-    <string name="minutes_short">%1$d 分钟</string>
 
     <string name="cd_drag_to_reorder">拖动以重新排序</string>
     <string name="cd_favorite">收藏</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">描述（可选）</string>
 
     <string name="video_options_share">分享</string>
-    <string name="video_options_not_interested">不感兴趣</string>
     <string name="cd_back">返回</string>
     <string name="cd_saved">已保存</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">%1$d 个歌单</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube 正在限制来自此网络的请求。请在大约 %1$d 分钟后重试。</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube 正在限制来自此网络的请求。请稍后重试。</string>
 
-    <string name="vhc_move_up">将%1$s上移</string>
-    <string name="vhc_move_down">将%1$s下移</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">点按收听</string>
     <string name="widget_pulse_label">脉搏</string>
@@ -187,7 +178,6 @@
     <string name="action_close">关闭</string>
     <string name="action_check_updates">检查更新</string>
     <string name="action_got_it">知道了</string>
-    <string name="action_like">喜欢</string>
     <string name="spotlight_new_for_you">为你上新</string>
     <string name="spotlight_new_for_you_caption">你常听艺人尚未播放过的歌曲</string>
     <string name="spotlight_discovery_empty">暂无新的推荐</string>
@@ -217,7 +207,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">静音</string>
     <string name="cd_volume_unmute">取消静音</string>
-    <string name="ps_now_playing">正在播放</string>
     <string name="ps_up_next">接下来播放</string>
     <string name="ps_queue_empty">队列为空</string>
     <string name="ps_queue">队列</string>

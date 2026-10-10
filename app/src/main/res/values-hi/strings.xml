@@ -24,7 +24,6 @@
 
     <string name="tab_home">होम</string>
     <string name="tab_search">खोजें</string>
-    <string name="tab_subs">सब्सक्रिप्शन</string>
     <string name="tab_library">लाइब्रेरी</string>
 
     <string name="local_only_title">केवल लोकल मोड चालू है</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">आपकी बनाई या सहेजी प्लेलिस्ट यहाँ दिखेगी।</string>
     <string name="spotlight_hint_all">कुछ चलाएं, और आपका होम भर जाएगा।</string>
 
-    <string name="minutes_short">%1$d मिनट</string>
 
     <string name="cd_drag_to_reorder">क्रम बदलने के लिए खींचें</string>
     <string name="cd_favorite">पसंदीदा</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">विवरण (वैकल्पिक)</string>
 
     <string name="video_options_share">साझा करें</string>
-    <string name="video_options_not_interested">रुचि नहीं है</string>
     <string name="cd_back">वापस</string>
     <string name="cd_saved">सहेजा गया</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d प्लेलिस्ट</item>
         <item quantity="other">%1$d प्लेलिस्ट</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube इस नेटवर्क से आने वाले अनुरोधों को सीमित कर रहा है। लगभग %1$d मिनट में फिर से कोशिश करें।</item>
-        <item quantity="other">YouTube इस नेटवर्क से आने वाले अनुरोधों को सीमित कर रहा है। लगभग %1$d मिनट में फिर से कोशिश करें।</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube इस नेटवर्क से आने वाले अनुरोधों को सीमित कर रहा है। थोड़ी देर में फिर से कोशिश करें।</string>
 
-    <string name="vhc_move_up">%1$s को ऊपर ले जाएं</string>
-    <string name="vhc_move_down">%1$s को नीचे ले जाएं</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">सुनने के लिए टैप करें</string>
@@ -191,7 +181,6 @@
     <string name="action_close">बंद करें</string>
     <string name="action_check_updates">अपडेट जाँचें</string>
     <string name="action_got_it">समझ गया</string>
-    <string name="action_like">पसंद</string>
     <string name="spotlight_new_for_you">आपके लिए नया</string>
     <string name="spotlight_new_for_you_caption">ऐसे कलाकारों के गाने जिन्हें आप सुनते हैं, पर जो आपने नहीं चलाए</string>
     <string name="spotlight_discovery_empty">अभी सुझाने को कुछ नया नहीं</string>
@@ -221,7 +210,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">म्यूट करें</string>
     <string name="cd_volume_unmute">अनम्यूट करें</string>
-    <string name="ps_now_playing">अब चल रहा है</string>
     <string name="ps_up_next">आगे है</string>
     <string name="ps_queue_empty">कतार खाली है</string>
     <string name="ps_queue">कतार</string>

@@ -24,7 +24,6 @@
 
     <string name="tab_home">Ana sayfa</string>
     <string name="tab_search">Ara</string>
-    <string name="tab_subs">Abonelikler</string>
     <string name="tab_library">Kitaplık</string>
 
     <string name="local_only_title">Yalnızca yerel modu açık</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Oluşturduğun veya kaydettiğin listeler burada görünür.</string>
     <string name="spotlight_hint_all">Bir şey çal, ana sayfan dolmaya başlasın.</string>
 
-    <string name="minutes_short">%1$d dk</string>
 
     <string name="cd_drag_to_reorder">Yeniden sıralamak için sürükle</string>
     <string name="cd_favorite">Favori</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Açıklama (isteğe bağlı)</string>
 
     <string name="video_options_share">Paylaş</string>
-    <string name="video_options_not_interested">İlgimi çekmiyor</string>
     <string name="cd_back">Geri</string>
     <string name="cd_saved">Kaydedildi</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d liste</item>
         <item quantity="other">%1$d oynatma listesi</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube bu ağdan gelen istekleri sınırlandırıyor. Yaklaşık %1$d dakika içinde tekrar deneyin.</item>
-        <item quantity="other">YouTube bu ağdan gelen istekleri sınırlandırıyor. Yaklaşık %1$d dakika içinde tekrar deneyin.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube bu ağdan gelen istekleri sınırlandırıyor. Birazdan tekrar deneyin.</string>
 
-    <string name="vhc_move_up">%1$s öğesini yukarı taşı</string>
-    <string name="vhc_move_down">%1$s öğesini aşağı taşı</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Dinlemek için dokun</string>
@@ -191,7 +181,6 @@
     <string name="action_close">Kapat</string>
     <string name="action_check_updates">Güncellemeleri denetle</string>
     <string name="action_got_it">Anladım</string>
-    <string name="action_like">Beğen</string>
     <string name="spotlight_new_for_you">Senin için yeniler</string>
     <string name="spotlight_new_for_you_caption">Dinlediğin sanatçılardan henüz çalmadığın şarkılar</string>
     <string name="spotlight_discovery_empty">Önerecek yeni bir şey yok</string>
@@ -221,7 +210,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Sesi kapat</string>
     <string name="cd_volume_unmute">Sesi aç</string>
-    <string name="ps_now_playing">Şimdi çalıyor</string>
     <string name="ps_up_next">Sıradaki</string>
     <string name="ps_queue_empty">Sıra boş</string>
     <string name="ps_queue">SIRA</string>

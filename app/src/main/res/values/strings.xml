@@ -71,7 +71,6 @@
     <string name="action_close">Close</string>
     <string name="action_check_updates">Check Updates</string>
     <string name="action_got_it">Got it</string>
-    <string name="action_like">Like</string>
     <string name="unknown_artist">Unknown Artist</string>
     <string name="untitled_song">Untitled Song</string>
     <string name="label_playlist">Playlist</string>
@@ -79,7 +78,6 @@
     <!-- Bottom navigation tabs. Doubles as each tab icon's contentDescription. -->
     <string name="tab_home">Home</string>
     <string name="tab_search">Search</string>
-    <string name="tab_subs">Subs</string>
     <string name="tab_library">Library</string>
 
     <!-- Local only mode notices -->
@@ -146,7 +144,6 @@
     <string name="spotlight_hint_all">Play something and your home fills in around it.</string>
 
     <!-- Sleep timer -->
-    <string name="minutes_short">%1$d min</string>
 
     <!-- Mini player / shared component content descriptions -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>
@@ -202,7 +199,6 @@
 
     <!-- Video options sheet (video long-press) -->
     <string name="video_options_share">Share</string>
-    <string name="video_options_not_interested">Not interested</string>
     <string name="cd_back">Back</string>
     <string name="cd_saved">Saved</string>
 
@@ -262,7 +258,6 @@
     <string name="about_open_source_note">Triat is based on Koda by Ivorisnoob and stays open source under GPL-3.0. The app mark and build details above are bundled with the app, so this page is complete before anything is fetched.</string>
     <string name="cd_profile_picture">Profile Picture</string>
     <string name="sp_connected">Connected</string>
-    <string name="sp_mode_music">Music</string>
     <string name="sp_color_palette">Color palette</string>
     <string name="sp_amoled_black">AMOLED Black</string>
     <string name="sp_ambient_background">Ambient Background</string>
@@ -336,8 +331,6 @@
     <string name="sp_quality_per_network">Quality per network</string>
     <string name="sp_quality_network_hint">Triat picks these based on the connection in use</string>
     <string name="sp_music_quality">Music quality</string>
-    <string name="sp_video_quality">Video quality</string>
-    <string name="sp_quality_auto_highest">Auto (Highest)</string>
     <string name="sp_music_quality_data_saver">Data Saver</string>
     <string name="sp_music_quality_normal">Normal</string>
     <string name="sp_music_quality_high">High</string>
@@ -361,8 +354,6 @@
     <string name="sp_local_only">Local Only</string>
     <string name="sp_local_only_sub_on">Offline: device library only, no internet</string>
     <string name="sp_local_only_sub_off">YouTube features enabled</string>
-    <string name="sp_shorts_buttons">Shorts Buttons</string>
-    <string name="sp_shorts_buttons_sub">Tap a button to show or hide it in Shorts</string>
     <string name="sp_excluded_folders_sub">Songs from selected folders won\'t appear in your library</string>
     <string name="sp_scanning_folders">Scanning folders...</string>
     <string name="sp_no_music_folders">No music folders found</string>
@@ -382,8 +373,6 @@
     <string name="auto_help_step4">Re-check the app launcher in your car</string>
     <string name="auto_help_note">The exact wording and location of these options varies between phone brands and Auto versions.</string>
     <string name="sp_recommendations">Recommendations</string>
-    <string name="vhc_move_up">Move %1$s up</string>
-    <string name="vhc_move_down">Move %1$s down</string>
     <string name="sp_show_recent_searches">Show recent searches</string>
     <string name="sp_show_recent_searches_sub">Your past queries under the search bar</string>
     <string name="sp_playlist_songs">Playlist songs</string>
@@ -400,24 +389,6 @@
     <string name="si_playlist_swipe">Quick actions when you swipe a song in a playlist. Queue appends it to the playing queue. Remove only swipes where the playlist can be edited, and a YouTube list that is not yours only ever offers Play and Queue.</string>
     <string name="sp_not_recommended">Not Recommended</string>
     <string name="sp_not_recommended_sub">Videos and channels you\'ve hidden from your feeds</string>
-    <string name="sp_subscriptions_shown">Subscriptions Shown</string>
-    <string name="sp_subs_source_desc">Which list the Subscriptions tab builds its feed from.</string>
-    <string name="sp_subscribe_saves_to">Subscribe Saves To</string>
-    <string name="sp_subs_target_desc">Where tapping Subscribe stores the channel. Saving on this device works signed out and never tells YouTube.</string>
-    <string name="sp_subs_src_local">On this device</string>
-    <string name="sp_subs_src_youtube">YouTube account</string>
-    <string name="sp_subs_src_all">Everything you follow</string>
-    <string name="sp_subs_src_local_desc">Only channels you follow inside Triat</string>
-    <string name="sp_subs_src_youtube_desc">Only channels your Google account is subscribed to</string>
-    <string name="sp_subs_src_all_desc">Both lists merged, whichever of them exist</string>
-    <string name="sp_subs_tgt_local">This device only</string>
-    <string name="sp_subs_tgt_youtube">YouTube account</string>
-    <string name="sp_subs_tgt_both">Device and YouTube</string>
-    <string name="sp_subs_tgt_auto">YouTube when signed in</string>
-    <string name="sp_subs_tgt_local_desc">Never touches your Google account</string>
-    <string name="sp_subs_tgt_youtube_desc">Needs you to be signed in</string>
-    <string name="sp_subs_tgt_both_desc">Keeps a local copy that survives signing out</string>
-    <string name="sp_subs_tgt_auto_desc">Falls back to this device when signed out</string>
     <string name="sp_downloads">Downloads</string>
     <string name="sp_private_downloads">Private downloads</string>
     <string name="sp_private_downloads_on">New audio and video stay inside Triat and are removed on uninstall</string>
@@ -543,14 +514,12 @@
         <item quantity="one">%d video</item>
         <item quantity="other">%d videos</item>
     </plurals>
-    <string name="vpl_video_count_partial">%d+ videos</string>
 
     <!-- Subscriptions -->
     <string name="sc_today">Today</string>
     <string name="sc_this_week">This week</string>
 
     <!-- Player sheet -->
-    <string name="ps_now_playing">Now Playing</string>
     <string name="cd_shuffle">Shuffle</string>
     <string name="cd_previous">Previous</string>
     <string name="cd_repeat">Repeat</string>
@@ -571,8 +540,6 @@
     <string name="load_more">Load More</string>
 
     <!-- Shorts -->
-    <string name="cd_dislike">Dislike</string>
-    <string name="cd_comments">Comments</string>
 
     <!-- Downloads -->
     <string name="stop_all">Stop all</string>
@@ -814,7 +781,6 @@
 
     <!-- Channel / artist / album -->
     <string name="cd_more_options">More options</string>
-    <string name="ar_open_youtube_channel">Open YouTube channel</string>
     <string name="ar_sort_suggested">Suggested</string>
     <string name="ar_sort_title">A-Z</string>
     <string name="ar_sort_album">Album</string>
@@ -872,18 +838,12 @@
     <string name="sp_music_quality_wifi">Music quality on Wi-Fi</string>
     <string name="sp_music_quality_mobile">Music quality on mobile data</string>
     <string name="ss_search_settings">Search settings</string>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube is limiting requests from this network. Try again in about %1$d minute.</item>
-        <item quantity="other">YouTube is limiting requests from this network. Try again in about %1$d minutes.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube is limiting requests from this network. Try again in a moment.</string>
     <string name="wifi">Wi-Fi</string>
     <string name="mobile_data">Mobile data</string>
 
     <!-- Queue / notifications / download sheets -->
     <string name="vd_estimated">Estimated download</string>
     <string name="vd_size_unavailable">Size unavailable</string>
-    <string name="vd_remember_quality">Remember this quality</string>
     <string name="vd_added">Added to downloads</string>
     <string name="sd_title">Download song</string>
     <string name="sd_artwork_note">Artwork and lyrics may add a little to the final size.</string>
@@ -891,21 +851,14 @@
     <string name="pd_download_playlist">Download playlist</string>
     <string name="pd_unavailable_offline">Unavailable offline</string>
     <string name="pd_in_playlist">In playlist</string>
-    <string name="pd_loaded_now">Loaded now</string>
-    <string name="pd_already_offline_here">Already offline here</string>
-    <string name="pd_pages_note">Every remaining playlist page is resolved after you confirm; existing downloads are skipped then too.</string>
     <string name="pd_already_offline">Already offline</string>
     <string name="pd_repeated_entries">Repeated entries</string>
     <string name="pd_repeated_entries_note">Repeated playlist entries share one offline file and still remain in their original positions.</string>
     <string name="pd_to_download">To download</string>
     <string name="pd_progress_cd">Playlist download progress</string>
-    <string name="pd_quality_note">Each video uses the best MP4 quality at or below this limit.</string>
-    <string name="pd_best_available">Best available</string>
-    <string name="pd_remember_sub">Use it for future video downloads</string>
     <string name="pd_local_only_block">Turn off Local only mode before starting a download.</string>
     <string name="pd_load_failed">Couldn\'t load the complete playlist. Check your connection and try again.</string>
     <string name="pd_background_note">Downloads continue in the background. Existing downloads and repeated items are skipped automatically.</string>
-    <string name="pd_loading_full">Loading full playlist...</string>
     <string name="pd_adding">Adding to downloads...</string>
     <string name="pd_already_complete">Already available offline</string>
     <string name="pd_download_full">Download full playlist</string>
@@ -1454,8 +1407,6 @@
     <string name="cookie_missing">Missing %1$s. Copy the whole cookie value, and make sure that browser is signed in.</string>
     <string name="cookie_warning">These cookies grant full access to your Google account and bypass 2-step verification. Triat stores them encrypted on this device and only sends them to YouTube. Never share them.</string>
     <string name="sp_crossfade_duration_value">Duration: %1$ds</string>
-    <string name="cd_label_shown">%1$s: shown</string>
-    <string name="cd_label_hidden">%1$s: hidden</string>
     <string name="settings_search_no_match">No settings match \"%1$s\"</string>
     <string name="settings_search_no_match_hint">Try a shorter word, or what the setting does rather than its name.</string>
     <string name="share_open_failed">Couldn\'t open that playlist</string>
@@ -1500,7 +1451,6 @@
     <string name="sv_signed_in">Signed in</string>
     <string name="sv_dynamic">Dynamic</string>
     <string name="sv_local_only_offline">Local only, offline</string>
-    <string name="sv_music_mode">Music mode</string>
     <string name="sv_cached">%1$s cached</string>
     <string name="sv_caching_off">Caching off</string>
     <string name="sv_blocked_by_system">Blocked by system</string>
@@ -1557,14 +1507,6 @@
     <plurals name="bk_n_liked_songs">
         <item quantity="one">%1$d liked song</item>
         <item quantity="other">%1$d liked songs</item>
-    </plurals>
-    <plurals name="bk_n_watched_videos">
-        <item quantity="one">%1$d watched video</item>
-        <item quantity="other">%1$d watched videos</item>
-    </plurals>
-    <plurals name="bk_n_followed_channels">
-        <item quantity="one">%1$d followed channel</item>
-        <item quantity="other">%1$d followed channels</item>
     </plurals>
     <plurals name="bk_n_blocked_channels">
         <item quantity="one">%1$d blocked channel</item>
@@ -1644,15 +1586,10 @@
     </plurals>
     <string name="dl_empty_music">No downloaded music</string>
     <string name="pd_download_tracks">Download tracks</string>
-    <string name="pd_download_videos">Download videos</string>
     <string name="pd_downloading_n">Downloading %1$d</string>
     <string name="pd_retry_n">Retry %1$d</string>
     <string name="pd_download_n">Download %1$d</string>
     <string name="pd_retry_items">Retry %1$s</string>
-    <plurals name="pd_skipped_live">
-        <item quantity="one">%1$s can\'t be downloaded while live and will be skipped.</item>
-        <item quantity="other">%1$s can\'t be downloaded while live and will be skipped.</item>
-    </plurals>
     <plurals name="pd_skipped_no_source">
         <item quantity="one">%1$s has no downloadable source and will be skipped.</item>
         <item quantity="other">%1$s have no downloadable source and will be skipped.</item>

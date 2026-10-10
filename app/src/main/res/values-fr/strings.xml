@@ -24,7 +24,6 @@
 
     <string name="tab_home">Accueil</string>
     <string name="tab_search">Rechercher</string>
-    <string name="tab_subs">Abonnements</string>
     <string name="tab_library">Bibliothèque</string>
 
     <string name="local_only_title">Le mode Local uniquement est activé</string>
@@ -74,7 +73,6 @@
     <string name="spotlight_hint_playlists">Les playlists que vous créez ou enregistrez apparaissent ici.</string>
     <string name="spotlight_hint_all">Lancez une lecture et votre accueil se remplira.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Faire glisser pour réorganiser</string>
     <string name="cd_favorite">Favori</string>
@@ -102,7 +100,6 @@
     <string name="description_optional_label">Description (facultatif)</string>
 
     <string name="video_options_share">Partager</string>
-    <string name="video_options_not_interested">Je ne suis pas intéressé</string>
     <string name="cd_back">Retour</string>
     <string name="cd_saved">Enregistré</string>
 
@@ -181,14 +178,7 @@
         <item quantity="many">%1$d de playlists</item>
         <item quantity="other">%1$d playlists</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube limite les requêtes provenant de ce réseau. Réessayez dans environ %1$d minute.</item>
-        <item quantity="other">YouTube limite les requêtes provenant de ce réseau. Réessayez dans environ %1$d minutes.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube limite les requêtes provenant de ce réseau. Réessayez dans un instant.</string>
 
-    <string name="vhc_move_up">Déplacer %1$s vers le haut</string>
-    <string name="vhc_move_down">Déplacer %1$s vers le bas</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Toucher pour écouter</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -219,7 +209,6 @@
     <string name="action_close">Fermer</string>
     <string name="action_check_updates">Rechercher des mises à jour</string>
     <string name="action_got_it">Compris</string>
-    <string name="action_like">J\'aime</string>
     <string name="spotlight_new_for_you">Nouveau pour vous</string>
     <string name="spotlight_new_for_you_caption">Des titres que vous n\'avez pas encore écoutés, d\'artistes que vous écoutez</string>
     <string name="spotlight_discovery_empty">Rien de nouveau à suggérer pour le moment</string>
@@ -249,7 +238,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Couper le son</string>
     <string name="cd_volume_unmute">Rétablir le son</string>
-    <string name="ps_now_playing">Lecture en cours</string>
     <string name="ps_up_next">À suivre</string>
     <string name="ps_queue_empty">La file est vide</string>
     <string name="ps_queue">FILE</string>
@@ -385,7 +373,6 @@
     <string name="sp_not_recommended">Non recommandé</string>
     <string name="sp_not_recommended_sub">Vidéos et chaînes que tu as masquées de tes fils</string>
     <string name="si_not_interested">Tout ce que tu as demandé à Triat de ne plus recommander — vidéos masquées et chaînes bloquées. Tout peut être réaffiché ici.</string>
-    <string name="sp_shorts_buttons">Boutons des Shorts</string>
     <string name="sp_show_recent_searches">Afficher les recherches récentes</string>
     <string name="sp_show_recent_searches_sub">Tes recherches passées sous la barre de recherche</string>
     <string name="si_recent_searches">Affiche tes recherches passées quand tu touches le champ de recherche. Les désactiver les masque sans les supprimer.</string>
@@ -424,7 +411,6 @@
     <string name="about_open_source_note">Triat est basé sur Koda d\'Ivorisnoob et reste open source sous GPL-3.0. Le logo de l\'app et les détails du build ci-dessus sont intégrés à l\'app, donc cette page est complète avant même que quoi que ce soit soit récupéré.</string>
     <string name="cd_profile_picture">Photo de profil</string>
     <string name="sp_connected">Connecté</string>
-    <string name="sp_mode_music">Musique</string>
     <string name="sp_color_palette">Palette de couleurs</string>
     <string name="sp_amoled_black">Noir AMOLED</string>
     <string name="sp_ambient_background">Arrière-plan ambiant</string>
@@ -496,15 +482,12 @@
     <string name="sp_quality_per_network">Qualité selon le réseau</string>
     <string name="sp_quality_network_hint">Triat choisit selon la connexion utilisée</string>
     <string name="sp_music_quality">Qualité de la musique</string>
-    <string name="sp_video_quality">Qualité vidéo</string>
-    <string name="sp_quality_auto_highest">Auto (maximale)</string>
     <string name="sp_music_quality_data_saver">Économie de données</string>
     <string name="sp_music_quality_normal">Normale</string>
     <string name="sp_music_quality_high">Haute</string>
     <string name="sp_music_quality_data_saver_opt">Économie de données (~48 kbps)</string>
     <string name="sp_music_quality_normal_opt">Normale (~128 kbps)</string>
     <string name="sp_music_quality_high_opt">Haute (meilleure disponible)</string>
-    <string name="sp_shorts_buttons_sub">Touche un bouton pour l\'afficher ou le masquer dans les Shorts</string>
     <string name="sp_excluded_folders_sub">Les titres des dossiers sélectionnés n\'apparaîtront pas dans ta bibliothèque</string>
     <string name="sp_scanning_folders">Analyse des dossiers…</string>
     <string name="sp_no_music_folders">Aucun dossier de musique trouvé</string>
@@ -531,24 +514,6 @@
     <string name="swipe_action_queue">File d\'attente</string>
     <string name="swipe_action_options">Options</string>
     <string name="si_playlist_swipe">Actions rapides quand tu balaies un titre dans une playlist. File d\'attente l\'ajoute à la fin de la file en cours. Retirer ne fonctionne que si la playlist est modifiable, et une liste YouTube qui n\'est pas à toi propose uniquement Lire et File d\'attente.</string>
-    <string name="sp_subscriptions_shown">Abonnements affichés</string>
-    <string name="sp_subs_source_desc">La liste à partir de laquelle l\'onglet Abonnements construit son fil.</string>
-    <string name="sp_subscribe_saves_to">L\'abonnement est enregistré dans</string>
-    <string name="sp_subs_target_desc">L\'endroit où la chaîne est enregistrée quand tu touches S\'abonner. Enregistrer sur cet appareil fonctionne sans connexion et ne prévient jamais YouTube.</string>
-    <string name="sp_subs_src_local">Sur cet appareil</string>
-    <string name="sp_subs_src_youtube">Compte YouTube</string>
-    <string name="sp_subs_src_all">Tout ce que tu suis</string>
-    <string name="sp_subs_src_local_desc">Seulement les chaînes que tu suis dans Triat</string>
-    <string name="sp_subs_src_youtube_desc">Seulement les chaînes auxquelles ton compte Google est abonné</string>
-    <string name="sp_subs_src_all_desc">Les deux listes fusionnées, selon ce qui existe</string>
-    <string name="sp_subs_tgt_local">Cet appareil uniquement</string>
-    <string name="sp_subs_tgt_youtube">Compte YouTube</string>
-    <string name="sp_subs_tgt_both">Appareil et YouTube</string>
-    <string name="sp_subs_tgt_auto">YouTube si connecté</string>
-    <string name="sp_subs_tgt_local_desc">Ne touche jamais à ton compte Google</string>
-    <string name="sp_subs_tgt_youtube_desc">Nécessite d\'être connecté</string>
-    <string name="sp_subs_tgt_both_desc">Garde une copie locale qui survit à la déconnexion</string>
-    <string name="sp_subs_tgt_auto_desc">Revient à cet appareil une fois déconnecté</string>
     <string name="sp_downloads">Téléchargements</string>
     <string name="sp_private_downloads">Téléchargements privés</string>
     <string name="sp_private_downloads_on">Les nouveaux contenus audio et vidéo restent dans Triat et sont supprimés à la désinstallation</string>
@@ -662,7 +627,6 @@
         <item quantity="one">%d vidéo</item>
         <item quantity="other">%d vidéos</item>
     </plurals>
-    <string name="vpl_video_count_partial">%d+ vidéos</string>
     <string name="cd_shuffle">Aléatoire</string>
     <string name="cd_previous">Précédent</string>
     <string name="cd_repeat">Répéter</string>
@@ -672,8 +636,6 @@
     <string name="cd_remove_from_queue">Retirer de la file d\'attente</string>
     <string name="loading">Chargement…</string>
     <string name="load_more">Charger plus</string>
-    <string name="cd_dislike">Je n\'aime pas</string>
-    <string name="cd_comments">Commentaires</string>
     <string name="stop_all">Tout arrêter</string>
     <string name="in_progress">En cours</string>
     <string name="dl_failed">Échec</string>
@@ -887,7 +849,6 @@
     <string name="au_sign_in_renderer_failed">La page de connexion s\'est arrêtée de façon inattendue. Ton app ne risque rien ; recharge la page pour continuer.</string>
     <string name="cd_close">Fermer</string>
     <string name="cd_more_options">Plus d\'options</string>
-    <string name="ar_open_youtube_channel">Ouvrir la chaîne YouTube</string>
     <string name="ar_sort_suggested">Suggérés</string>
     <string name="ar_sort_title">A-Z</string>
     <string name="ar_sort_album">Album</string>
@@ -913,7 +874,6 @@
     <string name="mobile_data">Données mobiles</string>
     <string name="vd_estimated">Téléchargement estimé</string>
     <string name="vd_size_unavailable">Taille indisponible</string>
-    <string name="vd_remember_quality">Mémoriser cette qualité</string>
     <string name="vd_added">Ajouté aux téléchargements</string>
     <string name="sd_title">Télécharger le titre</string>
     <string name="sd_artwork_note">La pochette et les paroles peuvent augmenter un peu la taille finale.</string>
@@ -921,21 +881,14 @@
     <string name="pd_download_playlist">Télécharger la playlist</string>
     <string name="pd_unavailable_offline">Indisponible hors ligne</string>
     <string name="pd_in_playlist">Dans la playlist</string>
-    <string name="pd_loaded_now">Chargés maintenant</string>
-    <string name="pd_already_offline_here">Déjà hors ligne ici</string>
-    <string name="pd_pages_note">Toutes les pages restantes de la playlist sont résolues après ta confirmation ; les téléchargements existants sont alors ignorés aussi.</string>
     <string name="pd_already_offline">Déjà hors ligne</string>
     <string name="pd_repeated_entries">Entrées répétées</string>
     <string name="pd_repeated_entries_note">Les entrées répétées d\'une playlist partagent un seul fichier hors ligne et restent à leur position d\'origine.</string>
     <string name="pd_to_download">À télécharger</string>
     <string name="pd_progress_cd">Progression du téléchargement de la playlist</string>
-    <string name="pd_quality_note">Chaque vidéo utilise la meilleure qualité MP4 inférieure ou égale à cette limite.</string>
-    <string name="pd_best_available">Meilleure disponible</string>
-    <string name="pd_remember_sub">L\'utiliser pour les prochains téléchargements de vidéos</string>
     <string name="pd_local_only_block">Désactive le mode Local uniquement avant de lancer un téléchargement.</string>
     <string name="pd_load_failed">Impossible de charger la playlist complète. Vérifie ta connexion et réessaie.</string>
     <string name="pd_background_note">Les téléchargements continuent en arrière-plan. Les téléchargements existants et les éléments répétés sont ignorés automatiquement.</string>
-    <string name="pd_loading_full">Chargement de la playlist complète…</string>
     <string name="pd_adding">Ajout aux téléchargements…</string>
     <string name="pd_already_complete">Déjà disponible hors ligne</string>
     <string name="pd_download_full">Télécharger la playlist complète</string>
@@ -1334,8 +1287,6 @@
     <string name="cookie_missing">Il manque %1$s. Copie la valeur complète des cookies et vérifie que ce navigateur est connecté.</string>
     <string name="cookie_warning">Ces cookies donnent un accès complet à ton compte Google et contournent la validation en deux étapes. Triat les stocke chiffrés sur cet appareil et ne les envoie qu\'à YouTube. Ne les partage jamais.</string>
     <string name="sp_crossfade_duration_value">Durée : %1$d s</string>
-    <string name="cd_label_shown">%1$s : affiché</string>
-    <string name="cd_label_hidden">%1$s : masqué</string>
     <string name="settings_search_no_match">Aucun réglage ne correspond à « %1$s »</string>
     <string name="settings_search_no_match_hint">Essaie un mot plus court, ou ce que fait le réglage plutôt que son nom.</string>
     <string name="share_open_failed">Impossible d\'ouvrir cette playlist</string>
@@ -1380,7 +1331,6 @@
     <string name="sv_signed_in">Connecté</string>
     <string name="sv_dynamic">Dynamique</string>
     <string name="sv_local_only_offline">Local uniquement, hors ligne</string>
-    <string name="sv_music_mode">Mode musique</string>
     <string name="sv_cached">%1$s en cache</string>
     <string name="sv_caching_off">Cache désactivé</string>
     <string name="sv_blocked_by_system">Bloqué par le système</string>
@@ -1437,14 +1387,6 @@
     <plurals name="bk_n_liked_songs">
         <item quantity="one">%1$d chanson aimée</item>
         <item quantity="other">%1$d chansons aimées</item>
-    </plurals>
-    <plurals name="bk_n_watched_videos">
-        <item quantity="one">%1$d vidéo regardée</item>
-        <item quantity="other">%1$d vidéos regardées</item>
-    </plurals>
-    <plurals name="bk_n_followed_channels">
-        <item quantity="one">%1$d chaîne suivie</item>
-        <item quantity="other">%1$d chaînes suivies</item>
     </plurals>
     <plurals name="bk_n_blocked_channels">
         <item quantity="one">%1$d chaîne bloquée</item>
@@ -1524,15 +1466,10 @@
     </plurals>
     <string name="dl_empty_music">Aucune musique téléchargée</string>
     <string name="pd_download_tracks">Télécharger les titres</string>
-    <string name="pd_download_videos">Télécharger les vidéos</string>
     <string name="pd_downloading_n">Téléchargement de %1$d</string>
     <string name="pd_retry_n">Réessayer %1$d</string>
     <string name="pd_download_n">Télécharger %1$d</string>
     <string name="pd_retry_items">Réessayer %1$s</string>
-    <plurals name="pd_skipped_live">
-        <item quantity="one">%1$s ne peut pas être téléchargée pendant le direct et sera ignorée.</item>
-        <item quantity="other">%1$s ne peuvent pas être téléchargées pendant le direct et seront ignorées.</item>
-    </plurals>
     <plurals name="pd_skipped_no_source">
         <item quantity="one">Aucune source téléchargeable pour %1$s : téléchargement ignoré.</item>
         <item quantity="other">Aucune source téléchargeable pour %1$s : téléchargements ignorés.</item>

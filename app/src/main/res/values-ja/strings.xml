@@ -24,7 +24,6 @@
 
     <string name="tab_home">ホーム</string>
     <string name="tab_search">検索</string>
-    <string name="tab_subs">登録チャンネル</string>
     <string name="tab_library">ライブラリ</string>
 
     <string name="local_only_title">ローカルのみモードが有効です</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">作成・保存したプレイリストがここに表示されます。</string>
     <string name="spotlight_hint_all">何か再生すると、ホームが育っていきます。</string>
 
-    <string name="minutes_short">%1$d 分</string>
 
     <string name="cd_drag_to_reorder">ドラッグして並べ替え</string>
     <string name="cd_favorite">お気に入り</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">説明（省略可）</string>
 
     <string name="video_options_share">共有</string>
-    <string name="video_options_not_interested">興味なし</string>
     <string name="cd_back">戻る</string>
     <string name="cd_saved">保存しました</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">プレイリスト: %1$d</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube がこのネットワークからのリクエストを制限しています。約%1$d分後にもう一度お試しください。</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube がこのネットワークからのリクエストを制限しています。しばらくしてからもう一度お試しください。</string>
 
-    <string name="vhc_move_up">%1$s を上に移動</string>
-    <string name="vhc_move_down">%1$s を下に移動</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">タップして聴く</string>
     <string name="widget_pulse_label">パルス</string>
@@ -187,7 +178,6 @@
     <string name="action_close">閉じる</string>
     <string name="action_check_updates">アップデートを確認</string>
     <string name="action_got_it">わかりました</string>
-    <string name="action_like">高評価</string>
     <string name="spotlight_new_for_you">あなたへの新着</string>
     <string name="spotlight_new_for_you_caption">聴いているアーティストの未再生の曲</string>
     <string name="spotlight_discovery_empty">おすすめはまだありません</string>
@@ -217,7 +207,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">ミュート</string>
     <string name="cd_volume_unmute">ミュート解除</string>
-    <string name="ps_now_playing">再生中</string>
     <string name="ps_up_next">次に再生</string>
     <string name="ps_queue_empty">キューは空です</string>
     <string name="ps_queue">キュー</string>

@@ -24,7 +24,6 @@
 
     <string name="tab_home">Hem</string>
     <string name="tab_search">Sök</string>
-    <string name="tab_subs">Prenumerationer</string>
     <string name="tab_library">Bibliotek</string>
 
     <string name="local_only_title">Läget Endast lokalt är på</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Spellistor du skapar eller sparar visas här.</string>
     <string name="spotlight_hint_all">Spela något så fylls ditt hem på.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Dra för att ordna om</string>
     <string name="cd_favorite">Favorit</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Beskrivning (valfritt)</string>
 
     <string name="video_options_share">Dela</string>
-    <string name="video_options_not_interested">Inte intresserad</string>
     <string name="cd_back">Tillbaka</string>
     <string name="cd_saved">Sparad</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d spellista</item>
         <item quantity="other">%1$d spellistor</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube begränsar förfrågningar från det här nätverket. Försök igen om ungefär %1$d minut.</item>
-        <item quantity="other">YouTube begränsar förfrågningar från det här nätverket. Försök igen om ungefär %1$d minuter.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube begränsar förfrågningar från det här nätverket. Försök igen om en liten stund.</string>
 
-    <string name="vhc_move_up">Flytta %1$s uppåt</string>
-    <string name="vhc_move_down">Flytta %1$s nedåt</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Tryck för att lyssna</string>
@@ -191,7 +181,6 @@
     <string name="action_close">Stäng</string>
     <string name="action_check_updates">Sök efter uppdateringar</string>
     <string name="action_got_it">Uppfattat</string>
-    <string name="action_like">Gilla</string>
     <string name="spotlight_new_for_you">Nytt för dig</string>
     <string name="spotlight_new_for_you_caption">Låtar du inte har spelat, från artister du lyssnar på</string>
     <string name="spotlight_discovery_empty">Inget nytt att föreslå ännu</string>
@@ -221,7 +210,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Stäng av ljudet</string>
     <string name="cd_volume_unmute">Sätt på ljudet</string>
-    <string name="ps_now_playing">Spelas nu</string>
     <string name="ps_up_next">Kommer härnäst</string>
     <string name="ps_queue_empty">Kön är tom</string>
     <string name="ps_queue">KÖ</string>

@@ -24,7 +24,6 @@
 
     <string name="tab_home">Acasă</string>
     <string name="tab_search">Caută</string>
-    <string name="tab_subs">Abonamente</string>
     <string name="tab_library">Bibliotecă</string>
 
     <string name="local_only_title">Modul Doar local este activat</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Playlisturile pe care le creezi sau salvezi apar aici.</string>
     <string name="spotlight_hint_all">Redă ceva și pagina ta principală se va umple.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Trage pentru a reordona</string>
     <string name="cd_favorite">Favorit</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Descriere (opțional)</string>
 
     <string name="video_options_share">Distribuie</string>
-    <string name="video_options_not_interested">Nu mă interesează</string>
     <string name="cd_back">Înapoi</string>
     <string name="cd_saved">Salvat</string>
 
@@ -154,15 +151,7 @@
         <item quantity="few">%1$d playlisturi</item>
         <item quantity="other">%1$d de playlisturi</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube limitează cererile de pe această rețea. Încearcă din nou peste aproximativ %1$d minut.</item>
-        <item quantity="few">YouTube limitează cererile de pe această rețea. Încearcă din nou peste aproximativ %1$d minute.</item>
-        <item quantity="other">YouTube limitează cererile de pe această rețea. Încearcă din nou peste aproximativ %1$d de minute.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube limitează cererile de pe această rețea. Încearcă din nou peste puțin timp.</string>
 
-    <string name="vhc_move_up">Mută %1$s în sus</string>
-    <string name="vhc_move_down">Mută %1$s în jos</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Atinge pentru a asculta</string>
@@ -194,7 +183,6 @@
     <string name="action_close">Închide</string>
     <string name="action_check_updates">Verifică actualizări</string>
     <string name="action_got_it">Am înțeles</string>
-    <string name="action_like">Îmi place</string>
     <string name="spotlight_new_for_you">Nou pentru tine</string>
     <string name="spotlight_new_for_you_caption">Melodii pe care nu le-ai redat, de la artiști pe care îi asculți</string>
     <string name="spotlight_discovery_empty">Nimic nou de sugerat încă</string>
@@ -224,7 +212,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Oprește sunetul</string>
     <string name="cd_volume_unmute">Pornește sunetul</string>
-    <string name="ps_now_playing">Se redă acum</string>
     <string name="ps_up_next">Urmează</string>
     <string name="ps_queue_empty">Coada e goală</string>
     <string name="ps_queue">COADĂ</string>

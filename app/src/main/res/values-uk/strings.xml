@@ -24,7 +24,6 @@
 
     <string name="tab_home">Головна</string>
     <string name="tab_search">Пошук</string>
-    <string name="tab_subs">Підписки</string>
     <string name="tab_library">Медіатека</string>
 
     <string name="local_only_title">Увімкнено режим «Лише локально»</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Створені та збережені плейлісти з\'являться тут.</string>
     <string name="spotlight_hint_all">Увімкніть музику, і головна заповниться.</string>
 
-    <string name="minutes_short">%1$d хв</string>
 
     <string name="cd_drag_to_reorder">Потягніть, щоб змінити порядок</string>
     <string name="cd_favorite">Обране</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Опис (необов\'язково)</string>
 
     <string name="video_options_share">Поділитися</string>
-    <string name="video_options_not_interested">Не цікавить</string>
     <string name="cd_back">Назад</string>
     <string name="cd_saved">Збережено</string>
 
@@ -156,16 +153,7 @@
         <item quantity="many">%1$d плейлістів</item>
         <item quantity="other">%1$d плейлісти</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз приблизно через %1$d хвилину.</item>
-        <item quantity="few">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз приблизно через %1$d хвилини.</item>
-        <item quantity="many">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз приблизно через %1$d хвилин.</item>
-        <item quantity="other">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз приблизно через %1$d хвилини.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube обмежує кількість запитів із цієї мережі. Спробуйте ще раз за мить.</string>
 
-    <string name="vhc_move_up">Перемістити %1$s вгору</string>
-    <string name="vhc_move_down">Перемістити %1$s вниз</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Торкніться, щоб слухати</string>
@@ -197,7 +185,6 @@
     <string name="action_close">Закрити</string>
     <string name="action_check_updates">Перевірити оновлення</string>
     <string name="action_got_it">Зрозуміло</string>
-    <string name="action_like">Подобається</string>
     <string name="spotlight_new_for_you">Нове для вас</string>
     <string name="spotlight_new_for_you_caption">Пісні, які ви ще не слухали, від виконавців, яких слухаєте</string>
     <string name="spotlight_discovery_empty">Поки нічого запропонувати</string>
@@ -227,7 +214,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Вимкнути звук</string>
     <string name="cd_volume_unmute">Увімкнути звук</string>
-    <string name="ps_now_playing">Зараз грає</string>
     <string name="ps_up_next">Далі</string>
     <string name="ps_queue_empty">Черга порожня</string>
     <string name="ps_queue">ЧЕРГА</string>

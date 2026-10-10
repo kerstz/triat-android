@@ -24,7 +24,6 @@
 
     <string name="tab_home">หน้าแรก</string>
     <string name="tab_search">ค้นหา</string>
-    <string name="tab_subs">การติดตาม</string>
     <string name="tab_library">คลัง</string>
 
     <string name="local_only_title">โหมดภายในเครื่องเท่านั้นเปิดอยู่</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">เพลย์ลิสต์ที่คุณสร้างหรือบันทึกจะแสดงที่นี่</string>
     <string name="spotlight_hint_all">เล่นอะไรสักอย่างแล้วหน้าแรกของคุณจะเต็มขึ้นมา</string>
 
-    <string name="minutes_short">%1$d นาที</string>
 
     <string name="cd_drag_to_reorder">ลากเพื่อจัดลำดับใหม่</string>
     <string name="cd_favorite">รายการโปรด</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">คำอธิบาย (ไม่บังคับ)</string>
 
     <string name="video_options_share">แชร์</string>
-    <string name="video_options_not_interested">ไม่สนใจ</string>
     <string name="cd_back">ย้อนกลับ</string>
     <string name="cd_saved">บันทึกแล้ว</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">%1$d เพลย์ลิสต์</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube กำลังจำกัดคำขอจากเครือข่ายนี้ ลองอีกครั้งในอีกประมาณ %1$d นาที</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube กำลังจำกัดคำขอจากเครือข่ายนี้ ลองอีกครั้งในอีกสักครู่</string>
 
-    <string name="vhc_move_up">ย้าย %1$s ขึ้น</string>
-    <string name="vhc_move_down">ย้าย %1$s ลง</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">แตะเพื่อฟัง</string>
@@ -188,7 +179,6 @@
     <string name="action_close">ปิด</string>
     <string name="action_check_updates">ตรวจหาอัปเดต</string>
     <string name="action_got_it">รับทราบ</string>
-    <string name="action_like">ถูกใจ</string>
     <string name="spotlight_new_for_you">ใหม่สำหรับคุณ</string>
     <string name="spotlight_new_for_you_caption">เพลงที่คุณยังไม่เคยเล่น จากศิลปินที่คุณฟัง</string>
     <string name="spotlight_discovery_empty">ยังไม่มีคำแนะนำใหม่</string>
@@ -218,7 +208,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">ปิดเสียง</string>
     <string name="cd_volume_unmute">เปิดเสียง</string>
-    <string name="ps_now_playing">กำลังเล่น</string>
     <string name="ps_up_next">ถัดไป</string>
     <string name="ps_queue_empty">คิวว่างเปล่า</string>
     <string name="ps_queue">คิว</string>

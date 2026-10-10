@@ -24,7 +24,6 @@
 
     <string name="tab_home">خانه</string>
     <string name="tab_search">جستجو</string>
-    <string name="tab_subs">اشتراک‌ها</string>
     <string name="tab_library">کتابخانه</string>
 
     <string name="local_only_title">حالت «فقط محلی» روشن است</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">فهرست‌های پخشی که می‌سازید یا ذخیره می‌کنید اینجا ظاهر می‌شوند.</string>
     <string name="spotlight_hint_all">چیزی پخش کنید تا صفحه اصلی‌تان پر شود.</string>
 
-    <string name="minutes_short">%1$d دقیقه</string>
 
     <string name="cd_drag_to_reorder">برای تغییر ترتیب بکشید</string>
     <string name="cd_favorite">مورد علاقه</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">توضیحات (اختیاری)</string>
 
     <string name="video_options_share">اشتراک‌گذاری</string>
-    <string name="video_options_not_interested">علاقه‌ای ندارم</string>
     <string name="cd_back">بازگشت</string>
     <string name="cd_saved">ذخیره شد</string>
 
@@ -154,14 +151,7 @@
         <item quantity="one">%1$d فهرست پخش</item>
         <item quantity="other">%1$d فهرست پخش</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">یوتیوب درخواست‌های این شبکه را محدود کرده است. لطفاً حدود %1$d دقیقه دیگر دوباره امتحان کنید.</item>
-        <item quantity="other">یوتیوب درخواست‌های این شبکه را محدود کرده است. لطفاً حدود %1$d دقیقه دیگر دوباره امتحان کنید.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">یوتیوب درخواست‌های این شبکه را محدود کرده است. لطفاً کمی بعد دوباره امتحان کنید.</string>
 
-    <string name="vhc_move_up">انتقال %1$s به بالا</string>
-    <string name="vhc_move_down">انتقال %1$s به پایین</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">برای گوش دادن ضربه بزنید</string>
@@ -193,7 +183,6 @@
     <string name="action_close">بستن</string>
     <string name="action_check_updates">بررسی به‌روزرسانی‌ها</string>
     <string name="action_got_it">فهمیدم</string>
-    <string name="action_like">پسندیدم</string>
     <string name="spotlight_new_for_you">تازه برای شما</string>
     <string name="spotlight_new_for_you_caption">آهنگ‌هایی که پخش نکرده‌اید، از هنرمندانی که گوش می‌دهید</string>
     <string name="spotlight_discovery_empty">هنوز پیشنهاد تازه‌ای نیست</string>
@@ -223,7 +212,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">بی‌صدا</string>
     <string name="cd_volume_unmute">با صدا</string>
-    <string name="ps_now_playing">در حال پخش</string>
     <string name="ps_up_next">بعدی</string>
     <string name="ps_queue_empty">صف خالی است</string>
     <string name="ps_queue">صف</string>

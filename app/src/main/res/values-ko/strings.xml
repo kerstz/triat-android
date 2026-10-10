@@ -24,7 +24,6 @@
 
     <string name="tab_home">홈</string>
     <string name="tab_search">검색</string>
-    <string name="tab_subs">구독</string>
     <string name="tab_library">보관함</string>
 
     <string name="local_only_title">오프라인 전용 모드가 켜져 있어요</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">만들거나 저장한 재생목록이 여기에 표시돼요.</string>
     <string name="spotlight_hint_all">음악을 틀면 홈이 차오르기 시작해요.</string>
 
-    <string name="minutes_short">%1$d분</string>
 
     <string name="cd_drag_to_reorder">길게 눌러 순서 변경</string>
     <string name="cd_favorite">즐겨찾기</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">설명 (선택사항)</string>
 
     <string name="video_options_share">공유</string>
-    <string name="video_options_not_interested">관심 없음</string>
     <string name="cd_back">뒤로</string>
     <string name="cd_saved">저장됨</string>
 
@@ -150,13 +147,7 @@
     <plurals name="n_playlists">
         <item quantity="other">재생목록 %1$d개</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="other">YouTube에서 이 네트워크의 요청을 제한하고 있어요. 약 %1$d분 후에 다시 시도해 주세요.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube에서 이 네트워크의 요청을 제한하고 있어요. 잠시 후 다시 시도해 주세요.</string>
 
-    <string name="vhc_move_up">%1$s 위로 이동</string>
-    <string name="vhc_move_down">%1$s 아래로 이동</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">탭하여 듣기</string>
     <string name="widget_pulse_label">펄스</string>
@@ -187,7 +178,6 @@
     <string name="action_close">닫기</string>
     <string name="action_check_updates">업데이트 확인</string>
     <string name="action_got_it">알겠어요</string>
-    <string name="action_like">좋아요</string>
     <string name="spotlight_new_for_you">나를 위한 새 음악</string>
     <string name="spotlight_new_for_you_caption">듣던 아티스트의 아직 안 들은 곡</string>
     <string name="spotlight_discovery_empty">아직 추천할 새 음악이 없어요</string>
@@ -217,7 +207,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">음소거</string>
     <string name="cd_volume_unmute">음소거 해제</string>
-    <string name="ps_now_playing">재생 중</string>
     <string name="ps_up_next">다음 곡</string>
     <string name="ps_queue_empty">대기열이 비어 있어요</string>
     <string name="ps_queue">대기열</string>

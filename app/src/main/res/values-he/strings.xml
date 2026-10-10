@@ -24,7 +24,6 @@
 
     <string name="tab_home">בית</string>
     <string name="tab_search">חיפוש</string>
-    <string name="tab_subs">מינויים</string>
     <string name="tab_library">ספרייה</string>
 
     <string name="local_only_title">מצב מקומי בלבד מופעל</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">רשימות שתיצור או תשמור יופיעו כאן.</string>
     <string name="spotlight_hint_all">נגן משהו ודף הבית שלך יתמלא.</string>
 
-    <string name="minutes_short">%1$d דק\'</string>
 
     <string name="cd_drag_to_reorder">גרור כדי לסדר מחדש</string>
     <string name="cd_favorite">מועדף</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">תיאור (אופציונלי)</string>
 
     <string name="video_options_share">שתף</string>
-    <string name="video_options_not_interested">לא מעוניין</string>
     <string name="cd_back">חזרה</string>
     <string name="cd_saved">נשמר</string>
 
@@ -156,15 +153,7 @@
         <item quantity="many">%1$d רשימות השמעה</item>
         <item quantity="other">%1$d רשימות השמעה</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube מגביל בקשות מהרשת הזו. נסה שוב בעוד כ-%1$d דקה.</item>
-        <item quantity="two">YouTube מגביל בקשות מהרשת הזו. נסה שוב בעוד כ-%1$d דקות.</item>
-        <item quantity="other">YouTube מגביל בקשות מהרשת הזו. נסה שוב בעוד כ-%1$d דקות.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube מגביל בקשות מהרשת הזו. נסה שוב בעוד רגע.</string>
 
-    <string name="vhc_move_up">הזז את %1$s למעלה</string>
-    <string name="vhc_move_down">הזז את %1$s למטה</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">הקש כדי להאזין</string>
@@ -196,7 +185,6 @@
     <string name="action_close">סגור</string>
     <string name="action_check_updates">בדוק עדכונים</string>
     <string name="action_got_it">הבנתי</string>
-    <string name="action_like">אהבתי</string>
     <string name="spotlight_new_for_you">חדש בשבילך</string>
     <string name="spotlight_new_for_you_caption">שירים שלא ניגנת, מאמנים שאתה כן מנגן</string>
     <string name="spotlight_discovery_empty">עדיין אין הצעות חדשות</string>
@@ -226,7 +214,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">השתק</string>
     <string name="cd_volume_unmute">בטל השתקה</string>
-    <string name="ps_now_playing">מתנגן כעת</string>
     <string name="ps_up_next">הבא בתור</string>
     <string name="ps_queue_empty">התור ריק</string>
     <string name="ps_queue">תור</string>

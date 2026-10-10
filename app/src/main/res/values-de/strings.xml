@@ -24,7 +24,6 @@
 
     <string name="tab_home">Start</string>
     <string name="tab_search">Suche</string>
-    <string name="tab_subs">Abos</string>
     <string name="tab_library">Mediathek</string>
 
     <string name="local_only_title">Der Nur-lokal-Modus ist aktiv</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Playlists, die du erstellst oder speicherst, erscheinen hier.</string>
     <string name="spotlight_hint_all">Spiel etwas ab und dein Startbildschirm füllt sich.</string>
 
-    <string name="minutes_short">%1$d Min.</string>
 
     <string name="cd_drag_to_reorder">Zum Umsortieren ziehen</string>
     <string name="cd_favorite">Favorit</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Beschreibung (optional)</string>
 
     <string name="video_options_share">Teilen</string>
-    <string name="video_options_not_interested">Kein Interesse</string>
     <string name="cd_back">Zurück</string>
     <string name="cd_saved">Gespeichert</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d Playlist</item>
         <item quantity="other">%1$d Playlists</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube schränkt Anfragen von diesem Netzwerk ein. Versuche es in etwa %1$d Minute erneut.</item>
-        <item quantity="other">YouTube schränkt Anfragen von diesem Netzwerk ein. Versuche es in etwa %1$d Minuten erneut.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube schränkt Anfragen von diesem Netzwerk ein. Versuche es in einem Moment erneut.</string>
 
-    <string name="vhc_move_up">%1$s nach oben verschieben</string>
-    <string name="vhc_move_down">%1$s nach unten verschieben</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Tippen zum Hören</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -190,7 +180,6 @@
     <string name="action_close">Schließen</string>
     <string name="action_check_updates">Nach Updates suchen</string>
     <string name="action_got_it">Verstanden</string>
-    <string name="action_like">Gefällt mir</string>
     <string name="spotlight_new_for_you">Neu für dich</string>
     <string name="spotlight_new_for_you_caption">Songs, die du noch nicht gespielt hast, von Künstlern, die du hörst</string>
     <string name="spotlight_discovery_empty">Noch keine neuen Vorschläge</string>
@@ -220,7 +209,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Stummschalten</string>
     <string name="cd_volume_unmute">Stummschaltung aufheben</string>
-    <string name="ps_now_playing">Läuft gerade</string>
     <string name="ps_up_next">Als Nächstes</string>
     <string name="ps_queue_empty">Warteschlange ist leer</string>
     <string name="ps_queue">WARTESCHLANGE</string>

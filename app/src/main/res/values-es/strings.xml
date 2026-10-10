@@ -24,7 +24,6 @@
 
     <string name="tab_home">Inicio</string>
     <string name="tab_search">Buscar</string>
-    <string name="tab_subs">Suscripciones</string>
     <string name="tab_library">Biblioteca</string>
 
     <string name="local_only_title">El modo Solo local está activado</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Las playlists que crees o guardes aparecerán aquí.</string>
     <string name="spotlight_hint_all">Reproduce algo y tu página de inicio se irá llenando.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Arrastrar para reordenar</string>
     <string name="cd_favorite">Favorito</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Descripción (opcional)</string>
 
     <string name="video_options_share">Compartir</string>
-    <string name="video_options_not_interested">No me interesa</string>
     <string name="cd_back">Atrás</string>
     <string name="cd_saved">Guardado</string>
 
@@ -154,14 +151,7 @@
         <item quantity="many">%1$d playlists</item>
         <item quantity="other">%1$d playlists</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube está limitando las solicitudes desde esta red. Inténtalo de nuevo en aproximadamente %1$d minuto.</item>
-        <item quantity="other">YouTube está limitando las solicitudes desde esta red. Inténtalo de nuevo en aproximadamente %1$d minutos.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube está limitando las solicitudes desde esta red. Inténtalo de nuevo en un momento.</string>
 
-    <string name="vhc_move_up">Mover %1$s hacia arriba</string>
-    <string name="vhc_move_down">Mover %1$s hacia abajo</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Toca para escuchar</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -192,7 +182,6 @@
     <string name="action_close">Cerrar</string>
     <string name="action_check_updates">Buscar actualizaciones</string>
     <string name="action_got_it">Entendido</string>
-    <string name="action_like">Me gusta</string>
     <string name="spotlight_new_for_you">Nuevo para ti</string>
     <string name="spotlight_new_for_you_caption">Canciones que aún no has reproducido, de artistas que sí escuchas</string>
     <string name="spotlight_discovery_empty">Nada nuevo que sugerir todavía</string>
@@ -222,7 +211,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Silenciar</string>
     <string name="cd_volume_unmute">Activar sonido</string>
-    <string name="ps_now_playing">Reproduciendo ahora</string>
     <string name="ps_up_next">A continuación</string>
     <string name="ps_queue_empty">La cola está vacía</string>
     <string name="ps_queue">COLA</string>

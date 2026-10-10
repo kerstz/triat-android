@@ -24,7 +24,6 @@
 
     <string name="tab_home">Home</string>
     <string name="tab_search">Cerca</string>
-    <string name="tab_subs">Iscrizioni</string>
     <string name="tab_library">Libreria</string>
 
     <string name="local_only_title">La modalità Solo locale è attiva</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Le playlist che crei o salvi appaiono qui.</string>
     <string name="spotlight_hint_all">Riproduci qualcosa e la tua home si riempie.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Trascina per riordinare</string>
     <string name="cd_favorite">Preferito</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Descrizione (facoltativa)</string>
 
     <string name="video_options_share">Condividi</string>
-    <string name="video_options_not_interested">Non mi interessa</string>
     <string name="cd_back">Indietro</string>
     <string name="cd_saved">Salvato</string>
 
@@ -152,14 +149,7 @@
         <item quantity="one">%1$d playlist</item>
         <item quantity="other">%1$d playlist</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube sta limitando le richieste da questa rete. Riprova tra circa %1$d minuto.</item>
-        <item quantity="other">YouTube sta limitando le richieste da questa rete. Riprova tra circa %1$d minuti.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube sta limitando le richieste da questa rete. Riprova tra un momento.</string>
 
-    <string name="vhc_move_up">Sposta %1$s in alto</string>
-    <string name="vhc_move_down">Sposta %1$s in basso</string>
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Tocca per ascoltare</string>
     <string name="widget_pulse_label">Pulse</string>
@@ -190,7 +180,6 @@
     <string name="action_close">Chiudi</string>
     <string name="action_check_updates">Verifica aggiornamenti</string>
     <string name="action_got_it">Capito</string>
-    <string name="action_like">Mi piace</string>
     <string name="spotlight_new_for_you">Nuovo per te</string>
     <string name="spotlight_new_for_you_caption">Brani che non hai ancora ascoltato, di artisti che segui</string>
     <string name="spotlight_discovery_empty">Niente di nuovo da suggerire per ora</string>
@@ -220,7 +209,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Silenzia</string>
     <string name="cd_volume_unmute">Riattiva l\'audio</string>
-    <string name="ps_now_playing">In riproduzione</string>
     <string name="ps_up_next">In arrivo</string>
     <string name="ps_queue_empty">La coda è vuota</string>
     <string name="ps_queue">CODA</string>

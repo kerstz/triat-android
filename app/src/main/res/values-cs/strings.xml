@@ -24,7 +24,6 @@
 
     <string name="tab_home">Domů</string>
     <string name="tab_search">Hledat</string>
-    <string name="tab_subs">Odběry</string>
     <string name="tab_library">Knihovna</string>
 
     <string name="local_only_title">Režim Jen offline je zapnutý</string>
@@ -65,7 +64,6 @@
     <string name="spotlight_hint_playlists">Playlisty, které vytvoříte nebo uložíte, se zobrazí zde.</string>
     <string name="spotlight_hint_all">Něco si přehrajte a vaše domácí stránka se zaplní.</string>
 
-    <string name="minutes_short">%1$d min</string>
 
     <string name="cd_drag_to_reorder">Přetažením změníte pořadí</string>
     <string name="cd_favorite">Oblíbené</string>
@@ -90,7 +88,6 @@
     <string name="description_optional_label">Popis (volitelné)</string>
 
     <string name="video_options_share">Sdílet</string>
-    <string name="video_options_not_interested">Nezajímá mě</string>
     <string name="cd_back">Zpět</string>
     <string name="cd_saved">Uloženo</string>
 
@@ -156,16 +153,7 @@
         <item quantity="many">%1$d playlistů</item>
         <item quantity="other">%1$d playlisty</item>
     </plurals>
-    <plurals name="hvm_subs_feed_rate_limited">
-        <item quantity="one">YouTube omezuje počet požadavků z této sítě. Zkuste to znovu přibližně za %1$d minutu.</item>
-        <item quantity="few">YouTube omezuje počet požadavků z této sítě. Zkuste to znovu přibližně za %1$d minuty.</item>
-        <item quantity="many">YouTube omezuje počet požadavků z této sítě. Zkuste to znovu přibližně za %1$d minuty.</item>
-        <item quantity="other">YouTube omezuje počet požadavků z této sítě. Zkuste to znovu přibližně za %1$d minut.</item>
-    </plurals>
-    <string name="hvm_subs_feed_rate_limited_soon">YouTube omezuje počet požadavků z této sítě. Zkuste to znovu za chvíli.</string>
 
-    <string name="vhc_move_up">Přesunout %1$s nahoru</string>
-    <string name="vhc_move_down">Přesunout %1$s dolů</string>
 
     <!-- Top-visible sweep Sep 2026 -->
     <string name="widget_tap_to_listen">Klepněte pro poslech</string>
@@ -197,7 +185,6 @@
     <string name="action_close">Zavřít</string>
     <string name="action_check_updates">Zkontrolovat aktualizace</string>
     <string name="action_got_it">Rozumím</string>
-    <string name="action_like">Líbí se mi</string>
     <string name="spotlight_new_for_you">Nové pro vás</string>
     <string name="spotlight_new_for_you_caption">Skladby, které jste ještě nehráli, od interpretů, které posloucháte</string>
     <string name="spotlight_discovery_empty">Zatím žádná nová doporučení</string>
@@ -227,7 +214,6 @@
     <string name="np_volume_value">%1$d%%</string>
     <string name="cd_volume_mute">Ztlumit</string>
     <string name="cd_volume_unmute">Zapnout zvuk</string>
-    <string name="ps_now_playing">Právě hraje</string>
     <string name="ps_up_next">Další na řadě</string>
     <string name="ps_queue_empty">Fronta je prázdná</string>
     <string name="ps_queue">FRONTA</string>
