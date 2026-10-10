@@ -27,10 +27,20 @@ class RecommendationEngine(
     private val searchHistoryRepository = SearchHistoryRepository(context)
     private val likedSongsRepository = LikedSongsRepository(context)
     private val playlistRepository = PlaylistRepository(context)
+    private val tasteSignals = TasteSignals(context)
+    private val tasteGraph = TasteGraph(context, youTubeRepository)
 
     data class TasteProfile(
         /** Artist names ranked by recency-weighted listening, best first. */
         val topArtists: List<String>,
+        /**
+         * The same artists with their scores, for anything that weights by
+         * how much an artist is actually listened to rather than treating the
+         * top eight as equals - which the artist graph does, since a neighbour
+         * named by the favourite artist is a better bet than one named by the
+         * eighth.
+         */
+        val artistAffinity: List<Pair<String, Double>> = emptyList(),
         /** The user's highest-scoring YouTube songs (radio seed candidates). */
         val topSongs: List<PlayHistoryEntry>,
         /** Most recent search queries, newest first. */
@@ -70,6 +80,33 @@ class RecommendationEngine(
         private const val COLD_START_ALBUMS = "new album releases"
         private const val COLD_START_PLAYLISTS = "top hits playlist"
         private const val COLD_START_ARTISTS = "popular artists"
+
+        /** Graph neighbours taken in rank order, then at random from the tail. */
+        private const val GRAPH_EXPLOIT_ARTISTS = 6
+        private const val GRAPH_EXPLORE_ARTISTS = 3
+
+        /**
+         * Source weights, on the graph's own scale.
+         *
+         * A radio outranks a bare search because it is seeded by a track the
+         * listener chose, while a search only repeats words they typed; both
+         * sit under the graph, whose scores carry the summed affinity of every
+         * favourite that pointed at the artist.
+         */
+        private const val RADIO_WEIGHT = 1.2
+        private const val SEARCH_WEIGHT = 0.6
+
+        /** Places any one artist may hold in the feed. */
+        private const val MAX_PER_ARTIST = 2
+
+        /**
+         * How damped a track has to be before the auto-queue refuses it.
+         *
+         * Higher than nothing on purpose: a single old skip should not stop a
+         * track appearing in a queue the listener did not curate, where the
+         * cost of a wrong guess is one tap.
+         */
+        private const val QUEUE_SKIP_CUTOFF = 0.6
     }
 
     suspend fun buildTasteProfile(): TasteProfile = withContext(Dispatchers.Default) {
@@ -130,13 +167,15 @@ class RecommendationEngine(
             if (isUnknownArtist(artist)) continue
             artistScores.merge(artist, score, Double::plus)
         }
-        val topArtists = artistScores.entries
+        val rankedArtists = artistScores.entries
             .sortedByDescending { it.value }
             .take(MAX_ARTISTS)
-            .map { it.key }
+            .map { it.key to it.value }
+        val topArtists = rankedArtists.map { it.first }
 
         TasteProfile(
             topArtists = topArtists,
+            artistAffinity = rankedArtists,
             topSongs = topSongs,
             recentSearches = searchHistoryRepository.getHistory().take(MAX_RECENT_SEARCHES)
         )
@@ -161,13 +200,24 @@ class RecommendationEngine(
             results += youTubeRepository.getRelatedSongs(currentSong.id)
         }
 
-        // 2. Taste-profile fallback: songs by the user's top artists.
-        // Shuffled so consecutive loads don't always seed from the same artist.
+        // 2. The artists next to this listener's favourites, which keeps an
+        // auto-queue widening rather than circling the same names. Falls back
+        // to artist searches when the graph has nothing - a fresh profile, or
+        // an artist with no "fans might also like" shelf.
         if (results.count { it.id !in excludeIds } < limit) {
             val profile = buildTasteProfile()
-            for (artist in profile.topArtists.shuffled().take(2)) {
-                results += youTubeRepository.search("$artist songs", YouTubeRepository.FILTER_SONGS)
-                if (results.count { it.id !in excludeIds } >= limit) break
+            val neighbours = runCatching {
+                tasteGraph.neighbours(profile.artistAffinity, maxSeeds = 3, limit = 4)
+            }.getOrDefault(emptyList())
+            if (neighbours.isNotEmpty()) {
+                results += tasteGraph.songsFrom(neighbours.shuffled().take(2)).map { it.song }
+            }
+            if (results.count { it.id !in excludeIds } < limit) {
+                // Shuffled so consecutive loads don't always seed from the same artist.
+                for (artist in profile.topArtists.shuffled().take(2)) {
+                    results += youTubeRepository.search("$artist songs", YouTubeRepository.FILTER_SONGS)
+                    if (results.count { it.id !in excludeIds } >= limit) break
+                }
             }
         }
 
@@ -179,9 +229,14 @@ class RecommendationEngine(
             )
         }
 
+        // A track turned away from is not a track to queue up next. The
+        // penalty is the same one the discovery feed ranks by, so the two
+        // surfaces cannot disagree about what was rejected.
+        val skips = tasteSignals.skips()
         return results.asSequence()
             .filter { it.id !in excludeIds }
             .distinctBy { it.id }
+            .filter { tasteSignals.penaltyFor(skips[it.id]) < QUEUE_SKIP_CUTOFF }
             .take(limit)
             .toList()
     }
@@ -289,7 +344,35 @@ class RecommendationEngine(
     suspend fun getDiscoveryRecommendations(
         excludeIds: Set<String> = emptySet(),
         limit: Int = 40
-    ): List<Song> = coroutineScope {
+    ): List<Song> = getDiscoveryFeed(excludeIds, limit).map { it.song }
+
+    /**
+     * The discovery feed, each entry carrying the artist it was reached
+     * through.
+     *
+     * Three sources pull in different directions and are ranked together
+     * rather than interleaved blindly, because they are not equally good:
+     *
+     * - **The artist graph** ([TasteGraph]) is the one that actually reaches
+     *   unfamiliar music. A neighbour named by several favourites at once sits
+     *   in the middle of this listener's taste, which no search can express.
+     * - **Related-song radios** from favourite tracks reach sideways within a
+     *   sound rather than within a name, and catch the artist who has one
+     *   track in this world and nothing else like it.
+     * - **Recent searches** are intent the play history has not caught up with
+     *   yet - something typed last week is a stated interest.
+     *
+     * Ranking is the score of the source, damped by what the listener has
+     * turned away from ([TasteSignals]) and capped per artist so no single
+     * discovery owns the screen. A slice of the result is held back for the
+     * lower-ranked neighbours, chosen at random: a feed that only ever shows
+     * its top answers converges on a narrow band and stops discovering
+     * anything, and that slice is what keeps a refresh worth pulling.
+     */
+    suspend fun getDiscoveryFeed(
+        excludeIds: Set<String> = emptySet(),
+        limit: Int = 40
+    ): List<TasteGraph.Recommendation> = coroutineScope {
         val profile = buildTasteProfile()
         if (profile.isEmpty()) {
             return@coroutineScope youTubeRepository
@@ -297,37 +380,90 @@ class RecommendationEngine(
                 .filter { it.id !in excludeIds }
                 .distinctBy { it.id }
                 .take(limit)
+                .map { TasteGraph.Recommendation(it, 0.0, null, it.artist) }
         }
 
-        // Shuffled rather than always the same three: a refresh that returns
-        // the identical list is a refresh that appears not to have run.
-        val artistSeeds = profile.topArtists.shuffled().take(3)
-        val searchBuckets = artistSeeds.map { artist ->
-            async {
-                runCatching {
-                    youTubeRepository.search("$artist latest songs", YouTubeRepository.FILTER_SONGS)
-                }.getOrDefault(emptyList())
-            }
+        // Round one of the graph: who sits next to the artists being played.
+        // Awaited before round two because round two asks about the answers.
+        val neighbours = runCatching {
+            tasteGraph.neighbours(profile.artistAffinity)
+        }.getOrDefault(emptyList())
+
+        // Most of the budget on the best neighbours, the rest on a random pick
+        // from the tail - exploration, not noise: every one of them was still
+        // named by an artist the listener plays.
+        val exploring = neighbours.drop(GRAPH_EXPLOIT_ARTISTS).shuffled().take(GRAPH_EXPLORE_ARTISTS)
+        val chosenNeighbours = neighbours.take(GRAPH_EXPLOIT_ARTISTS) + exploring
+
+        val graphJob = async {
+            runCatching { tasteGraph.songsFrom(chosenNeighbours) }.getOrDefault(emptyList())
         }
-        val searchHistoryBucket = profile.recentSearches.take(2).map { query ->
-            async {
-                runCatching { youTubeRepository.search(query, YouTubeRepository.FILTER_SONGS) }
-                    .getOrDefault(emptyList())
-            }
-        }
-        val radioBuckets = profile.topSongs.take(2).map { seed ->
+        val radioJobs = profile.topSongs.take(2).map { seed ->
             async {
                 runCatching { youTubeRepository.getRelatedSongs(seed.songId) }
                     .getOrDefault(emptyList())
+                    .map { song ->
+                        TasteGraph.Recommendation(
+                            song = song,
+                            score = RADIO_WEIGHT,
+                            becauseOf = seed.artist.takeIf { !isUnknownArtist(it) },
+                            viaArtist = song.artist,
+                        )
+                    }
+            }
+        }
+        val searchJobs = profile.recentSearches.take(2).map { query ->
+            async {
+                runCatching { youTubeRepository.search(query, YouTubeRepository.FILTER_SONGS) }
+                    .getOrDefault(emptyList())
+                    .map { song ->
+                        TasteGraph.Recommendation(song, SEARCH_WEIGHT, null, song.artist)
+                    }
             }
         }
 
-        val buckets = (searchBuckets + searchHistoryBucket + radioBuckets)
-            .map { it.await() }
-            .map { bucket -> bucket.filter { it.id !in excludeIds } }
-            .filter { it.isNotEmpty() }
+        val skips = tasteSignals.skips()
+        val candidates = (listOf(graphJob) + radioJobs + searchJobs)
+            .flatMap { it.await() }
+            .filter { it.song.id.isNotBlank() && it.song.id !in excludeIds }
+            .distinctBy { it.song.id }
+            .map { candidate ->
+                val penalty = tasteSignals.penaltyFor(skips[candidate.song.id])
+                candidate to candidate.score * (1.0 - penalty)
+            }
+            .filter { it.second > 0.0 }
+            .sortedByDescending { it.second }
+            .map { it.first }
 
-        interleave(buckets).distinctBy { it.id }.take(limit)
+        capPerArtist(candidates, MAX_PER_ARTIST).take(limit)
+    }
+
+    /**
+     * Keeps the ranking but lets no artist hold more than [max] places.
+     *
+     * A straight sort hands the whole top of the feed to whichever artist the
+     * graph liked most, and a screen of one artist is a screen that has
+     * discovered one artist. Overflow is not dropped - it falls to the end,
+     * where it is still reachable by scrolling.
+     */
+    private fun capPerArtist(
+        items: List<TasteGraph.Recommendation>,
+        max: Int
+    ): List<TasteGraph.Recommendation> {
+        val counts = HashMap<String, Int>()
+        val kept = mutableListOf<TasteGraph.Recommendation>()
+        val overflow = mutableListOf<TasteGraph.Recommendation>()
+        for (item in items) {
+            val key = item.viaArtist.lowercase()
+            val seen = counts.getOrDefault(key, 0)
+            if (seen < max) {
+                counts[key] = seen + 1
+                kept += item
+            } else {
+                overflow += item
+            }
+        }
+        return kept + overflow
     }
 
     /**
