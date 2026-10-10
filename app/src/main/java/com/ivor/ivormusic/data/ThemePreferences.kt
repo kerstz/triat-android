@@ -577,7 +577,6 @@ class ThemePreferences(context: Context) {
          * Settings screen, so like the video session state below it has no
          * StateFlow — the sheet and the download worker both read it fresh.
          */
-        private const val KEY_DOWNLOAD_VIDEO_QUALITY = "download_video_quality"
 
         /**
          * App-only download storage. Off preserves Koda's existing public
@@ -590,16 +589,6 @@ class ThemePreferences(context: Context) {
             context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                 .getBoolean(KEY_PRIVATE_DOWNLOADS, false)
 
-        /**
-         * Static fresh read of the download quality for DownloadRepository,
-         * which runs off a plain Context (same pattern as [isLocalOnly]).
-         * Defaults to [VIDEO_QUALITY_AUTO]: best available, the historical
-         * download behavior.
-         */
-        fun currentDownloadVideoQuality(context: Context): String =
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getString(KEY_DOWNLOAD_VIDEO_QUALITY, VIDEO_QUALITY_AUTO)
-                ?: VIDEO_QUALITY_AUTO
 
         /**
          * Static fresh read of the active palette id, for the playlist cover
@@ -1383,17 +1372,7 @@ class ThemePreferences(context: Context) {
         _nonExpressiveNavigationBar.value = enabled
     }
 
-    /**
-     * Default quality for video downloads. See [currentDownloadVideoQuality]
-     * for the semantics; this instance pair serves the download sheet, which
-     * preselects from it and writes it back through its "remember" toggle.
-     */
-    fun getDownloadVideoQuality(): String =
-        prefs.getString(KEY_DOWNLOAD_VIDEO_QUALITY, VIDEO_QUALITY_AUTO) ?: VIDEO_QUALITY_AUTO
 
-    fun setDownloadVideoQuality(quality: String) {
-        prefs.edit().putString(KEY_DOWNLOAD_VIDEO_QUALITY, quality).apply()
-    }
 
     private fun getPrivateDownloadsEnabledPreference(): Boolean =
         prefs.getBoolean(KEY_PRIVATE_DOWNLOADS, false)

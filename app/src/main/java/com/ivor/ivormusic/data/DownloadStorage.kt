@@ -24,8 +24,7 @@ enum class DownloadMediaType(
     val mimeType: String,
     val extension: String
 ) {
-    MUSIC("Music", "audio/mp4", "m4a"),
-    VIDEO("Video", "video/mp4", "mp4");
+    MUSIC("Music", "audio/mp4", "m4a");
 
     val relativePath: String
         get() = "${Environment.DIRECTORY_DOWNLOADS}/Triat/$folderName"

@@ -12,7 +12,6 @@ class DownloadFolderTest {
     @Test
     fun `new downloads go to the Triat folder`() {
         assertEquals("$root/Triat/Music", DownloadMediaType.MUSIC.relativePath)
-        assertEquals("$root/Triat/Video", DownloadMediaType.VIDEO.relativePath)
     }
 
     @Test
@@ -24,6 +23,5 @@ class DownloadFolderTest {
     @Test
     fun `other folders are not ours`() {
         assertFalse(DownloadMediaType.MUSIC.isOwnFolder("$root/Other/Music/"))
-        assertFalse(DownloadMediaType.MUSIC.isOwnFolder("$root/Triat/Video/"))
     }
 }

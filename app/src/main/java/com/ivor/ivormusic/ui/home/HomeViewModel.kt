@@ -440,7 +440,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     // Downloads
     private val downloadRepository = com.ivor.ivormusic.data.DownloadRepository.getInstance(application)
     val downloadedSongs = downloadRepository.downloadedSongs
-    val downloadedVideos = downloadRepository.downloadedVideos
     val downloadingIds = downloadRepository.downloadingIds
     val downloadProgress = downloadRepository.downloadProgress
 

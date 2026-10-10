@@ -1637,16 +1637,9 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         downloadRepository.retryDownload(request)
     }
 
-    val downloadedVideos = downloadRepository.downloadedVideos
     val downloadQueue = downloadRepository.downloadQueue
 
-    fun downloadVideo(video: com.ivor.ivormusic.data.VideoItem) {
-        viewModelScope.launch { downloadRepository.downloadVideo(video) }
-    }
 
-    fun deleteVideoDownload(videoId: String) {
-        downloadRepository.deleteVideoDownload(videoId)
-    }
 
     /** Cancel every queued and in-flight download. */
     fun cancelAllDownloads() {

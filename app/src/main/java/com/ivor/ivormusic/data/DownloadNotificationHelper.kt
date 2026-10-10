@@ -132,9 +132,6 @@ class DownloadNotificationHelper(private val context: Context) {
         bytesDownloaded: Long,
         totalBytes: Long,
         queuedCount: Int = 0,
-        // Picks the tracker icon. A plain flag for now; this becomes part of the
-        // download model proper once video downloads land.
-        isVideo: Boolean = false,
         // Album art / video thumbnail. Null until it has been fetched, so the
         // notification shows immediately and gains the artwork on the next
         // update rather than waiting on the network.
@@ -173,14 +170,7 @@ class DownloadNotificationHelper(private val context: Context) {
                 )
             )
             .setProgressTrackerIcon(
-                IconCompat.createWithResource(
-                    context,
-                    if (isVideo) {
-                        R.drawable.ic_download_tracker_video
-                    } else {
-                        R.drawable.ic_download_tracker_music
-                    }
-                )
+                IconCompat.createWithResource(context, R.drawable.ic_download_tracker_music)
             )
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)

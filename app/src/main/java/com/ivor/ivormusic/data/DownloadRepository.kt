@@ -59,9 +59,7 @@ data class DownloadRequest(
     val durationMs: Long = 0,
     val song: Song? = null,
     val qualityLabel: String? = null
-) {
-    val isVideo: Boolean get() = type == DownloadMediaType.VIDEO
-}
+)
 
 data class DownloadProgress(
     val songId: String,
@@ -72,16 +70,6 @@ data class DownloadProgress(
     val totalBytes: Long = 0
 )
 
-/** A completed video download. */
-data class DownloadedVideo(
-    val id: String,
-    val title: String,
-    val channelName: String,
-    val uri: Uri,
-    val thumbnailUrl: String? = null,
-    val durationMs: Long = 0,
-    val quality: String? = null
-)
 
 /**
  * Owns download state for the whole process.
@@ -204,7 +192,6 @@ class DownloadRepository private constructor(private val context: Context) {
     }
 
     private val downloadsFile = File(context.filesDir, "downloaded_songs_metadata.json")
-    private val videosFile = File(context.filesDir, "downloaded_videos_metadata.json")
 
     /**
      * Scope for work that outlives a single call, currently only the one-time
@@ -223,9 +210,6 @@ class DownloadRepository private constructor(private val context: Context) {
     // Real-time progress tracking for each active download
     private val _downloadProgress = MutableStateFlow<Map<String, DownloadProgress>>(emptyMap())
     val downloadProgress: StateFlow<Map<String, DownloadProgress>> = _downloadProgress.asStateFlow()
-
-    private val _downloadedVideos = MutableStateFlow<List<DownloadedVideo>>(emptyList())
-    val downloadedVideos: StateFlow<List<DownloadedVideo>> = _downloadedVideos.asStateFlow()
 
     // Requests accepted but not yet started. Downloads run serially, so this is
     // the real backlog rather than a snapshot of a batch.
@@ -259,7 +243,6 @@ class DownloadRepository private constructor(private val context: Context) {
         // downloadedSongs.value immediately (MusicService does) are not racing
         // an empty list, then migrate in the background and reload.
         loadDownloadedSongs()
-        loadDownloadedVideos()
         repositoryScope.launch {
             if (DownloadMigration.migrateIfNeeded(context)) {
                 loadDownloadedSongs()
@@ -289,7 +272,6 @@ class DownloadRepository private constructor(private val context: Context) {
     private fun isDownloadedOfType(id: String, type: DownloadMediaType): Boolean =
         when (type) {
             DownloadMediaType.MUSIC -> _downloadedSongs.value.any { it.id == id }
-            DownloadMediaType.VIDEO -> _downloadedVideos.value.any { it.id == id }
         }
 
     /**
@@ -456,72 +438,7 @@ class DownloadRepository private constructor(private val context: Context) {
         }
     }
 
-    /** Load completed video downloads, reconciled against MediaStore. */
-    private fun loadDownloadedVideos() {
-        if (!videosFile.exists()) {
-            _downloadedVideos.value = emptyList()
-            return
-        }
 
-        try {
-            val jsonArray = JSONArray(videosFile.readText())
-            val liveUris = storage.listExisting(DownloadMediaType.VIDEO).keys
-            val videos = mutableListOf<DownloadedVideo>()
-            var prunedAny = false
-
-            for (i in 0 until jsonArray.length()) {
-                val obj = jsonArray.optJSONObject(i) ?: continue
-                val uri = obj.optString("mediaUri").takeIf { it.isNotBlank() }
-                    ?.let(Uri::parse)
-                    ?.takeIf { it in liveUris }
-
-                if (uri == null) {
-                    prunedAny = true
-                    continue
-                }
-
-                videos.add(
-                    DownloadedVideo(
-                        id = obj.optString("id"),
-                        title = obj.optString("title"),
-                        channelName = obj.optString("channelName"),
-                        uri = uri,
-                        thumbnailUrl = obj.optString("thumbnailUrl").takeIf { it.isNotBlank() },
-                        durationMs = obj.optLong("durationMs"),
-                        quality = obj.optString("quality").takeIf { it.isNotBlank() }
-                    )
-                )
-            }
-
-            _downloadedVideos.value = videos
-            if (prunedAny) saveVideoMetadata()
-        } catch (e: Exception) {
-            KLog.e(TAG, "Error loading video downloads", e)
-            _downloadedVideos.value = emptyList()
-        }
-    }
-
-    private fun saveVideoMetadata() {
-        try {
-            val jsonArray = JSONArray()
-            _downloadedVideos.value.forEach { video ->
-                jsonArray.put(
-                    JSONObject().apply {
-                        put("id", video.id)
-                        put("title", video.title)
-                        put("channelName", video.channelName)
-                        put("mediaUri", video.uri.toString())
-                        put("thumbnailUrl", video.thumbnailUrl)
-                        put("durationMs", video.durationMs)
-                        put("quality", video.quality)
-                    }
-                )
-            }
-            videosFile.writeText(jsonArray.toString())
-        } catch (e: Exception) {
-            KLog.e(TAG, "Error saving video metadata", e)
-        }
-    }
 
     /**
      * Publish progress for one download.
@@ -612,13 +529,6 @@ class DownloadRepository private constructor(private val context: Context) {
         )
     }
 
-    /**
-     * Queue a video download. [qualityLabel] pins the quality picked in the
-     * download sheet; null defers to the stored default at transfer time.
-     */
-    suspend fun downloadVideo(video: VideoItem, qualityLabel: String? = null) {
-        enqueue(listOf(video.toRequest(qualityLabel)))
-    }
 
     /**
      * Resolve the exact byte length of the audio stream that would be selected
@@ -633,44 +543,7 @@ class DownloadRepository private constructor(private val context: Context) {
     }
 
 
-    /**
-     * Queue several videos at once with one quality cap for the batch.
-     *
-     * Live broadcasts only expose an HLS manifest and cannot be remuxed by the
-     * offline MP4 path. They are skipped here as a final data-layer guard even
-     * though the playlist sheet also explains the skip before confirmation.
-     */
-    suspend fun downloadVideos(videos: List<VideoItem>, qualityLabel: String? = null) {
-        enqueue(
-            videos.asSequence()
-                .filterNot { it.isLive }
-                .distinctBy { it.videoId }
-                .map { it.toRequest(qualityLabel) }
-                .toList()
-        )
-    }
 
-    /**
-     * Resolve and queue a complete video playlist.
-     *
-     * A local playlist already carries its whole copied list. A YouTube
-     * playlist is normally loaded as one page for responsive browsing, so a
-     * batch explicitly follows every continuation here. False means neither
-     * independent resolver reached the real end; no partial batch is queued.
-     */
-    suspend fun downloadVideoPlaylist(
-        playlistId: String,
-        loadedVideos: List<VideoItem>,
-        qualityLabel: String? = null
-    ): Boolean {
-        val completeVideos = if (LocalVideoPlaylistsRepository.isLocal(playlistId)) {
-            loadedVideos
-        } else {
-            youtubeRepository.getCompletePlaylistVideos(playlistId) ?: return false
-        }
-        downloadVideos(completeVideos, qualityLabel)
-        return true
-    }
 
     private fun Song.toRequest() = DownloadRequest(
         id = id,
@@ -680,17 +553,6 @@ class DownloadRepository private constructor(private val context: Context) {
         thumbnailUrl = highResThumbnailUrl ?: thumbnailUrl ?: albumArtUri?.toString(),
         durationMs = duration,
         song = this
-    )
-
-    private fun VideoItem.toRequest(qualityLabel: String? = null) = DownloadRequest(
-        id = videoId,
-        title = title,
-        subtitle = channelName,
-        type = DownloadMediaType.VIDEO,
-        thumbnailUrl = thumbnailUrl,
-        // VideoItem.duration is seconds; everything downstream works in millis.
-        durationMs = duration * 1000,
-        qualityLabel = qualityLabel
     )
 
     private suspend fun enqueue(requests: List<DownloadRequest>) {
@@ -798,11 +660,7 @@ class DownloadRepository private constructor(private val context: Context) {
 
         for (attempt in 1..MAX_ATTEMPTS) {
             try {
-                val ok = if (request.isVideo) {
-                    attemptVideoDownload(request)
-                } else {
-                    attemptMusicDownload(request)
-                }
+                val ok = attemptMusicDownload(request)
                 if (ok) return
             } catch (e: kotlinx.coroutines.CancellationException) {
                 throw e
@@ -822,9 +680,6 @@ class DownloadRepository private constructor(private val context: Context) {
                 if (isMediaForbidden(lastError)) {
                     KLog.w(TAG, "googlevideo refused the media; re-minting visitorData before retry")
                     youtubeRepository.refreshVisitorDataAfterPlaybackFailure()
-                }
-                if (request.isVideo) {
-                    youtubeRepository.invalidateVideoStreamResult(request.id)
                 }
                 kotlinx.coroutines.delay(RETRY_BACKOFF_MS * attempt)
             }
@@ -1012,129 +867,6 @@ class DownloadRepository private constructor(private val context: Context) {
         output.use { out -> source.inputStream().use { input -> input.copyTo(out) } }
     }
 
-    /**
-     * One video download attempt.
-     *
-     * YouTube serves a single ready-made file only at 360p; everything better
-     * is video-only plus a separate audio stream, so the good path downloads
-     * both to the cache and remuxes them into the final MP4 (see
-     * [DownloadMuxer]). If no adaptive pair is usable - or the MP4 muxer
-     * rejects the codec - it falls back to whatever progressive stream exists
-     * so the user gets a file rather than an error.
-     */
-    private suspend fun attemptVideoDownload(request: DownloadRequest): Boolean =
-        withContext(Dispatchers.IO) {
-            var pendingTarget: Uri? = null
-            var videoTemp: File? = null
-            var audioTemp: File? = null
-            val privateStorage = ThemePreferences.usePrivateDownloadStorage(context)
-            updateProgress(request, 0.02f, DownloadStatus.DOWNLOADING)
-
-            try {
-                val qualities = youtubeRepository.getVideoStreamQualities(request.id)
-                if (qualities.isEmpty()) throw java.io.IOException("No streams for ${request.id}")
-
-                ensureActive()
-
-                // MP4-container entries only: the muxer will not accept VP9 or
-                // Opus, which is what the webm ladder carries.
-                val mp4Candidates = qualities.filter {
-                    !it.isDASH && it.audioUrl != null && it.isMp4DownloadCompatible
-                }
-                // The list is sorted highest-first, so "auto" is the head and a
-                // requested label resolves to the best entry at or below its
-                // height (a picked quality can vanish between the sheet's fetch
-                // and this re-resolution), else the lowest available.
-                val targetLabel = request.qualityLabel
-                    ?: ThemePreferences.currentDownloadVideoQuality(context)
-                fun height(label: String): Int =
-                    label.takeWhile { it.isDigit() }.toIntOrNull() ?: 0
-                val adaptive = if (targetLabel == ThemePreferences.VIDEO_QUALITY_AUTO) {
-                    mp4Candidates.firstOrNull()
-                } else {
-                    mp4Candidates.firstOrNull { height(it.resolution) in 1..height(targetLabel) }
-                        ?: mp4Candidates.lastOrNull { height(it.resolution) > 0 }
-                        ?: mp4Candidates.firstOrNull()
-                }
-                val progressive = qualities.firstOrNull {
-                    !it.isDASH && it.audioUrl == null && it.isMp4Container
-                }
-
-                val chosen = adaptive ?: progressive
-                    ?: throw java.io.IOException("No downloadable stream for ${request.id}")
-
-                val fileName =
-                    storage.buildFileName(request.title, request.subtitle, DownloadMediaType.VIDEO)
-                val target = storage.createPending(
-                    fileName,
-                    DownloadMediaType.VIDEO,
-                    privateStorage
-                )
-                    ?: throw java.io.IOException("Could not create storage entry")
-                pendingTarget = target
-
-                var muxed = false
-
-                if (chosen.audioUrl != null) {
-                    // Two transfers, then a remux. Progress is split so the bar
-                    // reflects real work: video is the bulk, audio a slice, and
-                    // the tail is the mux.
-                    videoTemp = downloadStream(request, chosen.url, "video", 0.05f, 0.70f)
-                    ensureActive()
-                    audioTemp = downloadStream(request, chosen.audioUrl, "audio", 0.70f, 0.88f)
-                    ensureActive()
-
-                    updateProgress(request, 0.9f, DownloadStatus.DOWNLOADING)
-
-                    muxed = context.contentResolver.openFileDescriptor(target, "rw")?.use { pfd ->
-                        DownloadMuxer.mux(videoTemp, audioTemp, pfd.fileDescriptor)
-                    } ?: false
-
-                    if (!muxed) {
-                        KLog.w(TAG, "Mux failed for ${request.title}, falling back to progressive")
-                    }
-                }
-
-                if (!muxed) {
-                    val fallback = progressive
-                        ?: throw java.io.IOException("Mux failed and no progressive stream")
-                    // Re-create the row: a failed mux may have written a partial
-                    // container into the existing one.
-                    storage.delete(target)
-                    val retryTarget = storage.createPending(
-                        fileName,
-                        DownloadMediaType.VIDEO,
-                        privateStorage
-                    )
-                        ?: throw java.io.IOException("Could not recreate storage entry")
-                    pendingTarget = retryTarget
-
-                    val progressiveFile = downloadStream(request, fallback.url, "muxed", 0.1f, 0.98f)
-                    ensureActive()
-                    copyToPending(progressiveFile, retryTarget)
-                    ensureActive()
-                    storage.publish(retryTarget)
-                    recordVideo(request, retryTarget, fallback.resolution)
-                    pendingTarget = null
-                } else {
-                    ensureActive()
-                    storage.publish(target)
-                    recordVideo(request, target, chosen.resolution)
-                    pendingTarget = null
-                }
-
-                finishSuccess(request)
-                true
-            } catch (e: kotlinx.coroutines.CancellationException) {
-                cleanUpCancelled(request, pendingTarget)
-                throw e
-            } catch (e: Exception) {
-                pendingTarget?.let { storage.delete(it) }
-                throw e
-            } finally {
-                activeDownloadCalls.remove(request.id)
-            }
-        }
 
     /**
      * Stream [url] into a session checkpoint, reporting progress scaled into
@@ -1280,18 +1012,6 @@ class DownloadRepository private constructor(private val context: Context) {
     private fun parseContentRangeTotal(contentRange: String?): Long? =
         contentRange?.substringAfterLast('/')?.toLongOrNull()?.takeIf { it > 0 }
 
-    private fun recordVideo(request: DownloadRequest, uri: Uri, quality: String?) {
-        _downloadedVideos.value = _downloadedVideos.value + DownloadedVideo(
-            id = request.id,
-            title = request.title,
-            channelName = request.subtitle,
-            uri = uri,
-            thumbnailUrl = request.thumbnailUrl,
-            durationMs = request.durationMs,
-            quality = quality
-        )
-        saveVideoMetadata()
-    }
 
     private fun finishSuccess(request: DownloadRequest) {
         pausedRequests.remove(request.id)
@@ -1419,14 +1139,6 @@ class DownloadRepository private constructor(private val context: Context) {
         }
     }
 
-    /** Delete a completed video download. */
-    fun deleteVideoDownload(videoId: String) {
-        val current = _downloadedVideos.value
-        val video = current.find { it.id == videoId } ?: return
-        storage.delete(video.uri)
-        _downloadedVideos.value = current - video
-        saveVideoMetadata()
-    }
 
     fun deleteDownload(songId: String) {
         val currentList = _downloadedSongs.value.toMutableList()

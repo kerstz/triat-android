@@ -83,7 +83,6 @@ import com.ivor.ivormusic.data.DownloadProgress
 import com.ivor.ivormusic.data.DownloadRepository
 import com.ivor.ivormusic.data.DownloadRequest
 import com.ivor.ivormusic.data.DownloadStatus
-import com.ivor.ivormusic.data.DownloadedVideo
 import com.ivor.ivormusic.data.Song
 
 /**

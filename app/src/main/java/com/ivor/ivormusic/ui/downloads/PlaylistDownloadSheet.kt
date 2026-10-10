@@ -86,13 +86,6 @@ import com.ivor.ivormusic.data.VideoItem
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
-private enum class PlaylistDownloadKind(
-    @PluralsRes val countPlural: Int,
-    @StringRes val downloadAllLabel: Int
-) {
-    MUSIC(R.plurals.n_tracks, R.string.pd_download_tracks),
-    VIDEO(R.plurals.vpl_video_count, R.string.pd_download_videos)
-}
 
 private data class PlaylistDownloadSnapshot(
     val eligibleIds: Set<String>,
@@ -180,7 +173,6 @@ fun MusicPlaylistDownloadAction(
     }
 
     PlaylistDownloadButton(
-        kind = PlaylistDownloadKind.MUSIC,
         snapshot = snapshot,
         totalItemCount = songs.size,
         enabled = songs.isNotEmpty(),
@@ -203,8 +195,7 @@ fun MusicPlaylistDownloadAction(
     if (showSheet) {
         PlaylistDownloadSheet(
             playlistTitle = playlistTitle,
-            kind = PlaylistDownloadKind.MUSIC,
-            playlistItemCountLabel = itemCountLabel(songs.size, PlaylistDownloadKind.MUSIC),
+            playlistItemCountLabel = trackCountLabel(songs.size),
             snapshot = snapshot,
             onDismiss = { showSheet = false },
             onQueue = {
@@ -217,100 +208,27 @@ fun MusicPlaylistDownloadAction(
     }
 }
 
-/** Download entry point for a video playlist, including a per-batch quality cap. */
-@Composable
-fun VideoPlaylistDownloadAction(
-    playlistId: String,
-    playlistTitle: String,
-    videos: List<VideoItem>,
-    playlistCountText: String? = null,
-    modifier: Modifier = Modifier,
-    allPagesLoaded: Boolean = true
-) {
-    val context = LocalContext.current
-    val repository = remember(context) { DownloadRepository.getInstance(context) }
-    val downloadedVideos by repository.downloadedVideos.collectAsStateWithLifecycle()
-    val progress by repository.downloadProgress.collectAsStateWithLifecycle()
-    var showSheet by remember(playlistTitle) { mutableStateOf(false) }
-
-    val eligibleVideos = remember(videos) {
-        videos.filter { !it.isLive && it.videoId.isNotBlank() }.distinctBy { it.videoId }
-    }
-    val eligibleIds = remember(eligibleVideos) { eligibleVideos.mapTo(linkedSetOf()) { it.videoId } }
-    val downloadedIds = remember(downloadedVideos, eligibleIds) {
-        downloadedVideos.asSequence().map { it.id }.filter { it in eligibleIds }.toSet()
-    }
-    val relevantProgress = remember(progress, eligibleIds) {
-        progress.values.filter {
-            it.request.type == DownloadMediaType.VIDEO && it.request.id in eligibleIds
-        }.associateBy { it.request.id }
-    }
-    val snapshot = remember(eligibleIds, downloadedIds, relevantProgress, videos, allPagesLoaded) {
-        PlaylistDownloadSnapshot(
-            eligibleIds = eligibleIds,
-            completedIds = downloadedIds,
-            active = relevantProgress.filterValues {
-                it.status == DownloadStatus.QUEUED || it.status == DownloadStatus.DOWNLOADING
-            },
-            failedIds = relevantProgress.filterValues { it.status == DownloadStatus.FAILED }.keys,
-            localOfflineCount = 0,
-            skippedCount = videos.count { it.isLive || it.videoId.isBlank() },
-            allPagesLoaded = allPagesLoaded,
-            repeatedEntryCount = (
-                videos.count { !it.isLive && it.videoId.isNotBlank() } - eligibleVideos.size
-            ).coerceAtLeast(0)
-        )
-    }
-
-    PlaylistDownloadButton(
-        kind = PlaylistDownloadKind.VIDEO,
-        snapshot = snapshot,
-        totalItemCount = videos.size,
-        enabled = videos.isNotEmpty(),
-        onClick = { showSheet = true },
-        modifier = modifier
-    )
-
-    if (showSheet) {
-        PlaylistDownloadSheet(
-            playlistTitle = playlistTitle,
-            kind = PlaylistDownloadKind.VIDEO,
-            playlistItemCountLabel = playlistCountText
-                ?.takeIf { it.isNotBlank() }
-                ?: if (videos.size >= 100) stringResource(R.string.vpl_video_count_partial, 100)
-                else itemCountLabel(videos.size, PlaylistDownloadKind.VIDEO),
-            snapshot = snapshot,
-            onDismiss = { showSheet = false },
-            onQueue = { quality ->
-                repository.downloadVideoPlaylist(playlistId, eligibleVideos, quality)
-            }
-        )
-    }
-}
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 private fun PlaylistDownloadButton(
-    kind: PlaylistDownloadKind,
     snapshot: PlaylistDownloadSnapshot,
     totalItemCount: Int,
     enabled: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val canOpen = enabled && (!snapshot.allPagesLoaded || snapshot.eligibleIds.isNotEmpty() || snapshot.localOfflineCount > 0) &&
-        (kind == PlaylistDownloadKind.MUSIC || !snapshot.isComplete)
+    val canOpen = enabled &&
+        (!snapshot.allPagesLoaded || snapshot.eligibleIds.isNotEmpty() || snapshot.localOfflineCount > 0)
     val label = when {
         snapshot.isComplete -> stringResource(R.string.vh_available_offline)
-        snapshot.activeCount > 0 && kind == PlaylistDownloadKind.VIDEO -> stringResource(R.string.pd_downloading_playlist)
         snapshot.activeCount > 0 -> stringResource(R.string.pd_downloading_n, snapshot.activeCount)
         !snapshot.allPagesLoaded -> stringResource(R.string.pd_download_playlist)
         snapshot.remainingCount > 0 && snapshot.remainingIds.all { it in snapshot.failedIds } ->
             stringResource(R.string.pd_retry_n, snapshot.remainingCount)
-        snapshot.remainingCount > 0 && kind == PlaylistDownloadKind.VIDEO -> stringResource(R.string.pd_download_playlist)
         snapshot.remainingCount > 0 -> stringResource(R.string.pd_download_n, totalItemCount)
         snapshot.skippedCount > 0 -> stringResource(R.string.pd_unavailable_offline)
-        else -> stringResource(kind.downloadAllLabel)
+        else -> stringResource(R.string.pd_download_tracks)
     }
 
     FilledTonalButton(
@@ -363,11 +281,10 @@ private fun PlaylistDownloadButton(
 @Composable
 private fun PlaylistDownloadSheet(
     playlistTitle: String,
-    kind: PlaylistDownloadKind,
     playlistItemCountLabel: String,
     snapshot: PlaylistDownloadSnapshot,
     onDismiss: () -> Unit,
-    onQueue: suspend (qualityLabel: String?) -> Boolean
+    onQueue: suspend () -> Boolean
 ) {
     val context = LocalContext.current
     val scope = rememberCoroutineScope()
@@ -377,10 +294,6 @@ private fun PlaylistDownloadSheet(
     // halfway hides the quality and summary context while making the first scroll
     // gesture resize the sheet, so enter directly at the expanded anchor.
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var selectedQuality by remember {
-        mutableStateOf(preferences.getDownloadVideoQuality())
-    }
-    var rememberQuality by remember { mutableStateOf(false) }
     var queued by remember { mutableStateOf(false) }
     var queueing by remember { mutableStateOf(false) }
     var queueFailed by remember { mutableStateOf(false) }
@@ -469,50 +382,31 @@ private fun PlaylistDownloadSheet(
                             verticalArrangement = Arrangement.spacedBy(10.dp)
                         ) {
                             DownloadSummaryRow(stringResource(R.string.pd_in_playlist), playlistItemCountLabel)
-                            if (kind == PlaylistDownloadKind.VIDEO) {
+                            DownloadSummaryRow(
+                                stringResource(R.string.pd_already_offline),
+                                trackCountLabel(snapshot.completedCount)
+                            )
+                            if (snapshot.repeatedEntryCount > 0) {
                                 DownloadSummaryRow(
-                                    stringResource(R.string.pd_loaded_now),
-                                    itemCountLabel(
-                                        snapshot.eligibleIds.size + snapshot.skippedCount,
-                                        kind
-                                    )
+                                    stringResource(R.string.pd_repeated_entries),
+                                    trackCountLabel(snapshot.repeatedEntryCount)
                                 )
-                                DownloadSummaryRow(
-                                    stringResource(R.string.pd_already_offline_here),
-                                    itemCountLabel(snapshot.completedCount, kind)
-                                )
+                            }
+                            DownloadSummaryRow(
+                                stringResource(R.string.pd_to_download),
+                                trackCountLabel(snapshot.remainingCount)
+                            )
+                            if (snapshot.repeatedEntryCount > 0) {
                                 Text(
-                                    text = stringResource(R.string.pd_pages_note),
+                                    text = stringResource(R.string.pd_repeated_entries_note),
                                     style = MaterialTheme.typography.bodySmall,
                                     color = MaterialTheme.colorScheme.onSurfaceVariant
                                 )
-                            } else {
-                                DownloadSummaryRow(
-                                    stringResource(R.string.pd_already_offline),
-                                    itemCountLabel(snapshot.completedCount, kind)
-                                )
-                                if (snapshot.repeatedEntryCount > 0) {
-                                    DownloadSummaryRow(
-                                        stringResource(R.string.pd_repeated_entries),
-                                        itemCountLabel(snapshot.repeatedEntryCount, kind)
-                                    )
-                                }
-                                DownloadSummaryRow(
-                                    stringResource(R.string.pd_to_download),
-                                    itemCountLabel(snapshot.remainingCount, kind)
-                                )
-                                if (snapshot.repeatedEntryCount > 0) {
-                                    Text(
-                                        text = stringResource(R.string.pd_repeated_entries_note),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
                             }
                             if (snapshot.activeCount > 0) {
                                 DownloadSummaryRow(
                                     stringResource(R.string.in_progress),
-                                    itemCountLabel(snapshot.activeCount, kind)
+                                    trackCountLabel(snapshot.activeCount)
                                 )
                                 val progressCd = stringResource(R.string.pd_progress_cd)
                                 LinearWavyProgressIndicator(
@@ -532,83 +426,24 @@ private fun PlaylistDownloadSheet(
                     }
                 }
 
-                if (kind == PlaylistDownloadKind.VIDEO) {
-                    item {
-                        Column(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalArrangement = Arrangement.spacedBy(10.dp)
-                        ) {
-                            Text(
-                                text = stringResource(R.string.sp_video_quality),
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.SemiBold
-                            )
-                            Text(
-                                text = stringResource(R.string.pd_quality_note),
-                                style = MaterialTheme.typography.bodySmall,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            FlowRow(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.spacedBy(8.dp),
-                                verticalArrangement = Arrangement.spacedBy(8.dp)
-                            ) {
-                                ThemePreferences.VIDEO_QUALITY_OPTIONS.forEach { quality ->
-                                    BatchQualityPill(
-                                        label = if (quality == ThemePreferences.VIDEO_QUALITY_AUTO) {
-                                            stringResource(R.string.pd_best_available)
-                                        } else quality,
-                                        selected = selectedQuality == quality,
-                                        onClick = { selectedQuality = quality }
-                                    )
-                                }
-                            }
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .clickable { rememberQuality = !rememberQuality }
-                                    .padding(vertical = 4.dp),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                Column(modifier = Modifier.weight(1f)) {
-                                    Text(
-                                        text = stringResource(R.string.vd_remember_quality),
-                                        style = MaterialTheme.typography.titleSmall,
-                                        fontWeight = FontWeight.SemiBold
-                                    )
-                                    Text(
-                                        text = stringResource(R.string.pd_remember_sub),
-                                        style = MaterialTheme.typography.bodySmall,
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                                    )
-                                }
-                                Switch(
-                                    checked = rememberQuality,
-                                    onCheckedChange = { rememberQuality = it }
-                                )
-                            }
-                        }
+                item {
+                    val musicQuality = remember {
+                        ThemePreferences.currentMusicQuality(context)
                     }
-                } else {
-                    item {
-                        val musicQuality = remember {
-                            ThemePreferences.currentMusicQuality(context)
-                        }
-                        Text(
-                            text = stringResource(
-                                R.string.dl_music_quality_note,
-                                stringResource(
-                                    when (musicQuality) {
-                                        ThemePreferences.MUSIC_QUALITY_NORMAL -> R.string.sp_music_quality_normal
-                                        ThemePreferences.MUSIC_QUALITY_LOW -> R.string.dl_music_quality_low
-                                        else -> R.string.sp_music_quality_high
-                                    }
-                                )
-                            ),
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
+                    Text(
+                        text = stringResource(
+                            R.string.dl_music_quality_note,
+                            stringResource(
+                                when (musicQuality) {
+                                    ThemePreferences.MUSIC_QUALITY_NORMAL -> R.string.sp_music_quality_normal
+                                    ThemePreferences.MUSIC_QUALITY_LOW -> R.string.dl_music_quality_low
+                                    else -> R.string.sp_music_quality_high
+                                }
+                            )
+                        ),
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
 
                 if (snapshot.skippedCount > 0 || localOnly) {
@@ -631,18 +466,13 @@ private fun PlaylistDownloadSheet(
                                         else MaterialTheme.colorScheme.onSecondaryContainer
                                 )
                                 Text(
-                                    text = when {
-                                        localOnly -> stringResource(R.string.pd_local_only_block)
-                                        kind == PlaylistDownloadKind.VIDEO ->
-                                            pluralStringResource(
-                                                R.plurals.pd_skipped_live, snapshot.skippedCount,
-                                                itemCountLabel(snapshot.skippedCount, kind)
-                                            )
-                                        else ->
-                                            pluralStringResource(
-                                                R.plurals.pd_skipped_no_source, snapshot.skippedCount,
-                                                itemCountLabel(snapshot.skippedCount, kind)
-                                            )
+                                    text = if (localOnly) {
+                                        stringResource(R.string.pd_local_only_block)
+                                    } else {
+                                        pluralStringResource(
+                                            R.plurals.pd_skipped_no_source, snapshot.skippedCount,
+                                            trackCountLabel(snapshot.skippedCount)
+                                        )
                                     },
                                     style = MaterialTheme.typography.bodyMedium,
                                     color = if (localOnly) MaterialTheme.colorScheme.onErrorContainer
@@ -703,14 +533,9 @@ private fun PlaylistDownloadSheet(
                         queueing = true
                         queueFailed = false
                         scope.launch {
-                            val success = onQueue(
-                                selectedQuality.takeIf { kind == PlaylistDownloadKind.VIDEO }
-                            )
+                            val success = onQueue()
                             queueing = false
                             if (success) {
-                                if (kind == PlaylistDownloadKind.VIDEO && rememberQuality) {
-                                    preferences.setDownloadVideoQuality(selectedQuality)
-                                }
                                 queued = true
                             } else {
                                 queueFailed = true
@@ -726,15 +551,13 @@ private fun PlaylistDownloadSheet(
                 ) {
                     val label = when {
                         queued -> stringResource(R.string.vd_added)
-                        queueing -> if (kind == PlaylistDownloadKind.VIDEO) {
-                            stringResource(R.string.pd_loading_full)
-                        } else stringResource(R.string.pd_adding)
+                        queueing -> stringResource(R.string.pd_adding)
                         localOnly -> stringResource(R.string.local_only_title)
                         snapshot.isComplete -> stringResource(R.string.pd_already_complete)
                         !snapshot.allPagesLoaded -> stringResource(R.string.pd_download_full)
                         snapshot.remainingCount == 0 && snapshot.activeCount > 0 -> stringResource(R.string.dl_preparing)
                         snapshot.remainingIds.all { it in snapshot.failedIds } ->
-                            stringResource(R.string.pd_retry_items, itemCountLabel(snapshot.remainingCount, kind))
+                            stringResource(R.string.pd_retry_items, trackCountLabel(snapshot.remainingCount))
                         else -> stringResource(R.string.pd_download_full)
                     }
                     if (queueing) {
@@ -773,47 +596,6 @@ private fun DownloadSummaryRow(label: String, value: String) {
 }
 
 @Composable
-private fun itemCountLabel(count: Int, kind: PlaylistDownloadKind): String =
-    pluralStringResource(kind.countPlural, count, count)
+private fun trackCountLabel(count: Int): String =
+    pluralStringResource(R.plurals.n_tracks, count, count)
 
-@Composable
-private fun BatchQualityPill(
-    label: String,
-    selected: Boolean,
-    onClick: () -> Unit
-) {
-    val interactionSource = remember { MutableInteractionSource() }
-    val pressed by interactionSource.collectIsPressedAsState()
-    val scale by animateFloatAsState(
-        targetValue = if (pressed) 0.94f else 1f,
-        animationSpec = spring(dampingRatio = 0.65f),
-        label = "batchQualityScale"
-    )
-    val color by animateColorAsState(
-        targetValue = if (selected) MaterialTheme.colorScheme.primaryContainer
-            else MaterialTheme.colorScheme.surfaceContainerHigh,
-        label = "batchQualityColor"
-    )
-    Surface(
-        shape = RoundedCornerShape(if (selected) 14.dp else 24.dp),
-        color = color,
-        modifier = Modifier
-            .scale(scale)
-            .clickable(
-                interactionSource = interactionSource,
-                indication = null,
-                onClick = onClick
-            )
-    ) {
-        Row(
-            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (selected) {
-                Icon(Icons.Rounded.Check, contentDescription = null, modifier = Modifier.size(18.dp))
-                Spacer(Modifier.width(6.dp))
-            }
-            Text(label, style = MaterialTheme.typography.labelLarge)
-        }
-    }
-}
