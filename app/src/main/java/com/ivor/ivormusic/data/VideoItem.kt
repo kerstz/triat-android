@@ -58,34 +58,11 @@ data class VideoItem(
      * them. Null everywhere except signed-in InnerTube feeds.
      */
     val dismissal: DismissalTokens? = null,
-    /**
-     * Every channel credited on a collab upload, uploader first, when the
-     * response named them. Empty for an ordinary single-channel video, which
-     * is why size > 1 is the test for "this is a collab" rather than isEmpty.
-     *
-     * A collab names no single owner, so [channelId] alone cannot describe one:
-     * it holds the uploader so that tapping through still lands somewhere
-     * sensible, and this holds the rest so a surface can offer the choice.
-     */
-    val collaborators: List<VideoCollaborator> = emptyList(),
     /** Last playback position as a fraction; null means no progress was supplied. */
     val watchedProgress: Float? = null,
     /** Snapshot time used to choose between local playback and refreshed account history. */
     val watchProgressUpdatedAtMs: Long = 0L
 ) {
-    /**
-     * Destination understood by the channel screen.
-     *
-     * Modern feed lockups sometimes omit their creator browse endpoint even
-     * though they still include an avatar. In that case the video id lets the
-     * channel screen resolve the owner from watch metadata without starting or
-     * changing playback.
-     */
-    val channelNavigationReference: String
-        get() = channelId?.takeIf { it.isNotBlank() }
-            ?: collaborators.firstOrNull()?.channelId
-            ?: "$CHANNEL_REFERENCE_VIDEO_PREFIX$videoId"
-
     /**
      * High-resolution thumbnail URL.
      */
@@ -125,8 +102,6 @@ data class VideoItem(
         }
 
     companion object {
-        const val CHANNEL_REFERENCE_VIDEO_PREFIX = "video:"
-
         /**
          * Creates a VideoItem from NewPipe StreamInfoItem data.
          */
@@ -346,15 +321,6 @@ data class VideoDetails(
     val updatedVideoItem: VideoItem? = null
 )
 
-/**
- * A single chapter marker in a video, parsed from the watch-next player bar
- * (multiMarkersPlayerBarRenderer -> markersMap -> chapterRenderer).
- */
-data class VideoChapter(
-    val title: String,
-    val startMs: Long,
-    val thumbnailUrl: String? = null
-)
 
 /**
  * A frame source used while scrubbing the video timeline.
@@ -435,23 +401,6 @@ data class VideoStreamResult(
     val seekPreview: VideoSeekPreview? = null,
 )
 
-/**
- * Everything the video player needs from a single watch-next (/next) call:
- * engagement state, enriched metadata, related videos and chapters.
- */
-data class WatchNextData(
-    val engagement: VideoEngagement?,
-    val updatedVideoItem: VideoItem?,
-    val relatedVideos: List<VideoItem>,
-    val chapters: List<VideoChapter> = emptyList(),
-    /**
-     * Live chat start token, when the video is a broadcast with chat enabled.
-     * It rides this response so opening the chat panel costs no extra /next -
-     * the watch-next tree is a multi-megabyte parse and re-fetching it was the
-     * single biggest cost of opening chat.
-     */
-    val liveChatContinuation: String? = null
-)
 
 /**
  * A caption/subtitle track for a video, parsed from the /player response

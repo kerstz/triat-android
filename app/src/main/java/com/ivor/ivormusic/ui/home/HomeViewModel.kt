@@ -1259,7 +1259,7 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
     suspend fun resolveVideoFromLink(videoId: String): VideoItem? {
         return try {
-            youtubeRepository.getWatchNextData(videoId).updatedVideoItem
+            youtubeRepository.resolveVideoMetadata(videoId)
         } catch (e: Exception) {
             null
         }

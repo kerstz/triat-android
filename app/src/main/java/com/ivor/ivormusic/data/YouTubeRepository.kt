@@ -3078,33 +3078,7 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-    /**
-     * Related videos for a seed video from the watch-next endpoint.
-     * Far lighter than a full NewPipe StreamExtractor fetch (one JSON call,
-     * no stream resolution). Related items are lockupViewModels since 2025.
-     */
-    private fun getRelatedVideosLight(videoId: String): List<VideoItem> {
-        return try {
-            val root = fetchWatchNextRoot(videoId) ?: return emptyList()
-            parseRelatedFromWatchNext(root)
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "getRelatedVideosLight failed for $videoId", e)
-            emptyList()
-        }
-    }
 
-    /**
-     * Related videos from a watch-next response: lockupViewModels under
-     * secondaryResults (the modern shape since 2025).
-     */
-    private fun parseRelatedFromWatchNext(root: org.json.JSONObject): List<VideoItem> {
-        val secondary = root.optJSONObject("contents")
-            ?.optJSONObject("twoColumnWatchNextResults")
-            ?.optJSONObject("secondaryResults") ?: return emptyList()
-        val lockups = mutableListOf<org.json.JSONObject>()
-        findObjectsByKey(secondary, "lockupViewModel", lockups)
-        return lockups.mapNotNull { parseLockupViewModel(it) }
-    }
 
 
     /**
@@ -3646,8 +3620,6 @@ class YouTubeRepository(private val context: Context) {
                  return bestUrl?.takeIf { it.isNotBlank() }
              }
 
-             val collaborators = collaboratorsFromDialogHost(avatarStack)
-
              // The collab fallback is second because a collab has no single
              // owner: the dialog lists its channels in the order the byline
              // names them ("Sidemen and CORE"), so the first is the uploader and
@@ -3661,7 +3633,7 @@ class YouTubeRepository(private val context: Context) {
                      ?.optJSONObject("browseEndpoint")
                      ?.optString("browseId")
                      ?.takeIf { it.isNotBlank() }
-                 channelId = avatarChannelId ?: collaborators.firstOrNull()?.channelId
+                 channelId = avatarChannelId ?: uploaderIdFromAvatarStack(avatarStack)
              }
 
              val channelIconUrl = bestSourceUrl(
@@ -3778,7 +3750,6 @@ class YouTubeRepository(private val context: Context) {
                 uploadedDate = uploadDate,
                 isLive = isLive,
                 dismissal = parseDismissalTokens(metadata),
-                collaborators = collaborators,
                 watchedProgress = parseVideoWatchProgress(lockupViewModel),
                 watchProgressUpdatedAtMs = System.currentTimeMillis()
             )
@@ -4202,73 +4173,27 @@ class YouTubeRepository(private val context: Context) {
 
 
     /**
-     * Everything the video player needs from one watch-next call: engagement,
-     * enriched metadata and related videos, all parsed from a single /next
-     * response. Replaces the previous pair of an engagement call plus a full
-     * NewPipe StreamExtractor fetch, halving the network work per video open
-     * and freeing bandwidth for the player's initial buffer.
+     * Title, channel, view count and description for one video id, from a
+     * single watch-next call.
+     *
+     * This is what a pasted YouTube link resolves through: the id alone says
+     * nothing a row can be drawn from, and /next answers with the whole watch
+     * page's metadata in one request rather than a NewPipe StreamExtractor
+     * fetch.
      */
-    suspend fun getWatchNextData(
+    suspend fun resolveVideoMetadata(
         videoId: String,
         baseVideo: VideoItem? = null
-    ): WatchNextData = withContext(Dispatchers.IO) {
+    ): VideoItem? = withContext(Dispatchers.IO) {
         try {
-            val root = fetchWatchNextRoot(videoId)
-                ?: return@withContext WatchNextData(null, null, emptyList())
-            WatchNextData(
-                engagement = try {
-                    parseEngagementFromWatchNext(videoId, root)
-                } catch (e: Exception) {
-                    KLog.w("YouTubeRepo", "engagement parse failed for $videoId", e)
-                    null
-                },
-                updatedVideoItem = parseVideoMetadataFromWatchNext(videoId, root, baseVideo),
-                relatedVideos = parseRelatedFromWatchNext(root),
-                chapters = try {
-                    parseChaptersFromWatchNext(root)
-                } catch (e: Exception) {
-                    KLog.w("YouTubeRepo", "chapters parse failed for $videoId", e)
-                    emptyList()
-                },
-                liveChatContinuation = parseLiveChatContinuation(root)
-            )
+            val root = fetchWatchNextRoot(videoId) ?: return@withContext baseVideo
+            parseVideoMetadataFromWatchNext(videoId, root, baseVideo)
         } catch (e: Exception) {
-            KLog.e("YouTubeRepo", "getWatchNextData failed", e)
-            WatchNextData(null, null, emptyList())
+            KLog.e("YouTubeRepo", "resolveVideoMetadata failed", e)
+            baseVideo
         }
     }
 
-    /**
-     * Parse chapter markers from a watch-next response. Chapters live in the
-     * decorated player bar: multiMarkersPlayerBarRenderer.markersMap, keyed
-     * DESCRIPTION_CHAPTERS (creator) or AUTO_CHAPTERS, each with a list of
-     * chapterRenderer { title, timeRangeStartMillis, thumbnail }. Collecting
-     * chapterRenderer by key returns them in document (chronological) order;
-     * we sort defensively and drop anything without a title. Verified against
-     * the live /next API July 2026.
-     */
-    private fun parseChaptersFromWatchNext(root: org.json.JSONObject): List<VideoChapter> {
-        val renderers = mutableListOf<org.json.JSONObject>()
-        findObjectsByKey(root, "chapterRenderer", renderers)
-        if (renderers.isEmpty()) return emptyList()
-
-        val chapters = renderers.mapNotNull { r ->
-            val title = getRunText(r.optJSONObject("title"))?.takeIf { it.isNotBlank() }
-                ?: return@mapNotNull null
-            val startMs = r.optLong("timeRangeStartMillis", -1L)
-            if (startMs < 0L) return@mapNotNull null
-            val thumbs = r.optJSONObject("thumbnail")?.optJSONArray("thumbnails")
-            val thumbnailUrl = thumbs?.optJSONObject(thumbs.length() - 1)
-                ?.optString("url")?.takeIf { it.isNotBlank() }
-            VideoChapter(title = title, startMs = startMs, thumbnailUrl = thumbnailUrl)
-        }
-
-        // De-duplicate by start time (the same chapter list can appear twice in
-        // the tree on some responses) and keep chronological order.
-        return chapters
-            .distinctBy { it.startMs }
-            .sortedBy { it.startMs }
-    }
 
     private fun fetchWatchNextRoot(videoId: String): org.json.JSONObject? {
         val body = org.json.JSONObject()
@@ -4283,32 +4208,6 @@ class YouTubeRepository(private val context: Context) {
     // ============================================================
 
 
-    /**
-     * Pull the chat start token out of an already-fetched watch-next response.
-     *
-     * conversationBar is absent entirely when the video is not live or the
-     * creator disabled chat, which is the "no chat" signal - not an error.
-     *
-     * A finished broadcast that kept its chat exposes the *replay* under this
-     * same key. Nothing consumes that today - the panel is gated on isLive -
-     * but it is the hook if replay chat is ever wanted.
-     */
-    private fun parseLiveChatContinuation(root: org.json.JSONObject): String? {
-        val renderer = root.optJSONObject("contents")
-            ?.optJSONObject("twoColumnWatchNextResults")
-            ?.optJSONObject("conversationBar")
-            ?.optJSONObject("liveChatRenderer")
-            ?: return null
-
-        // Sub-menu entry 0 is "Top chat" and entry 1 "Live chat"; the top-level
-        // continuation matches whichever the creator defaulted to, and is the
-        // one the web player opens with.
-        return renderer.optJSONArray("continuations")
-            ?.optJSONObject(0)
-            ?.optJSONObject("reloadContinuationData")
-            ?.optString("continuation")
-            ?.takeIf { it.isNotBlank() }
-    }
 
 
 
@@ -4590,6 +4489,50 @@ class YouTubeRepository(private val context: Context) {
      * relativeDateText) and videoSecondaryInfoRenderer (owner.videoOwnerRenderer,
      * attributedDescription.content).
      */
+    /**
+     * The uploader's channel id out of a collab lockup's avatar stack.
+     *
+     * A collaboration names no single owner, so its avatar stack carries no
+     * browse endpoint of its own - only the dialog listing every credited
+     * channel, inline on the same command slot. The dialog lists them in the
+     * order the byline names them ("Sidemen and CORE"), so the first row is the
+     * uploader and the only destination a tap can be sent to.
+     */
+    private fun uploaderIdFromAvatarStack(host: org.json.JSONObject?): String? {
+        if (host == null) return null
+        return try {
+            val dialogs = mutableListOf<org.json.JSONObject>()
+            findObjectsByKey(host, "dialogViewModel", dialogs)
+            val first = dialogs.firstNotNullOfOrNull { dialog ->
+                dialog.optJSONObject("customContent")
+                    ?.optJSONObject("listViewModel")
+                    ?.optJSONArray("listItems")
+                    ?.optJSONObject(0)
+                    ?.optJSONObject("listItemViewModel")
+            } ?: return null
+            first.optJSONObject("title")
+                ?.optJSONArray("commandRuns")
+                ?.optJSONObject(0)
+                ?.optJSONObject("onTap")
+                ?.optJSONObject("innertubeCommand")
+                ?.optJSONObject("browseEndpoint")
+                ?.optString("browseId")
+                ?.takeIf { it.isNotBlank() }
+            // The lockup variant of the same dialog puts the command on the row
+            // rather than on the title text.
+                ?: first.optJSONObject("rendererContext")
+                    ?.optJSONObject("commandContext")
+                    ?.optJSONObject("onTap")
+                    ?.optJSONObject("innertubeCommand")
+                    ?.optJSONObject("browseEndpoint")
+                    ?.optString("browseId")
+                    ?.takeIf { it.isNotBlank() }
+        } catch (e: Exception) {
+            KLog.w("YouTubeRepo", "collab uploader parse failed", e)
+            null
+        }
+    }
+
     private fun parseVideoMetadataFromWatchNext(
         videoId: String,
         root: org.json.JSONObject,
@@ -4658,11 +4601,6 @@ class YouTubeRepository(private val context: Context) {
                     ?: baseVideo?.channelName ?: "Unknown",
                 channelId = channelId ?: baseVideo?.channelId,
                 channelIconUrl = channelIconUrl ?: baseVideo?.channelIconUrl,
-                // Carried on the item as well as on the engagement so that a
-                // surface holding only the VideoItem - the queue, the mini
-                // player, a related card - can still resolve the creator.
-                collaborators = parseCollaborators(owner)
-                    .ifEmpty { baseVideo?.collaborators.orEmpty() },
                 thumbnailUrl = baseVideo?.thumbnailUrl
                     ?: "https://i.ytimg.com/vi/$videoId/hqdefault.jpg",
                 duration = baseVideo?.duration ?: 0L,
@@ -4681,233 +4619,10 @@ class YouTubeRepository(private val context: Context) {
         }
     }
 
-    private fun parseEngagementFromWatchNext(
-        videoId: String,
-        root: org.json.JSONObject
-    ): VideoEngagement {
-            // Like count + user's like status live in frameworkUpdates entities
-            val likeCounts = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "likeCountEntity", likeCounts)
-            var likeCount = likeCounts.firstOrNull()
-                ?.optJSONObject("likeCountIfIndifferent")?.optString("content")
-                ?.takeIf { it.isNotBlank() }
-            if (likeCount == null) {
-                // Fallback: the visible title on the like toggle button ("19M")
-                val likeButtons = mutableListOf<org.json.JSONObject>()
-                findObjectsByKey(root, "segmentedLikeDislikeButtonViewModel", likeButtons)
-                val title = likeButtons.firstOrNull()
-                    ?.optJSONObject("likeButtonViewModel")?.optJSONObject("likeButtonViewModel")
-                    ?.optJSONObject("toggleButtonViewModel")?.optJSONObject("toggleButtonViewModel")
-                    ?.optJSONObject("defaultButtonViewModel")?.optJSONObject("buttonViewModel")
-                    ?.optString("title")
-                // Ignore non-numeric titles like "Like" (count hidden by creator)
-                likeCount = title?.takeIf { it.isNotBlank() && it.any { c -> c.isDigit() } }
-            }
 
-            val likeStatuses = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "likeStatusEntity", likeStatuses)
-            val likeStatus = when (likeStatuses.firstOrNull()?.optString("likeStatus")) {
-                "LIKE" -> LikeStatus.LIKE
-                "DISLIKE" -> LikeStatus.DISLIKE
-                else -> LikeStatus.INDIFFERENT
-            }
 
-            val subButtons = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "subscribeButtonRenderer", subButtons)
-            val subButton = subButtons.firstOrNull()
-            val isSubscribed = subButton?.optBoolean("subscribed", false) ?: false
 
-            val owners = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "videoOwnerRenderer", owners)
-            val owner = owners.firstOrNull()
-            val channelId = subButton?.optString("channelId")?.takeIf { it.isNotBlank() }
-                ?: owner?.optJSONObject("navigationEndpoint")
-                    ?.optJSONObject("browseEndpoint")?.optString("browseId")
-                    ?.takeIf { it.isNotBlank() }
-            val subscriberCountText = getRunText(owner?.optJSONObject("subscriberCountText"))
 
-            // Comments entry token: the itemSectionRenderer tagged comment-item-section.
-            // Two tokens usually appear; the longest is the full comments panel.
-            var commentsToken: String? = null
-            val sections = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(root, "itemSectionRenderer", sections)
-            for (section in sections) {
-                if (section.optString("sectionIdentifier") == "comment-item-section") {
-                    val tokens = mutableListOf<String>()
-                    findContinuationTokens(section, tokens)
-                    val best = tokens.maxByOrNull { it.length }
-                    if (best != null && best.length > (commentsToken?.length ?: 0)) {
-                        commentsToken = best
-                    }
-                }
-            }
-
-            return VideoEngagement(
-                videoId = videoId,
-                likeCount = likeCount,
-                likeStatus = likeStatus,
-                channelId = channelId,
-                isSubscribed = isSubscribed,
-                subscriberCountText = subscriberCountText,
-                commentsToken = commentsToken,
-                collaborators = parseCollaborators(owner)
-            )
-    }
-
-    /**
-     * Collaborators credited on a collab video, read out of the dialog the
-     * owner renderer carries inline.
-     *
-     * [verified September 2026, signed out] A collab `videoOwnerRenderer` has no
-     * `title`, `thumbnail` or `browseEndpoint` at all; the whole creator block is
-     *
-     * ```
-     * videoOwnerRenderer
-     *   attributedTitle.content              "KSI and 2 more"
-     *   avatarStack.avatarStackViewModel     one avatar per collaborator
-     *   navigationEndpoint.showDialogCommand.panelLoadingStrategy
-     *     .inlineContent.dialogViewModel.customContent.listViewModel.listItems[]
-     *       listItemViewModel
-     *         title.content                  channel name
-     *         title.commandRuns[0]...browseEndpoint.browseId
-     *         title.attachmentRuns[]         CHECK_CIRCLE_FILLED when verified
-     *         subtitle.content               "@handle • 19M subscribers"
-     *         leadingAccessory.avatarViewModel.image.sources[0].url
-     * ```
-     *
-     * The dialog is reached structurally rather than by matching its "Collaborators"
-     * headline, which is localized. A row with no browse id is dropped: without an
-     * id there is nothing to open, and a row that looks tappable and does nothing
-     * is worse than one that is not listed.
-     *
-     * A feed lockup carries the same dialog under a different host - see
-     * [collaboratorsFromDialogHost], which both entry points share.
-     */
-    private fun parseCollaborators(owner: org.json.JSONObject?): List<VideoCollaborator> =
-        collaboratorsFromDialogHost(owner)
-
-    /**
-     * The collaborator rows out of whatever `showDialogCommand` [host] carries.
-     *
-     * Two hosts carry the same dialog and neither can be assumed [verified
-     * September 2026, signed out, against a live collab upload]:
-     *
-     * - the watch page's `videoOwnerRenderer`, on its `navigationEndpoint`;
-     * - a feed lockup's `lockupMetadataViewModel.image.avatarStackViewModel`,
-     *   on its `rendererContext.commandContext.onTap`, where the row command
-     *   sits on each list item rather than on its title text.
-     *
-     * The nesting between the host and the dialog differs, so the dialog is
-     * located by descending to it rather than by spelling out one path: what is
-     * structural here is that a collab's channels are the list inside the only
-     * dialog the creator block carries, not the exact depth YouTube nests it at.
-     * [host] is always the creator block itself, never a whole response, which
-     * is what keeps that search from reaching an unrelated dialog.
-     */
-    private fun collaboratorsFromDialogHost(host: org.json.JSONObject?): List<VideoCollaborator> {
-        if (host == null) return emptyList()
-        return try {
-            val dialogs = mutableListOf<org.json.JSONObject>()
-            findObjectsByKey(host, "dialogViewModel", dialogs)
-            val items = dialogs.firstNotNullOfOrNull { dialog ->
-                dialog.optJSONObject("customContent")
-                    ?.optJSONObject("listViewModel")
-                    ?.optJSONArray("listItems")
-            } ?: return emptyList()
-
-            (0 until items.length()).mapNotNull { index ->
-                val item = items.optJSONObject(index)?.optJSONObject("listItemViewModel")
-                    ?: return@mapNotNull null
-                val titleObj = item.optJSONObject("title")
-                val name = titleObj?.optString("content")?.takeIf { it.isNotBlank() }
-                    ?: return@mapNotNull null
-                val channelId = titleObj.optJSONArray("commandRuns")
-                    ?.optJSONObject(0)
-                    ?.optJSONObject("onTap")
-                    ?.optJSONObject("innertubeCommand")
-                    ?.optJSONObject("browseEndpoint")
-                    ?.optString("browseId")
-                    ?.takeIf { it.isNotBlank() }
-                    // The lockup variant of the same dialog puts the command on
-                    // the row rather than on the title text.
-                    ?: item.optJSONObject("rendererContext")
-                        ?.optJSONObject("commandContext")
-                        ?.optJSONObject("onTap")
-                        ?.optJSONObject("innertubeCommand")
-                        ?.optJSONObject("browseEndpoint")
-                        ?.optString("browseId")
-                        ?.takeIf { it.isNotBlank() }
-                    ?: return@mapNotNull null
-
-                // "@KSI • 19M subscribers", wrapped in bidi isolates that would
-                // otherwise land in the middle of the visible strings.
-                val subtitle = item.optJSONObject("subtitle")?.optString("content")
-                    ?.filterNot { it in BIDI_CONTROL_CHARS }
-                    ?.trim()
-                    ?.takeIf { it.isNotBlank() }
-                val subtitleParts = subtitle?.split("•")?.map { it.trim() }.orEmpty()
-                val handle = subtitleParts.firstOrNull { it.startsWith("@") }
-                val subscriberCount = subtitleParts.firstOrNull { !it.startsWith("@") }
-                    ?.takeIf { it.isNotBlank() }
-
-                VideoCollaborator(
-                    channelId = channelId,
-                    name = name,
-                    handle = handle,
-                    subscriberCount = subscriberCount,
-                    avatarUrl = item.optJSONObject("leadingAccessory")
-                        ?.optJSONObject("avatarViewModel")
-                        ?.optJSONObject("image")
-                        ?.optJSONArray("sources")
-                        ?.optJSONObject(0)
-                        ?.optString("url")
-                        ?.takeIf { it.isNotBlank() },
-                    isVerified = hasVerifiedAttachment(titleObj)
-                )
-            }
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "collaborator parse failed", e)
-            emptyList()
-        }
-    }
-
-    /**
-     * Bidi marks and isolates YouTube wraps around interpolated values.
-     *
-     * They are correct on a web page - they stop an RTL channel handle from
-     * reordering the text around it - and invisible garbage the moment the
-     * string is split on a separator or measured for layout, so they come off
-     * before the parts are used.
-     */
-    private val BIDI_CONTROL_CHARS = setOf(
-        '\u200E', // LEFT-TO-RIGHT MARK
-        '\u200F', // RIGHT-TO-LEFT MARK
-        '\u061C', // ARABIC LETTER MARK
-        '\u2066', // LEFT-TO-RIGHT ISOLATE
-        '\u2067', // RIGHT-TO-LEFT ISOLATE
-        '\u2068', // FIRST STRONG ISOLATE
-        '\u2069'  // POP DIRECTIONAL ISOLATE
-    )
-
-    /** True when an attributed title carries YouTube's verified-badge glyph. */
-    private fun hasVerifiedAttachment(titleObj: org.json.JSONObject?): Boolean {
-        val runs = titleObj?.optJSONArray("attachmentRuns") ?: return false
-        for (i in 0 until runs.length()) {
-            val sources = runs.optJSONObject(i)
-                ?.optJSONObject("element")
-                ?.optJSONObject("type")
-                ?.optJSONObject("imageType")
-                ?.optJSONObject("image")
-                ?.optJSONArray("sources") ?: continue
-            for (j in 0 until sources.length()) {
-                val imageName = sources.optJSONObject(j)
-                    ?.optJSONObject("clientResource")
-                    ?.optString("imageName")
-                if (imageName == "CHECK_CIRCLE_FILLED") return true
-            }
-        }
-        return false
-    }
 
 
     /**
