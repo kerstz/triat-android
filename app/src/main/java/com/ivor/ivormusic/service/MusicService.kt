@@ -248,6 +248,13 @@ class MusicService : MediaLibraryService() {
         private const val PREFETCH_AHEAD_COUNT = 3
 
         /**
+         * How long the skip notice stays in the session extras. A little
+         * longer than the snackbar it feeds, so the undo outlives the message
+         * by a moment rather than dying under a finger reaching for it.
+         */
+        private const val SPONSOR_NOTICE_TTL_MS = 8_000L
+
+        /**
          * A YouTube video id, which is what a YouTube song's media id is.
          *
          * SponsorBlock only knows about videos, so this is the test for "there
@@ -598,6 +605,7 @@ class MusicService : MediaLibraryService() {
         progressJob?.cancel()
         transitionJob?.cancel()
         sponsorFetchJob?.cancel()
+        sponsorNoticeExpiryJob?.cancel()
         headsetButtonJob?.cancel()
         headsetButtonSequence.clear()
         audioFocus.abandon()
@@ -856,6 +864,16 @@ class MusicService : MediaLibraryService() {
     private var sponsorSkipCategory: String? = null
 
     /**
+     * Retires the skip notice a few seconds after it is published.
+     *
+     * Session extras are state, not events: a notice left in them is handed
+     * to the next controller that connects, so reopening the app minutes later
+     * would show "Skipped sponsor - Undo" for a skip long past, with an undo
+     * that seeks backwards into a track the listener has moved on from.
+     */
+    private var sponsorNoticeExpiryJob: Job? = null
+
+    /**
      * Builds the repository off the main thread, then hands the tracker back
      * on it, since sampling reads the player. A failure is logged and not
      * retried for this service's lifetime: the job stays set, so the loop does
@@ -916,6 +934,7 @@ class MusicService : MediaLibraryService() {
 
     /** Drops every trace of the previous track's segments. */
     private fun resetSponsorState() {
+        sponsorNoticeExpiryJob?.cancel()
         sponsorSegments = emptyList()
         sponsorSkipped.clear()
         sponsorAsk = null
@@ -933,7 +952,7 @@ class MusicService : MediaLibraryService() {
      */
     private fun applySponsorBlock() {
         val segments = sponsorSegments
-        if (segments.isEmpty() || !player.isPlaying) {
+        if (segments.isEmpty()) {
             clearSponsorAsk()
             return
         }
@@ -947,7 +966,10 @@ class MusicService : MediaLibraryService() {
         when (themePreferences.sponsorBlockActions.value[segment.category]) {
             SegmentAction.SKIP -> {
                 clearSponsorAsk()
-                performSponsorSkip(segment, automatic = true)
+                // Only while playing: seeking a paused player moves the
+                // playhead out from under someone who stopped to read where
+                // they are, and the segment is still there when they resume.
+                if (player.isPlaying) performSponsorSkip(segment, automatic = true)
             }
             SegmentAction.MANUAL -> {
                 if (sponsorAsk?.uuid != segment.uuid) {
@@ -988,6 +1010,13 @@ class MusicService : MediaLibraryService() {
             sponsorUndoPositionMs = from
             sponsorSkipCategory = segment.category.apiName
             sponsorSkipSeq++
+            sponsorNoticeExpiryJob?.cancel()
+            sponsorNoticeExpiryJob = serviceScope.launch {
+                delay(SPONSOR_NOTICE_TTL_MS)
+                sponsorUndoPositionMs = -1L
+                sponsorSkipCategory = null
+                publishSessionState()
+            }
         }
         publishSessionState()
     }
@@ -1000,6 +1029,7 @@ class MusicService : MediaLibraryService() {
 
     /** Puts the playhead back where the last automatic skip took it from. */
     private fun undoSponsorSkip() {
+        sponsorNoticeExpiryJob?.cancel()
         val position = sponsorUndoPositionMs
         sponsorUndoPositionMs = -1L
         sponsorSkipCategory = null
