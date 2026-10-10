@@ -112,7 +112,7 @@ fun PlayerSheetContent(
     var showQueue by remember { mutableStateOf(false) }
     var showOptions by remember { mutableStateOf(false) }
 
-    // 🌟 Stable shapes - prevents "square flash" on initial render
+    // Stable shapes - prevents "square flash" on initial render
     // IconButtonDefaults.shapes() already uses internal remember/caching
     val stableIconButtonShapes = IconButtonDefaults.shapes()
 
@@ -428,7 +428,7 @@ private fun ExpressiveNowPlayingView(
                 .padding(bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 🌟 Wavy Progress Indicator (Expressive!)
+            // Wavy Progress Indicator (Expressive!)
             // While the user is scrubbing we only track the finger locally and
             // issue a single seek on release — seeking on every drag frame causes
             // rebuffering storms on streamed tracks.
@@ -479,8 +479,19 @@ private fun ExpressiveNowPlayingView(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Text(formatDuration(displayedProgress), style = MaterialTheme.typography.labelMedium, color = onSurfaceVariantColor)
-                Text(formatDuration(duration), style = MaterialTheme.typography.labelMedium, color = onSurfaceVariantColor)
+                // Reference, not content - the same weight the coverflow
+                // player gives them, so the two styles agree about what a
+                // timestamp is worth.
+                Text(
+                    formatDuration(displayedProgress),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = onSurfaceVariantColor.copy(alpha = 0.7f),
+                )
+                Text(
+                    formatDuration(duration),
+                    style = MaterialTheme.typography.labelSmall,
+                    color = onSurfaceVariantColor.copy(alpha = 0.7f),
+                )
             }
             
             PlayerVisualizerSlot(modifier = Modifier.fillMaxWidth())
@@ -551,7 +562,7 @@ private fun ExpressiveNowPlayingView(
                             onCheckedChange = { viewModel.toggleShuffle() },
                             interactionSource = shuffleInteraction,
                             colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 checkedContainerColor = MaterialTheme.colorScheme.primary,
                                 checkedContentColor = MaterialTheme.colorScheme.onPrimary
@@ -574,12 +585,17 @@ private fun ExpressiveNowPlayingView(
                 // Previous Button - with animateWidth for squishy physics
                 customItem(
                     buttonGroupContent = {
+                        // Quiet containers around a single accented play
+                        // button: the group keeps its connected shapes and its
+                        // squish physics, which are the component, but five
+                        // filled shapes in a row meant nothing in it was the
+                        // primary action.
                         FilledTonalIconButton(
                             onClick = { playerHaptics.skip(); viewModel.skipToPrevious() },
                             shapes = stableShapes,
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             interactionSource = prevInteraction,
                             modifier = Modifier
@@ -597,7 +613,7 @@ private fun ExpressiveNowPlayingView(
                     menuContent = {}
                 )
 
-                // 🌟 Play/Pause Button (center, larger weight for emphasis)
+                // Play/Pause Button (center, larger weight for emphasis)
                 customItem(
                     buttonGroupContent = {
                         FilledIconButton(
@@ -618,7 +634,7 @@ private fun ExpressiveNowPlayingView(
                         ) {
                             // FIX: Only show loading if we are NOT playing. If audio is playing, always show Pause.
                             if (isBuffering && playWhenReady && !isPlaying) {
-                                // 🌟 Organic morphing loading with MaterialShapes
+                                // Organic morphing loading with MaterialShapes
                                 LoadingIndicator(
                                     modifier = Modifier.size(40.dp),
                                     color = MaterialTheme.colorScheme.onPrimary,
@@ -648,8 +664,8 @@ private fun ExpressiveNowPlayingView(
                             onClick = { playerHaptics.skip(); viewModel.skipToNext() },
                             shapes = stableShapes,
                             colors = IconButtonDefaults.filledTonalIconButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
-                                contentColor = MaterialTheme.colorScheme.onSurface
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
+                                contentColor = MaterialTheme.colorScheme.onSurfaceVariant
                             ),
                             interactionSource = nextInteraction,
                             modifier = Modifier
@@ -675,7 +691,7 @@ private fun ExpressiveNowPlayingView(
                             onCheckedChange = { viewModel.toggleRepeat() },
                             interactionSource = repeatInteraction,
                             colors = IconButtonDefaults.filledTonalIconToggleButtonColors(
-                                containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
+                                containerColor = MaterialTheme.colorScheme.surfaceContainerLow,
                                 contentColor = MaterialTheme.colorScheme.onSurfaceVariant,
                                 checkedContainerColor = MaterialTheme.colorScheme.primary,
                                 checkedContentColor = MaterialTheme.colorScheme.onPrimary
@@ -701,7 +717,7 @@ private fun ExpressiveNowPlayingView(
             
             Spacer(modifier = Modifier.height(24.dp))
             
-            // 🌟 Favorite / Download / Sleep Timer - connected button group
+            // Favorite / Download / Sleep Timer - connected button group
             val groupButtonColors = ToggleButtonDefaults.toggleButtonColors(
                 containerColor = MaterialTheme.colorScheme.surfaceContainerHigh,
                 contentColor = onSurfaceVariantColor

@@ -65,7 +65,7 @@ import com.ivor.ivormusic.ui.home.HomeViewModel
 import java.util.Calendar
 
 /**
- * 🌟 Material 3 Expressive Statistics Screen
+ * Material 3 Expressive statistics screen.
  *
  * - Hero listening-time card with a SoftBurst shape badge
  * - Stat tiles with expressive MaterialShapes badges
@@ -536,7 +536,7 @@ private fun ExpressiveStatTile(
 }
 
 /**
- * 🔥 Listening streak + progress toward the next play-count milestone.
+ * Listening streak plus progress toward the next play-count milestone.
  */
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable

@@ -175,7 +175,7 @@ private fun getSegmentedShape(index: Int, count: Int, hasMore: Boolean = false, 
 }
 
 /**
- * 🌟 Material 3 Expressive Search Screen
+ * Material 3 Expressive search screen.
  * 
  * Design Features:
  * - Gradient header with decorative organic shapes
