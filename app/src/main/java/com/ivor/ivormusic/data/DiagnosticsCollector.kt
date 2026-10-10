@@ -64,11 +64,6 @@ object DiagnosticsCollector {
                 "Music quality: wifi=${prefs.musicQualityWifi.value}, " +
                     "mobile=${prefs.musicQualityMobile.value}"
             )
-            appendLine(
-                "Video quality: wifi=${prefs.videoQualityWifi.value}, " +
-                    "mobile=${prefs.videoQualityMobile.value}"
-            )
-            appendLine("Subscribe target: ${prefs.subscribeTarget.value}")
             appendLine("Cache enabled: ${prefs.cacheEnabled.value}")
         }
     }

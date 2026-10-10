@@ -82,9 +82,8 @@ class BackupRepository(context: Context) {
          *  - `koda_download_migration` is a one-time "already migrated" flag.
          *    Restoring a true onto an install that never ran the migration
          *    would skip it permanently.
-         *  - `local_subscriptions`, `not_interested` and `video_history` are
-         *    profile-scoped and travel structurally instead (see
-         *    [collectProfileData]).
+         *  - `not_interested` is profile-scoped and travels structurally
+         *    instead (see [collectProfileData]).
          *  - `koda_incognito` describes a session rather than a preference,
          *    and restoring one onto another device would silently stop it
          *    recording history for reasons its owner never asked for.
@@ -170,8 +169,6 @@ class BackupRepository(context: Context) {
         const val COUNT_SAVED_PLAYLISTS = "savedPlaylists"
         const val COUNT_LIKED_SONGS = "likedSongs"
         const val COUNT_PLAY_HISTORY = "playHistory"
-        const val COUNT_WATCH_HISTORY = "watchHistory"
-        const val COUNT_SUBSCRIPTIONS = "localSubscriptions"
         const val COUNT_BLOCKED = "blockedChannels"
         const val COUNT_HIDDEN = "hiddenVideos"
         const val COUNT_PROFILES = "profiles"
@@ -279,38 +276,19 @@ class BackupRepository(context: Context) {
      * [ProfileManager.profileScopedKey] is a pure function of the profile id,
      * so the keys for a profile that is not currently active can be computed
      * without switching to it - which is the only reason a backup can carry
-     * more than one identity's subscriptions.
+     * more than one identity's blocklist.
      */
     private fun collectProfileData(profiles: List<Profile>): Map<String, BackupProfileData> {
         val legacyId = ProfileManager.legacyProfileId(appContext)
-        val subs = appContext.getSharedPreferences("local_subscriptions", Context.MODE_PRIVATE)
         val blocklist = appContext.getSharedPreferences("not_interested", Context.MODE_PRIVATE)
-        val history = appContext.getSharedPreferences(
-            VideoHistoryRepository.PREFS_NAME,
-            Context.MODE_PRIVATE
-        )
 
         fun scoped(base: String, profileId: String) =
             ProfileManager.profileScopedKey(base, profileId, legacyId)
 
         return profiles.associate { profile ->
             profile.id to BackupProfileData(
-                subscriptions = subs.getString(scoped("subscriptions", profile.id), null),
-                subscriptionGroups = subs.getString(scoped("groups", profile.id), null),
                 hiddenVideos = blocklist.getString(scoped("hidden_videos", profile.id), null),
-                blockedChannels = blocklist.getString(scoped("blocked_channels", profile.id), null),
-                watchHistory = history.getString(
-                    scoped(VideoHistoryRepository.KEY_HISTORY, profile.id),
-                    null
-                ),
-                removedFromHistory = history.getStringSet(
-                    scoped(VideoHistoryRepository.KEY_HIDDEN, profile.id),
-                    null
-                )?.takeIf { it.isNotEmpty() },
-                resumePositions = history.getString(
-                    scoped(VideoHistoryRepository.KEY_RESUME_POSITIONS, profile.id),
-                    null
-                )
+                blockedChannels = blocklist.getString(scoped("blocked_channels", profile.id), null)
             )
         }.filterValues { !it.isEmpty }
     }
@@ -365,11 +343,6 @@ class BackupRepository(context: Context) {
                 files.firstOrNull { it.path == "play_history.json" }
                     ?.bytes?.toString(Charsets.UTF_8)
             ),
-            // Summed across profiles now that history is per-profile, the same
-            // way subscriptions and the blocklist already were. Reading it out
-            // of the raw preference map would silently report zero.
-            COUNT_WATCH_HISTORY to profileData.values.sumOf { arrayLength(it.watchHistory) },
-            COUNT_SUBSCRIPTIONS to profileData.values.sumOf { arrayLength(it.subscriptions) },
             COUNT_BLOCKED to profileData.values.sumOf { arrayLength(it.blockedChannels) },
             COUNT_HIDDEN to profileData.values.sumOf { arrayLength(it.hiddenVideos) },
             COUNT_PROFILES to profiles.size,
@@ -538,38 +511,18 @@ class BackupRepository(context: Context) {
      */
     private fun restoreProfileData(snapshot: BackupSnapshot, profileMap: Map<String, String>) {
         val legacyId = ProfileManager.legacyProfileId(appContext)
-        val subs = appContext.getSharedPreferences("local_subscriptions", Context.MODE_PRIVATE)
         val blocklist = appContext.getSharedPreferences("not_interested", Context.MODE_PRIVATE)
-        val history = appContext.getSharedPreferences(
-            VideoHistoryRepository.PREFS_NAME,
-            Context.MODE_PRIVATE
-        )
 
-        val subsEditor = subs.edit().clear()
         val blocklistEditor = blocklist.edit().clear()
-        val historyEditor = history.edit().clear()
 
         for ((backupId, data) in snapshot.profileData) {
             val localId = profileMap[backupId] ?: continue
             fun key(base: String) = ProfileManager.profileScopedKey(base, localId, legacyId)
-            data.subscriptions?.let { subsEditor.putString(key("subscriptions"), it) }
-            data.subscriptionGroups?.let { subsEditor.putString(key("groups"), it) }
             data.hiddenVideos?.let { blocklistEditor.putString(key("hidden_videos"), it) }
             data.blockedChannels?.let { blocklistEditor.putString(key("blocked_channels"), it) }
-            data.watchHistory?.let {
-                historyEditor.putString(key(VideoHistoryRepository.KEY_HISTORY), it)
-            }
-            data.removedFromHistory?.let {
-                historyEditor.putStringSet(key(VideoHistoryRepository.KEY_HIDDEN), it)
-            }
-            data.resumePositions?.let {
-                historyEditor.putString(key(VideoHistoryRepository.KEY_RESUME_POSITIONS), it)
-            }
         }
 
-        subsEditor.commit()
         blocklistEditor.commit()
-        historyEditor.commit()
     }
 
     /**

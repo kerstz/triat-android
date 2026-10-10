@@ -69,8 +69,6 @@ class ThemePreferences(context: Context) {
     /** Show the small source icon on each cover. */
     val showSourceBadge: StateFlow<Boolean> = _showSourceBadge.asStateFlow()
     
-    private val _saveVideoHistory = MutableStateFlow(getSaveVideoHistoryPreference())
-    val saveVideoHistory: StateFlow<Boolean> = _saveVideoHistory.asStateFlow()
 
     private val _saveMusicHistory = MutableStateFlow(getSaveMusicHistoryPreference())
     val saveMusicHistory: StateFlow<Boolean> = _saveMusicHistory.asStateFlow()
@@ -81,21 +79,11 @@ class ThemePreferences(context: Context) {
     private val _livePlaybackUpdates = MutableStateFlow(getLivePlaybackUpdatesPreference())
     val livePlaybackUpdates: StateFlow<Boolean> = _livePlaybackUpdates.asStateFlow()
 
-    private val _timedCommentsEnabled = MutableStateFlow(getTimedCommentsEnabledPreference())
-    val timedCommentsEnabled: StateFlow<Boolean> = _timedCommentsEnabled.asStateFlow()
 
-    private val _videoQualityWifi = MutableStateFlow(getVideoQualityWifiPreference())
-    val videoQualityWifi: StateFlow<String> = _videoQualityWifi.asStateFlow()
 
-    private val _videoQualityMobile = MutableStateFlow(getVideoQualityMobilePreference())
-    val videoQualityMobile: StateFlow<String> = _videoQualityMobile.asStateFlow()
 
-    private val _preferHdr = MutableStateFlow(getPreferHdrPreference())
-    val preferHdr: StateFlow<Boolean> = _preferHdr.asStateFlow()
 
-    private val _captionTextSize = MutableStateFlow(getCaptionTextSizePreference())
 
-    private val _captionTextColor = MutableStateFlow(getCaptionTextColorPreference())
 
     private val _captionBackground = MutableStateFlow(getCaptionBackgroundPreference())
 
@@ -137,14 +125,8 @@ class ThemePreferences(context: Context) {
         _nonExpressiveNavigationBar.asStateFlow()
 
 
-    private val _subscriptionSource = MutableStateFlow(getSubscriptionSourcePreference())
-    val subscriptionSource: StateFlow<String> = _subscriptionSource.asStateFlow()
 
-    private val _subscribeTarget = MutableStateFlow(getSubscribeTargetPreference())
-    val subscribeTarget: StateFlow<String> = _subscribeTarget.asStateFlow()
 
-    private val _fastSubscriptionFeed = MutableStateFlow(getFastSubscriptionFeedPreference())
-    val fastSubscriptionFeed: StateFlow<Boolean> = _fastSubscriptionFeed.asStateFlow()
     
     private val _excludedFolders = MutableStateFlow(getExcludedFoldersPreference())
     val excludedFolders: StateFlow<Set<String>> = _excludedFolders.asStateFlow()
@@ -153,8 +135,6 @@ class ThemePreferences(context: Context) {
     private val _cacheEnabled = MutableStateFlow(getCacheEnabledPreference())
     val cacheEnabled: StateFlow<Boolean> = _cacheEnabled.asStateFlow()
 
-    private val _videoCacheEnabled = MutableStateFlow(getVideoCacheEnabledPreference())
-    val videoCacheEnabled: StateFlow<Boolean> = _videoCacheEnabled.asStateFlow()
 
     private val _playbackPreloadEnabled = MutableStateFlow(getPlaybackPreloadEnabledPreference())
     val playbackPreloadEnabled: StateFlow<Boolean> = _playbackPreloadEnabled.asStateFlow()
@@ -179,15 +159,10 @@ class ThemePreferences(context: Context) {
     private val _normalizeVolume = MutableStateFlow(getNormalizeVolumePreference())
     val normalizeVolume: StateFlow<Boolean> = _normalizeVolume.asStateFlow()
 
-    private val _rememberVideoBrightness =
-        MutableStateFlow(getRememberVideoBrightness())
-    val rememberVideoBrightness: StateFlow<Boolean> = _rememberVideoBrightness.asStateFlow()
 
     private val _hapticsLevel = MutableStateFlow(getHapticsLevelPreference())
     val hapticsLevel: StateFlow<String> = _hapticsLevel.asStateFlow()
 
-    private val _uploadNotificationsEnabled =
-        MutableStateFlow(getUploadNotificationsEnabledPreference())
 
     private val _oemFixEnabled = MutableStateFlow(getOemFixEnabledPreference())
     val oemFixEnabled: StateFlow<Boolean> = _oemFixEnabled.asStateFlow()
@@ -223,11 +198,8 @@ class ThemePreferences(context: Context) {
     // inside Home's AnimatedContent, so leaving the tab disposed the state and
     // the feed came back on "Any time" every time. A filter that forgets is
     // worse than no filter, because the user has to re-check it constantly.
-    private val _subscriptionFeedPeriod = MutableStateFlow(getSubscriptionFeedPeriodPreference())
 
-    private val _subscriptionFeedOrder = MutableStateFlow(getSubscriptionFeedOrderPreference())
 
-    private val _hideWatchedInFeed = MutableStateFlow(getHideWatchedInFeedPreference())
 
     // Two ways the app suggests things you did not ask for. Stated as what is
     // shown rather than what is hidden, so the switch position and the sentence
@@ -236,14 +208,8 @@ class ThemePreferences(context: Context) {
     private val _showRecentSearches = MutableStateFlow(getShowRecentSearchesPreference())
     val showRecentSearches: StateFlow<Boolean> = _showRecentSearches.asStateFlow()
 
-    private val _showRelatedVideos = MutableStateFlow(getShowRelatedVideosPreference())
-    val showRelatedVideos: StateFlow<Boolean> = _showRelatedVideos.asStateFlow()
 
-    private val _inlinePreviews = MutableStateFlow(getInlinePreviewsPreference())
-    val inlinePreviews: StateFlow<Boolean> = _inlinePreviews.asStateFlow()
 
-    private val _compactVideoHome = MutableStateFlow(getCompactVideoHomePreference())
-    val compactVideoHome: StateFlow<Boolean> = _compactVideoHome.asStateFlow()
 
     // Swipe actions on playlist song rows. Each direction names its own
     // action so a right swipe can play while a left swipe removes - or
@@ -280,16 +246,9 @@ class ThemePreferences(context: Context) {
             KEY_CONTENT_SOURCE -> _contentSource.value = getContentSourcePreference()
             KEY_MIX_ON_HOME -> _mixSourcesOnHome.value = prefs.getBoolean(KEY_MIX_ON_HOME, true)
             KEY_SOURCE_BADGE -> _showSourceBadge.value = prefs.getBoolean(KEY_SOURCE_BADGE, true)
-            KEY_SAVE_VIDEO_HISTORY -> _saveVideoHistory.value = getSaveVideoHistoryPreference()
             KEY_SAVE_MUSIC_HISTORY -> _saveMusicHistory.value = getSaveMusicHistoryPreference()
             KEY_LIVE_DOWNLOAD_UPDATES -> _liveDownloadUpdates.value = getLiveDownloadUpdatesPreference()
             KEY_LIVE_PLAYBACK_UPDATES -> _livePlaybackUpdates.value = getLivePlaybackUpdatesPreference()
-            KEY_TIMED_COMMENTS_ENABLED -> _timedCommentsEnabled.value = getTimedCommentsEnabledPreference()
-            KEY_VIDEO_QUALITY_WIFI -> _videoQualityWifi.value = getVideoQualityWifiPreference()
-            KEY_VIDEO_QUALITY_MOBILE -> _videoQualityMobile.value = getVideoQualityMobilePreference()
-            KEY_PREFER_HDR -> _preferHdr.value = getPreferHdrPreference()
-            KEY_CAPTION_TEXT_SIZE -> _captionTextSize.value = getCaptionTextSizePreference()
-            KEY_CAPTION_TEXT_COLOR -> _captionTextColor.value = getCaptionTextColorPreference()
             KEY_CAPTION_BACKGROUND -> _captionBackground.value = getCaptionBackgroundPreference()
             KEY_MUSIC_QUALITY_WIFI -> _musicQualityWifi.value = getMusicQualityWifiPreference()
             KEY_MUSIC_QUALITY_MOBILE -> _musicQualityMobile.value = getMusicQualityMobilePreference()
@@ -307,12 +266,8 @@ class ThemePreferences(context: Context) {
                 _sponsorBlockMinDurationMs.value = getSponsorBlockMinDurationPreference()
             KEY_NON_EXPRESSIVE_NAVIGATION_BAR ->
                 _nonExpressiveNavigationBar.value = getNonExpressiveNavigationBarPreference()
-            KEY_SUBSCRIPTION_SOURCE -> _subscriptionSource.value = getSubscriptionSourcePreference()
-            KEY_SUBSCRIBE_TARGET -> _subscribeTarget.value = getSubscribeTargetPreference()
-            KEY_FAST_SUBSCRIPTION_FEED -> _fastSubscriptionFeed.value = getFastSubscriptionFeedPreference()
             KEY_EXCLUDED_FOLDERS -> _excludedFolders.value = getExcludedFoldersPreference()
             KEY_CACHE_ENABLED -> _cacheEnabled.value = getCacheEnabledPreference()
-            KEY_VIDEO_CACHE_ENABLED -> _videoCacheEnabled.value = getVideoCacheEnabledPreference()
             KEY_PLAYBACK_PRELOAD_ENABLED -> _playbackPreloadEnabled.value = getPlaybackPreloadEnabledPreference()
             KEY_MAX_CACHE_SIZE_MB -> _maxCacheSizeMb.value = getMaxCacheSizeMbPreference()
             KEY_AUTO_LOAD_QUEUE -> _autoLoadQueue.value = getAutoLoadQueuePreference()
@@ -320,11 +275,7 @@ class ThemePreferences(context: Context) {
             KEY_CROSSFADE_AUTO -> _crossfadeAuto.value = getCrossfadeAutoPreference()
             KEY_CROSSFADE_DURATION -> _crossfadeDurationMs.value = getCrossfadeDurationPreference()
             KEY_NORMALIZE_VOLUME -> _normalizeVolume.value = getNormalizeVolumePreference()
-            KEY_REMEMBER_VIDEO_BRIGHTNESS ->
-                _rememberVideoBrightness.value = getRememberVideoBrightness()
             KEY_HAPTICS_LEVEL -> _hapticsLevel.value = getHapticsLevelPreference()
-            KEY_UPLOAD_NOTIFICATIONS_ENABLED ->
-                _uploadNotificationsEnabled.value = getUploadNotificationsEnabledPreference()
             KEY_OEM_FIX_ENABLED -> _oemFixEnabled.value = getOemFixEnabledPreference()
             KEY_MANUAL_SCAN_ENABLED -> _manualScanEnabled.value = getManualScanEnabledPreference()
             KEY_PRIVATE_DOWNLOADS ->
@@ -335,15 +286,7 @@ class ThemePreferences(context: Context) {
             KEY_TIME_LIMIT_BUDGETS -> _timeLimitBudgets.value = getTimeLimitBudgetsPreference()
             KEY_LIBRARY_SORT_OPTION -> _librarySortOption.value = getLibrarySortOptionPreference()
             KEY_LIBRARY_TAB -> _libraryTab.value = getLibraryTabPreference()
-            KEY_SUBSCRIPTION_FEED_PERIOD ->
-                _subscriptionFeedPeriod.value = getSubscriptionFeedPeriodPreference()
-            KEY_SUBSCRIPTION_FEED_ORDER ->
-                _subscriptionFeedOrder.value = getSubscriptionFeedOrderPreference()
-            KEY_HIDE_WATCHED_IN_FEED -> _hideWatchedInFeed.value = getHideWatchedInFeedPreference()
             KEY_SHOW_RECENT_SEARCHES -> _showRecentSearches.value = getShowRecentSearchesPreference()
-            KEY_SHOW_RELATED_VIDEOS -> _showRelatedVideos.value = getShowRelatedVideosPreference()
-            KEY_INLINE_PREVIEWS -> _inlinePreviews.value = getInlinePreviewsPreference()
-            KEY_COMPACT_VIDEO_HOME -> _compactVideoHome.value = getCompactVideoHomePreference()
             KEY_PLAYLIST_SWIPE_ENABLED -> _playlistSwipeEnabled.value = getPlaylistSwipeEnabledPreference()
             KEY_PLAYLIST_SWIPE_START_ACTION -> _playlistSwipeStartAction.value = getPlaylistSwipeStartActionPreference()
             KEY_PLAYLIST_SWIPE_END_ACTION -> _playlistSwipeEndAction.value = getPlaylistSwipeEndActionPreference()
@@ -407,7 +350,6 @@ class ThemePreferences(context: Context) {
         private const val KEY_CONTENT_SOURCE = "content_source"
         private const val KEY_MIX_ON_HOME = "mix_sources_on_home"
         private const val KEY_SOURCE_BADGE = "show_source_badge"
-        private const val KEY_SAVE_VIDEO_HISTORY = "save_video_history"
         private const val KEY_SAVE_MUSIC_HISTORY = "save_music_history"
         private const val KEY_LIVE_DOWNLOAD_UPDATES = "live_download_updates"
 
@@ -441,21 +383,8 @@ class ThemePreferences(context: Context) {
             SUPPORTS_LIVE_UPDATES &&
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                     .getBoolean(KEY_LIVE_PLAYBACK_UPDATES, false)
-        private const val KEY_TIMED_COMMENTS_ENABLED = "timed_comments_enabled"
 
 
-        /**
-         * Legacy single video-quality key, superseded by the per-network pair
-         * below. Kept only as a migration source: a value stored here by an
-         * older version seeds both network variants on first read.
-         */
-        private const val KEY_DEFAULT_VIDEO_QUALITY = "default_video_quality"
-
-        private const val KEY_VIDEO_QUALITY_WIFI = "video_quality_wifi"
-        private const val KEY_VIDEO_QUALITY_MOBILE = "video_quality_mobile"
-        private const val KEY_PREFER_HDR = "prefer_hdr_video"
-        private const val KEY_CAPTION_TEXT_SIZE = "caption_text_size"
-        private const val KEY_CAPTION_TEXT_COLOR = "caption_text_color"
         private const val KEY_CAPTION_BACKGROUND = "caption_background"
         private const val KEY_CAPTIONS_ENABLED = "captions_enabled"
         private const val KEY_CAPTION_LANGUAGE_CODE = "caption_language_code"
@@ -468,44 +397,7 @@ class ThemePreferences(context: Context) {
             VIDEO_QUALITY_AUTO, "2160p", "1440p", "1080p", "720p", "480p", "360p", "240p",
             "144p"
         )
-        private const val DEFAULT_VIDEO_QUALITY_WIFI = "1080p"
-        private const val DEFAULT_VIDEO_QUALITY_MOBILE = "720p"
 
-        /** Fresh read used by both video players at stream-resolution time. */
-        fun isPreferHdrEnabled(context: Context): Boolean =
-            context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-                .getBoolean(KEY_PREFER_HDR, false)
-
-        // ---------------- Subscriptions ----------------
-
-        private const val KEY_SUBSCRIPTION_SOURCE = "subscription_source"
-        private const val KEY_SUBSCRIBE_TARGET = "subscribe_target"
-        private const val KEY_FAST_SUBSCRIPTION_FEED = "fast_subscription_feed"
-
-        /**
-         * Show whichever subscriptions exist - the device's, the account's, or
-         * both merged. The default, because a user who has imported a list
-         * *and* signed in wants both, and picking one for them silently hides
-         * channels they explicitly added.
-         */
-        const val SUBSCRIPTIONS_AUTO = "auto"
-
-        /** Device-local subscriptions only, even when signed in. */
-        const val SUBSCRIPTIONS_LOCAL = "local"
-
-        /** The signed-in YouTube account's subscriptions only. */
-        const val SUBSCRIPTIONS_YOUTUBE = "youtube"
-
-        /** Subscribe writes to both stores at once (subscribe target only). */
-        const val SUBSCRIPTIONS_BOTH = "both"
-
-        val SUBSCRIPTION_SOURCE_OPTIONS = listOf(
-            SUBSCRIPTIONS_AUTO, SUBSCRIPTIONS_LOCAL, SUBSCRIPTIONS_YOUTUBE
-        )
-
-        val SUBSCRIBE_TARGET_OPTIONS = listOf(
-            SUBSCRIPTIONS_AUTO, SUBSCRIPTIONS_LOCAL, SUBSCRIPTIONS_YOUTUBE, SUBSCRIPTIONS_BOTH
-        )
 
         private const val KEY_MUSIC_QUALITY_WIFI = "music_quality_wifi"
         private const val KEY_MUSIC_QUALITY_MOBILE = "music_quality_mobile"
@@ -669,9 +561,7 @@ class ThemePreferences(context: Context) {
         private const val MIN_CROSSFADE_DURATION_MS = 1_000
         private const val MAX_CROSSFADE_DURATION_MS = 15_000
         private const val KEY_NORMALIZE_VOLUME = "normalize_volume"
-        private const val KEY_REMEMBER_VIDEO_BRIGHTNESS = "remember_video_brightness"
         private const val KEY_HAPTICS_LEVEL = "haptics_level"
-        private const val KEY_UPLOAD_NOTIFICATIONS_ENABLED = "upload_notifications_enabled"
         private const val KEY_OEM_FIX_ENABLED = "oem_fix_enabled"
         private const val KEY_MANUAL_SCAN_ENABLED = "manual_scan_enabled"
         private const val KEY_ONBOARDING_COMPLETED = "onboarding_completed"
@@ -688,13 +578,7 @@ class ThemePreferences(context: Context) {
 
         private const val KEY_LIBRARY_SORT_OPTION = "library_sort_option"
         private const val KEY_LIBRARY_TAB = "library_tab"
-        private const val KEY_SUBSCRIPTION_FEED_PERIOD = "subscription_feed_period"
-        private const val KEY_SUBSCRIPTION_FEED_ORDER = "subscription_feed_order"
-        private const val KEY_HIDE_WATCHED_IN_FEED = "hide_watched_in_feed"
         private const val KEY_SHOW_RECENT_SEARCHES = "show_recent_searches"
-        private const val KEY_SHOW_RELATED_VIDEOS = "show_related_videos"
-        private const val KEY_INLINE_PREVIEWS = "inline_previews"
-        private const val KEY_COMPACT_VIDEO_HOME = "compact_video_home"
         private const val KEY_PLAYLIST_SWIPE_ENABLED = "playlist_swipe_enabled"
         private const val KEY_PLAYLIST_SWIPE_START_ACTION = "playlist_swipe_start_action"
         private const val KEY_PLAYLIST_SWIPE_END_ACTION = "playlist_swipe_end_action"
@@ -1030,42 +914,15 @@ class ThemePreferences(context: Context) {
         _playerStyle.value = style
     }
     
-    /**
-     * Get the stored save video history preference. Defaults to true (save history).
-     */
-    private fun getSaveVideoHistoryPreference(): Boolean {
-        return prefs.getBoolean(KEY_SAVE_VIDEO_HISTORY, true)
-    }
     
-    /**
-     * Fresh read of the save-history preference straight from SharedPreferences.
-     * ViewModels hold their own ThemePreferences instances, so their StateFlow
-     * copy goes stale when the toggle is flipped through another instance
-     * (e.g. the settings screen) — use this at decision time instead.
-     */
-    fun isSaveVideoHistoryEnabled(): Boolean = getSaveVideoHistoryPreference()
 
-    /**
-     * Save video history preference and update the flow.
-     */
-    fun setSaveVideoHistory(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SAVE_VIDEO_HISTORY, enabled).apply()
-        _saveVideoHistory.value = enabled
-    }
     
-    /**
-     * Toggle save video history setting.
-     */
-    fun toggleSaveVideoHistory() {
-        setSaveVideoHistory(!_saveVideoHistory.value)
-    }
 
     /**
      * Whether songs that play are written to the local listening history.
      *
-     * Separate from [getSaveVideoHistoryPreference], which governs the YouTube
-     * account's watch history: this one is device-local, works signed out, and
-     * feeds the listening history screen, the recently-played rail, the Library
+     * Device-local, works signed out, and feeds the listening history screen,
+     * the recently-played rail, the Library
      * "Most played" sort and the taste profile behind recommendations. Turning
      * it off stops all of those growing; it does not erase what is already
      * recorded, which is what Clear history is for.
@@ -1114,78 +971,15 @@ class ThemePreferences(context: Context) {
     }
 
 
-    /**
-     * Get the stored timed comments preference. Defaults to false (off).
-     */
-    private fun getTimedCommentsEnabledPreference(): Boolean {
-        return prefs.getBoolean(KEY_TIMED_COMMENTS_ENABLED, false)
-    }
 
-    /**
-     * Save timed comments preference and update the flow.
-     */
-    fun setTimedCommentsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_TIMED_COMMENTS_ENABLED, enabled).apply()
-        _timedCommentsEnabled.value = enabled
-    }
     
-    /**
-     * Get the stored Wi-Fi (unmetered) video quality. Falls back to the
-     * legacy single-quality key so an upgrade keeps the user's old choice,
-     * then to 1080p, matching the player's historical hardcoded pick.
-     */
-    private fun getVideoQualityWifiPreference(): String {
-        return prefs.getString(KEY_VIDEO_QUALITY_WIFI, null)
-            ?: prefs.getString(KEY_DEFAULT_VIDEO_QUALITY, null)
-            ?: DEFAULT_VIDEO_QUALITY_WIFI
-    }
-
-    /**
-     * Get the stored mobile-data (metered) video quality. A legacy
-     * single-quality choice seeds this too — the split must not silently
-     * change what an existing user sees — and only fresh installs get the
-     * data-friendlier 720p default.
-     */
-    private fun getVideoQualityMobilePreference(): String {
-        return prefs.getString(KEY_VIDEO_QUALITY_MOBILE, null)
-            ?: prefs.getString(KEY_DEFAULT_VIDEO_QUALITY, null)
-            ?: DEFAULT_VIDEO_QUALITY_MOBILE
-    }
 
 
-    /**
-     * Save the Wi-Fi video quality preference and update the flow.
-     */
-    fun setVideoQualityWifi(quality: String) {
-        prefs.edit().putString(KEY_VIDEO_QUALITY_WIFI, quality).apply()
-        _videoQualityWifi.value = quality
-    }
 
-    /**
-     * Save the mobile-data video quality preference and update the flow.
-     */
-    fun setVideoQualityMobile(quality: String) {
-        prefs.edit().putString(KEY_VIDEO_QUALITY_MOBILE, quality).apply()
-        _videoQualityMobile.value = quality
-    }
 
-    private fun getPreferHdrPreference(): Boolean =
-        prefs.getBoolean(KEY_PREFER_HDR, false)
 
-    fun isPreferHdrEnabled(): Boolean = getPreferHdrPreference()
 
-    fun setPreferHdr(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_PREFER_HDR, enabled).apply()
-        _preferHdr.value = enabled
-    }
 
-    private fun getCaptionTextSizePreference(): Float =
-        captionTextScaleFromStored(prefs.all[KEY_CAPTION_TEXT_SIZE])
-
-    private fun getCaptionTextColorPreference(): CaptionTextColor =
-        prefs.getString(KEY_CAPTION_TEXT_COLOR, null)
-            ?.let { stored -> CaptionTextColor.entries.firstOrNull { it.name == stored } }
-            ?: CaptionTextColor.WHITE
 
     private fun getCaptionBackgroundPreference(): CaptionBackground =
         prefs.getString(KEY_CAPTION_BACKGROUND, null)
@@ -1195,40 +989,12 @@ class ThemePreferences(context: Context) {
 
     // ---------------- Subscriptions ----------------
 
-    private fun getSubscriptionSourcePreference(): String =
-        prefs.getString(KEY_SUBSCRIPTION_SOURCE, SUBSCRIPTIONS_AUTO) ?: SUBSCRIPTIONS_AUTO
 
-    private fun getSubscribeTargetPreference(): String =
-        prefs.getString(KEY_SUBSCRIBE_TARGET, SUBSCRIPTIONS_AUTO) ?: SUBSCRIPTIONS_AUTO
 
-    private fun getFastSubscriptionFeedPreference(): Boolean =
-        prefs.getBoolean(KEY_FAST_SUBSCRIPTION_FEED, true)
 
-    /** Which subscription lists the Subscriptions tab shows. */
-    fun setSubscriptionSource(source: String) {
-        prefs.edit().putString(KEY_SUBSCRIPTION_SOURCE, source).apply()
-        _subscriptionSource.value = source
-    }
 
-    /** Where a Subscribe tap writes: device, YouTube account, or both. */
-    fun setSubscribeTarget(target: String) {
-        prefs.edit().putString(KEY_SUBSCRIBE_TARGET, target).apply()
-        _subscribeTarget.value = target
-    }
 
-    /**
-     * Fast refresh builds the local feed from each channel's Atom feed:
-     * roughly a twentieth of the data, exact upload times, but no duration or
-     * live badge. Off means a full channel fetch per channel, which restores
-     * those at a real cost on a large subscription list.
-     */
-    fun setFastSubscriptionFeed(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_FAST_SUBSCRIPTION_FEED, enabled).apply()
-        _fastSubscriptionFeed.value = enabled
-    }
 
-    /** Fresh read for ViewModels deciding at tap time. */
-    fun currentSubscribeTarget(): String = getSubscribeTargetPreference()
 
 
     // ---------------- Bug reporting ----------------
@@ -1383,20 +1149,7 @@ class ThemePreferences(context: Context) {
     }
 
 
-    /**
-     * Whether the fullscreen brightness drag should carry over to the next
-     * fullscreen video (default). Off, every video reopens at the system
-     * brightness and the gesture's level dies with the surface. The stored
-     * level itself is kept either way so turning the setting back on restores
-     * what the user last dialed in.
-     */
-    fun getRememberVideoBrightness(): Boolean =
-        prefs.getBoolean(KEY_REMEMBER_VIDEO_BRIGHTNESS, true)
 
-    fun setRememberVideoBrightness(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_REMEMBER_VIDEO_BRIGHTNESS, enabled).apply()
-        _rememberVideoBrightness.value = enabled
-    }
 
     /**
      * Touch feedback intensity for the whole app - one of the values
@@ -1413,8 +1166,6 @@ class ThemePreferences(context: Context) {
     }
 
 
-    private fun getUploadNotificationsEnabledPreference(): Boolean =
-        prefs.getBoolean(KEY_UPLOAD_NOTIFICATIONS_ENABLED, false)
 
 
     /**
@@ -1458,12 +1209,7 @@ class ThemePreferences(context: Context) {
         _cacheEnabled.value = enabled
     }
     
-    private fun getVideoCacheEnabledPreference(): Boolean = prefs.getBoolean(KEY_VIDEO_CACHE_ENABLED, true)
 
-    fun setVideoCacheEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_VIDEO_CACHE_ENABLED, enabled).apply()
-        _videoCacheEnabled.value = enabled
-    }
 
 
     private fun getPlaybackPreloadEnabledPreference(): Boolean = prefs.getBoolean(KEY_PLAYBACK_PRELOAD_ENABLED, true)
@@ -1741,16 +1487,8 @@ class ThemePreferences(context: Context) {
         _libraryTab.value = tabName
     }
 
-    private fun getSubscriptionFeedPeriodPreference(): String =
-        prefs.getString(KEY_SUBSCRIPTION_FEED_PERIOD, "") ?: ""
 
 
-    private fun getSubscriptionFeedOrderPreference(): String =
-        prefs.getString(KEY_SUBSCRIPTION_FEED_ORDER, "") ?: ""
-
-
-    private fun getHideWatchedInFeedPreference(): Boolean =
-        prefs.getBoolean(KEY_HIDE_WATCHED_IN_FEED, false)
 
 
     private fun getShowRecentSearchesPreference(): Boolean =
@@ -1761,37 +1499,11 @@ class ThemePreferences(context: Context) {
         _showRecentSearches.value = show
     }
 
-    private fun getCompactVideoHomePreference(): Boolean =
-        prefs.getBoolean(KEY_COMPACT_VIDEO_HOME, false)
 
-    fun setCompactVideoHome(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_COMPACT_VIDEO_HOME, enabled).apply()
-        _compactVideoHome.value = enabled
-    }
 
-    private fun getShowRelatedVideosPreference(): Boolean =
-        prefs.getBoolean(KEY_SHOW_RELATED_VIDEOS, true)
 
-    fun setShowRelatedVideos(show: Boolean) {
-        prefs.edit().putBoolean(KEY_SHOW_RELATED_VIDEOS, show).apply()
-        _showRelatedVideos.value = show
-    }
 
-    /**
-     * Whether a video card plays a silent preview when you rest on it.
-     *
-     * **Off by default, and deliberately so.** It spends data and battery on
-     * something nobody asked for, on a screen people scroll past, and a feed
-     * that starts moving on its own is a different product from one that does
-     * not. Someone who wants it can say so.
-     */
-    private fun getInlinePreviewsPreference(): Boolean =
-        prefs.getBoolean(KEY_INLINE_PREVIEWS, false)
 
-    fun setInlinePreviews(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_INLINE_PREVIEWS, enabled).apply()
-        _inlinePreviews.value = enabled
-    }
 
     private fun getPlaylistSwipeEnabledPreference(): Boolean =
         prefs.getBoolean(KEY_PLAYLIST_SWIPE_ENABLED, true)

@@ -38,15 +38,10 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.contentSource
     val mixSourcesOnHome: StateFlow<Boolean> = themePreferences.mixSourcesOnHome
     val showSourceBadge: StateFlow<Boolean> = themePreferences.showSourceBadge
-    val saveVideoHistory: StateFlow<Boolean> = themePreferences.saveVideoHistory
     val saveMusicHistory: StateFlow<Boolean> = themePreferences.saveMusicHistory
 
     val liveDownloadUpdates: StateFlow<Boolean> = themePreferences.liveDownloadUpdates
     val livePlaybackUpdates: StateFlow<Boolean> = themePreferences.livePlaybackUpdates
-    val timedCommentsEnabled: StateFlow<Boolean> = themePreferences.timedCommentsEnabled
-    val videoQualityWifi: StateFlow<String> = themePreferences.videoQualityWifi
-    val videoQualityMobile: StateFlow<String> = themePreferences.videoQualityMobile
-    val preferHdr: StateFlow<Boolean> = themePreferences.preferHdr
     val musicQualityWifi: StateFlow<String> = themePreferences.musicQualityWifi
     val musicQualityMobile: StateFlow<String> = themePreferences.musicQualityMobile
     val spotlightHome: StateFlow<Boolean> = themePreferences.spotlightHome
@@ -59,23 +54,16 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     val sponsorBlockMinDurationMs: StateFlow<Long> = themePreferences.sponsorBlockMinDurationMs
     val nonExpressiveNavigationBar: StateFlow<Boolean> =
         themePreferences.nonExpressiveNavigationBar
-    val subscriptionSource: StateFlow<String> = themePreferences.subscriptionSource
-    val subscribeTarget: StateFlow<String> = themePreferences.subscribeTarget
-    val fastSubscriptionFeed: StateFlow<Boolean> = themePreferences.fastSubscriptionFeed
     val excludedFolders: StateFlow<Set<String>> = themePreferences.excludedFolders
     
     val autoLoadQueue: StateFlow<Boolean> = themePreferences.autoLoadQueue
 
     // Cache & Crossfade
     val cacheEnabled: StateFlow<Boolean> = themePreferences.cacheEnabled
-    val videoCacheEnabled: StateFlow<Boolean> = themePreferences.videoCacheEnabled
     val playbackPreloadEnabled: StateFlow<Boolean> = themePreferences.playbackPreloadEnabled
     val maxCacheSizeMb: StateFlow<Long> = themePreferences.maxCacheSizeMb
 
     val showRecentSearches: StateFlow<Boolean> = themePreferences.showRecentSearches
-    val showRelatedVideos: StateFlow<Boolean> = themePreferences.showRelatedVideos
-    val inlinePreviews: StateFlow<Boolean> = themePreferences.inlinePreviews
-    val compactVideoHome: StateFlow<Boolean> = themePreferences.compactVideoHome
     val playlistSwipeEnabled: StateFlow<Boolean> = themePreferences.playlistSwipeEnabled
     val playlistSwipeStartAction: StateFlow<String> = themePreferences.playlistSwipeStartAction
     val playlistSwipeEndAction: StateFlow<String> = themePreferences.playlistSwipeEndAction
@@ -83,7 +71,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     val crossfadeAuto: StateFlow<Boolean> = themePreferences.crossfadeAuto
     val crossfadeDurationMs: StateFlow<Int> = themePreferences.crossfadeDurationMs
     val normalizeVolume: StateFlow<Boolean> = themePreferences.normalizeVolume
-    val rememberVideoBrightness: StateFlow<Boolean> = themePreferences.rememberVideoBrightness
     val hapticsLevel: StateFlow<String> = themePreferences.hapticsLevel
 
     val oemFixEnabled: StateFlow<Boolean> = themePreferences.oemFixEnabled
@@ -149,13 +136,7 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setShowSourceBadge(enabled)
     }
     
-    fun setSaveVideoHistory(enabled: Boolean) {
-        themePreferences.setSaveVideoHistory(enabled)
-    }
     
-    fun toggleSaveVideoHistory() {
-        themePreferences.toggleSaveVideoHistory()
-    }
 
     fun setSaveMusicHistory(enabled: Boolean) {
         themePreferences.setSaveMusicHistory(enabled)
@@ -169,22 +150,10 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setLivePlaybackUpdates(enabled)
     }
 
-    fun setTimedCommentsEnabled(enabled: Boolean) {
-        themePreferences.setTimedCommentsEnabled(enabled)
-    }
 
 
-    fun setVideoQualityWifi(quality: String) {
-        themePreferences.setVideoQualityWifi(quality)
-    }
 
-    fun setVideoQualityMobile(quality: String) {
-        themePreferences.setVideoQualityMobile(quality)
-    }
 
-    fun setPreferHdr(enabled: Boolean) {
-        themePreferences.setPreferHdr(enabled)
-    }
 
     fun setMusicQualityWifi(quality: String) {
         themePreferences.setMusicQualityWifi(quality)
@@ -233,17 +202,8 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setNonExpressiveNavigationBar(enabled)
     }
 
-    fun setSubscriptionSource(source: String) {
-        themePreferences.setSubscriptionSource(source)
-    }
 
-    fun setSubscribeTarget(target: String) {
-        themePreferences.setSubscribeTarget(target)
-    }
 
-    fun setFastSubscriptionFeed(enabled: Boolean) {
-        themePreferences.setFastSubscriptionFeed(enabled)
-    }
     
     fun addExcludedFolder(folderPath: String) {
         themePreferences.addExcludedFolder(folderPath)
@@ -257,10 +217,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setExcludedFolders(folders)
     }
     
-    // --- Cache Settings ---
-    fun setVideoCacheEnabled(enabled: Boolean) {
-        themePreferences.setVideoCacheEnabled(enabled)
-    }
 
 
     fun setPlaybackPreloadEnabled(enabled: Boolean) {
@@ -280,9 +236,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
 
     fun setShowRecentSearches(show: Boolean) = themePreferences.setShowRecentSearches(show)
 
-    fun setShowRelatedVideos(show: Boolean) = themePreferences.setShowRelatedVideos(show)
-    fun setInlinePreviews(enabled: Boolean) = themePreferences.setInlinePreviews(enabled)
-    fun setCompactVideoHome(enabled: Boolean) = themePreferences.setCompactVideoHome(enabled)
     fun setPlaylistSwipeEnabled(enabled: Boolean) = themePreferences.setPlaylistSwipeEnabled(enabled)
     fun setPlaylistSwipeStartAction(action: String) = themePreferences.setPlaylistSwipeStartAction(action)
     fun setPlaylistSwipeEndAction(action: String) = themePreferences.setPlaylistSwipeEndAction(action)
@@ -315,9 +268,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setNormalizeVolume(enabled)
     }
 
-    fun setRememberVideoBrightness(enabled: Boolean) {
-        themePreferences.setRememberVideoBrightness(enabled)
-    }
 
     fun setHapticsLevel(value: String) {
         themePreferences.setHapticsLevel(value)

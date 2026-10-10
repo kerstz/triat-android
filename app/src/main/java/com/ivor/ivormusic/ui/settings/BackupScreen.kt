@@ -887,8 +887,6 @@ private fun describeContents(context: Context, manifest: BackupManifest): List<S
         line(BackupRepository.COUNT_SAVED_PLAYLISTS, R.plurals.bk_n_saved_playlists),
         line(BackupRepository.COUNT_LIKED_SONGS, R.plurals.bk_n_liked_songs),
         line(BackupRepository.COUNT_PLAY_HISTORY, R.plurals.n_plays),
-        line(BackupRepository.COUNT_WATCH_HISTORY, R.plurals.bk_n_watched_videos),
-        line(BackupRepository.COUNT_SUBSCRIPTIONS, R.plurals.bk_n_followed_channels),
         line(BackupRepository.COUNT_BLOCKED, R.plurals.bk_n_blocked_channels),
         line(BackupRepository.COUNT_HIDDEN, R.plurals.bk_n_hidden_videos),
         line(BackupRepository.COUNT_SETTINGS, R.plurals.bk_n_settings),

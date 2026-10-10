@@ -33,7 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
  *
  * ViewModels and the service cannot be reached directly - there is no DI - so
  * they observe [activeProfileId] and reset themselves. It is companion-scoped
- * for the same reason [LocalSubscriptionsRepository]'s flows are.
+ * for the same reason [NotInterestedRepository]'s flows are.
  */
 class AccountSwitcher(context: Context) {
 
@@ -98,9 +98,7 @@ class AccountSwitcher(context: Context) {
      */
     fun invalidateForProfileChange() {
         YouTubeRepository.invalidateSessionScopedCaches(appContext)
-        LocalSubscriptionsRepository.reloadForActiveProfile(appContext)
         NotInterestedRepository.reloadForActiveProfile(appContext)
-        VideoHistoryRepository.reloadForActiveProfile(appContext)
         sessionManager.refreshExpiredFromProfile()
     }
 

@@ -55,21 +55,6 @@ data class ChannelHeader(
      */
     val accountSubscribed: Boolean? = null
 ) {
-    fun toLocalSubscription(): LocalSubscription = LocalSubscription(
-        channelId = channelId,
-        name = name,
-        avatarUrl = avatarUrl,
-        handle = handle
-    )
-
-    fun toSubscribedChannel(): SubscribedChannel = SubscribedChannel(
-        channelId = channelId,
-        name = name,
-        avatarUrl = avatarUrl,
-        subscriberCountText = subscriberCountText,
-        handle = handle
-    )
-
     val shareUrl: String
         get() = handle?.takeIf { it.startsWith("@") }
             ?.let { "https://www.youtube.com/$it" }

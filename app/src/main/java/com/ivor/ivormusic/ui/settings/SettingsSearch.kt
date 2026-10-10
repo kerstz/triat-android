@@ -170,7 +170,6 @@ internal fun searchSettings(
 internal fun buildSettingsSearchIndex(
     onOpenPage: (SettingsPage) -> Unit,
     onOpenQualityPicker: (QualityDialogTarget) -> Unit,
-    onOpenRoutingPicker: (SubscriptionDialogTarget) -> Unit,
     onShowAbout: () -> Unit,
     onOpenFolderExclusion: () -> Unit,
     onNavigateToColorPalette: () -> Unit,

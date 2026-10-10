@@ -536,7 +536,6 @@ fun SettingsScreen(
     var qualityDialogTarget by remember { mutableStateOf<QualityDialogTarget?>(null) }
 
     // Which subscription-routing picker is open, if any
-    var subscriptionDialogTarget by remember { mutableStateOf<SubscriptionDialogTarget?>(null) }
 
     // Dialog state for Folder Exclusion
     var showFolderExclusionDialog by remember { mutableStateOf(false) }
@@ -562,7 +561,6 @@ fun SettingsScreen(
     val searchEntries = buildSettingsSearchIndex(
         onOpenPage = { page = it },
         onOpenQualityPicker = { qualityDialogTarget = it },
-        onOpenRoutingPicker = { subscriptionDialogTarget = it },
         onShowAbout = { showAboutDialog = true },
         onOpenFolderExclusion = openFolderExclusion,
         onNavigateToColorPalette = onNavigateToColorPalette,
@@ -1537,10 +1535,6 @@ internal fun ExpressiveAccountItem(
     }
 }
 
-/** Human-readable label for a stored default video quality value. */
-@Composable
-internal fun videoQualityLabel(value: String): String =
-    if (value == ThemePreferences.VIDEO_QUALITY_AUTO) stringResource(R.string.sp_quality_auto_highest) else value
 
 /** Human-readable label for a stored music quality value. */
 @Composable
@@ -1558,201 +1552,24 @@ private fun musicQualityOptionLabel(value: String): String = when (value) {
     else -> stringResource(R.string.sp_music_quality_high_opt)
 }
 
-/** Short label for the stored "which subscriptions to show" value. */
-@Composable
-internal fun subscriptionSourceLabel(value: String): String = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL -> stringResource(R.string.sp_subs_src_local)
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> stringResource(R.string.sp_subs_src_youtube)
-    else -> stringResource(R.string.sp_subs_src_all)
-}
 
-/** Short label for the stored "where Subscribe writes" value. */
-@Composable
-internal fun subscribeTargetLabel(value: String): String = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL -> stringResource(R.string.sp_subs_tgt_local)
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> stringResource(R.string.sp_subs_tgt_youtube)
-    ThemePreferences.SUBSCRIPTIONS_BOTH -> stringResource(R.string.sp_subs_tgt_both)
-    else -> stringResource(R.string.sp_subs_tgt_auto)
-}
 
-/** Longer picker-row description for a subscription source option. */
-@Composable
-private fun subscriptionSourceOptionLabel(value: String): Pair<String, String> = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL ->
-        stringResource(R.string.sp_subs_src_local) to stringResource(R.string.sp_subs_src_local_desc)
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE ->
-        stringResource(R.string.sp_subs_src_youtube) to stringResource(R.string.sp_subs_src_youtube_desc)
-    else ->
-        stringResource(R.string.sp_subs_src_all) to stringResource(R.string.sp_subs_src_all_desc)
-}
 
-/** Longer picker-row description for a subscribe target option. */
-@Composable
-private fun subscribeTargetOptionLabel(value: String): Pair<String, String> = when (value) {
-    ThemePreferences.SUBSCRIPTIONS_LOCAL ->
-        stringResource(R.string.sp_subs_tgt_local) to stringResource(R.string.sp_subs_tgt_local_desc)
-    ThemePreferences.SUBSCRIPTIONS_YOUTUBE ->
-        stringResource(R.string.sp_subs_tgt_youtube) to stringResource(R.string.sp_subs_tgt_youtube_desc)
-    ThemePreferences.SUBSCRIPTIONS_BOTH ->
-        stringResource(R.string.sp_subs_tgt_both) to stringResource(R.string.sp_subs_tgt_both_desc)
-    else ->
-        stringResource(R.string.sp_subs_tgt_auto) to stringResource(R.string.sp_subs_tgt_auto_desc)
-}
 
-/** One subscription-routing picker the Settings screen can open. */
-internal enum class SubscriptionDialogTarget(
-    @StringRes val titleRes: Int,
-    @StringRes val descriptionRes: Int
-) {
-    SOURCE(
-        titleRes = R.string.sp_subscriptions_shown,
-        descriptionRes = R.string.sp_subs_source_desc
-    ),
-    TARGET(
-        titleRes = R.string.sp_subscribe_saves_to,
-        descriptionRes = R.string.sp_subs_target_desc
-    )
-}
 
-@OptIn(ExperimentalMaterial3ExpressiveApi::class)
-@Composable
-private fun SubscriptionRoutingDialog(
-    target: SubscriptionDialogTarget,
-    currentValue: String,
-    onValueSelected: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val primaryColor = MaterialTheme.colorScheme.primary
-    val backgroundColor = MaterialTheme.colorScheme.surfaceContainerHigh
-    val textColor = MaterialTheme.colorScheme.onSurface
-    val secondaryTextColor = MaterialTheme.colorScheme.onSurfaceVariant
-
-    var dialogVisible by remember { mutableStateOf(false) }
-    LaunchedEffect(Unit) { dialogVisible = true }
-
-    AnimatedVisibility(
-        visible = dialogVisible,
-        enter = scaleIn(
-            initialScale = 0.8f,
-            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy)
-        ) + fadeIn(tween(200)),
-        exit = scaleOut(targetScale = 0.8f) + fadeOut(tween(150))
-    ) {
-        AlertDialog(
-            onDismissRequest = onDismiss,
-            containerColor = backgroundColor,
-            shape = RoundedCornerShape(32.dp),
-            icon = {
-                Box(
-                    modifier = Modifier
-                        .size(64.dp)
-                        .clip(RoundedCornerShape(20.dp))
-                        .background(primaryColor.copy(alpha = 0.15f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Subscriptions,
-                        contentDescription = null,
-                        tint = primaryColor,
-                        modifier = Modifier.size(32.dp)
-                    )
-                }
-            },
-            title = {
-                Text(
-                    text = stringResource(target.titleRes),
-                    color = textColor,
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Bold,
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
-                )
-            },
-            text = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .verticalScroll(rememberScrollState())
-                ) {
-                    Text(
-                        text = stringResource(target.descriptionRes),
-                        color = secondaryTextColor,
-                        fontSize = 13.sp,
-                        lineHeight = 18.sp,
-                        modifier = Modifier.padding(bottom = 12.dp)
-                    )
-                    val options = when (target) {
-                        SubscriptionDialogTarget.SOURCE -> ThemePreferences.SUBSCRIPTION_SOURCE_OPTIONS
-                        SubscriptionDialogTarget.TARGET -> ThemePreferences.SUBSCRIBE_TARGET_OPTIONS
-                    }
-                    options.forEach { option ->
-                        val selected = option == currentValue
-                        val (label, description) = when (target) {
-                            SubscriptionDialogTarget.SOURCE -> subscriptionSourceOptionLabel(option)
-                            SubscriptionDialogTarget.TARGET -> subscribeTargetOptionLabel(option)
-                        }
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .clip(RoundedCornerShape(14.dp))
-                                .background(
-                                    if (selected) primaryColor.copy(alpha = 0.12f)
-                                    else Color.Transparent
-                                )
-                                .clickable { onValueSelected(option) }
-                                .padding(horizontal = 8.dp, vertical = 4.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            RadioButton(
-                                selected = selected,
-                                onClick = { onValueSelected(option) }
-                            )
-                            Column(modifier = Modifier.padding(start = 4.dp)) {
-                                Text(
-                                    text = label,
-                                    color = if (selected) primaryColor else textColor,
-                                    fontSize = 15.sp,
-                                    fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium
-                                )
-                                Text(
-                                    text = description,
-                                    color = secondaryTextColor,
-                                    fontSize = 12.sp,
-                                    lineHeight = 16.sp
-                                )
-                            }
-                        }
-                    }
-                }
-            },
-            confirmButton = {
-                OutlinedButton(
-                    onClick = onDismiss,
-                    shape = RoundedCornerShape(16.dp),
-                    modifier = Modifier.height(48.dp)
-                ) {
-                    Text(text = stringResource(R.string.action_close), fontWeight = FontWeight.SemiBold)
-                }
-            }
-        )
-    }
-}
 
 /** One per-network quality picker the Settings screen can open. */
 internal enum class QualityDialogTarget(
     @StringRes val titleRes: Int,
-    @StringRes val descriptionRes: Int,
-    val isMusic: Boolean
+    @StringRes val descriptionRes: Int
 ) {
     MUSIC_WIFI(
         titleRes = R.string.qd_music_wifi,
-        descriptionRes = R.string.qd_music_wifi_desc,
-        isMusic = true
+        descriptionRes = R.string.qd_music_wifi_desc
     ),
     MUSIC_MOBILE(
         titleRes = R.string.qd_music_mobile,
-        descriptionRes = R.string.qd_music_mobile_desc,
-        isMusic = true
+        descriptionRes = R.string.qd_music_mobile_desc
     )
 }
 
@@ -1796,7 +1613,7 @@ private fun StreamQualityDialog(
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
-                        imageVector = if (target.isMusic) Icons.Rounded.MusicNote else Icons.Rounded.HighQuality,
+                        imageVector = Icons.Rounded.MusicNote,
                         contentDescription = null,
                         tint = primaryColor,
                         modifier = Modifier.size(32.dp)
@@ -1826,8 +1643,7 @@ private fun StreamQualityDialog(
                         lineHeight = 18.sp,
                         modifier = Modifier.padding(bottom = 12.dp)
                     )
-                    val options = if (target.isMusic) ThemePreferences.MUSIC_QUALITY_OPTIONS
-                        else ThemePreferences.VIDEO_QUALITY_OPTIONS
+                    val options = ThemePreferences.MUSIC_QUALITY_OPTIONS
                     options.forEach { option ->
                         val selected = option == currentQuality
                         Row(
@@ -1847,8 +1663,7 @@ private fun StreamQualityDialog(
                                 onClick = { onQualitySelected(option) }
                             )
                             Text(
-                                text = if (target.isMusic) musicQualityOptionLabel(option)
-                                    else videoQualityLabel(option),
+                                text = musicQualityOptionLabel(option),
                                 color = if (selected) primaryColor else textColor,
                                 fontSize = 15.sp,
                                 fontWeight = if (selected) FontWeight.SemiBold else FontWeight.Medium

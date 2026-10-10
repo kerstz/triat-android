@@ -6,23 +6,17 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.material3.LinearProgressIndicator
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.ivor.ivormusic.data.VideoHistoryRepository
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.BrokenImage
-import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LoadingIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -208,50 +202,6 @@ fun VideoThumbnail(
                     modifier = Modifier.size(indicatorSize)
                 )
             }
-        }
-    }
-}
-
-/** [VideoThumbnail] for a feed item, taking both URLs off the item itself. */
-@Composable
-fun VideoThumbnail(
-    video: VideoItem,
-    modifier: Modifier = Modifier,
-    contentScale: ContentScale = ContentScale.Crop,
-    showProgress: Boolean = true,
-    indicatorSize: Dp = 36.dp,
-    placeholderColor: Color = MaterialTheme.colorScheme.surfaceContainerHighest,
-) {
-    val context = LocalContext.current
-    val repository = remember(context) { VideoHistoryRepository(context) }
-    val history by repository.history.collectAsStateWithLifecycle()
-    val local = history.firstOrNull { it.videoId == video.videoId }
-    val progress = if (video.isLive) null else {
-        if (local?.watchedProgress != null &&
-            (video.watchedProgress == null || local.watchProgressUpdatedAtMs >= video.watchProgressUpdatedAtMs)) {
-            local.watchedProgress
-        } else video.watchedProgress
-    }
-    Box(modifier = modifier) {
-        VideoThumbnail(
-            thumbnailUrl = video.thumbnailUrl,
-            highResThumbnailUrl = video.highResThumbnailUrl,
-            contentDescription = video.title,
-            modifier = Modifier.matchParentSize(),
-            contentScale = contentScale,
-            showProgress = showProgress,
-            indicatorSize = indicatorSize,
-            placeholderColor = placeholderColor
-        )
-        progress?.takeIf { it > 0f }?.let { watched ->
-            LinearProgressIndicator(
-                progress = { watched.coerceIn(0f, 1f) },
-                modifier = Modifier.align(Alignment.BottomCenter).fillMaxWidth().height(3.dp),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surfaceContainerHighest,
-                gapSize = 0.dp,
-                drawStopIndicator = {},
-            )
         }
     }
 }

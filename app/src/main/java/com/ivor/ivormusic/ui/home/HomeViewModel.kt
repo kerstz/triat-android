@@ -36,16 +36,6 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
-internal fun shouldWarmSubscriptionFeed(
-    source: String,
-    hasLocalSubscriptions: Boolean,
-    isLoggedIn: Boolean
-): Boolean = when (source) {
-    com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_LOCAL -> hasLocalSubscriptions
-    com.ivor.ivormusic.data.ThemePreferences.SUBSCRIPTIONS_YOUTUBE -> isLoggedIn
-    else -> hasLocalSubscriptions || isLoggedIn
-}
-
 class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
     private val app get() = getApplication<Application>()
@@ -57,7 +47,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val searchHistoryRepository = com.ivor.ivormusic.data.SearchHistoryRepository(application)
     private val recommendationEngine = com.ivor.ivormusic.data.RecommendationEngine(application, youtubeRepository)
     private val homeRecommendationCache = HomeRecommendationCache(application)
-    private val videoHistoryRepository = com.ivor.ivormusic.data.VideoHistoryRepository(application)
 
     // What the user asked not to be recommended, in either mode. Declared with
     // the other repositories rather than beside the video feeds it started
@@ -564,65 +553,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
 
 
-    private var tasteSeedOffset = 0
-
-
-    // ---------------- Subscriptions tab ----------------
-
-    private val localSubscriptionsRepository =
-        com.ivor.ivormusic.data.LocalSubscriptionsRepository(application)
-
-
-    /** Channels followed on this device. Process-wide, so a subscribe anywhere lands here. */
-    val localSubscriptions: StateFlow<List<com.ivor.ivormusic.data.LocalSubscription>> =
-        localSubscriptionsRepository.subscriptions
-
-    val subscriptionGroups: StateFlow<List<com.ivor.ivormusic.data.SubscriptionGroup>> =
-        localSubscriptionsRepository.groups
-
-    /** Which group filters the feed, or null for everything. */
-    private val _selectedGroupId = MutableStateFlow<String?>(null)
-    val selectedGroupId: StateFlow<String?> = _selectedGroupId.asStateFlow()
-
-    /**
-     * The channel list the Subscriptions tab shows, resolved from the source
-     * setting. On "auto" both lists are merged: someone who imported a list
-     * *and* signed in wants both, and a channel followed in both places must
-     * appear once, so the merge dedupes on channel id with the local entry
-     * winning (it carries the avatar an import backfilled).
-     */
-
-
-    /**
-     * The subscriptions feed, minus what the user asked not to see. A channel
-     * block does apply here even though the user follows the channel: the two
-     * are different statements, and someone who blocks a channel they follow
-     * has been unambiguous about it.
-     */
-
-
-    // Notifications state
-    private val _notifications = MutableStateFlow<List<com.ivor.ivormusic.data.NotificationItem>>(emptyList())
-    val notifications: StateFlow<List<com.ivor.ivormusic.data.NotificationItem>> = _notifications.asStateFlow()
-
-
-    /**
-     * The device's video playlists with their videos still attached, which is
-     * what [videoPlaylists] drops on the way to [com.ivor.ivormusic.data.VideoPlaylist].
-     *
-     * Exposed so the options sheet can mark the playlists a video is already
-     * in. It stops at the device's own on purpose: the account's would need a
-     * playlist browse each, which is one request per row for a checkmark, and
-     * saving twice is a no-op on both sides anyway.
-     */
-
-
-    /**
-     * Keep or drop a playlist found in video mode. Returns the state after the
-     * toggle, synchronous for the same reason [toggleSavedPlaylist] is.
-     */
-
-
     // When each Home loader last reached the network successfully. HomeScreen
     // is disposed by every real navigation (a channel page, a playlist) and
     // its startup effects run again on the way back, so without these every
@@ -711,15 +641,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
 
 
     /**
-     * Load the subscriptions feed, newest first.
-     *
-     * The two halves come from completely different places: YouTube builds
-     * the account feed server side in one browse call, while the device feed
-     * has to be merged from one request per followed channel. Both are pulled
-     * when the source setting asks for both, and interleaved on upload time so
-     * the result reads as one feed rather than two stacked lists.
-     */
-    /**
      * Whether the device has a usable network right now.
      *
      * Used only to word a failure correctly: an empty feed on a working
@@ -739,165 +660,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         true
     }
 
-    /**
-     * How a rate limit is worded for the user.
-     *
-     * Deliberately not the generic feed error: that one tells people to check
-     * their connection, and during a hold the connection is fine. Rounds up so
-     * "1 minute" never means "any second now", and falls back to a vague
-     * wording under a minute rather than saying "0 minutes".
-     */
-    private fun rateLimitMessage(): String {
-        val remainingMs = com.ivor.ivormusic.data.YouTubeRateLimit.remainingMs()
-        val minutes = ((remainingMs + 59_999L) / 60_000L).toInt()
-        return if (minutes <= 0) {
-            app.getString(R.string.hvm_subs_feed_rate_limited_soon)
-        } else {
-            app.resources.getQuantityString(
-                R.plurals.hvm_subs_feed_rate_limited,
-                minutes,
-                minutes,
-            )
-        }
-    }
-
-
-    /**
-     * Load the selected creator's Videos tab rather than filtering the recent
-     * subscriptions snapshot. The latter may contain no recent item from a
-     * channel that still has hundreds of uploads, which is not an empty feed.
-     */
-
-
-    // ---------------- Shuffled subscriptions (Home, recommendations off) ----------------
-    //
-    // With recommendations off, Home used to be the Subscriptions feed a second
-    // time: newest first, one tap from the tab that already shows exactly that.
-    // It is now a shuffle across the followed channels' whole histories (see
-    // SubscriptionMix). Pools are fetched a batch of channels at a time as the
-    // user scrolls and kept for the session, so a refresh reshuffles what is
-    // already in hand and only the next unseen channels cost requests.
-
-
-    /** The shuffled Home feed minus what the user asked not to see. */
-
-
-    /** Pools already fetched this session, by channel id. Main-thread only. */
-    private val mixPools = LinkedHashMap<String, com.ivor.ivormusic.data.ChannelMixPool>()
-    private val mixShownIds = HashSet<String>()
-    private var mixExhausted = false
-    private var mixJob: Job? = null
-    private var mixLoadedAtMs = 0L
-    private var mixGeneration = 0L
-    private val mixRandom = kotlin.random.Random(System.nanoTime())
-
-    /**
-     * Build or rebuild the shuffled Home feed.
-     *
-     * Not forced, it stands when it already has videos from the last ten
-     * minutes, like every other Home loader. Forced - a pull to refresh, a
-     * profile switch, recommendations just turned off - it reshuffles: channel
-     * order and picks start again, while pools already fetched are reused.
-     */
-
-    /** Append the next shuffled page as the user reaches the end of Home. */
-
-    /**
-     * One page: the next [MIX_CHANNELS_PER_PAGE] channels in this shuffle's
-     * order, fetching pools only for the ones not already held. Once every
-     * channel has had its turn, pages keep drawing unseen videos from the pools
-     * in hand at no network cost, until nothing unseen is left.
-     */
-
-    /**
-     * Fetch pools for [channels] not yet held, [MIX_FETCH_CONCURRENCY] at a
-     * time. Discretionary fan-out, so a 429 hold stands it down: the batch
-     * stops and the channels without pools simply contribute nothing this
-     * page rather than being retried in a loop.
-     */
-
-    /**
-     * The channels the mix draws from: the same list the Subscriptions tab
-     * shows, resolved from the source setting. An account whose channel list
-     * has not arrived yet is waited for rather than treated as following
-     * nobody, which would end the feed before it started.
-     */
-
-
-    /**
-     * Interleaves the account feed and the device feed on upload time.
-     *
-     * The account feed carries no exact timestamp (InnerTube only says "3 days
-     * ago"), so its items are placed by parsing that prose. It is deliberately
-     * coarse, but stacking one list on top of the other would be worse: a
-     * month-old account upload would sit above this morning's local one.
-     */
-    private fun mergeFeeds(accountFeed: List<VideoItem>, localFeed: List<VideoItem>): List<VideoItem> {
-        if (localFeed.isEmpty()) return accountFeed
-        if (accountFeed.isEmpty()) return localFeed
-        val now = System.currentTimeMillis()
-        return (accountFeed + localFeed)
-            .distinctBy { it.videoId }
-            .sortedByDescending {
-                it.publishedAtMs ?: VideoItem.parseRelativeTime(it.uploadedDate, now) ?: Long.MIN_VALUE
-            }
-    }
-
-
-    /** Filter the feed by a group. Passing null clears the filter. */
-
-
-    /** Drop a locally followed channel. Account subscriptions are untouched. */
-
-    fun isLocallySubscribed(channelId: String?): Boolean =
-        localSubscriptionsRepository.isSubscribed(channelId)
-
-    // ---------------- Subscription import / export ----------------
-
-
-    /** "resolved 40 of 220" while an import runs. */
-    private val _importProgress = MutableStateFlow<Pair<Int, Int>?>(null)
-    val importProgress: StateFlow<Pair<Int, Int>?> = _importProgress.asStateFlow()
-
-    /**
-     * Imports a subscription file - NewPipe/PipePipe JSON, a NewPipe-family
-     * backup archive, Takeout CSV or OPML, sniffed rather than asked for.
-     *
-     * Reading happens through the content resolver because the file arrives as
-     * a SAF uri, which is not a path and cannot be opened as one. Bytes rather
-     * than text, since a backup archive is a zipped database and decoding one
-     * as UTF-8 first would corrupt it. The whole run is one merge into the
-     * existing list: importing twice, or importing a second device's export,
-     * adds what is missing and touches nothing else.
-     */
-
-    /**
-     * Copies the signed-in account's subscriptions onto the device, so they
-     * survive signing out - the main reason someone would want a local copy
-     * while still having an account.
-     */
-
-    /**
-     * Writes the local subscriptions to [uri] in the NewPipe-compatible shape,
-     * so the file imports cleanly into NewPipe, PipePipe and Tubular as well
-     * as back into Koda.
-     */
-
-    // ---------------- Subscription groups ----------------
-
-
-    /** Wipes every local subscription and group. Account subscriptions survive. */
-
-    /** Load the user's YouTube playlists for the video Library tab. Requires login. */
-
-
-    /**
-     * Create a playlist from the video Library tab.
-     *
-     * [onDevice] picks the store. It is forced true signed out, because the
-     * YouTube path needs a session and a create that silently does nothing is
-     * exactly the failure this whole change exists to remove.
-     */
 
     /**
      * Delete a playlist. The local store owns its own list, so there is nothing
