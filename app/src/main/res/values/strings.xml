@@ -267,6 +267,8 @@
 
     <!-- SponsorBlock -->
     <string name="sb_title">SponsorBlock</string>
+    <string name="sb_skipped">Skipped %1$s</string>
+    <string name="sb_skip">Skip %1$s</string>
     <string name="sb_enable">Enable SponsorBlock</string>
     <string name="sb_enable_sub">Look up crowd-sourced segments for videos you watch</string>
     <string name="sb_privacy_note">Triat never sends the video ID. It sends the first four characters of a hash of it and picks your video out of the results locally, so sponsor.ajay.app cannot tell what you are watching.</string>

@@ -418,6 +418,8 @@
     <string name="sp_spotlight_home">Accueil en vedette</string>
     <string name="sp_display_size">Taille d\'affichage</string>
     <string name="sb_title">SponsorBlock</string>
+    <string name="sb_skipped">%1$s ignoré</string>
+    <string name="sb_skip">Ignorer : %1$s</string>
     <string name="sb_enable">Activer SponsorBlock</string>
     <string name="sb_enable_sub">Rechercher les segments signalés par la communauté pour les vidéos que tu regardes</string>
     <string name="sb_privacy_note">Triat n\'envoie jamais l\'identifiant de la vidéo. Il envoie les quatre premiers caractères de son hash et retrouve ta vidéo localement parmi les résultats, donc sponsor.ajay.app ne peut pas savoir ce que tu regardes.</string>

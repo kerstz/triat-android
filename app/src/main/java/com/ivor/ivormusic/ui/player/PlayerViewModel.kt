@@ -14,6 +14,9 @@ import androidx.media3.session.SessionToken
 import com.google.common.util.concurrent.ListenableFuture
 import com.google.common.util.concurrent.MoreExecutors
 import com.ivor.ivormusic.data.Song
+import com.ivor.ivormusic.data.SponsorCategory
+import com.ivor.ivormusic.data.SponsorSegment
+import com.ivor.ivormusic.data.SponsorSkipNotice
 import com.ivor.ivormusic.data.ThemePreferences
 import com.ivor.ivormusic.data.MusicQueueItem
 import com.ivor.ivormusic.data.QUEUE_START_ABSENT
@@ -118,6 +121,31 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
 
     /** Queue positions in playing order, as last published by the service. */
     private val _playOrder = MutableStateFlow(IntArray(0))
+
+    /**
+     * The SponsorBlock segments of the playing track, for the seek bar.
+     *
+     * Empty whenever the feature is off, the track has none, or the user
+     * turned the seek-bar markers off - the service only publishes them when
+     * something is going to draw them.
+     */
+    private val _sponsorSegments = MutableStateFlow<List<SponsorSegment>>(emptyList())
+    val sponsorSegments: StateFlow<List<SponsorSegment>> = _sponsorSegments.asStateFlow()
+
+    /** The segment under the playhead whose category is set to Ask, if any. */
+    private val _sponsorAsk = MutableStateFlow<SponsorCategory?>(null)
+    val sponsorAsk: StateFlow<SponsorCategory?> = _sponsorAsk.asStateFlow()
+
+    /**
+     * The most recent automatic skip, for the notice and its undo.
+     *
+     * The sequence number is part of the value because the UI has to tell a
+     * fresh skip from a recomposition carrying the same category: two skips
+     * of the same category, or one skip undone and met again, are otherwise
+     * indistinguishable and the second notice would never show.
+     */
+    private val _sponsorSkip = MutableStateFlow<SponsorSkipNotice?>(null)
+    val sponsorSkip: StateFlow<SponsorSkipNotice?> = _sponsorSkip.asStateFlow()
 
     /**
      * The queue in the order it will actually be heard.
@@ -372,6 +400,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                 ) {
                     applyPlaybackSpeedExtras(extras)
                     applyPlayOrderExtras(extras)
+                    applySponsorBlockExtras(extras)
                 }
             })
             .buildAsync()
@@ -625,6 +654,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         // change - a controller connecting to a session that is already
         // shuffling would otherwise never be told which permutation it is in.
         applyPlayOrderExtras(ctrl.sessionExtras)
+        applySponsorBlockExtras(ctrl.sessionExtras)
 
         // Rebuild queue from MediaSession
         val itemCount = ctrl.mediaItemCount
@@ -1445,6 +1475,62 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     private fun applyPlayOrderExtras(extras: android.os.Bundle) {
         if (!extras.containsKey(MusicService.EXTRA_PLAY_ORDER)) return
         _playOrder.value = extras.getIntArray(MusicService.EXTRA_PLAY_ORDER) ?: IntArray(0)
+    }
+
+    /**
+     * Adopt the SponsorBlock state the service published.
+     *
+     * A missing key reads as "nothing", not as "unchanged": the service sends
+     * one Bundle describing the whole state, so an Ask segment the playhead
+     * has left is published by its absence.
+     */
+    private fun applySponsorBlockExtras(extras: android.os.Bundle) {
+        val starts = extras.getLongArray(MusicService.EXTRA_SPONSOR_STARTS)
+        val ends = extras.getLongArray(MusicService.EXTRA_SPONSOR_ENDS)
+        val categories = extras.getStringArray(MusicService.EXTRA_SPONSOR_CATEGORIES)
+        _sponsorSegments.value = if (
+            starts != null && ends != null && categories != null &&
+            starts.size == ends.size && starts.size == categories.size
+        ) {
+            starts.indices.mapNotNull { i ->
+                SponsorCategory.fromApiName(categories[i])?.let { category ->
+                    SponsorSegment("$i", category, starts[i], ends[i])
+                }
+            }
+        } else {
+            emptyList()
+        }
+
+        _sponsorAsk.value = extras.getString(MusicService.EXTRA_SPONSOR_ASK_CATEGORY)
+            ?.let { SponsorCategory.fromApiName(it) }
+
+        val skipped = extras.getString(MusicService.EXTRA_SPONSOR_SKIP_CATEGORY)
+            ?.let { SponsorCategory.fromApiName(it) }
+        _sponsorSkip.value = skipped?.let {
+            SponsorSkipNotice(extras.getInt(MusicService.EXTRA_SPONSOR_SKIP_SEQ), it)
+        }
+    }
+
+    /** Skip the Ask segment the player is offering a button for. */
+    fun skipSponsorSegment() {
+        controller?.sendCustomCommand(
+            androidx.media3.session.SessionCommand(
+                MusicService.CMD_SPONSOR_SKIP,
+                android.os.Bundle.EMPTY,
+            ),
+            android.os.Bundle.EMPTY,
+        )
+    }
+
+    /** Put the playhead back where the last automatic skip took it from. */
+    fun undoSponsorSkip() {
+        controller?.sendCustomCommand(
+            androidx.media3.session.SessionCommand(
+                MusicService.CMD_SPONSOR_UNDO,
+                android.os.Bundle.EMPTY,
+            ),
+            android.os.Bundle.EMPTY,
+        )
     }
 
     private fun applyPlaybackSpeedExtras(extras: android.os.Bundle) {

@@ -230,13 +230,13 @@ private fun CategoryRow(
                     // The category names are lowercase so they read naturally
                     // inside "Skipped sponsor" on the player chip; here they
                     // are a heading and want a capital.
-                    text = stringResource(categoryLabel(category))
+                    text = stringResource(sponsorCategoryLabel(category))
                         .replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = stringResource(categoryDescription(category)),
+                    text = stringResource(sponsorCategoryDescription(category)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

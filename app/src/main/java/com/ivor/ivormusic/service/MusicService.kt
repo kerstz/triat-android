@@ -378,10 +378,56 @@ class MusicService : MediaLibraryService() {
         const val ARG_PLAY_ORDER = "play_order"
         const val EXTRA_SONG_SOURCE = "com.ivor.ivormusic.SONG_SOURCE"
 
+        /**
+         * Skip the SponsorBlock segment the playhead is inside, for a
+         * category the user set to Ask.
+         *
+         * A command rather than a plain seek from the UI because the service
+         * holds the segment list: the controller is told which segment it is
+         * looking at, but the decision of where that segment ends - and the
+         * bookkeeping that stops the next 250ms sample acting on it again -
+         * belongs with the engine that fetched it.
+         */
+        const val CMD_SPONSOR_SKIP = "com.ivor.ivormusic.SPONSOR_SKIP"
+
+        /**
+         * Put the playhead back where an automatic skip took it from.
+         *
+         * The segment stays in the skipped set, which is the whole point: an
+         * undo leaves the listener sitting inside the segment, and without
+         * that the very next sample would skip it again.
+         */
+        const val CMD_SPONSOR_UNDO = "com.ivor.ivormusic.SPONSOR_UNDO"
+
         /** Session-extras keys the timer state is published under. */
 
         /** Session-extras key the current playback rate is published under. */
         const val EXTRA_PLAYBACK_SPEED = "playback_speed"
+
+        /**
+         * Session-extras keys the SponsorBlock state is published under.
+         *
+         * Three parallel arrays rather than a list of parcelables: session
+         * extras cross a process boundary, and a `Bundle` of primitives is
+         * the one shape that needs no custom parcelling on either side.
+         *
+         * [EXTRA_SPONSOR_SKIP_SEQ] counts automatic skips. The UI has to tell
+         * a fresh skip from a recomposition carrying the same category, and a
+         * category plus a position cannot: skipping the same segment twice
+         * after an undo would look identical.
+         */
+        const val EXTRA_SPONSOR_STARTS = "sponsor_starts"
+        const val EXTRA_SPONSOR_ENDS = "sponsor_ends"
+        const val EXTRA_SPONSOR_CATEGORIES = "sponsor_categories"
+        const val EXTRA_SPONSOR_ON_SEEK_BAR = "sponsor_on_seek_bar"
+
+        /** The segment under the playhead whose category is set to Ask. */
+        const val EXTRA_SPONSOR_ASK_UUID = "sponsor_ask_uuid"
+        const val EXTRA_SPONSOR_ASK_CATEGORY = "sponsor_ask_category"
+
+        /** The most recent automatic skip, for the notice and its undo. */
+        const val EXTRA_SPONSOR_SKIP_SEQ = "sponsor_skip_seq"
+        const val EXTRA_SPONSOR_SKIP_CATEGORY = "sponsor_skip_category"
 
         /**
          * Session-extras key carrying the queue positions in the order they
@@ -801,6 +847,14 @@ class MusicService : MediaLibraryService() {
      */
     private val sponsorSkipped = mutableSetOf<String>()
 
+    /** The Ask segment under the playhead, published for the player's button. */
+    private var sponsorAsk: SponsorSegment? = null
+
+    /** Where the last automatic skip started, so the undo has somewhere to go. */
+    private var sponsorUndoPositionMs = -1L
+    private var sponsorSkipSeq = 0
+    private var sponsorSkipCategory: String? = null
+
     /**
      * Builds the repository off the main thread, then hands the tracker back
      * on it, since sampling reads the player. A failure is logged and not
@@ -834,15 +888,13 @@ class MusicService : MediaLibraryService() {
             ?.takeIf { YOUTUBE_VIDEO_ID.matches(it) }
         if (videoId == null) {
             sponsorVideoId = null
-            sponsorSegments = emptyList()
-            sponsorSkipped.clear()
+            resetSponsorState()
             return
         }
         if (videoId == sponsorVideoId) return
 
         sponsorVideoId = videoId
-        sponsorSegments = emptyList()
-        sponsorSkipped.clear()
+        resetSponsorState()
 
         if (!themePreferences.sponsorBlockEnabled.value) return
         val categories = activeCategories(themePreferences.sponsorBlockActions.value)
@@ -854,6 +906,7 @@ class MusicService : MediaLibraryService() {
             // id guard is what keeps one track's segments off another.
             if (sponsorVideoId == videoId) {
                 sponsorSegments = segments
+                publishSessionState()
                 if (segments.isNotEmpty()) {
                     KLog.d(TAG, "SponsorBlock: ${segments.size} segment(s) for $videoId")
                 }
@@ -861,35 +914,97 @@ class MusicService : MediaLibraryService() {
         }
     }
 
+    /** Drops every trace of the previous track's segments. */
+    private fun resetSponsorState() {
+        sponsorSegments = emptyList()
+        sponsorSkipped.clear()
+        sponsorAsk = null
+        sponsorUndoPositionMs = -1L
+        sponsorSkipCategory = null
+        publishSessionState()
+    }
+
     /**
-     * Seeks past the segment under the playhead when its category says Skip.
+     * Acts on the segment under the playhead, or clears what was offered.
      *
      * Rides the 250ms sample that already exists rather than adding a timer:
      * a skip can land up to one tick late, which submitted segments' own
-     * padding absorbs. Manual is left alone here - the music player has no
-     * in-segment button to offer - so a category set to Manual behaves as
-     * Ignore until one exists.
+     * padding absorbs.
      */
     private fun applySponsorBlock() {
         val segments = sponsorSegments
-        if (segments.isEmpty() || !player.isPlaying) return
-
-        val position = player.currentPosition
-        val segment = segmentAt(segments, position, sponsorSkipped) ?: return
-        if (themePreferences.sponsorBlockActions.value[segment.category] != SegmentAction.SKIP) {
+        if (segments.isEmpty() || !player.isPlaying) {
+            clearSponsorAsk()
             return
         }
-        if (segment.durationMs < themePreferences.sponsorBlockMinDurationMs.value) return
 
-        sponsorSkipped += segment.uuid
-        val duration = player.duration
-        val target = if (duration > 0) {
-            segment.endMs.coerceAtMost(duration)
-        } else {
-            segment.endMs
+        val segment = segmentAt(segments, player.currentPosition, sponsorSkipped)
+        if (segment == null || segment.durationMs < themePreferences.sponsorBlockMinDurationMs.value) {
+            clearSponsorAsk()
+            return
         }
+
+        when (themePreferences.sponsorBlockActions.value[segment.category]) {
+            SegmentAction.SKIP -> {
+                clearSponsorAsk()
+                performSponsorSkip(segment, automatic = true)
+            }
+            SegmentAction.MANUAL -> {
+                if (sponsorAsk?.uuid != segment.uuid) {
+                    sponsorAsk = segment
+                    publishSessionState()
+                }
+            }
+            // IGNORE, or a category this build does not know.
+            else -> clearSponsorAsk()
+        }
+    }
+
+    private fun clearSponsorAsk() {
+        if (sponsorAsk != null) {
+            sponsorAsk = null
+            publishSessionState()
+        }
+    }
+
+    /**
+     * Seeks past [segment] and, when the skip was automatic, offers an undo.
+     *
+     * The segment joins the skipped set either way. Without that, an Ask skip
+     * landing a moment before the end - or an undo the listener then plays
+     * back through - re-triggers on the next sample.
+     */
+    private fun performSponsorSkip(segment: SponsorSegment, automatic: Boolean) {
+        val from = player.currentPosition.coerceAtLeast(0L)
+        sponsorSkipped += segment.uuid
+        sponsorAsk = null
+
+        val duration = player.duration
+        val target = if (duration > 0) segment.endMs.coerceAtMost(duration) else segment.endMs
         KLog.d(TAG, "SponsorBlock: skipping ${segment.category.apiName} to ${target}ms")
         player.seekTo(target)
+
+        if (automatic && themePreferences.sponsorBlockNotice.value) {
+            sponsorUndoPositionMs = from
+            sponsorSkipCategory = segment.category.apiName
+            sponsorSkipSeq++
+        }
+        publishSessionState()
+    }
+
+    /** Skips the Ask segment the player's button is offering. */
+    private fun skipSponsorAskSegment() {
+        val segment = sponsorAsk ?: return
+        performSponsorSkip(segment, automatic = false)
+    }
+
+    /** Puts the playhead back where the last automatic skip took it from. */
+    private fun undoSponsorSkip() {
+        val position = sponsorUndoPositionMs
+        sponsorUndoPositionMs = -1L
+        sponsorSkipCategory = null
+        publishSessionState()
+        if (position >= 0L) player.seekTo(position)
     }
 
     private fun observePreferences() {
@@ -923,6 +1038,12 @@ class MusicService : MediaLibraryService() {
                 sponsorVideoId = null
                 refreshSponsorSegments(player.currentMediaItem)
             }
+        }
+        // The seek-bar switch decides whether the segments are published at
+        // all, so flipping it has to republish rather than wait for the next
+        // state change to carry the new answer.
+        serviceScope.launch {
+            themePreferences.sponsorBlockShowOnSeekBar.drop(1).collect { publishSessionState() }
         }
         // These flows update live across ThemePreferences instances (the
         // settings screen writes through its own instance) thanks to the
@@ -1794,6 +1915,8 @@ class MusicService : MediaLibraryService() {
                     .add(SessionCommand(CMD_RESTORE_PLAYBACK, Bundle.EMPTY))
                     .add(SessionCommand(CMD_SET_PLAYBACK_SPEED, Bundle.EMPTY))
                     .add(SessionCommand(CMD_SET_PLAY_ORDER, Bundle.EMPTY))
+                    .add(SessionCommand(CMD_SPONSOR_SKIP, Bundle.EMPTY))
+                    .add(SessionCommand(CMD_SPONSOR_UNDO, Bundle.EMPTY))
                     .build()
 
             return MediaSession.ConnectionResult.accept(
@@ -1863,6 +1986,14 @@ class MusicService : MediaLibraryService() {
             }
             CMD_SET_PLAY_ORDER -> {
                 applyPlayOrder(args.getIntArray(ARG_PLAY_ORDER))
+                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+            }
+            CMD_SPONSOR_SKIP -> {
+                skipSponsorAskSegment()
+                Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
+            }
+            CMD_SPONSOR_UNDO -> {
+                undoSponsorSkip()
                 Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
             }
             CMD_SET_PLAYBACK_SPEED -> {
@@ -2527,6 +2658,36 @@ class MusicService : MediaLibraryService() {
      * cloned and rewritten by ExoPlayer itself on every queue edit, and may
      * have been replaced outright by [applyPlayOrder].
      */
+    /**
+     * Writes the SponsorBlock half of the session extras.
+     *
+     * Segments are published only when the seek-bar setting asks for them -
+     * a controller has no other use for the full list, and a long track with
+     * many segments is three arrays sent across the boundary on every state
+     * change. The Ask segment and the skip notice are published regardless,
+     * since those are what the controls are made of.
+     */
+    private fun putSponsorBlockState(extras: Bundle) {
+        val segments = sponsorSegments
+        if (segments.isNotEmpty() && themePreferences.sponsorBlockShowOnSeekBar.value) {
+            extras.putLongArray(EXTRA_SPONSOR_STARTS, LongArray(segments.size) { segments[it].startMs })
+            extras.putLongArray(EXTRA_SPONSOR_ENDS, LongArray(segments.size) { segments[it].endMs })
+            extras.putStringArray(
+                EXTRA_SPONSOR_CATEGORIES,
+                Array(segments.size) { segments[it].category.apiName }
+            )
+            extras.putBoolean(EXTRA_SPONSOR_ON_SEEK_BAR, true)
+        }
+        sponsorAsk?.let {
+            extras.putString(EXTRA_SPONSOR_ASK_UUID, it.uuid)
+            extras.putString(EXTRA_SPONSOR_ASK_CATEGORY, it.category.apiName)
+        }
+        sponsorSkipCategory?.let {
+            extras.putInt(EXTRA_SPONSOR_SKIP_SEQ, sponsorSkipSeq)
+            extras.putString(EXTRA_SPONSOR_SKIP_CATEGORY, it)
+        }
+    }
+
     private fun publishSessionState() {
         val session = mediaLibrarySession ?: return
         runCatching {
@@ -2534,6 +2695,7 @@ class MusicService : MediaLibraryService() {
                 Bundle().apply {
                     putFloat(EXTRA_PLAYBACK_SPEED, playbackSpeed)
                     putIntArray(EXTRA_PLAY_ORDER, currentPlayOrder())
+                    putSponsorBlockState(this)
                 }
             )
         }

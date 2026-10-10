@@ -76,6 +76,26 @@ internal val LocalPlayerWaveform = staticCompositionLocalOf<PlayerWaveform?> { n
 internal val LocalPlayerScrubInteraction = staticCompositionLocalOf { MutableInteractionSource() }
 
 /**
+ * One SponsorBlock segment's span on the bar, as fractions of the track.
+ *
+ * Fractions rather than milliseconds because the mark is drawn, not timed: the
+ * host knows the track's duration and resolves it once, so no style has to be
+ * handed a duration alongside its progress.
+ */
+internal data class ScrubberMark(val start: Float, val end: Float, val color: Color)
+
+/**
+ * The marks drawn over the track, for SponsorBlock's segments.
+ *
+ * Provided once by the player host, for the same reason [LocalPlayerWaveform]
+ * is: nine styles draw this bar, and a parameter on each of them is nine
+ * chances to ship the feature half-wired. Empty whenever the feature is off,
+ * the track has no segments, or the user turned the seek-bar marks off - the
+ * service does not even publish segments in that last case.
+ */
+internal val LocalScrubberMarks = staticCompositionLocalOf<List<ScrubberMark>> { emptyList() }
+
+/**
  * One song's finished waveform: a frozen envelope plus the bars it resamples to.
  *
  * Frozen is the whole contract. The bar is a picture of the *song*, not of the listening, so
@@ -182,6 +202,7 @@ internal fun ExpressiveScrubber(
     amplitude: (Float) -> Float = { 1f },
     waveform: PlayerWaveform? = LocalPlayerWaveform.current,
     interactionSource: MutableInteractionSource = LocalPlayerScrubInteraction.current,
+    marks: List<ScrubberMark> = LocalScrubberMarks.current,
 ) {
     val dragged by interactionSource.collectIsDraggedAsState()
     val pressed by interactionSource.collectIsPressedAsState()
@@ -251,6 +272,9 @@ internal fun ExpressiveScrubber(
                 trackStroke = trackStroke,
                 amplitude = { at -> amplitude(at) * (1f - bloom) },
             )
+        }
+        if (marks.isNotEmpty()) {
+            Canvas(modifier = Modifier.matchParentSize()) { drawMarks(marks) }
         }
         Canvas(modifier = Modifier.matchParentSize()) {
             drawThumb(progress(), bloom, color)
@@ -483,3 +507,32 @@ private const val MIN_TICK_GAP_NANOS = 20_000_000L
  * finished before anybody could want to scrub. It is one animation per song, never a loop.
  */
 private const val REVEAL_DURATION_MS = 620
+
+/**
+ * Draws the segment marks as full-height bands across the track.
+ *
+ * Over the bar rather than under it, and at full height, because a mark is a
+ * statement about a span of the song that has to be legible against both the
+ * played and unplayed sides of the track. A minimum width keeps a three-second
+ * segment in a long track from rounding away to nothing - a mark that cannot
+ * be seen is the same as no mark at all, and the span is what it is there to
+ * show.
+ */
+private fun DrawScope.drawMarks(marks: List<ScrubberMark>) {
+    val width = size.width
+    if (width <= 0f) return
+    val minWidth = MARK_MIN_WIDTH_PX
+    marks.forEach { mark ->
+        val left = (mark.start.coerceIn(0f, 1f) * width)
+        val right = (mark.end.coerceIn(0f, 1f) * width)
+        val drawnWidth = (right - left).coerceAtLeast(minWidth)
+        drawRect(
+            color = mark.color.copy(alpha = MARK_ALPHA),
+            topLeft = Offset(left.coerceAtMost(width - drawnWidth).coerceAtLeast(0f), 0f),
+            size = Size(drawnWidth.coerceAtMost(width), size.height),
+        )
+    }
+}
+
+private const val MARK_ALPHA = 0.85f
+private const val MARK_MIN_WIDTH_PX = 4f

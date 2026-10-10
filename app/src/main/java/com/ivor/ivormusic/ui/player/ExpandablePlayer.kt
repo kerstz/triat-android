@@ -44,6 +44,21 @@ import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 import kotlin.math.absoluteValue
 import kotlin.math.roundToInt
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.navigationBarsPadding
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.FastForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
+import androidx.compose.ui.res.stringResource
+import com.ivor.ivormusic.R
+import com.ivor.ivormusic.util.rememberKodaHaptics
+import com.ivor.ivormusic.ui.settings.sponsorCategoryLabel
 
 /**
  * How far a back gesture shrinks the expanded player before it is released.
@@ -120,6 +135,25 @@ fun ExpandablePlayer(
     // that interpolates between samples has to know how fast the clock is
     // running. It changes only when somebody moves the speed slider.
     val playbackSpeed by viewModel.playbackSpeed.collectAsStateWithLifecycle()
+    // SponsorBlock's marks, resolved to fractions here because this is where
+    // the duration is known; the bar is handed spans it can simply draw. The
+    // list is already empty when the feature, the track or the seek-bar
+    // setting says there is nothing to show, so there is no gate here.
+    val sponsorSegments by viewModel.sponsorSegments.collectAsStateWithLifecycle()
+    val trackDuration by viewModel.duration.collectAsStateWithLifecycle()
+    val sponsorMarks = remember(sponsorSegments, trackDuration) {
+        if (trackDuration <= 0L) {
+            emptyList()
+        } else {
+            sponsorSegments.map { segment ->
+                ScrubberMark(
+                    start = segment.startMs.toFloat() / trackDuration,
+                    end = segment.endMs.toFloat() / trackDuration,
+                    color = segment.category.color,
+                )
+            }
+        }
+    }
     LaunchedEffect(isExpanded) {
         if (!isExpanded) styleWheel.dismiss()
     }
@@ -456,6 +490,7 @@ fun ExpandablePlayer(
                             // The rate every style's bar extrapolates at between
                             // the service's once-a-second samples.
                             LocalPlaybackSpeed provides playbackSpeed,
+                            LocalScrubberMarks provides sponsorMarks,
                         ) {
                         when (activeStyle) {
                             PlayerStyle.CLASSIC -> {
@@ -581,6 +616,20 @@ fun ExpandablePlayer(
                         }
                         }
 
+                        // "Skip sponsor", offered only while the playhead is
+                        // inside a segment whose category is set to Ask. It
+                        // sits here rather than in each style for the same
+                        // reason the scrubber's marks do: nine styles would be
+                        // nine chances to leave it out, and the button has no
+                        // business in a style's own layout.
+                        SponsorAskButton(
+                            viewModel = viewModel,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .navigationBarsPadding()
+                                .padding(bottom = 132.dp)
+                        )
+
                         androidx.compose.animation.AnimatedVisibility(
                             visible = styleWheel.isOpen,
                             enter = fadeIn(MaterialTheme.motionScheme.fastEffectsSpec()),
@@ -600,4 +649,57 @@ fun ExpandablePlayer(
         }
     }
 
+}
+
+/**
+ * The "Skip sponsor" button a category set to Ask puts on the player.
+ *
+ * Ask exists because the categories are not equivalent: a sponsor read is
+ * something nearly everyone wants gone, while an intro or an off-topic music
+ * section is something plenty of people want to keep but might skip on the
+ * day. So the control has to be offered while inside the segment and never act
+ * on its own, which is what separates it from Skip.
+ *
+ * It appears and leaves with the segment, on a fade rather than a slide: it
+ * arrives over a playing track whose controls are already in place, and a
+ * button sliding in from an edge reads as the chrome rearranging itself.
+ */
+@Composable
+private fun SponsorAskButton(
+    viewModel: PlayerViewModel,
+    modifier: Modifier = Modifier
+) {
+    val ask by viewModel.sponsorAsk.collectAsStateWithLifecycle()
+    androidx.compose.animation.AnimatedVisibility(
+        visible = ask != null,
+        enter = fadeIn(MaterialTheme.motionScheme.fastEffectsSpec()),
+        exit = fadeOut(MaterialTheme.motionScheme.fastEffectsSpec()),
+        modifier = modifier
+    ) {
+        val category = ask ?: return@AnimatedVisibility
+        val haptics = rememberKodaHaptics()
+        Button(
+            onClick = {
+                haptics.confirm()
+                viewModel.skipSponsorSegment()
+            },
+            colors = ButtonDefaults.buttonColors(
+                containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
+            )
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.FastForward,
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(Modifier.width(8.dp))
+            Text(
+                text = stringResource(
+                    R.string.sb_skip,
+                    stringResource(sponsorCategoryLabel(category))
+                )
+            )
+        }
+    }
 }

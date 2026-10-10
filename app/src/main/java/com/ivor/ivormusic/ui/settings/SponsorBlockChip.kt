@@ -4,7 +4,7 @@ import com.ivor.ivormusic.R
 import com.ivor.ivormusic.data.SponsorCategory
 
 /** The user-facing name of a category, shared with the settings page. */
-internal fun categoryLabel(category: SponsorCategory): Int = when (category) {
+internal fun sponsorCategoryLabel(category: SponsorCategory): Int = when (category) {
     SponsorCategory.SPONSOR -> R.string.sb_cat_sponsor
     SponsorCategory.SELF_PROMO -> R.string.sb_cat_selfpromo
     SponsorCategory.INTERACTION -> R.string.sb_cat_interaction
@@ -16,7 +16,7 @@ internal fun categoryLabel(category: SponsorCategory): Int = when (category) {
 }
 
 /** The one-line explanation of what a category actually covers. */
-internal fun categoryDescription(category: SponsorCategory): Int = when (category) {
+internal fun sponsorCategoryDescription(category: SponsorCategory): Int = when (category) {
     SponsorCategory.SPONSOR -> R.string.sb_cat_sponsor_sub
     SponsorCategory.SELF_PROMO -> R.string.sb_cat_selfpromo_sub
     SponsorCategory.INTERACTION -> R.string.sb_cat_interaction_sub

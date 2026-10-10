@@ -150,3 +150,17 @@ fun segmentAt(
     segments
         .filter { it.uuid !in ignored && it.contains(positionMs) }
         .maxByOrNull { it.endMs }
+
+/**
+ * One automatic skip, for the notice that offers to undo it.
+ *
+ * [seq] is the service's own counter and is part of the value on purpose: a
+ * notice is shown per skip, and two skips of the same category - or one
+ * segment skipped, undone, and met again - carry identical categories. With
+ * the category alone the second notice would be indistinguishable from a
+ * recomposition of the first and would never appear.
+ */
+data class SponsorSkipNotice(
+    val seq: Int,
+    val category: SponsorCategory
+)

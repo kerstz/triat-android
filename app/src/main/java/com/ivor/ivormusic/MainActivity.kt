@@ -3,6 +3,7 @@ package com.ivor.ivormusic
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.ui.components.hiddenFraction
 import com.ivor.ivormusic.ui.components.DismissibleSnackbarHost
+import com.ivor.ivormusic.ui.settings.sponsorCategoryLabel
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -946,6 +947,17 @@ fun MusicApp(
                 .padding(bottom = if (musicPillVisible) 96.dp else 16.dp)
         )
 
+        // "Skipped sponsor - Undo", from the same corner and for the same
+        // reason: the skip happens in the service while the listener may be
+        // anywhere in the app, so the notice cannot belong to a screen.
+        SponsorSkipNoticeHost(
+            playerViewModel = playerViewModel,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = if (musicPillVisible) 96.dp else 16.dp)
+        )
+
         // Offer to report the crash from the previous run. Read once per
         // composition of MusicApp (an activity recreation re-reads the file,
         // but either answer has deleted it by then). Only after onboarding -
@@ -997,6 +1009,44 @@ fun MusicApp(
             )
         }
     }
+}
+
+/**
+ * Shows "Skipped sponsor - Undo" after an automatic SponsorBlock skip.
+ *
+ * Keyed on the notice's sequence number rather than its category, because two
+ * skips of the same category - or one segment skipped, undone, and met again -
+ * carry identical categories, and keying on those would show the first notice
+ * and silently swallow every one after it.
+ *
+ * Nothing is shown when the user turned the notice off: the service then
+ * publishes no skip at all, which is also what stops the undo position being
+ * held for a control that does not exist.
+ */
+@Composable
+private fun SponsorSkipNoticeHost(
+    playerViewModel: PlayerViewModel,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val notice by playerViewModel.sponsorSkip.collectAsStateWithLifecycle()
+    val hostState = remember { SnackbarHostState() }
+
+    LaunchedEffect(notice?.seq) {
+        val current = notice ?: return@LaunchedEffect
+        val result = hostState.showSnackbar(
+            message = context.getString(
+                R.string.sb_skipped,
+                context.getString(sponsorCategoryLabel(current.category))
+            ),
+            actionLabel = context.getString(R.string.undo),
+            withDismissAction = false,
+            duration = SnackbarDuration.Short
+        )
+        if (result == SnackbarResult.ActionPerformed) playerViewModel.undoSponsorSkip()
+    }
+
+    DismissibleSnackbarHost(hostState = hostState, modifier = modifier)
 }
 
 /**
