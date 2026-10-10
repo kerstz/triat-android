@@ -50,6 +50,11 @@ import com.ivor.ivormusic.data.PlaybackSessionRepository
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.SongRepository
 import com.ivor.ivormusic.data.SongSource
+import com.ivor.ivormusic.data.SegmentAction
+import com.ivor.ivormusic.data.SponsorBlockRepository
+import com.ivor.ivormusic.data.SponsorSegment
+import com.ivor.ivormusic.data.activeCategories
+import com.ivor.ivormusic.data.segmentAt
 import com.ivor.ivormusic.data.StatsRepository
 import com.ivor.ivormusic.data.ThemePreferences
 import com.ivor.ivormusic.data.WaveformAnalyzer
@@ -241,6 +246,15 @@ class MusicService : MediaLibraryService() {
     companion object {
         private const val TAG = "MusicService"
         private const val PREFETCH_AHEAD_COUNT = 3
+
+        /**
+         * A YouTube video id, which is what a YouTube song's media id is.
+         *
+         * SponsorBlock only knows about videos, so this is the test for "there
+         * is something to ask about": a device file's id is a MediaStore row
+         * number and a SoundCloud track's is a URL, and neither shape matches.
+         */
+        private val YOUTUBE_VIDEO_ID = Regex("^[A-Za-z0-9_-]{11}$")
         private const val MAX_RESOLVED_URI_ENTRIES = 128
         private const val MAX_WARMED_IDS = 256
         // Covers the maintained NewPipe extraction and the direct InnerTube
@@ -537,6 +551,7 @@ class MusicService : MediaLibraryService() {
         fadeVolumeJob?.cancel()
         progressJob?.cancel()
         transitionJob?.cancel()
+        sponsorFetchJob?.cancel()
         headsetButtonJob?.cancel()
         headsetButtonSequence.clear()
         audioFocus.abandon()
@@ -767,6 +782,25 @@ class MusicService : MediaLibraryService() {
     private var lastFmTracker: LastFmPlaybackTracker? = null
     private var lastFmTrackerLoad: Job? = null
 
+    /* ---------------- SponsorBlock ---------------- */
+
+    private val sponsorBlockRepository = SponsorBlockRepository()
+
+    /** The track the segments in hand belong to, so a transition refetches. */
+    private var sponsorVideoId: String? = null
+    private var sponsorSegments: List<SponsorSegment> = emptyList()
+    private var sponsorFetchJob: Job? = null
+
+    /**
+     * Segments already skipped on this track, keyed by submission UUID.
+     *
+     * A skip lands on the segment's end, which the next 250ms sample can still
+     * read as inside it when the end is approximate - that fired a second seek
+     * and read as a stutter. The UUID survives a seek back into the same range
+     * too, which an index or a start time would not.
+     */
+    private val sponsorSkipped = mutableSetOf<String>()
+
     /**
      * Builds the repository off the main thread, then hands the tracker back
      * on it, since sampling reads the player. A failure is logged and not
@@ -786,6 +820,78 @@ class MusicService : MediaLibraryService() {
         }
     }
 
+    /**
+     * Fetches the segments for whatever is playing now, or clears them.
+     *
+     * A YouTube track is identified by its media id, which is the video id -
+     * including a downloaded one, whose segments are the same video's and are
+     * just as worth skipping offline. Device files and SoundCloud tracks have
+     * no video id to ask about, so they clear instead of fetching.
+     */
+    private fun refreshSponsorSegments(mediaItem: MediaItem?) {
+        sponsorFetchJob?.cancel()
+        val videoId = mediaItem?.mediaId
+            ?.takeIf { YOUTUBE_VIDEO_ID.matches(it) }
+        if (videoId == null) {
+            sponsorVideoId = null
+            sponsorSegments = emptyList()
+            sponsorSkipped.clear()
+            return
+        }
+        if (videoId == sponsorVideoId) return
+
+        sponsorVideoId = videoId
+        sponsorSegments = emptyList()
+        sponsorSkipped.clear()
+
+        if (!themePreferences.sponsorBlockEnabled.value) return
+        val categories = activeCategories(themePreferences.sponsorBlockActions.value)
+        if (categories.isEmpty()) return
+
+        sponsorFetchJob = serviceScope.launch {
+            val segments = sponsorBlockRepository.getSegments(videoId, categories)
+            // The track may have changed while the lookup was in flight; the
+            // id guard is what keeps one track's segments off another.
+            if (sponsorVideoId == videoId) {
+                sponsorSegments = segments
+                if (segments.isNotEmpty()) {
+                    KLog.d(TAG, "SponsorBlock: ${segments.size} segment(s) for $videoId")
+                }
+            }
+        }
+    }
+
+    /**
+     * Seeks past the segment under the playhead when its category says Skip.
+     *
+     * Rides the 250ms sample that already exists rather than adding a timer:
+     * a skip can land up to one tick late, which submitted segments' own
+     * padding absorbs. Manual is left alone here - the music player has no
+     * in-segment button to offer - so a category set to Manual behaves as
+     * Ignore until one exists.
+     */
+    private fun applySponsorBlock() {
+        val segments = sponsorSegments
+        if (segments.isEmpty() || !player.isPlaying) return
+
+        val position = player.currentPosition
+        val segment = segmentAt(segments, position, sponsorSkipped) ?: return
+        if (themePreferences.sponsorBlockActions.value[segment.category] != SegmentAction.SKIP) {
+            return
+        }
+        if (segment.durationMs < themePreferences.sponsorBlockMinDurationMs.value) return
+
+        sponsorSkipped += segment.uuid
+        val duration = player.duration
+        val target = if (duration > 0) {
+            segment.endMs.coerceAtMost(duration)
+        } else {
+            segment.endMs
+        }
+        KLog.d(TAG, "SponsorBlock: skipping ${segment.category.apiName} to ${target}ms")
+        player.seekTo(target)
+    }
+
     private fun observePreferences() {
         serviceScope.launch {
             while (isActive) {
@@ -798,8 +904,24 @@ class MusicService : MediaLibraryService() {
                     ) {
                         lastFmTrackerLoad = launch { loadLastFmTracker() }
                     }
+                    applySponsorBlock()
                 }
                 delay(250)
+            }
+        }
+        // Turning the feature on mid-track, or changing which categories act,
+        // has to reach the track already playing: the fetch is keyed by video
+        // id, so without this it would wait for the next transition.
+        serviceScope.launch {
+            themePreferences.sponsorBlockEnabled.drop(1).collect {
+                sponsorVideoId = null
+                refreshSponsorSegments(player.currentMediaItem)
+            }
+        }
+        serviceScope.launch {
+            themePreferences.sponsorBlockActions.drop(1).collect {
+                sponsorVideoId = null
+                refreshSponsorSegments(player.currentMediaItem)
             }
         }
         // These flows update live across ThemePreferences instances (the
@@ -964,6 +1086,11 @@ class MusicService : MediaLibraryService() {
                 validateAndPlayCurrentItem(mediaItem)
             }
 
+            // 2b. Segments belong to one video, so they are refetched here and
+            // nowhere else - this is the one callback every change of current
+            // item reaches.
+            refreshSponsorSegments(mediaItem)
+
             // 3. Robust Prefetching of FUTURE items
             prefetchUpcomingSongs()
 
@@ -985,6 +1112,10 @@ class MusicService : MediaLibraryService() {
                 refreshTrackGain(applyNow = true)
                 player.currentMediaItem?.let { maybeProfile(it, player.duration) }
                 prefetchUpcomingSongs()
+                // The first item of a restored session is in place before any
+                // transition fires, so this is where its segments are picked
+                // up; the video-id guard makes every later call a no-op.
+                refreshSponsorSegments(player.currentMediaItem)
             }
 
             // Android 16 Live Update: dismiss when playback ends or returns to idle so
