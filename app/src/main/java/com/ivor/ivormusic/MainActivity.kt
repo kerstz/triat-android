@@ -939,11 +939,10 @@ fun MusicApp(
         // Undo for "don't recommend", app-wide and last in the stack.
         //
         // One host for the whole app rather than one per screen: the action can
-        // be taken from the home grid, the subscriptions feed, search, the
-        // player's Up Next list and Shorts, and two of those are overlays
-        // drawn above the NavHost. A per-screen snackbar would be hidden behind
-        // the Shorts overlay exactly when it is needed most, and could show
-        // twice when a screen and an overlay are both alive.
+        // be taken from the home grid, search and the player's Up Next list,
+        // and the player is an overlay drawn above the NavHost. A per-screen
+        // snackbar could show twice when a screen and the overlay are both
+        // alive.
         NotInterestedUndoHost(
             modifier = Modifier
                 .align(Alignment.BottomCenter)

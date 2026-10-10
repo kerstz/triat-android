@@ -116,12 +116,6 @@ class ThemePreferences(context: Context) {
     private val _timedCommentsEnabled = MutableStateFlow(getTimedCommentsEnabledPreference())
     val timedCommentsEnabled: StateFlow<Boolean> = _timedCommentsEnabled.asStateFlow()
 
-    private val _shortsEnabled = MutableStateFlow(getShortsEnabledPreference())
-    val shortsEnabled: StateFlow<Boolean> = _shortsEnabled.asStateFlow()
-
-    private val _shortsHiddenActions = MutableStateFlow(getShortsHiddenActionsPreference())
-    val shortsHiddenActions: StateFlow<Set<String>> = _shortsHiddenActions.asStateFlow()
-
     private val _videoQualityWifi = MutableStateFlow(getVideoQualityWifiPreference())
     val videoQualityWifi: StateFlow<String> = _videoQualityWifi.asStateFlow()
 
@@ -136,7 +130,6 @@ class ThemePreferences(context: Context) {
     private val _captionTextColor = MutableStateFlow(getCaptionTextColorPreference())
 
     private val _captionBackground = MutableStateFlow(getCaptionBackgroundPreference())
-
 
 
     private val _musicQualityWifi = MutableStateFlow(getMusicQualityWifiPreference())
@@ -194,9 +187,6 @@ class ThemePreferences(context: Context) {
 
     private val _videoCacheEnabled = MutableStateFlow(getVideoCacheEnabledPreference())
     val videoCacheEnabled: StateFlow<Boolean> = _videoCacheEnabled.asStateFlow()
-
-    private val _shortsCacheEnabled = MutableStateFlow(getShortsCacheEnabledPreference())
-    val shortsCacheEnabled: StateFlow<Boolean> = _shortsCacheEnabled.asStateFlow()
 
     private val _playbackPreloadEnabled = MutableStateFlow(getPlaybackPreloadEnabledPreference())
     val playbackPreloadEnabled: StateFlow<Boolean> = _playbackPreloadEnabled.asStateFlow()
@@ -333,8 +323,6 @@ class ThemePreferences(context: Context) {
             KEY_LIVE_DOWNLOAD_UPDATES -> _liveDownloadUpdates.value = getLiveDownloadUpdatesPreference()
             KEY_LIVE_PLAYBACK_UPDATES -> _livePlaybackUpdates.value = getLivePlaybackUpdatesPreference()
             KEY_TIMED_COMMENTS_ENABLED -> _timedCommentsEnabled.value = getTimedCommentsEnabledPreference()
-            KEY_SHORTS_ENABLED -> _shortsEnabled.value = getShortsEnabledPreference()
-            KEY_SHORTS_HIDDEN_ACTIONS -> _shortsHiddenActions.value = getShortsHiddenActionsPreference()
             KEY_VIDEO_QUALITY_WIFI -> _videoQualityWifi.value = getVideoQualityWifiPreference()
             KEY_VIDEO_QUALITY_MOBILE -> _videoQualityMobile.value = getVideoQualityMobilePreference()
             KEY_PREFER_HDR -> _preferHdr.value = getPreferHdrPreference()
@@ -363,7 +351,6 @@ class ThemePreferences(context: Context) {
             KEY_EXCLUDED_FOLDERS -> _excludedFolders.value = getExcludedFoldersPreference()
             KEY_CACHE_ENABLED -> _cacheEnabled.value = getCacheEnabledPreference()
             KEY_VIDEO_CACHE_ENABLED -> _videoCacheEnabled.value = getVideoCacheEnabledPreference()
-            KEY_SHORTS_CACHE_ENABLED -> _shortsCacheEnabled.value = getShortsCacheEnabledPreference()
             KEY_PLAYBACK_PRELOAD_ENABLED -> _playbackPreloadEnabled.value = getPlaybackPreloadEnabledPreference()
             KEY_MAX_CACHE_SIZE_MB -> _maxCacheSizeMb.value = getMaxCacheSizeMbPreference()
             KEY_AUTO_LOAD_QUEUE -> _autoLoadQueue.value = getAutoLoadQueuePreference()
@@ -502,15 +489,7 @@ class ThemePreferences(context: Context) {
                 context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
                     .getBoolean(KEY_LIVE_PLAYBACK_UPDATES, false)
         private const val KEY_TIMED_COMMENTS_ENABLED = "timed_comments_enabled"
-        private const val KEY_SHORTS_ENABLED = "shorts_enabled"
-        private const val KEY_SHORTS_HIDDEN_ACTIONS = "shorts_hidden_actions"
 
-        /** Ids for the Shorts action-rail buttons that can be hidden. */
-        const val SHORTS_ACTION_LIKE = "like"
-        const val SHORTS_ACTION_DISLIKE = "dislike"
-        const val SHORTS_ACTION_COMMENTS = "comments"
-        const val SHORTS_ACTION_SHARE = "share"
-        const val SHORTS_ACTION_NOT_INTERESTED = "not_interested"
 
         /**
          * Legacy single video-quality key, superseded by the per-network pair
@@ -697,7 +676,6 @@ class ThemePreferences(context: Context) {
         private const val KEY_EXCLUDED_FOLDERS = "excluded_folders"
         private const val KEY_CACHE_ENABLED = "cache_enabled"
         private const val KEY_VIDEO_CACHE_ENABLED = "video_cache_enabled"
-        private const val KEY_SHORTS_CACHE_ENABLED = "shorts_cache_enabled"
         private const val KEY_PLAYBACK_PRELOAD_ENABLED = "playback_preload_enabled"
 
         /**
@@ -717,8 +695,6 @@ class ThemePreferences(context: Context) {
         fun isVideoCacheEnabled(context: Context): Boolean =
             switch(context, KEY_VIDEO_CACHE_ENABLED, true)
 
-        fun isShortsCacheEnabled(context: Context): Boolean =
-            switch(context, KEY_SHORTS_CACHE_ENABLED, true)
 
         fun isPlaybackPreloadEnabled(context: Context): Boolean =
             switch(context, KEY_PLAYBACK_PRELOAD_ENABLED, true)
@@ -1286,37 +1262,6 @@ class ThemePreferences(context: Context) {
         _livePlaybackUpdates.value = enabled && SUPPORTS_LIVE_UPDATES
     }
 
-    /**
-     * Get the stored Shorts experience preference. Locked to false (Music mode).
-     */
-    private fun getShortsEnabledPreference(): Boolean {
-        return false
-    }
-
-
-    /**
-     * Save the Home shelf / swipe-player preference and update the flow.
-     */
-    fun setShortsEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SHORTS_ENABLED, false).apply()
-        _shortsEnabled.value = false
-    }
-
-    /**
-     * Get the Shorts action buttons the user chose to hide (ids from
-     * SHORTS_ACTION_OPTIONS). Defaults to empty: all buttons visible.
-     */
-    private fun getShortsHiddenActionsPreference(): Set<String> {
-        return prefs.getStringSet(KEY_SHORTS_HIDDEN_ACTIONS, emptySet()) ?: emptySet()
-    }
-
-    /**
-     * Save which Shorts action buttons are hidden and update the flow.
-     */
-    fun setShortsHiddenActions(hidden: Set<String>) {
-        prefs.edit().putStringSet(KEY_SHORTS_HIDDEN_ACTIONS, hidden).apply()
-        _shortsHiddenActions.value = hidden
-    }
 
     /**
      * Get the stored timed comments preference. Defaults to false (off).
@@ -1397,12 +1342,6 @@ class ThemePreferences(context: Context) {
             ?: CaptionBackground.TRANSLUCENT
 
 
-
-
-
-
-
-
     // ---------------- Subscriptions ----------------
 
     private fun getSubscriptionSourcePreference(): String =
@@ -1439,7 +1378,6 @@ class ThemePreferences(context: Context) {
 
     /** Fresh read for ViewModels deciding at tap time. */
     fun currentSubscribeTarget(): String = getSubscribeTargetPreference()
-
 
 
     // ---------------- Bug reporting ----------------
@@ -1552,8 +1490,6 @@ class ThemePreferences(context: Context) {
     }
 
 
-
-
     /**
      * Save the interface scale and update the flow.
      *
@@ -1604,13 +1540,6 @@ class ThemePreferences(context: Context) {
         prefs.edit().putBoolean(KEY_PRIVATE_DOWNLOADS, enabled).apply()
         _privateDownloadsEnabled.value = enabled
     }
-
-
-
-
-
-
-
 
 
     /**
@@ -1695,12 +1624,6 @@ class ThemePreferences(context: Context) {
         _videoCacheEnabled.value = enabled
     }
 
-    private fun getShortsCacheEnabledPreference(): Boolean = prefs.getBoolean(KEY_SHORTS_CACHE_ENABLED, true)
-
-    fun setShortsCacheEnabled(enabled: Boolean) {
-        prefs.edit().putBoolean(KEY_SHORTS_CACHE_ENABLED, enabled).apply()
-        _shortsCacheEnabled.value = enabled
-    }
 
     private fun getPlaybackPreloadEnabledPreference(): Boolean = prefs.getBoolean(KEY_PLAYBACK_PRELOAD_ENABLED, true)
 
@@ -1824,9 +1747,6 @@ class ThemePreferences(context: Context) {
     fun setPlaybackShuffleSeed(seed: Long) {
         prefs.edit().putLong(KEY_PLAYBACK_SHUFFLE_SEED, seed).apply()
     }
-
-
-
 
 
     /**

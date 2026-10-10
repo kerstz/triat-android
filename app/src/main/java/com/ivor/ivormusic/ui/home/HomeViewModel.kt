@@ -120,7 +120,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     /**
      * What a shared playlist link points at, as the page that opens it needs to
      * describe itself. Null when the id has no page behind it - a generated
@@ -547,7 +546,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
 
 
-
     /**
      * Shorts shelf minus individually hidden Shorts.
      *
@@ -596,7 +594,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
 
 
-
     /**
      * The subscriptions feed, minus what the user asked not to see. A channel
      * block does apply here even though the user follows the channel: the two
@@ -605,19 +602,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
 
 
-
-
-
-
-
-
-
     // Notifications state
     private val _notifications = MutableStateFlow<List<com.ivor.ivormusic.data.NotificationItem>>(emptyList())
     val notifications: StateFlow<List<com.ivor.ivormusic.data.NotificationItem>> = _notifications.asStateFlow()
-
-
-
 
 
     /**
@@ -631,12 +618,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
      */
 
 
-
     /**
      * Keep or drop a playlist found in video mode. Returns the state after the
      * toggle, synchronous for the same reason [toggleSavedPlaylist] is.
      */
-
 
 
     // When each Home loader last reached the network successfully. HomeScreen
@@ -670,7 +655,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         // instance of the repository, whose cache this one cannot see.
         viewModelScope.reloadAfterEachSync(application) { playlistRepository.refreshPlaylists() }
     }
-
 
 
     /**
@@ -799,7 +783,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** The shuffled Home feed minus what the user asked not to see. */
 
 
-
     /** Pools already fetched this session, by channel id. Main-thread only. */
     private val mixPools = LinkedHashMap<String, com.ivor.ivormusic.data.ChannelMixPool>()
     private val mixShownIds = HashSet<String>()
@@ -862,7 +845,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
-
     /** Filter the feed by a group. Passing null clears the filter. */
 
 
@@ -905,16 +887,9 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     // ---------------- Subscription groups ----------------
 
 
-
-
-
     /** Wipes every local subscription and group. Account subscriptions survive. */
 
     /** Load the user's YouTube playlists for the video Library tab. Requires login. */
-
-
-
-
 
 
     /**
@@ -1489,9 +1464,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     /** Library and refresh request one page only, irrespective of account age. */
 
 
-
-
-
     /** Next page for the same query, date window and sort as the displayed list. */
 
 
@@ -1514,7 +1486,6 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             null
         }
     }
-
 
 
     // ============= PASTED YOUTUBE LINK RESOLUTION =============

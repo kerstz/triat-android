@@ -75,13 +75,3 @@ data class ChannelHeader(
             ?.let { "https://www.youtube.com/$it" }
             ?: "https://www.youtube.com/channel/$channelId"
 }
-
-
-
-
-
-
-
-
-
-

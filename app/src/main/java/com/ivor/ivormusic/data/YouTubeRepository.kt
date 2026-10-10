@@ -1498,7 +1498,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
     /**
      * Get personalized recommendations (Quick Picks / Home).
      * Uses Internal YTM API with Cookies for personalized content.
@@ -2912,7 +2911,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
     private fun extractVideoId(url: String): String {
         // Extract video ID from various YouTube URL formats
         val patterns = listOf(
@@ -3186,7 +3184,6 @@ class YouTubeRepository(private val context: Context) {
                 null
             }
         }
-
 
 
     /**
@@ -3622,50 +3619,6 @@ class YouTubeRepository(private val context: Context) {
     // API July 2026.
     // ============================================================
 
-
-
-
-
-    /**
-     * shortsLockupViewModel: videoId + sequenceParams live in
-     * onTap.innertubeCommand.reelWatchEndpoint, title/views in
-     * overlayMetadata.primaryText/secondaryText, portrait thumbnail in the
-     * reelWatchEndpoint (1080x1920 frame0).
-     */
-    private fun parseShortsLockup(lockup: org.json.JSONObject): ShortsItem? {
-        return try {
-            val reel = lockup.optJSONObject("onTap")
-                ?.optJSONObject("innertubeCommand")
-                ?.optJSONObject("reelWatchEndpoint") ?: return null
-            val base = parseReelWatchEndpoint(reel) ?: return null
-
-            val overlay = lockup.optJSONObject("overlayMetadata")
-            val title = overlay?.optJSONObject("primaryText")?.optString("content")
-                ?.takeIf { it.isNotBlank() } ?: ""
-            val viewCount = overlay?.optJSONObject("secondaryText")?.optString("content")
-                ?.takeIf { it.isNotBlank() } ?: ""
-
-            // Prefer the lockup's own thumbnailViewModel (sized variants) over
-            // the reel endpoint's single 1080x1920 frame
-            val sources = lockup.optJSONObject("thumbnailViewModel")
-                ?.optJSONObject("image")?.optJSONArray("sources")
-            val lockupThumb = sources?.optJSONObject(sources.length() - 1)
-                ?.optString("url")?.takeIf { it.isNotBlank() }
-
-            base.copy(
-                title = title,
-                viewCount = viewCount,
-                thumbnailUrl = lockupThumb ?: base.thumbnailUrl
-            )
-        } catch (e: Exception) {
-            KLog.w("YouTubeRepo", "parseShortsLockup failed", e)
-            null
-        }
-    }
-
-    /** reelWatchEndpoint: videoId, portrait thumbnail and sequence seed. */
-    private fun parseReelWatchEndpoint(reel: org.json.JSONObject): ShortsItem? =
-        parseShortsEndpoint(reel)
 
     // ============================================================
     // Video library (www.youtube.com): user playlists, Watch Later,
@@ -5501,7 +5454,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
     /**
      * Turn one addChatItemAction item into a [LiveChatMessage].
      *
@@ -5778,7 +5730,6 @@ class YouTubeRepository(private val context: Context) {
             emptyList()
         }
     }
-
 
 
     private fun cacheCaptionTracks(videoId: String, tracks: List<CaptionTrack>) {
@@ -6128,9 +6079,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
-
-
     /**
      * Subscribe to / unsubscribe from a channel. Requires login and a
      * canonical UC... channelId (from getVideoEngagement).
@@ -6398,15 +6346,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
-
-
-
-
-
-
-
-
     /**
      * All channels the user is subscribed to, from the FEchannels browse
      * feed (channelRenderer items), following continuations. Requires login.
@@ -6509,7 +6448,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
     // ============================================================
     // The channel page. Verified against live responses, signed out,
     // August 2026.
@@ -6566,9 +6504,6 @@ class YouTubeRepository(private val context: Context) {
             null
         }
     }
-
-
-
 
 
     /**
@@ -6742,14 +6677,6 @@ class YouTubeRepository(private val context: Context) {
     }
 
 
-
-
-
-
-
-
-
-
     /**
      * A legacy `{runs: [...]}` text object as [RichText], keeping the links.
      *
@@ -6789,8 +6716,6 @@ class YouTubeRepository(private val context: Context) {
             ?.let { return RichLinkTarget.Browse(it) }
         return null
     }
-
-
 
 
     private inline fun <T, R : Any> List<T>.lastNotNullOfOrNull(transform: (T) -> R?): R? {
@@ -7227,7 +7152,6 @@ class YouTubeRepository(private val context: Context) {
             // keeping a dormant one's year-old video.
             .take(maxTotal)
     }
-
 
 
     /**

@@ -48,8 +48,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     val liveDownloadUpdates: StateFlow<Boolean> = themePreferences.liveDownloadUpdates
     val livePlaybackUpdates: StateFlow<Boolean> = themePreferences.livePlaybackUpdates
     val timedCommentsEnabled: StateFlow<Boolean> = themePreferences.timedCommentsEnabled
-    val shortsEnabled: StateFlow<Boolean> = themePreferences.shortsEnabled
-    val shortsHiddenActions: StateFlow<Set<String>> = themePreferences.shortsHiddenActions
     val videoQualityWifi: StateFlow<String> = themePreferences.videoQualityWifi
     val videoQualityMobile: StateFlow<String> = themePreferences.videoQualityMobile
     val preferHdr: StateFlow<Boolean> = themePreferences.preferHdr
@@ -75,7 +73,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
     // Cache & Crossfade
     val cacheEnabled: StateFlow<Boolean> = themePreferences.cacheEnabled
     val videoCacheEnabled: StateFlow<Boolean> = themePreferences.videoCacheEnabled
-    val shortsCacheEnabled: StateFlow<Boolean> = themePreferences.shortsCacheEnabled
     val playbackPreloadEnabled: StateFlow<Boolean> = themePreferences.playbackPreloadEnabled
     val maxCacheSizeMb: StateFlow<Long> = themePreferences.maxCacheSizeMb
 
@@ -207,13 +204,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setTimedCommentsEnabled(enabled)
     }
 
-    fun setShortsEnabled(enabled: Boolean) {
-        themePreferences.setShortsEnabled(enabled)
-    }
-
-    fun setShortsHiddenActions(hidden: Set<String>) {
-        themePreferences.setShortsHiddenActions(hidden)
-    }
 
     fun setVideoQualityWifi(quality: String) {
         themePreferences.setVideoQualityWifi(quality)
@@ -303,9 +293,6 @@ class ThemeViewModel(application: Application) : AndroidViewModel(application) {
         themePreferences.setVideoCacheEnabled(enabled)
     }
 
-    fun setShortsCacheEnabled(enabled: Boolean) {
-        themePreferences.setShortsCacheEnabled(enabled)
-    }
 
     fun setPlaybackPreloadEnabled(enabled: Boolean) {
         themePreferences.setPlaybackPreloadEnabled(enabled)
