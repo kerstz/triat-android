@@ -439,34 +439,6 @@ class RecommendationEngine(
     }
 
     /**
-     * Keeps the ranking but lets no artist hold more than [max] places.
-     *
-     * A straight sort hands the whole top of the feed to whichever artist the
-     * graph liked most, and a screen of one artist is a screen that has
-     * discovered one artist. Overflow is not dropped - it falls to the end,
-     * where it is still reachable by scrolling.
-     */
-    private fun capPerArtist(
-        items: List<TasteGraph.Recommendation>,
-        max: Int
-    ): List<TasteGraph.Recommendation> {
-        val counts = HashMap<String, Int>()
-        val kept = mutableListOf<TasteGraph.Recommendation>()
-        val overflow = mutableListOf<TasteGraph.Recommendation>()
-        for (item in items) {
-            val key = item.viaArtist.lowercase()
-            val seen = counts.getOrDefault(key, 0)
-            if (seen < max) {
-                counts[key] = seen + 1
-                kept += item
-            } else {
-                overflow += item
-            }
-        }
-        return kept + overflow
-    }
-
-    /**
      * Albums, playlists and artists to discover, for the shelves under the
      * songs on Spotlight's "For you" tab.
      *
@@ -584,4 +556,35 @@ class RecommendationEngine(
         }
         return out
     }
+}
+
+/**
+ * Keeps the ranking but lets no artist hold more than [max] places.
+ *
+ * A straight sort hands the whole top of the feed to whichever artist the
+ * graph liked most, and a screen of one artist is a screen that has discovered
+ * one artist. Overflow is not dropped - it falls to the end, where it is still
+ * reachable by scrolling, because the alternative is a refresh that loses
+ * tracks the listener was about to reach.
+ *
+ * Outside the class, and free of Android, so the rule can be unit-tested.
+ */
+internal fun capPerArtist(
+    items: List<TasteGraph.Recommendation>,
+    max: Int
+): List<TasteGraph.Recommendation> {
+    val counts = HashMap<String, Int>()
+    val kept = mutableListOf<TasteGraph.Recommendation>()
+    val overflow = mutableListOf<TasteGraph.Recommendation>()
+    for (item in items) {
+        val key = item.viaArtist.lowercase()
+        val seen = counts.getOrDefault(key, 0)
+        if (seen < max) {
+            counts[key] = seen + 1
+            kept += item
+        } else {
+            overflow += item
+        }
+    }
+    return kept + overflow
 }

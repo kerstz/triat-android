@@ -70,13 +70,8 @@ class TasteSignals(context: Context) {
      * a song rejected two months ago is offered again rather than blacklisted
      * for life. Taste changes; a store that never forgets would not let it.
      */
-    fun penaltyFor(skip: Skip?, nowMs: Long = System.currentTimeMillis()): Double {
-        if (skip == null) return 0.0
-        val ageDays = (nowMs - skip.lastAtMs).coerceAtLeast(0L) / MS_PER_DAY
-        val decay = 0.5.pow(ageDays / SKIP_HALF_LIFE_DAYS)
-        val strength = (skip.count.toDouble() / SKIPS_TO_SUPPRESS).coerceAtMost(1.0)
-        return strength * decay
-    }
+    fun penaltyFor(skip: Skip?, nowMs: Long = System.currentTimeMillis()): Double =
+        skipPenalty(skip, nowMs)
 
     /**
      * Artists whose tracks keep being skipped, with their penalties summed.
@@ -85,14 +80,10 @@ class TasteSignals(context: Context) {
      * plays: skipping three tracks by an artist you listen to daily says those
      * tracks were wrong, not the artist.
      */
-    fun artistPenalties(skips: Collection<Skip>, nowMs: Long = System.currentTimeMillis()): Map<String, Double> {
-        val out = HashMap<String, Double>()
-        for (skip in skips) {
-            if (skip.artist.isBlank()) continue
-            out.merge(skip.artist.lowercase(), penaltyFor(skip, nowMs), Double::plus)
-        }
-        return out
-    }
+    fun artistPenalties(
+        skips: Collection<Skip>,
+        nowMs: Long = System.currentTimeMillis()
+    ): Map<String, Double> = artistSkipPenalties(skips, nowMs)
 
     private fun readSkips(): Map<String, Skip> {
         val raw = prefs.getStringSet(KEY_SKIPS, emptySet()) ?: emptySet()
@@ -125,14 +116,6 @@ class TasteSignals(context: Context) {
         /** Bounded: the oldest skips are the ones already decayed to nothing. */
         private const val MAX_ENTRIES = 400
 
-        /** Skips needed before a track is suppressed outright. */
-        private const val SKIPS_TO_SUPPRESS = 3.0
-
-        /** Longer than the play half-life: a rejection ages out, slowly. */
-        private const val SKIP_HALF_LIFE_DAYS = 45.0
-
-        private const val MS_PER_DAY = 86_400_000.0
-
         /**
          * A track dropped inside this window was not given a chance, so the
          * turn away is about the music rather than about the listening.
@@ -144,3 +127,42 @@ class TasteSignals(context: Context) {
         const val SKIP_WINDOW_MS = 15_000L
     }
 }
+
+/**
+ * How much a track's score should be cut, from 0 (untouched) to 1 (gone).
+ *
+ * Free of Android so the curve can be unit-tested: it is the one piece of
+ * this store with a shape worth arguing about, and an off-by-one in the decay
+ * is invisible at a glance and silently wrong for months. Same reason
+ * `captionTextScaleFromStored` and the encode/decode helpers sit outside the
+ * classes that use them.
+ */
+internal fun skipPenalty(
+    skip: TasteSignals.Skip?,
+    nowMs: Long = System.currentTimeMillis()
+): Double {
+    if (skip == null) return 0.0
+    val ageDays = (nowMs - skip.lastAtMs).coerceAtLeast(0L) / 86_400_000.0
+    val decay = 0.5.pow(ageDays / SKIP_HALF_LIFE_DAYS)
+    val strength = (skip.count.toDouble() / SKIPS_TO_SUPPRESS).coerceAtMost(1.0)
+    return strength * decay
+}
+
+/** [skipPenalty] summed per artist, for damping a suggested neighbour. */
+internal fun artistSkipPenalties(
+    skips: Collection<TasteSignals.Skip>,
+    nowMs: Long = System.currentTimeMillis()
+): Map<String, Double> {
+    val out = HashMap<String, Double>()
+    for (skip in skips) {
+        if (skip.artist.isBlank()) continue
+        out.merge(skip.artist.lowercase(), skipPenalty(skip, nowMs), Double::plus)
+    }
+    return out
+}
+
+/** Skips needed before a track is suppressed outright. */
+internal const val SKIPS_TO_SUPPRESS = 3.0
+
+/** Longer than the play half-life: a rejection ages out, slowly. */
+internal const val SKIP_HALF_LIFE_DAYS = 45.0
