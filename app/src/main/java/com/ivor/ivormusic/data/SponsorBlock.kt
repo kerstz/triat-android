@@ -53,7 +53,11 @@ enum class SponsorCategory(
     INTRO("intro", SegmentAction.IGNORE, Color(0xFF00FFFF)),
     OUTRO("outro", SegmentAction.IGNORE, Color(0xFF0202ED)),
     PREVIEW("preview", SegmentAction.IGNORE, Color(0xFF008FD6)),
-    MUSIC_OFFTOPIC("music_offtopic", SegmentAction.IGNORE, Color(0xFFFF9900)),
+    // Skipped by default, unlike upstream: this is the non-music stretch of a
+    // music video - the spoken intro, the skit before the song - and in a
+    // player that only plays music it is the one category every listener wants
+    // gone. Koda left it off because it also played video.
+    MUSIC_OFFTOPIC("music_offtopic", SegmentAction.SKIP, Color(0xFFFF9900)),
     FILLER("filler", SegmentAction.IGNORE, Color(0xFF7300FF));
 
     companion object {
