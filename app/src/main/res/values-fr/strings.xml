@@ -419,8 +419,8 @@
     <string name="sp_display_size">Taille d\'affichage</string>
     <string name="sb_title">SponsorBlock</string>
     <string name="sp_because_you_play">Parce que tu écoutes %1$s</string>
-    <string name="sb_skipped">%1$s ignoré</string>
-    <string name="sb_skip">Ignorer : %1$s</string>
+    <string name="sb_skipped">%1$s passé</string>
+    <string name="sb_skip">Passer : %1$s</string>
     <string name="sb_enable">Activer SponsorBlock</string>
     <string name="sb_enable_sub">Rechercher les segments signalés par la communauté pour les titres que tu écoutes</string>
     <string name="sb_privacy_note">Triat n\'envoie jamais l\'identifiant du titre. Il envoie les quatre premiers caractères de son hash et retrouve ton titre localement parmi les résultats, donc sponsor.ajay.app ne peut pas savoir ce que tu écoutes.</string>
@@ -436,7 +436,7 @@
     <string name="sb_min_duration_off">Ignorer les segments quelle que soit leur durée</string>
     <string name="sb_min_duration_value">Ignorer tout ce qui dure moins de %1$.1f s</string>
     <string name="sb_reset_categories">Rétablir les catégories par défaut</string>
-    <string name="sb_action_skip">Ignorer</string>
+    <string name="sb_action_skip">Passer</string>
     <string name="sb_action_manual">Demander</string>
     <string name="sb_action_ignore">Désactivé</string>
     <string name="sb_cat_sponsor">sponsor</string>
