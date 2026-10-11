@@ -873,16 +873,10 @@ private fun SpotlightArtistRail(
                     overflow = TextOverflow.Ellipsis,
                     textAlign = TextAlign.Center,
                 )
-                artist.subscriberCount?.takeIf { it.isNotBlank() }?.let { subscribers ->
-                    Text(
-                        text = subscribers,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis,
-                        textAlign = TextAlign.Center,
-                    )
-                }
+                // No second line. The count under the name is whatever string
+                // YouTube sent - "1.4K views" on a French device, and a view
+                // count on an artist is not a fact about the artist. The name
+                // is the whole answer this card owes.
             }
         }
     }

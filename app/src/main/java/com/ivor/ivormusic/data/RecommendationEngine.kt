@@ -4,6 +4,8 @@ import android.content.Context
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import kotlin.math.pow
 
@@ -29,6 +31,19 @@ class RecommendationEngine(
     private val playlistRepository = PlaylistRepository(context)
     private val tasteSignals = TasteSignals(context)
     private val tasteGraph = TasteGraph(context, youTubeRepository)
+
+    /**
+     * The last neighbour round, kept for [NEIGHBOUR_TTL_MS].
+     *
+     * The "For you" tab asks the graph twice on one load - once for the songs
+     * and once for the artists shelf - and a neighbour round is a browse per
+     * seed artist. Without this, opening the tab doubles the request budget to
+     * answer the same question twice in the same second, which is exactly the
+     * fan-out the rate limiter arms on.
+     */
+    private val neighbourCacheLock = Mutex()
+    private var cachedNeighbours: List<TasteGraph.Neighbour> = emptyList()
+    private var cachedNeighboursAt = 0L
 
     data class TasteProfile(
         /** Artist names ranked by recency-weighted listening, best first. */
@@ -80,6 +95,15 @@ class RecommendationEngine(
         private const val COLD_START_ALBUMS = "new album releases"
         private const val COLD_START_PLAYLISTS = "top hits playlist"
         private const val COLD_START_ARTISTS = "popular artists"
+
+        /**
+         * How long one neighbour round answers for.
+         *
+         * Long enough that the songs and the artists shelf of a single tab
+         * load share it, short enough that a session spent liking new artists
+         * is not stuck with the graph it had on launch.
+         */
+        private const val NEIGHBOUR_TTL_MS = 10 * 60 * 1000L
 
         /** Graph neighbours taken in rank order, then at random from the tail. */
         private const val GRAPH_EXPLOIT_ARTISTS = 6
@@ -405,16 +429,7 @@ class RecommendationEngine(
 
         // Round one of the graph: who sits next to the artists being played.
         // Awaited before round two because round two asks about the answers.
-        // One played track per seed artist, so the graph can ask that track
-        // who its artist is rather than searching for the name and landing on
-        // a channel.
-        val tracksByArtist = profile.topSongs.associateBy(
-            { musicArtistOf(it.title, it.artist) },
-            { it.songId },
-        )
-        val neighbours = runCatching {
-            tasteGraph.neighbours(profile.artistAffinity, seedTracks = tracksByArtist)
-        }.getOrDefault(emptyList())
+        val neighbours = neighboursOf(profile)
 
         // Most of the budget on the best neighbours, the rest on a random pick
         // from the tail - exploration, not noise: every one of them was still
@@ -472,6 +487,37 @@ class RecommendationEngine(
     }
 
     /**
+     * The graph's neighbours for [profile], from the cache when it is warm.
+     *
+     * One played track per seed artist travels with the ask, so the graph can
+     * read the artist off that track's music metadata rather than searching
+     * for the name and landing on a channel of the same name.
+     */
+    private suspend fun neighboursOf(profile: TasteProfile): List<TasteGraph.Neighbour> =
+        neighbourCacheLock.withLock {
+            val now = System.currentTimeMillis()
+            val fresh = cachedNeighbours.isNotEmpty() &&
+                now - cachedNeighboursAt < NEIGHBOUR_TTL_MS
+            if (fresh) return@withLock cachedNeighbours
+
+            val tracksByArtist = profile.topSongs.associateBy(
+                { musicArtistOf(it.title, it.artist) },
+                { it.songId },
+            )
+            val fetched = runCatching {
+                tasteGraph.neighbours(profile.artistAffinity, seedTracks = tracksByArtist)
+            }.getOrDefault(emptyList())
+            // An empty round is not cached: it is usually a refused request or
+            // a cold profile, and holding it would keep the tab barren for the
+            // whole window.
+            if (fetched.isNotEmpty()) {
+                cachedNeighbours = fetched
+                cachedNeighboursAt = now
+            }
+            fetched
+        }
+
+    /**
      * Albums, playlists and artists to discover, for the shelves under the
      * songs on Spotlight's "For you" tab.
      *
@@ -480,10 +526,19 @@ class RecommendationEngine(
      * catalogue, which is most of how people actually find music. These three
      * shelves are that, built from the same taste profile the song half uses.
      *
-     * Every query is an ordinary search, deliberately. There is no probed
-     * browse id for "new music" in this codebase, and inventing one is writing
-     * a request from memory - so this reaches for the endpoint that is already
-     * verified rather than the one that would be tidier.
+     * The album and playlist queries are ordinary searches, deliberately.
+     * There is no probed browse id for "new music" in this codebase, and
+     * inventing one is writing a request from memory - so this reaches for the
+     * endpoint that is already verified rather than the one that would be
+     * tidier.
+     *
+     * The artists shelf does not: it reads the graph. [verified on device,
+     * October 2026] Searching for the seed artist's own name answers with the
+     * channels sharing that name - a listener playing "Inkognito" was offered
+     * "Inkognito Popara" and "Inkognito kvartet" - which is their own rotation
+     * spelled differently, not a discovery. The graph's neighbours are artists
+     * YouTube's own "fans might also like" shelf put next to them. The search
+     * stays as the fallback for a cold or offline profile.
      *
      * Each shelf is independent and each is wrapped in its own runCatching: one
      * refused search costs its own shelf and not the other two, which is what
@@ -515,13 +570,23 @@ class RecommendationEngine(
                 async { searchOrEmpty { youTubeRepository.searchPlaylists("$seed playlist") } }
             }
         }
-        val artistJobs = if (querySeeds.isEmpty()) {
-            listOf(async { searchArtistsOrEmpty(COLD_START_ARTISTS) })
-        } else {
-            querySeeds.map { seed -> async { searchArtistsOrEmpty(seed) } }
-        }
+        val neighbourJob = async { neighboursOf(profile) }
 
         val excludedNames = excludeArtistNames.map { it.lowercase() }.toSet()
+        // The listener's own artists, so a neighbour that is already in heavy
+        // rotation cannot be offered as somebody new.
+        val ownNames = profile.topArtists.map { it.lowercase() }.toSet()
+
+        val neighbours = neighbourJob.await()
+        val graphArtists = neighbours.map {
+            ArtistItem(id = it.artistId, name = it.name, thumbnailUrl = it.thumbnailUrl)
+        }
+        val artists = graphArtists.ifEmpty {
+            // Cold or offline: the search is all there is. Its results are the
+            // weaker answer, not the preferred one.
+            val fallbackSeed = querySeeds.firstOrNull() ?: COLD_START_ARTISTS
+            searchArtistsOrEmpty(fallbackSeed)
+        }
 
         DiscoveryCollections(
             albums = mergeCollections(albumJobs.map { it.await() }, excludeCollectionIds, limitPerShelf),
@@ -530,8 +595,13 @@ class RecommendationEngine(
                 excludeCollectionIds,
                 limitPerShelf
             ),
-            artists = interleaveBy(artistJobs.map { it.await() }) { it.id }
-                .filter { it.name.isNotBlank() && it.name.lowercase() !in excludedNames }
+            artists = artists
+                .distinctBy { it.id }
+                .filter {
+                    it.name.isNotBlank() &&
+                        it.name.lowercase() !in excludedNames &&
+                        it.name.lowercase() !in ownNames
+                }
                 .take(limitPerShelf)
         )
     }
