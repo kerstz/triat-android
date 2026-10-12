@@ -109,8 +109,9 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
 
     /**
      * Asks whatever listens at [host]:[port] who it is (`GET /v1/hello`). Null
-     * when the host is refused, does not answer, or is not a Triat desktop of
-     * this protocol version. Used by the manual `ip:port` entry.
+     * when the host is refused, does not answer, or is not a Triat desktop. A
+     * desktop of another protocol version is returned, with its `version`.
+     * Used by the manual `ip:port` entry.
      */
     suspend fun hello(host: String, port: Int): FoundDesktop? = withContext(Dispatchers.IO) {
         if (!isPrivateHost(host) || port !in PORTS) return@withContext null
@@ -385,10 +386,16 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         /** The desktop's `/v1/hello` answer as a [FoundDesktop], or null when it is not one. */
         internal fun parseHello(body: ByteArray, host: String, port: Int): FoundDesktop? {
             val o = parseObject(body) ?: return null
-            if (text(o, "app") != "triat" || o.optInt("v", 0) != SyncWire.VERSION) return null
+            if (text(o, "app") != "triat" || !o.has("v")) return null
             val serverId = text(o, "server_id").trim()
             if (serverId.isEmpty()) return null
-            return FoundDesktop(serverId, text(o, "name").trim().ifEmpty { host }, host, port)
+            // A version other than ours is still a Triat desktop: reported as
+            // such (FoundDesktop.version) so the UI says "incompatible".
+            val now = if (o.has("now")) o.optLong("now", 0L).takeIf { it > 0 } else null
+            return FoundDesktop(
+                serverId, text(o, "name").trim().ifEmpty { host }, host, port,
+                version = o.optInt("v", 0), serverNow = now,
+            )
         }
 
         internal class PairOffer(val serverId: String, val name: String, val pub: ByteArray)

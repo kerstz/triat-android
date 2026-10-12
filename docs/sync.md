@@ -13,6 +13,8 @@ The desktop side lives in the Triat desktop repository (`triat/core/sync.py`, `t
 ### 1.1 Discovery
 - mDNS / DNS-SD, service type **`_triat._tcp`**. TXT properties: `v` (version, "1"), `name` (for example "Triat - host-name"), `id` (the desktop's identifier, hex).
 - Default port **47823** (it may differ if that one is taken: use the port from the announcement).
+- A desktop announces every private IPv4 it has (Docker, VPN, link-local ones included). The phone keeps IPv4 only (the server binds IPv4) and prefers RFC1918 (10/8, 172.16/12, 192.168/16) over any other (`DesktopDiscovery.pickHost`).
+- A TXT `v` other than `SyncWire.VERSION` is listed with that `version`; pairing it answers "incompatible" rather than hiding it.
 - Fallback: manual entry of `ip:port`.
 
 ### 1.2 HTTP endpoints
@@ -20,15 +22,19 @@ Everything is plain HTTP on the local network.
 
 | Method | Path | Body sent | Response |
 |---|---|---|---|
-| GET | `/v1/hello` | none | JSON `{"app":"triat","v":1,"server_id":..,"name":..,"pairing":bool}` |
+| GET | `/v1/hello` | none | JSON `{"app":"triat","v":1,"server_id":..,"name":..,"pairing":bool,"now":<epoch ms>}` (`now` may be absent) |
 | POST | `/v1/pair/start` | JSON `{"device_id":str,"name":str,"pub":b64}` | 200 `{"server_id","name","pub":b64}`; 409 if no code is displayed |
 | POST | `/v1/pair/finish` | JSON `{"device_id":str,"confirm":b64}` | 200 `{"confirm":b64}`; 403 wrong code; 409 closed |
-| POST | `/v1/sync` | sealed binary, header `X-Triat-Device: <device_id>` | 200 sealed binary; 401 unknown or tampered; 400 version |
+| POST | `/v1/sync` | sealed binary, header `X-Triat-Device: <device_id>` | 200 sealed binary; 401 unknown or tampered; 400 version; 500 server error |
+
+- Errors carry a small JSON body (`{"error": ...}`), including 401 for an unknown device and 500 for a server fault: the socket is no longer dropped. The phone keys on the status only (401 -> pair again, 400 -> version, 500 -> server), never on the body, so a body it cannot read changes nothing.
 
 - `b64` is standard Base64 (with `=`). `pub` is an uncompressed P-256 point (65 bytes, starting with 0x04), that is `SyncCrypto.encodePublic`.
 - `device_id` is a random string, stable per phone (a UUID), at most 64 characters.
 
 ### 1.3 Pairing
+The QR code is `triat://pair?host=A&host=B&port=P&code=C&id=S`. `host` may be repeated: the first is the desktop's default-route address, the others its other private LAN addresses. `parsePairingUri` keeps those that pass `isPrivateHost` (in order) and fails only when none does. `pairWith` asks each in turn (`/v1/hello`) and takes the first answer whose `server_id` equals `id`, then falls back to an mDNS result with the same id; a desktop that answers with another id is "unverified" (`SyncProblem.UNVERIFIED`), none at all is "not found".
+
 1. The user taps "Pair a phone" on the desktop. The desktop displays an 8-character code (alphabet `ABCDEFGHJKMNPQRSTUVWXYZ23456789`), valid for 120 s, 5 attempts.
 2. Phone: `kp = SyncCrypto.newKeyPair()`, then POST `/v1/pair/start`.
 3. Phone: `key = SyncCrypto.deriveKey(kp.private, unb64(desktop_pub), code)` and `tr = SyncCrypto.transcript(deviceId, phonePub, desktopPub)`, then POST `/v1/pair/finish` with `confirm = b64(SyncCrypto.confirmation(key, "client", tr))`.
@@ -50,9 +56,12 @@ TRACK = {"id": "<videoId, 11 chars>", "title": "...", "artist": "...",
          "duration": 183.0, "thumb": "https://..." or null}
 ```
 
+- The response may also contain `"now"` (the desktop's epoch milliseconds). When it differs from the phone's clock by more than 120 s, the sync still applies but ends with `ERROR_CLOCK` (`clockProblem`, `SyncProblem.CLOCK`): last-writer-wins on skewed clocks picks the wrong side and the phone drops plays dated in its future.
 - The response may also contain `"cookies": "<Cookie header>"` if the user enabled sharing on the desktop.
 - A deleted playlist is `"deleted": true, "tracks": []`, with `updated` set to the deletion date. A removed like is `"liked": false, "track": null`.
 - **Only YouTube tracks** (11-character ids) are synchronized. The phone's local songs (`SongSource.LOCAL`) are excluded.
+- A deletion received from the desktop keeps the author's date: `unlikeSongAt(id, at)` records the tombstone with `at`, never now, so an edit made elsewhere in between still beats it (`ApplyPlan.likesToRemove` carries `(id, at)`).
+- A desktop copy of a playlist never holds the phone's local songs; `applySynced` puts them back at their old index, clamped (`SyncWire.mergeLocalSongs`).
 - Merge rules (applied by the desktop; the phone applies the result): the most recent playlist wins (deletion included), the most recent like wins, history is the union deduplicated to the second, capped at the 3000 most recent entries.
 
 ## Files
@@ -84,7 +93,8 @@ The decision lives in `AutoSyncPolicy.kt`, apart from everything Android so it c
 
 - `NsdManager` resolves one service at a time on older Android, so resolutions are queued.
 - Cleartext HTTP is allowed app-wide (`network_security_config.xml`), so `DesktopSyncClient` refuses any host that is not private (`isPrivateHost`), and every payload is sealed by `SyncCrypto`.
-- `unlikeSong` writes a tombstone on purpose: without it the desktop would hand the like back.
+- `unlikeSong` writes a tombstone on purpose: without it the desktop would hand the like back. One that comes from the desktop uses `unlikeSongAt` so the tombstone keeps the author's date; a tombstone dated now is sent back to every device and beats a newer like.
+- `SyncTombstones.record`/`clear` read-modify-write one preference string from several instances: they share one process-wide lock.
 - The desktop does the merge; the phone sends a full snapshot and applies what comes back. Never change the protocol on one side only.
 - Only YouTube tracks (11-character ids) travel. Local songs never do.
 - In incognito the history is not sent; playlists and likes still are.
@@ -94,13 +104,13 @@ The decision lives in `AutoSyncPolicy.kt`, apart from everything Android so it c
 ## Tests
 
 - `sync/AutoSyncPolicyTest.kt`: the automatic sync's decision, on a clock the test moves by hand.
-- `sync/DesktopDiscoveryTest.kt`: TXT decoding and address choice (IPv4 over IPv6, no loopback).
+- `sync/DesktopDiscoveryTest.kt`: TXT decoding and address choice (RFC1918 over other IPv4, no IPv6, no loopback), TXT version.
 - `sync/DesktopSyncClientTest.kt`: the HTTP client against a simulated desktop with the real `SyncCrypto`, and the private-host guard.
 - `sync/DesktopSyncRepositoryTest.kt`: the pure decisions of the repository, on invented data.
 - `sync/SyncCryptoTest.kt`: interop vectors produced by the desktop; a failure means the two sides no longer understand each other.
 - `sync/SyncRefreshTest.kt`: which state changes count as a finished sync (`finishedSyncs`).
 - `sync/SyncStoreTest.kt`: the saved pairing, the device id, forgetting and damaged records.
-- `sync/SyncWireTest.kt`: the wire format, the snapshot and the plan applied from a merged state, on invented data.
+- `sync/SyncWireTest.kt`: the wire format, the snapshot, the plan applied from a merged state and `mergeLocalSongs`, on invented data.
 - `ui/settings/DesktopSyncSettingsTest.kt`: what the code field keeps, how a typed address is read, how old a sync is called, which message each failure gets.
 
 ## E1 manual check

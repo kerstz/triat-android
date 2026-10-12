@@ -1282,6 +1282,7 @@
     <string name="ds_error_bad_address">Enter the address of a computer on your local network, like 192.168.1.20:47823. Addresses on the internet are refused.</string>
     <string name="ds_error_not_triat">The device at this address didn\'t answer like Triat. Make sure Triat is up to date on both sides.</string>
     <string name="ds_error_unverified">The computer\'s answer couldn\'t be verified. Ask it for a new code and try again.</string>
+    <string name="ds_error_clock">The clock of this phone and the computer\'s differ by more than 2 minutes. Fix the date and time on both: otherwise the newest change may lose.</string>
     <string name="ds_error_incompatible">Your computer uses another version of the sync. Update Triat on the phone and on the computer.</string>
     <string name="ds_error_damaged">The saved pairing can\'t be used any more. Pair again to keep syncing.</string>
     <string name="ds_error_too_large">Your library is too big to send in one go.</string>

@@ -133,6 +133,8 @@ class DesktopSyncRepository private constructor(context: Context) {
      * lands in [state]); the failures are returned for the UI to word.
      */
     suspend fun pair(found: FoundDesktop, code: String): PairResult {
+        // Another protocol version cannot sync: say so rather than "not found".
+        if (found.version != SyncWire.VERSION) return PairResult.Failed(DesktopSyncClient.REASON_VERSION)
         val deviceId = withContext(Dispatchers.IO) { store.deviceId }
         val result = client.pair(found.host, found.port, code, deviceId, deviceLabel(Build.MANUFACTURER, Build.MODEL))
         if (result is PairResult.Paired) {
@@ -243,9 +245,12 @@ class DesktopSyncRepository private constructor(context: Context) {
                 val changes = withContext(Dispatchers.IO) { apply(result.merged) }
                 val now = System.currentTimeMillis()
                 store.lastSyncAt = now
-                store.lastError = null
+                // The merge worked, but last-writer-wins on clocks that differ
+                // decides wrongly and drops "future" plays: tell the user.
+                val error = if (clockProblem(now, serverNow(result.merged))) ERROR_CLOCK else null
+                store.lastError = error
                 mutableState.update {
-                    it.copy(paired = store.paired(), lastSyncAt = now, lastError = null, lastChanges = describe(changes))
+                    it.copy(paired = store.paired(), lastSyncAt = now, lastError = error, lastChanges = describe(changes))
                 }
             }
             SyncResult.Unauthorized -> record(desktop, ERROR_UNPAIRED)
@@ -271,8 +276,9 @@ class DesktopSyncRepository private constructor(context: Context) {
         for (p in plan.playlistsToWrite) playlists.applySynced(p.id, p.name, p.songs, p.updated)
         for (id in plan.playlistsToDelete) playlists.deleteSynced(id)
         for ((song, at) in plan.likesToAdd) likes.likeSongAt(song, at)
-        // Leaves a tombstone, on purpose: the desktop must hear about the unlike too.
-        for (id in plan.likesToRemove) likes.unlikeSong(id)
+        // Leaves a tombstone, on purpose (the desktop must hear about the unlike
+        // too), dated with the author's time so a later like elsewhere still wins.
+        for ((id, at) in plan.likesToRemove) likes.unlikeSongAt(id, at)
         // The desktop's plays are another device's history: not held back by
         // IncognitoMode, which only stops this phone from recording (or sending)
         // its own. Deduplicated, capped and counted by StatsRepository.
@@ -331,6 +337,9 @@ class DesktopSyncRepository private constructor(context: Context) {
         /** The desktop forgot this phone (it answered 401): pair again. */
         const val ERROR_UNPAIRED = "unpaired"
 
+        /** The desktop's clock and this phone's differ by more than [CLOCK_SKEW_LIMIT_MS]. */
+        const val ERROR_CLOCK = "clock"
+
         /** Something local broke while applying the answer. */
         const val ERROR_INTERNAL = "internal"
 
@@ -338,6 +347,9 @@ class DesktopSyncRepository private constructor(context: Context) {
         const val ERROR_NOT_PAIRED = "not_paired"
 
         private const val REDISCOVERY_TIMEOUT_MS = 6_000L
+
+        /** Beyond this the merge's last-writer-wins can no longer be trusted. */
+        const val CLOCK_SKEW_LIMIT_MS = 120_000L
 
         @Volatile private var instance: DesktopSyncRepository? = null
 
@@ -417,3 +429,15 @@ internal fun deviceLabel(manufacturer: String?, model: String?): String {
     }
     return label.ifEmpty { "Android" }.replaceFirstChar { it.uppercase() }
 }
+
+/** The desktop's `now` (epoch milliseconds) in a sync reply, or null when it did not send one. */
+internal fun serverNow(merged: JSONObject): Long? =
+    if (merged.has("now")) merged.optLong("now", 0L).takeIf { it > 0 } else null
+
+/**
+ * Whether the clocks differ enough to matter: [serverNow] is the desktop's
+ * clock when it answered (null when it did not say, which is never a
+ * problem), [now] the phone's. More than two minutes either way.
+ */
+internal fun clockProblem(now: Long, serverNow: Long?): Boolean =
+    serverNow != null && kotlin.math.abs(serverNow - now) > DesktopSyncRepository.CLOCK_SKEW_LIMIT_MS

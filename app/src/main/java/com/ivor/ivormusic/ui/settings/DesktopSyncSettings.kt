@@ -73,6 +73,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ivor.ivormusic.R
 import com.ivor.ivormusic.sync.DesktopSyncClient
 import com.ivor.ivormusic.sync.DesktopSyncRepository
+import com.ivor.ivormusic.sync.matchQrDesktop
 import com.ivor.ivormusic.sync.FoundDesktop
 import com.ivor.ivormusic.sync.PairResult
 import com.ivor.ivormusic.sync.SyncCrypto
@@ -223,6 +224,9 @@ internal enum class SyncProblem {
     /** The library is too big for one exchange. */
     TOO_LARGE,
 
+    /** The phone's clock and the computer's differ by minutes: the merge can pick the wrong side. */
+    CLOCK,
+
     /** Something on the phone itself failed. */
     INTERNAL;
 
@@ -244,6 +248,7 @@ internal fun problemFor(reason: String): SyncProblem = when (reason) {
     DesktopSyncClient.REASON_VERSION -> SyncProblem.INCOMPATIBLE
     DesktopSyncClient.REASON_KEY -> SyncProblem.DAMAGED_PAIRING
     DesktopSyncClient.REASON_TOO_LARGE -> SyncProblem.TOO_LARGE
+    DesktopSyncRepository.ERROR_CLOCK -> SyncProblem.CLOCK
     // ERROR_INTERNAL, REASON_DEVICE (this phone's own id), ERROR_NOT_PAIRED and anything new.
     else -> SyncProblem.INTERNAL
 }
@@ -300,7 +305,19 @@ internal class DesktopSyncViewModel(application: Application) : AndroidViewModel
     }
 
     /** The QR entry: same path as the manual one, with what the code carried. */
-    fun pairWith(qr: com.ivor.ivormusic.sync.PairingUri) = pairAt("${qr.host}:${qr.port}", qr.code)
+    fun pairWith(qr: com.ivor.ivormusic.sync.PairingUri) = runPairing {
+        // The code lists the desktop's addresses; the first that answers as the
+        // desktop the code names wins, then what mDNS found with the same id.
+        val answers = mutableListOf<FoundDesktop?>()
+        for (host in qr.hosts) {
+            val answer = repository.lookup(host, qr.port)
+            answers += answer
+            if (answer != null && answer.serverId == qr.serverId) break
+        }
+        val found = matchQrDesktop(qr, answers, repository.state.value.found)
+            ?: return@runPairing if (answers.any { it != null }) SyncProblem.UNVERIFIED else SyncProblem.DESKTOP_NOT_FOUND
+        problemFor(repository.pair(found, qr.code))
+    }
 
     fun reportBadQr() { mutablePairing.value = PairingUi(problem = SyncProblem.BAD_QR) }
 
@@ -627,6 +644,7 @@ private fun problemText(problem: SyncProblem): String = stringResource(
         SyncProblem.INCOMPATIBLE -> R.string.ds_error_incompatible
         SyncProblem.DAMAGED_PAIRING -> R.string.ds_error_damaged
         SyncProblem.TOO_LARGE -> R.string.ds_error_too_large
+        SyncProblem.CLOCK -> R.string.ds_error_clock
         SyncProblem.INTERNAL -> R.string.ds_error_internal
     }
 )

@@ -21,8 +21,8 @@ data class ApplyPlan(
     val playlistsToDelete: List<String>,
     /** Track and the date of the like, in milliseconds. */
     val likesToAdd: List<Pair<Song, Long>>,
-    /** Video ids. */
-    val likesToRemove: List<String>,
+    /** Video id and the date of the unlike, in milliseconds (the author's, not now). */
+    val likesToRemove: List<Pair<String, Long>>,
     val history: List<PlayHistoryEntry>,
 )
 
@@ -174,7 +174,7 @@ object SyncWire {
         }
 
         val toAdd = mutableListOf<Pair<Song, Long>>()
-        val toRemove = mutableListOf<String>()
+        val toRemove = mutableListOf<Pair<String, Long>>()
         val likes = merged.optJSONArray("likes") ?: JSONArray()
         for (i in 0 until likes.length()) {
             val item = likes.optJSONObject(i) ?: continue
@@ -189,7 +189,7 @@ object SyncWire {
                     toAdd += song to at
                 }
             } else if (mine != null && (mine.dateAdded ?: 0L) <= at) {
-                toRemove += id
+                toRemove += id to at
             }
         }
 
@@ -217,6 +217,24 @@ object SyncWire {
 
         return ApplyPlan(toWrite, toDelete, toAdd, toRemove, received)
     }
+
+    /**
+     * The playlist a desktop copy produces on the phone: [incoming] (the
+     * desktop only ever holds YouTube tracks) with the phone's own local songs
+     * of [current] put back, each at its old index clamped to the list size.
+     * Without this a mixed playlist lost its device songs on any desktop edit.
+     */
+    fun mergeLocalSongs(current: List<Song>, incoming: List<Song>): List<Song> {
+        val merged = incoming.toMutableList()
+        current.forEachIndexed { index, song ->
+            if (!isSyncable(song)) merged.add(index.coerceAtMost(merged.size), song)
+        }
+        return merged
+    }
+
+    /** Whether a song travels at all: a YouTube id that is not a device file. */
+    private fun isSyncable(song: Song): Boolean =
+        song.id.length == VIDEO_ID_LENGTH && song.source != SongSource.LOCAL
 
     /** Playlists written before edit dates existed carry 0: fall back on creation. */
     private fun effectiveUpdated(playlist: UserPlaylist): Long =

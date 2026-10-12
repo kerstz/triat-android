@@ -334,6 +334,7 @@
     <string name="ds_error_bad_address">Saisissez l\'adresse d\'un ordinateur de votre réseau local, par exemple 192.168.1.20:47823. Les adresses d\'Internet sont refusées.</string>
     <string name="ds_error_not_triat">L\'appareil à cette adresse n\'a pas répondu comme Triat. Vérifiez que Triat est à jour des deux côtés.</string>
     <string name="ds_error_unverified">La réponse de l\'ordinateur n\'a pas pu être vérifiée. Demandez-lui un nouveau code et réessayez.</string>
+    <string name="ds_error_clock">L\'heure du téléphone et celle de l\'ordinateur diffèrent de plus de 2 minutes. Corrigez la date et l\'heure des deux : sinon la modification la plus récente peut perdre.</string>
     <string name="ds_error_incompatible">Votre ordinateur utilise une autre version de la synchro. Mettez Triat à jour sur le téléphone et sur l\'ordinateur.</string>
     <string name="ds_error_damaged">L\'association enregistrée n\'est plus utilisable. Associez-les à nouveau pour continuer à synchroniser.</string>
     <string name="ds_error_too_large">Votre bibliothèque est trop grosse pour être envoyée d\'un coup.</string>

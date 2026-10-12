@@ -44,17 +44,30 @@ class DesktopDiscoveryTest {
     }
 
     @Test
-    fun `IPv4 wins over IPv6`() {
+    fun `IPv4 wins over IPv6 and IPv6 is never offered alone`() {
         val v6 = InetAddress.getByAddress(ByteArray(16).also { it[0] = 0xfd.toByte(); it[15] = 1 })
         assertEquals("10.0.0.2", DesktopDiscovery.pickHost(listOf(v6, ip(10, 0, 0, 2))))
+        assertNull(DesktopDiscovery.pickHost(listOf(v6)))
     }
 
     @Test
-    fun `IPv6 is bracketed and link-local is skipped`() {
-        val ula = InetAddress.getByAddress(ByteArray(16).also { it[0] = 0xfd.toByte(); it[15] = 1 })
-        val linkLocal = InetAddress.getByAddress(ByteArray(16).also { it[0] = 0xfe.toByte(); it[1] = 0x80.toByte(); it[15] = 1 })
-        assertEquals("[fd00:0:0:0:0:0:0:1]", DesktopDiscovery.pickHost(listOf(linkLocal, ula)))
-        assertNull(DesktopDiscovery.pickHost(listOf(linkLocal)))
+    fun `a LAN address wins over a virtual interface one`() {
+        assertEquals("192.168.1.10", DesktopDiscovery.pickHost(listOf(ip(100, 101, 1, 2), ip(192, 168, 1, 10))))
+        assertEquals("10.1.2.3", DesktopDiscovery.pickHost(listOf(ip(169, 254, 3, 4), ip(10, 1, 2, 3))))
+        assertEquals("172.20.0.5", DesktopDiscovery.pickHost(listOf(ip(172, 32, 0, 1), ip(172, 20, 0, 5))))
+    }
+
+    @Test
+    fun `another IPv4 is the fallback when no private one is listed`() {
+        assertEquals("100.101.1.2", DesktopDiscovery.pickHost(listOf(ip(100, 101, 1, 2))))
+    }
+
+    @Test
+    fun `a TXT version other than ours is reported, not dropped`() {
+        val newer = txt("id1", "x") + ("v" to "2".toByteArray(Charsets.UTF_8))
+        val found = DesktopDiscovery.desktopFrom("svc", newer, listOf(ip(10, 0, 0, 2)), 47823)
+        assertEquals(2, found?.version)
+        assertEquals(SyncWire.VERSION, DesktopDiscovery.desktopFrom("svc", txt("id1", "x"), listOf(ip(10, 0, 0, 2)), 1)?.version)
     }
 
     @Test

@@ -173,6 +173,12 @@ class DesktopSyncSettingsTest {
     }
 
     @Test
+    fun `a clock difference has its own problem and does not ask to pair again`() {
+        assertEquals(SyncProblem.CLOCK, problemFor(DesktopSyncRepository.ERROR_CLOCK))
+        assertFalse(SyncProblem.CLOCK.needsNewPairing)
+    }
+
+    @Test
     fun `only a forgotten or damaged pairing offers to pair again`() {
         val offering = SyncProblem.entries.filter { it.needsNewPairing }
         assertEquals(setOf(SyncProblem.FORGOTTEN, SyncProblem.DAMAGED_PAIRING), offering.toSet())

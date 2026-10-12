@@ -156,13 +156,27 @@ class DesktopSyncClientTest {
         val client = DesktopSyncClient()
         val other = FakeDesktop().start().also { it.helloJson = """{"app":"something","v":1,"server_id":"x","name":"y"}""" }
         assertNull(client.hello("127.0.0.1", other.port))
-        val newer = FakeDesktop().start().also { it.helloJson = """{"app":"triat","v":2,"server_id":"x","name":"y"}""" }
-        assertNull(client.hello("127.0.0.1", newer.port))
         val noId = FakeDesktop().start().also { it.helloJson = """{"app":"triat","v":1,"server_id":null,"name":"y"}""" }
         assertNull(client.hello("127.0.0.1", noId.port))
         val garbage = FakeDesktop().start().also { it.helloJson = "<html>hello</html>" }
         assertNull(client.hello("127.0.0.1", garbage.port))
         assertNull(client.hello("127.0.0.1", closedPort()))
+    }
+
+    @Test
+    fun `hello reports another protocol version instead of not found`() = runBlocking {
+        val newer = FakeDesktop().start().also { it.helloJson = """{"app":"triat","v":2,"server_id":"x","name":"y"}""" }
+        val found = DesktopSyncClient().hello("127.0.0.1", newer.port)
+        assertEquals(2, found?.version)
+        assertEquals("x", found?.serverId)
+    }
+
+    @Test
+    fun `hello carries the desktop clock when it sends one`() {
+        val body = """{"app":"triat","v":1,"server_id":"x","name":"y","now":1700000000000}""".toByteArray()
+        assertEquals(1_700_000_000_000L, DesktopSyncClient.parseHello(body, "10.0.0.2", 47823)?.serverNow)
+        val without = """{"app":"triat","v":1,"server_id":"x","name":"y"}""".toByteArray()
+        assertNull(DesktopSyncClient.parseHello(without, "10.0.0.2", 47823)?.serverNow)
     }
 
     @Test

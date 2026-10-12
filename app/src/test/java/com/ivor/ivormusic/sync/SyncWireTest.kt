@@ -246,7 +246,7 @@ class SyncWireTest {
             local = emptyList(),
             liked = listOf(youtube("aaaaaaaaaaa").copy(dateAdded = 4_000L)),
         )
-        assertEquals(listOf("aaaaaaaaaaa"), older.likesToRemove)
+        assertEquals(listOf("aaaaaaaaaaa" to 5_000L), older.likesToRemove)
         assertTrue(older.likesToAdd.isEmpty())
 
         val newer = SyncWire.plan(
@@ -298,5 +298,27 @@ class SyncWireTest {
         assertTrue(plan.likesToAdd.isEmpty())
         assertTrue(plan.likesToRemove.isEmpty())
         assertTrue(plan.history.isEmpty())
+    }
+
+    @Test
+    fun `local songs of the phone survive a desktop copy at their old index`() {
+        val l1 = local("local-1"); val l2 = local("local-2")
+        val y1 = youtube("aaaaaaaaaa1"); val y2 = youtube("aaaaaaaaaa2"); val y3 = youtube("aaaaaaaaaa3")
+        val merged = SyncWire.mergeLocalSongs(listOf(l1, y1, l2, y2), listOf(y2, y3))
+        assertEquals(listOf(l1, y2, l2, y3), merged)
+    }
+
+    @Test
+    fun `a local song past the end of a shorter desktop list is appended`() {
+        val l = local("local-1")
+        val y1 = youtube("aaaaaaaaaa1"); val y2 = youtube("aaaaaaaaaa2")
+        assertEquals(listOf(y1, l), SyncWire.mergeLocalSongs(listOf(y2, y2, y2, l), listOf(y1)))
+    }
+
+    @Test
+    fun `without local songs the desktop list is taken as it is`() {
+        val y1 = youtube("aaaaaaaaaa1"); val y2 = youtube("aaaaaaaaaa2")
+        assertEquals(listOf(y2), SyncWire.mergeLocalSongs(listOf(y1), listOf(y2)))
+        assertEquals(listOf(y2), SyncWire.mergeLocalSongs(emptyList(), listOf(y2)))
     }
 }

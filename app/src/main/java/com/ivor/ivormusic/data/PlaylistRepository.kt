@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.data
 
+import com.ivor.ivormusic.sync.SyncWire
 import com.ivor.ivormusic.util.KLog
 
 import android.content.Context
@@ -473,7 +474,9 @@ class PlaylistRepository(private val context: Context) {
                 id = id, name = name, description = null,
                 coverUri = "file://${generateCoverArt(name, id, null)}"
             )
-            writePlaylist(base.copy(name = name, songs = songs, updatedAt = updatedAt))
+            // The desktop never holds the phone's local songs: keep them.
+            val merged = if (current != null) SyncWire.mergeLocalSongs(current.songs, songs) else songs
+            writePlaylist(base.copy(name = name, songs = merged, updatedAt = updatedAt))
         }
 
     /** A deletion received from Triat desktop: no new tombstone, it came from one. */

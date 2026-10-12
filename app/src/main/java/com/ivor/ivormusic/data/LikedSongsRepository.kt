@@ -63,10 +63,18 @@ class LikedSongsRepository(context: Context) {
 
     private val tombstones = com.ivor.ivormusic.sync.SyncTombstones(appContext)
 
-    private fun saveLikedIds(songIds: Set<String>) {
+    /**
+     * [tombstoneAt] dates the tombstones of the unlikes in this write: null
+     * means now (the user did it), a value is the author's date of a deletion
+     * received from the desktop.
+     */
+    private fun saveLikedIds(songIds: Set<String>, tombstoneAt: Long? = null) {
         // Unlikes leave a tombstone for the Wi-Fi sync; a like clears it.
         (_likedSongIds.value - songIds).forEach {
-            tombstones.record(com.ivor.ivormusic.sync.SyncTombstones.LIKE, it)
+            tombstones.record(
+                com.ivor.ivormusic.sync.SyncTombstones.LIKE, it,
+                tombstoneAt ?: System.currentTimeMillis(),
+            )
         }
         (songIds - _likedSongIds.value).forEach {
             tombstones.clear(com.ivor.ivormusic.sync.SyncTombstones.LIKE, it)
@@ -177,6 +185,17 @@ class LikedSongsRepository(context: Context) {
      */
     fun unlikeSong(songId: String) {
         saveLikedIds(_likedSongIds.value - songId)
+        if (_likedSongs.value.any { it.id == songId }) {
+            saveSongMetadata(_likedSongs.value.filter { it.id != songId })
+        }
+    }
+
+    /**
+     * An unlike received from Triat desktop: the tombstone keeps the date the
+     * author made it ([at]), so a like made elsewhere in between still wins.
+     */
+    fun unlikeSongAt(songId: String, at: Long) {
+        saveLikedIds(_likedSongIds.value - songId, tombstoneAt = at)
         if (_likedSongs.value.any { it.id == songId }) {
             saveSongMetadata(_likedSongs.value.filter { it.id != songId })
         }

@@ -16,19 +16,22 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withTimeoutOrNull
 import java.net.Inet4Address
-import java.net.Inet6Address
 import java.net.InetAddress
 import kotlin.coroutines.resume
 
 /**
  * A Triat desktop seen on the local network. [host] is ready to drop into a
- * URL: a dotted IPv4 address, or an IPv6 address already in brackets.
+ * URL: a dotted IPv4 address.
  */
 data class FoundDesktop(
     val serverId: String,
     val name: String,
     val host: String,
     val port: Int,
+    /** The protocol version it announced; anything but [SyncWire.VERSION] cannot be synced with. */
+    val version: Int = SyncWire.VERSION,
+    /** Its clock in epoch milliseconds when it said (hello only), else null. */
+    val serverNow: Long? = null,
 )
 
 /**
@@ -238,25 +241,28 @@ object DesktopDiscovery {
         val serverId = txt["id"]?.toString(Charsets.UTF_8)?.trim().orEmpty()
         if (serverId.isEmpty() || port !in 1..65535) return null
         val host = pickHost(addresses) ?: return null
+        val version = txt["v"]?.toString(Charsets.UTF_8)?.trim()?.toIntOrNull() ?: SyncWire.VERSION
         val name = txt["name"]?.toString(Charsets.UTF_8)?.trim()?.takeIf { it.isNotEmpty() }
             ?: serviceName?.takeIf { it.isNotBlank() }
             ?: host
-        return FoundDesktop(serverId = serverId, name = name, host = host, port = port)
+        return FoundDesktop(serverId = serverId, name = name, host = host, port = port, version = version)
     }
 
     /**
-     * IPv4 first: it is what the desktop server listens on and it needs no
-     * brackets or scope. An IPv6 link-local address is useless without its
-     * interface scope, so it is skipped rather than handed on half-formed.
+     * An IPv4 address, RFC1918 ones first (10/8, 172.16/12, 192.168/16): a
+     * desktop also announces Docker, VPN or link-local addresses the phone
+     * cannot use. IPv6 is dropped: the desktop server binds IPv4 only, so a
+     * connection to its IPv6 address is refused.
      */
     internal fun pickHost(addresses: List<InetAddress>): String? {
-        addresses
-            .firstOrNull { it is Inet4Address && !it.isLoopbackAddress && !it.isAnyLocalAddress }
-            ?.hostAddress
-            ?.let { return it }
-        val v6 = addresses.firstOrNull {
-            it is Inet6Address && !it.isLoopbackAddress && !it.isAnyLocalAddress && !it.isLinkLocalAddress
-        } ?: return null
-        return v6.hostAddress?.substringBefore('%')?.let { "[$it]" }
+        val v4 = addresses.filter { it is Inet4Address && !it.isLoopbackAddress && !it.isAnyLocalAddress }
+        return (v4.firstOrNull { isRfc1918(it) } ?: v4.firstOrNull())?.hostAddress
+    }
+
+    private fun isRfc1918(address: InetAddress): Boolean {
+        val b = address.address
+        val first = b[0].toInt() and 0xFF
+        val second = b[1].toInt() and 0xFF
+        return first == 10 || (first == 172 && second in 16..31) || (first == 192 && second == 168)
     }
 }

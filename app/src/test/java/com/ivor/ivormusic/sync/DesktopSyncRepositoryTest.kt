@@ -84,7 +84,7 @@ class DesktopSyncRepositoryTest {
         playlistsToWrite = List(write) { SyncedPlaylist("p$it", "Mix", emptyList(), 1L) },
         playlistsToDelete = List(delete) { "d$it" },
         likesToAdd = List(add) { song("aaaaaaaaaa$it") to 1L },
-        likesToRemove = List(remove) { "r$it" },
+        likesToRemove = List(remove) { "r$it" to 1L },
         history = List(received) {
             com.ivor.ivormusic.data.PlayHistoryEntry("aaaaaaaaaa$it", "T", "A", "", 1L, 1000L)
         },
@@ -167,5 +167,26 @@ class DesktopSyncRepositoryTest {
         assertEquals("Google", deviceLabel("Google", ""))
         assertEquals("Android", deviceLabel(null, null))
         assertEquals("Android", deviceLabel("  ", "  "))
+    }
+
+    // ---- clock skew ---------------------------------------------------------
+
+    @Test
+    fun `a small skew or no server clock is not a problem`() {
+        assertFalse(clockProblem(1_000_000L, null))
+        assertFalse(clockProblem(1_000_000L, 1_000_000L + 120_000L))
+        assertFalse(clockProblem(1_000_000L, 1_000_000L - 120_000L))
+    }
+
+    @Test
+    fun `more than two minutes either way is a problem`() {
+        assertTrue(clockProblem(1_000_000L, 1_000_000L + 120_001L))
+        assertTrue(clockProblem(1_000_000L, 1_000_000L - 120_001L))
+    }
+
+    @Test
+    fun `the server clock is read from a reply only when present`() {
+        assertEquals(1_700_000_000_000L, serverNow(org.json.JSONObject().put("now", 1_700_000_000_000L)))
+        assertNull(serverNow(org.json.JSONObject()))
     }
 }
