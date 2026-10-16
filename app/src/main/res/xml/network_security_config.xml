@@ -26,6 +26,16 @@
     What keeps the exception honest: DesktopSyncClient (task A4) must refuse
     any host that is not a loopback, link-local or private address, so the
     permission cannot be turned into sending sync traffic over the internet.
+    Why base-config stays cleartext (audit M2, re-examined): OkHttp asks
+    NetworkSecurityPolicy.isCleartextTrafficPermitted(host) before connecting
+    and ConnectionSpec.CLEARTEXT does not override it, so the policy cannot be
+    bypassed from the client. The paired desktop is stored as whatever address
+    discovery found (a DHCP IPv4 such as 192.168.x.x), and a domain-config can
+    only name exact hosts, never a range, so base=false would break the sync.
+    A "local" domain-config would only cover mDNS names, not IPs. The http
+    deep links (manifest) are rewritten to https in code instead
+    (YouTubeLinkParser.forceHttps) and no external API URL is http.
+
     Trust anchors are spelled out (system CAs only, which is also the default
     at this target) so the file states the whole policy.
 -->

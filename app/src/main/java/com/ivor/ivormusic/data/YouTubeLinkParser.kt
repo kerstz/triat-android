@@ -82,6 +82,14 @@ object YouTubeLinkParser {
     private val TRAILING_PUNCTUATION = charArrayOf('.', ',', ';', ':', '!', '?', ')', ']', '}', '\'')
 
     /**
+     * Upgrades a leading `http://` to `https://`. The manifest accepts http
+     * for the YouTube hosts, but the app never needs cleartext for them, so a
+     * link opened from outside is normalised before anything uses it.
+     */
+    fun forceHttps(url: String): String =
+        if (url.startsWith("http://", ignoreCase = true)) "https://" + url.substring(7) else url
+
+    /**
      * Parse [input] as a YouTube link. Returns null when the text is not a
      * YouTube URL, i.e. it should be treated as a normal search query.
      */
@@ -91,7 +99,7 @@ object YouTubeLinkParser {
 
         val candidate = when {
             text.startsWith("http://", ignoreCase = true) ||
-                text.startsWith("https://", ignoreCase = true) -> text
+                text.startsWith("https://", ignoreCase = true) -> forceHttps(text)
             text.contains("youtube.com/", ignoreCase = true) ||
                 text.contains("youtu.be/", ignoreCase = true) -> "https://$text"
             else -> return null

@@ -32,7 +32,7 @@ data class PendingSharedLink(val text: String, val token: Long)
  */
 fun Intent.sharedLinkText(): String? = when (action) {
     Intent.ACTION_SEND -> getStringExtra(Intent.EXTRA_TEXT)
-    Intent.ACTION_VIEW -> dataString
+    Intent.ACTION_VIEW -> dataString?.let(YouTubeLinkParser::forceHttps)
     else -> null
 }?.takeIf { it.isNotBlank() }
 
