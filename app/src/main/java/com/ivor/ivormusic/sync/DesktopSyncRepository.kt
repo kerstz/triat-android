@@ -152,7 +152,14 @@ class DesktopSyncRepository private constructor(context: Context) {
 
     /** Forgets the paired desktop (the phone stays on the desktop's list until it removes it). */
     fun forget() {
+        // Best-effort: ask the desktop to drop this phone too (POST /v1/unpair).
+        // Never blocks or fails the local forget; an older desktop ignores it.
+        val former = store.paired()
         store.forget()
+        if (former != null) {
+            // The device id survives forget(); read it off the caller's thread.
+            scope.launch(Dispatchers.IO) { runCatching { client.unpair(former, store.deviceId) } }
+        }
         mutableState.update {
             it.copy(paired = null, lastSyncAt = 0L, lastError = null, lastChanges = null, shareSession = false)
         }
@@ -242,6 +249,7 @@ class DesktopSyncRepository private constructor(context: Context) {
         if (store.paired()?.serverId != desktop.serverId) return SyncResult.Failed(ERROR_NOT_PAIRED)
         when (result) {
             is SyncResult.Ok -> {
+                if (result.bound) store.markBoundConfirmed()
                 val changes = withContext(Dispatchers.IO) { apply(result.merged) }
                 val now = System.currentTimeMillis()
                 store.lastSyncAt = now

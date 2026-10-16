@@ -1,5 +1,6 @@
 package com.ivor.ivormusic.sync
 
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
@@ -46,7 +47,7 @@ sealed interface PairResult {
 /** Outcome of [DesktopSyncClient.sync]. */
 sealed interface SyncResult {
     /** [merged] is the desktop's merged state, to apply as it comes (plus `cookies` when shared). */
-    data class Ok(val merged: JSONObject) : SyncResult
+    data class Ok(val merged: JSONObject, val bound: Boolean = false) : SyncResult
 
     /** The desktop does not know this phone (or the key no longer fits): pair again. */
     data object Unauthorized : SyncResult
@@ -232,14 +233,40 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         if (desktop.port !in PORTS) return@withContext SyncResult.Failed(REASON_PORT)
         if (!isValidDeviceId(deviceId)) return@withContext SyncResult.Failed(REASON_DEVICE)
 
-        val sealed = try {
-            SyncCrypto.seal(desktop.key, snapshot.toString(), deviceId)
-        } catch (e: GeneralSecurityException) {
-            return@withContext SyncResult.Failed(REASON_KEY)
-        } catch (e: IllegalArgumentException) {
-            return@withContext SyncResult.Failed(REASON_KEY)
+        // Framing choice. /v1/hello announces no capability (its "v" is the
+        // data protocol version, unchanged), so it cannot tell a desktop that
+        // understands the direction-bound framing from an older one. Hence:
+        // bound framing (ts + n in the request, AAD "<id>|req", reply AAD
+        // "<id>|resp|<n>") by default; the legacy framing (AAD = device id) is
+        // tried ONLY while this pairing has never seen the bound one succeed,
+        // because an older desktop answers 401 to a bound request. Once a
+        // bound exchange has worked, [SyncStore.PairedDesktop.boundConfirmed]
+        // is set and the legacy framing is never used again: an attacker on
+        // the LAN cannot force a downgrade by answering 401 or replaying.
+        val bound = exchangeSealed(desktop, deviceId, snapshot, bound = true)
+        if (bound is SyncResult.Unauthorized && !desktop.boundConfirmed) {
+            val legacy = exchangeSealed(desktop, deviceId, snapshot, bound = false)
+            if (legacy !is SyncResult.Unauthorized) return@withContext legacy
         }
-        if (sealed.size > MAX_REQUEST) return@withContext SyncResult.Failed(REASON_TOO_LARGE)
+        bound
+    }
+
+    private suspend fun exchangeSealed(
+        desktop: SyncStore.PairedDesktop,
+        deviceId: String,
+        snapshot: JSONObject,
+        bound: Boolean,
+    ): SyncResult {
+        val nonce = SyncCrypto.newRequestNonce()
+        val sealed = try {
+            if (bound) SyncCrypto.sealRequest(desktop.key, snapshot, deviceId, nonce)
+            else SyncCrypto.seal(desktop.key, snapshot.toString(), deviceId)
+        } catch (e: GeneralSecurityException) {
+            return SyncResult.Failed(REASON_KEY)
+        } catch (e: IllegalArgumentException) {
+            return SyncResult.Failed(REASON_KEY)
+        }
+        if (sealed.size > MAX_REQUEST) return SyncResult.Failed(REASON_TOO_LARGE)
 
         val request = Request.Builder()
             .url(urlFor(desktop.host, desktop.port, "v1/sync"))
@@ -249,35 +276,69 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         val reply = try {
             roundTrip(client, request, MAX_SYNC_REPLY)
         } catch (e: ResponseTooLarge) {
-            return@withContext SyncResult.Failed(REASON_PROTOCOL)
+            return SyncResult.Failed(REASON_PROTOCOL)
         } catch (e: IOException) {
-            return@withContext SyncResult.Failed(REASON_NETWORK)
+            return SyncResult.Failed(REASON_NETWORK)
         }
         when (reply.code) {
             200 -> Unit
-            401 -> return@withContext SyncResult.Unauthorized
-            400 -> return@withContext SyncResult.Failed(REASON_VERSION)
-            else -> return@withContext SyncResult.Failed(REASON_SERVER)
+            401 -> return SyncResult.Unauthorized
+            400 -> return SyncResult.Failed(REASON_VERSION)
+            else -> return SyncResult.Failed(REASON_SERVER)
         }
 
         val merged = try {
-            JSONObject(SyncCrypto.open(desktop.key, reply.body, deviceId))
+            // A bound reply must carry the AAD of THIS request's nonce.
+            JSONObject(
+                if (bound) SyncCrypto.openResponse(desktop.key, reply.body, deviceId, nonce)
+                else SyncCrypto.open(desktop.key, reply.body, deviceId),
+            )
         } catch (e: GeneralSecurityException) {
-            // Altered, or sealed under another key.
-            return@withContext SyncResult.Failed(REASON_PROTOCOL)
+            // Altered, sealed under another key, or answering another request.
+            return SyncResult.Failed(REASON_PROTOCOL)
         } catch (e: IOException) {
             // Not gzip once decrypted.
-            return@withContext SyncResult.Failed(REASON_PROTOCOL)
+            return SyncResult.Failed(REASON_PROTOCOL)
         } catch (e: JSONException) {
-            return@withContext SyncResult.Failed(REASON_PROTOCOL)
+            return SyncResult.Failed(REASON_PROTOCOL)
         } catch (e: IllegalArgumentException) {
-            return@withContext SyncResult.Failed(REASON_PROTOCOL)
+            return SyncResult.Failed(REASON_PROTOCOL)
         }
         if (merged.optInt("v", SyncWire.VERSION) != SyncWire.VERSION) {
-            return@withContext SyncResult.Failed(REASON_VERSION)
+            return SyncResult.Failed(REASON_VERSION)
         }
-        SyncResult.Ok(merged)
+        return SyncResult.Ok(merged, bound)
     }
+
+    /**
+     * Best-effort `POST /v1/unpair`: tells the desktop to forget this phone.
+     * Needs the bound framing (the desktop refuses the legacy one there), so
+     * an older desktop simply ignores it. Never throws, returns whether the
+     * desktop acknowledged.
+     */
+    suspend fun unpair(desktop: SyncStore.PairedDesktop, deviceId: String): Boolean =
+        withContext(Dispatchers.IO) {
+            if (!isPrivateHost(desktop.host) || desktop.port !in PORTS || !isValidDeviceId(deviceId)) {
+                return@withContext false
+            }
+            try {
+                val nonce = SyncCrypto.newRequestNonce()
+                val sealed = SyncCrypto.sealRequest(desktop.key, JSONObject(), deviceId, nonce)
+                val request = Request.Builder()
+                    .url(urlFor(desktop.host, desktop.port, "v1/unpair"))
+                    .header(DEVICE_HEADER, deviceId)
+                    .post(sealed.toRequestBody(OCTET_STREAM))
+                    .build()
+                val reply = roundTrip(quickClient, request, MAX_SMALL_REPLY)
+                reply.code == 200 &&
+                    JSONObject(SyncCrypto.openResponse(desktop.key, reply.body, deviceId, nonce))
+                        .optBoolean("ok", false)
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                false
+            }
+        }
 
     // ---- transport ------------------------------------------------------
 

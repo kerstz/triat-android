@@ -302,6 +302,59 @@ class DesktopSyncClientTest {
     }
 
     @Test
+    fun `a sync uses the bound framing with fresh ts and n`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val paired = pairedWith(desktop)
+        val client = DesktopSyncClient()
+        val first = client.sync(paired, "phone-1", JSONObject().put("v", 1)) as SyncResult.Ok
+        val second = client.sync(paired, "phone-1", JSONObject().put("v", 1)) as SyncResult.Ok
+        assertTrue(first.bound && second.bound)
+        assertEquals(listOf("bound", "bound"), desktop.syncRequests.toList())
+        assertEquals(2, desktop.seenNonces.toSet().size)
+        assertTrue(kotlin.math.abs(System.currentTimeMillis() - desktop.lastSyncReceived!!.getLong("ts")) < 60_000)
+    }
+
+    @Test
+    fun `an older desktop is reached through the legacy framing until the bound one is confirmed`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val paired = pairedWith(desktop)
+        desktop.legacyOnly = true
+        val result = DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1))
+        assertTrue(result is SyncResult.Ok)
+        assertFalse((result as SyncResult.Ok).bound)
+        assertEquals(listOf("legacy"), desktop.syncRequests.toList())
+    }
+
+    @Test
+    fun `once the bound framing is confirmed there is no fallback to the legacy one`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val paired = pairedWith(desktop).copy(boundConfirmed = true)
+        desktop.legacyOnly = true
+        assertEquals(SyncResult.Unauthorized, DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1)))
+        assertTrue(desktop.syncRequests.isEmpty())
+    }
+
+    @Test
+    fun `a reply sealed for another request is refused`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val paired = pairedWith(desktop)
+        desktop.wrongReplyNonce = "00000000000000000000000000000000"
+        assertEquals(
+            SyncResult.Failed(DesktopSyncClient.REASON_PROTOCOL),
+            DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1)),
+        )
+    }
+
+    @Test
+    fun `unpair tells the desktop and never throws`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val paired = pairedWith(desktop)
+        assertTrue(DesktopSyncClient().unpair(paired, "phone-1"))
+        assertTrue(desktop.unpaired)
+        assertFalse(DesktopSyncClient().unpair(paired.copy(port = closedPort()), "phone-1"))
+    }
+
+    @Test
     fun `an unknown phone is reported as unauthorized`() = runBlocking {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
@@ -372,6 +425,12 @@ class DesktopSyncClientTest {
         @Volatile var mergedJson = """{"v":1,"playlists":[],"likes":[],"history":[]}"""
         @Volatile var tamperReply = false
         @Volatile var rawReply: ByteArray? = null
+        /** Behaves like a desktop published before the bound framing: only the legacy AAD opens. */
+        @Volatile var legacyOnly = false
+        /** Seals the reply for another request's nonce. */
+        @Volatile var wrongReplyNonce: String? = null
+        val seenNonces = CopyOnWriteArrayList<String>()
+        val syncRequests = CopyOnWriteArrayList<String>()
 
         // What the desktop learned.
         @Volatile var pairedKey: ByteArray? = null
@@ -409,6 +468,7 @@ class DesktopSyncClientTest {
                     "POST /v1/pair/start" -> start(it, body)
                     "POST /v1/pair/finish" -> finish(it, body)
                     "POST /v1/sync" -> sync(it, body)
+                    "POST /v1/unpair" -> unpair(it, body)
                     else -> json(it, 404, """{"error":"not-found"}""")
                 }
             }
@@ -452,17 +512,49 @@ class DesktopSyncClientTest {
             val device = ex.requestHeaders.getFirst("X-Triat-Device").orEmpty()
             if (syncStatus != 200) return raw(ex, syncStatus, ByteArray(0))
             val key = pairedKey ?: return raw(ex, 401, ByteArray(0))
-            val received = try {
-                JSONObject(SyncCrypto.open(key, body, device))
-            } catch (e: Exception) {
-                return raw(ex, 401, ByteArray(0))
+            var requestNonce: String? = null
+            var received: JSONObject? = null
+            if (!legacyOnly) {
+                try {
+                    val o = JSONObject(SyncCrypto.openWithAad(key, body, SyncCrypto.requestAad(device)))
+                    requestNonce = o.getString("n")
+                    seenNonces += requestNonce
+                    received = o
+                } catch (e: Exception) {
+                }
+            }
+            if (received == null) {
+                received = try {
+                    JSONObject(SyncCrypto.open(key, body, device))
+                } catch (e: Exception) {
+                    return raw(ex, 401, ByteArray(0))
+                }
             }
             lastSyncDevice = device
             lastSyncReceived = received
+            syncRequests += if (requestNonce != null) "bound" else "legacy"
             rawReply?.let { return raw(ex, 200, it) }
-            val sealed = SyncCrypto.seal(key, mergedJson, device)
+            val sealed = if (requestNonce == null) {
+                SyncCrypto.seal(key, mergedJson, device)
+            } else {
+                SyncCrypto.sealWithAad(key, mergedJson, SyncCrypto.responseAad(device, wrongReplyNonce ?: requestNonce))
+            }
             if (tamperReply) sealed[sealed.size - 1] = (sealed.last().toInt() xor 1).toByte()
             raw(ex, 200, sealed)
+        }
+
+        @Volatile var unpaired = false
+
+        private fun unpair(ex: HttpExchange, body: ByteArray) {
+            val device = ex.requestHeaders.getFirst("X-Triat-Device").orEmpty()
+            val key = pairedKey ?: return raw(ex, 401, ByteArray(0))
+            val n = try {
+                JSONObject(SyncCrypto.openWithAad(key, body, SyncCrypto.requestAad(device))).getString("n")
+            } catch (e: Exception) {
+                return raw(ex, 401, ByteArray(0))
+            }
+            unpaired = true
+            raw(ex, 200, SyncCrypto.sealWithAad(key, """{"ok":true}""", SyncCrypto.responseAad(device, n)))
         }
 
         private fun json(ex: HttpExchange, status: Int, text: String) {

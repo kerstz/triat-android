@@ -69,6 +69,22 @@ class SyncStoreTest {
     }
 
     @Test
+    fun `the bound-framing confirmation is per pairing and sticky`() {
+        val store = SyncStore(VolatileSharedPreferences())
+        store.markBoundConfirmed()                 // nobody paired: nothing to mark
+        assertNull(store.paired())
+        store.save(desktop)
+        assertFalse(store.paired()!!.boundConfirmed)
+        store.markBoundConfirmed()
+        assertTrue(store.paired()!!.boundConfirmed)
+        store.updateAddress("192.168.1.99", 50000)
+        assertTrue(store.paired()!!.boundConfirmed)
+        store.forget()
+        store.save(desktop)
+        assertFalse(store.paired()!!.boundConfirmed)
+    }
+
+    @Test
     fun `forget drops the pairing and its state but keeps the device id`() {
         val store = SyncStore(VolatileSharedPreferences())
         val id = store.deviceId

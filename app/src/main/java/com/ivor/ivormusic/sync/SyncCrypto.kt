@@ -91,26 +91,61 @@ object SyncCrypto {
     fun confirmation(key: ByteArray, role: String, transcript: ByteArray): ByteArray =
         hmac(key, role.toByteArray() + '|'.code.toByte() + transcript)
 
-    fun seal(key: ByteArray, json: String, deviceId: String): ByteArray {
-        val nonce = ByteArray(12).also(random::nextBytes)
-        return nonce + aes(Cipher.ENCRYPT_MODE, key, nonce, deviceId, gzip(json.toByteArray()))
+    /** Legacy framing: the device id alone as associated data. Kept for older desktops only. */
+    fun seal(key: ByteArray, json: String, deviceId: String): ByteArray =
+        sealWithAad(key, json, deviceId.toByteArray())
+
+    /** Throws on a wrong key or any altered byte (GCM tag). Legacy framing. */
+    fun open(key: ByteArray, blob: ByteArray, deviceId: String): String =
+        openWithAad(key, blob, deviceId.toByteArray())
+
+    // ---- direction-bound framing (desktop's request_aad / response_aad) -----
+
+    /** Associated data of a request: "<deviceId>|req". */
+    fun requestAad(deviceId: String): ByteArray = "$deviceId|req".toByteArray()
+
+    /** Associated data of a response: bound to the request it answers ("<deviceId>|resp|<n>"). */
+    fun responseAad(deviceId: String, requestNonce: String): ByteArray =
+        "$deviceId|resp|$requestNonce".toByteArray()
+
+    /** A fresh request nonce `n`: 128 random bits, hex (the desktop wants 8..64 characters). */
+    fun newRequestNonce(): String = ByteArray(16).also(random::nextBytes)
+        .joinToString("") { "%02x".format(it) }
+
+    /**
+     * Adds `ts` (epoch ms) and `n` to the request object and seals it under
+     * the request AAD. The desktop rejects a stale `ts` and a repeated `n`,
+     * so a captured request cannot be replayed.
+     */
+    fun sealRequest(key: ByteArray, json: org.json.JSONObject, deviceId: String,
+                    nonce: String, nowMs: Long = System.currentTimeMillis()): ByteArray {
+        val body = org.json.JSONObject(json.toString()).put("ts", nowMs).put("n", nonce)
+        return sealWithAad(key, body.toString(), requestAad(deviceId))
     }
 
-    /** Throws on a wrong key or any altered byte (GCM tag). */
-    fun open(key: ByteArray, blob: ByteArray, deviceId: String): String {
+    /** Opens a response that must answer the request carrying [requestNonce]; any other fails. */
+    fun openResponse(key: ByteArray, blob: ByteArray, deviceId: String, requestNonce: String): String =
+        openWithAad(key, blob, responseAad(deviceId, requestNonce))
+
+    fun sealWithAad(key: ByteArray, json: String, aad: ByteArray): ByteArray {
+        val nonce = ByteArray(12).also(random::nextBytes)
+        return nonce + aes(Cipher.ENCRYPT_MODE, key, nonce, aad, gzip(json.toByteArray()))
+    }
+
+    fun openWithAad(key: ByteArray, blob: ByteArray, aad: ByteArray): String {
         require(blob.size > 28) { "message too short" }
         val nonce = blob.copyOfRange(0, 12)
-        val plain = aes(Cipher.DECRYPT_MODE, key, nonce, deviceId, blob.copyOfRange(12, blob.size))
+        val plain = aes(Cipher.DECRYPT_MODE, key, nonce, aad, blob.copyOfRange(12, blob.size))
         return String(gunzip(plain))
     }
 
     // ---- primitives ----------------------------------------------------
 
-    private fun aes(mode: Int, key: ByteArray, nonce: ByteArray, deviceId: String,
+    private fun aes(mode: Int, key: ByteArray, nonce: ByteArray, aad: ByteArray,
                     data: ByteArray): ByteArray =
         Cipher.getInstance("AES/GCM/NoPadding").run {
             init(mode, SecretKeySpec(key, "AES"), GCMParameterSpec(128, nonce))
-            updateAAD(deviceId.toByteArray())
+            updateAAD(aad)
             doFinal(data)
         }
 

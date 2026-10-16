@@ -53,6 +53,33 @@ class SyncCryptoTest {
     }
 
     @Test
+    fun `bound framing round-trips and the response is tied to the request nonce`() {
+        val n = SyncCrypto.newRequestNonce()
+        assertEquals(32, n.length)
+        val request = SyncCrypto.sealRequest(key, org.json.JSONObject().put("v", 1), "phone-1", n, 1_700_000_000_000L)
+        val opened = org.json.JSONObject(SyncCrypto.openWithAad(key, request, SyncCrypto.requestAad("phone-1")))
+        assertEquals(n, opened.getString("n"))
+        assertEquals(1_700_000_000_000L, opened.getLong("ts"))
+        assertEquals(1, opened.getInt("v"))
+        // A request does not open as a legacy message, nor as a response.
+        assertThrows(Exception::class.java) { SyncCrypto.open(key, request, "phone-1") }
+        assertThrows(Exception::class.java) { SyncCrypto.openResponse(key, request, "phone-1", n) }
+
+        val response = SyncCrypto.sealWithAad(key, "{\"v\":1}", SyncCrypto.responseAad("phone-1", n))
+        assertEquals("{\"v\":1}", SyncCrypto.openResponse(key, response, "phone-1", n))
+        // Another request's nonce, another device, the request AAD, the legacy AAD: all refused.
+        assertThrows(Exception::class.java) { SyncCrypto.openResponse(key, response, "phone-1", SyncCrypto.newRequestNonce()) }
+        assertThrows(Exception::class.java) { SyncCrypto.openResponse(key, response, "phone-2", n) }
+        assertThrows(Exception::class.java) { SyncCrypto.open(key, response, "phone-1") }
+        assertThrows(Exception::class.java) { SyncCrypto.openWithAad(key, response, SyncCrypto.requestAad("phone-1")) }
+    }
+
+    @Test
+    fun `request nonces are unique`() {
+        assertEquals(200, (1..200).map { SyncCrypto.newRequestNonce() }.toSet().size)
+    }
+
+    @Test
     fun `public keys encode as 65-byte uncompressed points`() {
         val pair = SyncCrypto.newKeyPair()
         val encoded = SyncCrypto.encodePublic(pair.public)

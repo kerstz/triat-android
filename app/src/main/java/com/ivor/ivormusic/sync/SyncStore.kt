@@ -40,10 +40,13 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
         val host: String,
         val port: Int,
         val key: ByteArray,
+        /** The desktop answered in the direction-bound framing at least once: never fall back (anti-downgrade). */
+        val boundConfirmed: Boolean = false,
     ) {
         override fun equals(other: Any?): Boolean =
             other is PairedDesktop && serverId == other.serverId && name == other.name &&
-                host == other.host && port == other.port && key.contentEquals(other.key)
+                host == other.host && port == other.port && key.contentEquals(other.key) &&
+                boundConfirmed == other.boundConfirmed
 
         override fun hashCode(): Int {
             var result = serverId.hashCode()
@@ -76,7 +79,8 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
         val key = prefs.getString(KEY_KEY, null)
             ?.let { runCatching { Base64.getDecoder().decode(it) }.getOrNull() }
             ?.takeIf { it.isNotEmpty() } ?: return null
-        PairedDesktop(serverId, prefs.getString(KEY_NAME, null).orEmpty(), host, port, key)
+        PairedDesktop(serverId, prefs.getString(KEY_NAME, null).orEmpty(), host, port, key,
+            prefs.getBoolean(KEY_BOUND, false))
     }
 
     /** Replaces any earlier pairing and starts from a clean sync state. */
@@ -88,6 +92,7 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
                 .putString(KEY_HOST, d.host)
                 .putInt(KEY_PORT, d.port)
                 .putString(KEY_KEY, Base64.getEncoder().encodeToString(d.key))
+                .putBoolean(KEY_BOUND, d.boundConfirmed)
                 .remove(KEY_LAST_SYNC_AT)
                 .remove(KEY_LAST_ERROR)
                 .remove(KEY_SESSION_DIGEST)
@@ -106,8 +111,15 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
             prefs.edit()
                 .remove(KEY_SERVER_ID).remove(KEY_NAME).remove(KEY_HOST).remove(KEY_PORT).remove(KEY_KEY)
                 .remove(KEY_LAST_SYNC_AT).remove(KEY_LAST_ERROR).remove(KEY_SHARE_SESSION)
-                .remove(KEY_SESSION_DIGEST)
+                .remove(KEY_SESSION_DIGEST).remove(KEY_BOUND)
                 .apply()
+        }
+    }
+
+    /** Sticky: once set it is only cleared by [forget] or a new [save]. */
+    fun markBoundConfirmed() {
+        synchronized(this) {
+            if (prefs.contains(KEY_SERVER_ID)) prefs.edit().putBoolean(KEY_BOUND, true).apply()
         }
     }
 
@@ -169,6 +181,7 @@ class SyncStore internal constructor(private val prefs: SharedPreferences) {
         private const val KEY_LAST_ERROR = "last_error"
         private const val KEY_SHARE_SESSION = "share_session"
         private const val KEY_SESSION_DIGEST = "session_digest"
+        private const val KEY_BOUND = "bound_confirmed"
 
         @Suppress("DEPRECATION")
         private fun buildPrefs(context: Context): SharedPreferences =
