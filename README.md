@@ -1,6 +1,6 @@
 # Triat for Android
 
-A music player for YouTube. No ads, no account required, no API key.
+A music player for YouTube. No account required, no API key.
 
 Search for a song, see its cover, play it.
 
@@ -20,7 +20,8 @@ the slowed edit or the one-hour loop before you tap.
 - SponsorBlock: skips intros, talking and sponsor reads
 - Discovery through the artists you already listen to, with the source of each
   suggestion shown
-- Playlists, likes, listening history and offline downloads
+- Playlists, likes, listening history and downloads for offline listening
+  (see the legal notice below)
 - Import a plain text list of songs into a playlist
 - Wi-Fi sync with [Triat on desktop](https://github.com/kerstz/triat), no cloud
 - Dark, quiet interface, in French and English
@@ -77,6 +78,32 @@ cd triat-android
 The APK is written to `app/build/outputs/apk/debug/`. For a signed release
 build, see [docs/build-apk.md](docs/build-apk.md). The `docs/` folder and
 [CLAUDE.md](CLAUDE.md) explain how the code is organised.
+
+## Legal notice
+
+Triat for Android is an independent hobby project. It is **not affiliated
+with, endorsed by or sponsored by Google LLC, YouTube, YouTube Music or
+SoundCloud**. YouTube is a trademark of Google LLC, SoundCloud of SoundCloud
+Global Limited & Co. KG.
+
+The app does not host or distribute any music. It plays what you choose to
+open from public services, and you are responsible for using it in line with
+those services' terms and with copyright law where you live. YouTube's Terms
+of Service do not allow downloading content unless YouTube offers a download
+option for it: only use the download feature for content you have the right
+to keep. This notice is not legal advice.
+
+The screenshots show artwork and titles owned by their respective rights
+holders, for illustration only.
+
+## Credits
+
+- [Koda](https://github.com/Ivorisnoob/Koda) by Ivorisnoob (GPL-3.0), see above.
+- [SponsorBlock](https://sponsor.ajay.app): segment data is fetched at run
+  time from the SponsorBlock API and is licensed under
+  [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
+  The app does not redistribute it.
+- [Last.fm](https://www.last.fm) (optional scrobbling).
 
 ## License
 
