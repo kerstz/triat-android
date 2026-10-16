@@ -2095,16 +2095,8 @@ internal fun AdvancedSettingsPage(
                         explanation = stringResource(R.string.si_compat_scan),
                         enabled = manualScanEnabled,
                         onToggle = { enabled ->
-                            if (enabled && android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.R) {
-                                if (!android.os.Environment.isExternalStorageManager()) {
-                                    val intent = Intent(
-                                        android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION
-                                    ).apply {
-                                        data = Uri.parse("package:${context.packageName}")
-                                    }
-                                    context.startActivity(intent)
-                                }
-                            }
+                            // No all-files access any more: the scan walks what the audio
+                            // permission already exposes (see AndroidManifest.xml).
                             onManualScanEnabledToggle(enabled)
                         }
                     )

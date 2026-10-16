@@ -6,7 +6,6 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
-import android.os.Environment
 import android.provider.Settings
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -281,12 +280,8 @@ fun OnboardingScreen(
                             onRequestNotificationPermission = { notificationPermissionState?.launchPermissionRequest() },
                             manualScanEnabled = manualScanEnabled,
                             onManualScanEnabledToggle = { enabled ->
-                                if (enabled && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && !Environment.isExternalStorageManager()) {
-                                    val intent = Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION).apply {
-                                        data = Uri.parse("package:${context.packageName}")
-                                    }
-                                    context.startActivity(intent)
-                                }
+                                // No all-files access any more: the scan walks what the audio
+                                // permission already exposes (see AndroidManifest.xml).
                                 onManualScanEnabledToggle(enabled)
                             }
                         )
