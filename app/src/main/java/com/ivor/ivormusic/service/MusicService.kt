@@ -1931,23 +1931,31 @@ class MusicService : MediaLibraryService() {
         }
 
         
+        private fun isOwnController(controller: MediaSession.ControllerInfo): Boolean =
+            controller.packageName == packageName
+
         override fun onConnect(session: MediaSession, controller: MediaSession.ControllerInfo): MediaSession.ConnectionResult {
             val availablePlayerCommands = MediaSession.ConnectionResult.DEFAULT_PLAYER_COMMANDS.buildUpon()
                 .add(Player.COMMAND_SET_SHUFFLE_MODE)
                 .add(Player.COMMAND_SET_REPEAT_MODE)
                 .build()
 
+            // The custom commands drive Koda's own player (queue order, restore,
+            // speed...). Only Koda's own controllers (UI, widgets, same package)
+            // get them; any other controller keeps the standard media commands.
             val availableSessionCommands =
-                MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon()
-                    .add(SessionCommand(CMD_SKIP_NEXT, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SKIP_PREVIOUS, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SKIP_TO_INDEX, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_RESTORE_PLAYBACK, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SET_PLAYBACK_SPEED, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SET_PLAY_ORDER, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SPONSOR_SKIP, Bundle.EMPTY))
-                    .add(SessionCommand(CMD_SPONSOR_UNDO, Bundle.EMPTY))
-                    .build()
+                MediaSession.ConnectionResult.DEFAULT_SESSION_AND_LIBRARY_COMMANDS.buildUpon().apply {
+                    if (isOwnController(controller)) {
+                        add(SessionCommand(CMD_SKIP_NEXT, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SKIP_PREVIOUS, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SKIP_TO_INDEX, Bundle.EMPTY))
+                        add(SessionCommand(CMD_RESTORE_PLAYBACK, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SET_PLAYBACK_SPEED, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SET_PLAY_ORDER, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SPONSOR_SKIP, Bundle.EMPTY))
+                        add(SessionCommand(CMD_SPONSOR_UNDO, Bundle.EMPTY))
+                    }
+                }.build()
 
             return MediaSession.ConnectionResult.accept(
                 availableSessionCommands,
@@ -2001,7 +2009,10 @@ class MusicService : MediaLibraryService() {
             controller: MediaSession.ControllerInfo,
             customCommand: SessionCommand,
             args: Bundle
-        ): ListenableFuture<SessionResult> = when (customCommand.customAction) {
+        ): ListenableFuture<SessionResult> = if (!isOwnController(controller)) {
+            // Defence in depth: Media3 already filters on the commands granted in onConnect.
+            Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_PERMISSION_DENIED))
+        } else when (customCommand.customAction) {
             CMD_SKIP_NEXT -> {
                 requestManualSkip(forward = true)
                 Futures.immediateFuture(SessionResult(SessionResult.RESULT_SUCCESS))
