@@ -153,17 +153,13 @@ fun PlayerVisualizerSlot(modifier: Modifier = Modifier) {
 @Composable
 private fun rememberStillPreferred(): Boolean {
     val context = LocalContext.current
-    return remember(context) {
-        val noAnimation = runCatching {
-            Settings.Global.getFloat(
-                context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f
-            ) == 0f
-        }.getOrDefault(false)
-        val saving = runCatching {
+    val noAnimation = com.ivor.ivormusic.ui.theme.rememberReducedMotion()
+    val saving = remember(context) {
+        runCatching {
             context.getSystemService(PowerManager::class.java)?.isPowerSaveMode == true
         }.getOrDefault(false)
-        noAnimation || saving
     }
+    return noAnimation || saving
 }
 
 /**

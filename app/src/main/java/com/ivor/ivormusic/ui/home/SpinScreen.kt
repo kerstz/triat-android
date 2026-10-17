@@ -787,8 +787,10 @@ private fun SpinRow(
 private fun SpinDisc(song: Song, turning: Boolean, coverPx: Int, pill: State<Float>) {
     val context = LocalContext.current
     val rotation = remember { Animatable(0f) }
-    LaunchedEffect(turning) {
-        while (turning) {
+    // Animations turned off in system settings: the disc holds still.
+    val reducedMotion = com.ivor.ivormusic.ui.theme.rememberReducedMotion()
+    LaunchedEffect(turning, reducedMotion) {
+        while (turning && !reducedMotion) {
             if (rotation.value > 3600f) rotation.snapTo(rotation.value % 360f)
             rotation.animateTo(rotation.value + 360f, tween(9000, easing = LinearEasing))
         }

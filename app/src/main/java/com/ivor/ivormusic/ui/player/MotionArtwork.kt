@@ -121,7 +121,7 @@ private fun rememberMotionArtworkAllowed(wifiOnly: Boolean): Boolean {
             val connected = capabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED) == true
             val wifi = capabilities?.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) == true &&
                 capabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
-            val reducedMotion = Settings.Global.getFloat(context.contentResolver, Settings.Global.ANIMATOR_DURATION_SCALE, 1f) == 0f
+            val reducedMotion = com.ivor.ivormusic.ui.theme.TriatMotion.isReducedMotion(context.contentResolver)
             allowed = connected && (!wifiOnly || wifi) && !power.isPowerSaveMode && !reducedMotion &&
                 connectivity.restrictBackgroundStatus != ConnectivityManager.RESTRICT_BACKGROUND_STATUS_ENABLED &&
                 lifecycle.currentState.isAtLeast(Lifecycle.State.RESUMED)
