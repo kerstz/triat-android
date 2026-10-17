@@ -33,6 +33,13 @@ class TriatColorSchemeTest {
         }
     }
 
+    @Test fun outlineMarksComponentBoundariesOnEveryContainer() {
+        for (bg in listOf(dark.surface, dark.surfaceContainerLow, dark.surfaceContainer,
+            dark.surfaceContainerHigh, dark.surfaceContainerHighest)) {
+            assertTrue("outline on $bg", ratio(dark.outline, bg) >= 3f)
+        }
+    }
+
     @Test fun accentsKeepTheirLabelsReadable() {
         assertTrue(ratio(dark.onPrimary, dark.primary) >= 4.5f)
         assertTrue(ratio(dark.onSecondary, dark.secondary) >= 4.5f)

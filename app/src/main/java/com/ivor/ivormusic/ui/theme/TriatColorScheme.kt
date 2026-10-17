@@ -60,8 +60,12 @@ internal fun triatDarkColorScheme(): ColorScheme {
         onError = ground,
         errorContainer = flat(t.dangerSoft),
         onErrorContainer = t.danger,
-        outline = veil4,
-        outlineVariant = flat(t.hair),
+        // outline draws component boundaries (text field borders, outlined
+        // buttons, switch tracks), which need 3:1 against what they sit on
+        // (WCAG 1.4.11): ink3 clears that on every container up to veil-4.
+        // The veil itself is only good enough for decorative dividers.
+        outline = t.ink3,
+        outlineVariant = veil4,
         scrim = t.scrim.copy(alpha = 1f),
         surfaceBright = veil3,
         surfaceDim = ground,
