@@ -78,6 +78,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.guava.future
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
@@ -243,6 +244,9 @@ class MusicService : MediaLibraryService() {
      * the JVM browse test can swap it: `Uri.Builder` returns null from every
      * step under the stubbed android.jar.
      */
+    /** Mirrors onIsPlayingChanged so the sample loop can sleep while paused. */
+    private val isPlayingFlow = kotlinx.coroutines.flow.MutableStateFlow(false)
+
     private var autoArtworkUri: (String) -> Uri? = { key -> AutoArtwork.uriFor(this, key) }
     private data class BrowseSearchKey(val browser: MediaSession.ControllerInfo, val query: String)
     // Main-thread owned; retain terminal errors too so the legacy completion
@@ -339,6 +343,8 @@ class MusicService : MediaLibraryService() {
          * fade, which the one-second progress tick never was.
          */
         private const val TRANSITION_POLL_MS = 200L
+        /** Longest the sample loop sleeps while paused before re-checking. */
+        private const val PAUSED_SAMPLE_MAX_WAIT_MS = 5_000L
         private const val TRANSITION_PREPARE_LEAD_MS = 1_500L
 
         // Re-resolution attempts before a song is skipped. A dead or expired URL
@@ -1058,7 +1064,17 @@ class MusicService : MediaLibraryService() {
                     }
                     applySponsorBlock()
                 }
-                delay(250)
+                // The 250ms cadence is for the SponsorBlock skip and the
+                // scrobble clock while sound plays. Paused, the loop has run
+                // one more sample (so the clock sees the pause edge) and now
+                // sleeps until playback resumes, instead of waking four times
+                // a second for the whole life of the service. The timeout is a
+                // floor in case an edge is missed across a crossfade swap.
+                if (::engine.isInitialized && !player.isPlaying) {
+                    withTimeoutOrNull(PAUSED_SAMPLE_MAX_WAIT_MS) { isPlayingFlow.first { it } }
+                } else {
+                    delay(250)
+                }
             }
         }
         // Turning the feature on mid-track, or changing which categories act,
@@ -1334,6 +1350,7 @@ class MusicService : MediaLibraryService() {
 
         override fun onIsPlayingChanged(isPlaying: Boolean) {
             super.onIsPlayingChanged(isPlaying)
+            isPlayingFlow.value = isPlaying
             // Single-flight: only one progress monitor coroutine ever runs. Previous
             // approach launched a fresh loop on every STATE_READY transition (which
             // fires multiple times per song due to URI resolution / replaceMediaItem),
