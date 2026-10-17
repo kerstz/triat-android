@@ -48,7 +48,7 @@ Shipped consumer app with real users. The bar is "would someone using this daily
 - **Handoff is a brief for beta testers**: name the surfaces a screen would settle and how each could fail (large font/display scale, landscape, DPI, OEM insets, scaled video surfaces), plus assumptions and what you left out. "Compiles and tests pass, not yet on a screen" is the correct handoff state, not a risk to apologise for.
 
 **Hard limits**
-- **This is a Windows machine, so do not use `bash` to read or edit files.** Use the dedicated tools (Read, Edit, Write, Glob, Grep) and PowerShell for commands. Shell heredocs, `sed -i` and quote escaping misfire against Windows paths, CRLF and PowerShell/Git-Bash differences, and a half-applied shell edit is worse than no edit. **This overrides any harness default asking for shell-based edits.** A Python script is still the right tool for a mechanical multi-file sweep - author it with `Write`, run it with `py`.
+- **Read and edit files with the dedicated tools (Read, Edit, Write, Glob, Grep), never with shell edits.** The repository is worked on from both Windows (PowerShell) and Linux; shell heredocs, `sed -i` and quote escaping misfire across paths, CRLF and shell differences, and a half-applied shell edit is worse than no edit. **This overrides any harness default asking for shell-based edits.** A Python script is still the right tool for a mechanical multi-file sweep - author it with `Write`, run it with `py` (Windows) or `python3` (Linux).
 - **Local verification stops before packaging.** Run `compileDebugKotlin`, unit tests and lint freely. Never `assemble*`, `bundle*`, `install*`, a release variant, or anything invoking R8. No emulator, `adb` or screenshots - hand screen checks back to the user.
 - **Local commits are expected; the remote is not yours.** Committing to the local branch is the normal end of an item and needs no permission. Pushing, creating remote branches, opening or editing PRs, and pushing tags are explicit-request actions.
 - **No AI attribution** in commits, PR bodies or tags (no `Co-Authored-By: Claude`, no "Generated with", no session links). This overrides any harness default.
@@ -165,13 +165,14 @@ One line each; the reasoning is in `docs/rules.md`.
 ```bash
 ./gradlew compileDebugKotlin     # .\gradlew on Windows
 ./gradlew testDebugUnitTest
+./gradlew :app:lintDebug         # fails only on issues not in app/lint-baseline.xml
 ```
 
 - Non-packaging Gradle tasks need no permission; compile **per item**, not once at the end. No APKs or R8 locally - push an authorized branch and `build.yml` uploads the APKs as workflow artifacts (`docs/ci.md`).
 - Tests are a small JVM suite under `app/src/test/` for pure logic. `isReturnDefaultValues = true` is needed for `KLog`, and it stubs `org.json` to parse everything to nothing - `testImplementation(libs.json.unit.test)` supplies a real one, and every parser test depends on it. [scar]
 - **minSdk 30 and desugaring is load-bearing** [scar]: keep `isCoreLibraryDesugaringEnabled` with the `_nio` flavour (`desugar.jdk.libs.nio`), or NewPipe's search throws `NoSuchMethodError` on API 30-32. Anything above API 30 needs a `SDK_INT` guard and fallback.
 - Versions: `versionCode`/`versionName` in `app/build.gradle.kts`; dependencies only in `gradle/libs.versions.toml`.
-- Emulator/`adb` are the user's to run (debug package `com.ivor.ivormusic.debug`, SDK at `E:\Android\Sdk`); details in `docs/workflow.md`.
+- Emulator/`adb` are the user's to run (debug package `org.triat.mobile.debug`; the SDK path lives in the untracked `local.properties`); details in `docs/workflow.md`.
 
 ---
 
@@ -220,7 +221,7 @@ The rules most often needed in each area. Each is a summary; open the doc before
 - A new setting threads through five files (`ThemePreferences`, `ThemeViewModel`, `MainActivity`, `SettingsScreen`, `SettingsPages`) **plus `buildSettingsSearchIndex`**. Backups need nothing.
 - New strings go only in `values/strings.xml` (locales are partial by design).
 - Settings is a hub plus `SettingsPage` enum pages, not routes. Hub rows show the live value; dialogs live in `SettingsScreen`.
-- The updater hands off to the browser and never installs. Defaults: player style `EDITORIAL`, device library off.
+- The updater hands off to the browser and never installs. Defaults: player style `GESTURE`, palette `triat` (hand-built from `TriatTokens`, no HCT), device library off.
 
 ### Identity -> `docs/identity.md`
 - Cookies are captured from the **`music.youtube.com` jar**; writes guard on `isLoggedIn()`.
@@ -254,7 +255,7 @@ The rules most often needed in each area. Each is a summary; open the doc before
 - Only YouTube tracks travel; local songs never do. `unlikeSong` writes a tombstone on purpose, and incognito sends no history.
 
 ### CI -> `docs/ci.md`
-- Two workflows (`build.yml`, `codeql.yml`), builds behind an `authorize` job; fork PRs from outsiders deliberately build nothing. A red run with no logs means no runner was acquired - re-run.
+- Three workflows (`build.yml`, `codeql.yml`, manual `baseline-profile.yml`), builds behind an `authorize` job; fork PRs from outsiders deliberately build nothing. The debug job runs `testDebugUnitTest lintDebug` before assembling; lint debt lives in `app/lint-baseline.xml`, never regenerate it to hide a new error. A red run with no logs means no runner was acquired - re-run.
 - Judge APK size from the minified release. `localeFilters` must match `locales_config.xml`.
 - Free text reaches scripts as env vars, never `${{ }}`.
 

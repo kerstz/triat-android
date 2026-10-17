@@ -12,7 +12,7 @@ For how the app is built, see [`CLAUDE.md`](CLAUDE.md). For the design system an
 
 This repository is Triat for Android, a fork of Koda.
 
-**Everything after this section is Koda's own roadmap, kept as it was for reference, and it describes the fork as it arrived.** Triat is a music player: it has no video mode, no Shorts, no channel pages, no subscriptions, no lyrics and no sleep timer. Where the sections below plan or describe any of those, they are a record of upstream's intent, not of this app. `CLAUDE.md` and `docs/` describe what is actually here.
+**Everything after this section is Koda's own roadmap, kept as it was for reference, and it describes the fork as it arrived.** Triat is a music player: it has no video mode, no Shorts, no channel pages, no subscriptions and no lyrics. Where the sections below plan or describe any of those, they are a record of upstream's intent, not of this app. `CLAUDE.md` and `docs/` describe what is actually here.
 
 **Shipped in Triat**
 - New name, icon and application id (`org.triat.mobile`), and a dark "Nothing" palette by default.
@@ -23,6 +23,7 @@ This repository is Triat for Android, a fork of Koda.
 - A quieter home and a flatter bottom bar: ghost chips and icons, artwork shelves kept, the top bar reduced to the greeting.
 - **Video removed.** The video player, Shorts, channel pages, subscriptions and the watch history are gone, along with lyrics and the sleep timer, which went with the same pass. About 13,000 lines.
 - SponsorBlock rebuilt for music: its skipping engine lived in the video player, so it now runs in `MusicService` and skips segments during audio playback, with the Ask button, the skip notice and its undo, and the coloured marks on the seek bar.
+- October 2026 production pass (`docs/review/REVIEW-ANDROID.md` and the V0/V1 Android lots of `PRODUCT-UI-ROADMAP.md` in the desktop repository): unit tests and lint in CI behind a baseline; the video permissions dropped; sync refuses loopback hosts and an incomplete YouTube session from the desktop; playlists load off the main thread; lazier cold start; the sample loop sleeps while paused; TalkBack can reorder the queue and hears the shuffle/repeat state; 48dp targets on the mini player and queue rows; the Triat palette (hand-built from `TriatTokens`, generated from the desktop's `design/tokens.json`) is the default; one reduced-motion check (`TriatMotion`); a shared `StateView` and an artist error state with Retry; tablets and unfolded foldables follow the device orientation, with a side-by-side Gesture player in landscape; the sleep timer is back, in the options sheet; cleaner display titles; the last video wording removed.
 
 **Planned**
 - Syncing what is playing and where, to carry on from one device to the other.
@@ -80,7 +81,20 @@ These are not goals. They are the walls the roadmap has to fit inside, and any p
 
 ## Known defects
 
-There are no diagnosed, still-open defects recorded here for version 4.7. Fixed diagnoses are retained under [Shipped](#shipped), where they cannot be mistaken for current behaviour.
+Open items left by the October 2026 review (`docs/review/REVIEW-ANDROID.md` in the desktop repository, IDs below). Each one is diagnosed; none has been reproduced on a device.
+
+- **No baseline profile ships (P1-3).** The generator and a manual CI workflow exist (`docs/baseline-profile.md`); nobody has run it yet, so release builds start cold without an ART profile.
+- **`MusicApp` takes 110+ parameters and collects about 60 flows at the root (PERF-1, PERF-4).** Every setting change recomposes the root; `ThemePreferences` is rebuilt by the 30-second time-limit tick even when the limit is off. Needs the Compose compiler reports (PERF-2) to measure before and after.
+- **`MusicService.onCreate` is fully synchronous (PERF-6)**, which delays the session for Auto, widgets and headset buttons.
+- **`security-crypto` is deprecated (SEC-4)**, and a key failure silently falls back to volatile storage, losing sessions without a message.
+- **Scheduled backups are a plain ZIP (SEC-5)**, possibly in a cloud folder; no passphrase option.
+- **Pairing shows no fingerprint of the desktop (SEC-6)**, and a well-formed shared session still switches the account with no undo (SEC-1 remainder).
+- **`allowBackup="true"` (SEC-3)** sends history, searches and the blocklist to Google Drive on top of the app's own backup. Left for the maintainer to decide.
+- **Only the Gesture player adapts to landscape on large screens**; the other eight styles draw their portrait column, and Home/Library have no NavigationRail or list-detail yet (P1-6 remainder).
+- **Hardcoded colors and font sizes remain (UX-2, UX-3)**: SearchScreen, HomeScreen overlays, settings components; and `items()` without keys in several lists (PERF-3).
+- **Most springs are still bouncy**: `TriatMotion` defines the calm specs but the existing call sites were not migrated; Doto/Geist are not embedded and fonts still come from the Google Fonts provider (roadmap A1/A2/A11).
+- **The Triat palette in light mode** falls back to the tinted "nothing" HCT scheme, and the `signal` red is 3.8:1 on black, so it must not carry small text.
+- **Display titles rebuilt from stored data** (history, last-played, downloads index) skip the title cleaner, so songs saved before it keep their old "(Official Video)" titles.
 
 ---
 
