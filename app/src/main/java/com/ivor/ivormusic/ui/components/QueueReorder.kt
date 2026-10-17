@@ -23,6 +23,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.CustomAccessibilityAction
+import androidx.compose.ui.semantics.customActions
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.isActive
@@ -210,6 +214,22 @@ class QueueReorderState internal constructor(
         haptics.performHapticFeedback(HapticFeedbackType.TextHandleMove)
     }
 
+    /**
+     * Move [key]'s row by [delta] positions without a drag: the path the
+     * accessibility actions take. It reports through the same [onMove] the
+     * drag does and settles at once, so positions stay the positions of the
+     * list handed to [rememberQueueReorderState] (the play order, for music)
+     * and go through exactly the same translation a drag does.
+     */
+    internal fun moveRowBy(key: Any, delta: Int): Boolean {
+        val from = keyIndex[key] ?: return false
+        val to = from + delta
+        if (to < 0 || to >= keyIndex.size || to == from) return false
+        onMove(from, to)
+        onSettle()
+        return true
+    }
+
     /** Auto-scroll step for this frame; zero away from the viewport edges. */
     internal fun autoScrollDelta(edgeZonePx: Float, maxStepPx: Float): Float {
         val key = draggingKey ?: return 0f
@@ -331,3 +351,29 @@ fun Modifier.queueDragLongPress(state: QueueReorderState, key: Any): Modifier =
             }
         )
     }
+
+/**
+ * "Move up" and "Move down" for a screen reader, the alternative to dragging
+ * (which TalkBack cannot do). Put it on the row's own clickable node so the
+ * actions show in that row's actions menu. An action is left out where it
+ * cannot apply, so the first row offers no "Move up".
+ *
+ * @param index this row's position in the list given to
+ * [rememberQueueReorderState], and [count] that list's size.
+ */
+@Composable
+fun Modifier.queueMoveActions(
+    state: QueueReorderState,
+    key: Any,
+    index: Int,
+    count: Int,
+): Modifier {
+    val upLabel = stringResource(com.ivor.ivormusic.R.string.cd_move_up)
+    val downLabel = stringResource(com.ivor.ivormusic.R.string.cd_move_down)
+    return this.semantics {
+        val actions = ArrayList<CustomAccessibilityAction>(2)
+        if (index > 0) actions += CustomAccessibilityAction(upLabel) { state.moveRowBy(key, -1) }
+        if (index < count - 1) actions += CustomAccessibilityAction(downLabel) { state.moveRowBy(key, 1) }
+        customActions = actions
+    }
+}

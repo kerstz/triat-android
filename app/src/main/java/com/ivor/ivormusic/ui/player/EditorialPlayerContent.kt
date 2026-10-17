@@ -113,6 +113,7 @@ import com.ivor.ivormusic.ui.components.QueueDragHandle
 import com.ivor.ivormusic.ui.components.QueueRowContainer
 import com.ivor.ivormusic.ui.components.queueDragLongPress
 import com.ivor.ivormusic.ui.components.rememberQueueRemoval
+import com.ivor.ivormusic.ui.components.queueMoveActions
 import com.ivor.ivormusic.ui.components.rememberQueueReorderState
 import com.ivor.ivormusic.ui.components.rememberFocusedQueueListState
 import kotlin.math.abs
@@ -888,6 +889,7 @@ internal fun EditorialQueueView(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .queueDragLongPress(reorder, key)
+                                .queueMoveActions(reorder, key, index, queue.size)
                         ) {
                             Row(
                                 modifier = Modifier
