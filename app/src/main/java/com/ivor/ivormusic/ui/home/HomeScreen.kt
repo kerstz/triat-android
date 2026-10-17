@@ -584,12 +584,13 @@ fun HomeScreen(
                             if (spotlightHome) {
                                 val spotlightPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
                                 val spotlightLiked by viewModel.likedSongs.collectAsStateWithLifecycle()
+                                val localPlaylistsLoaded by viewModel.localPlaylistsLoaded.collectAsStateWithLifecycle()
                                 SpotlightHomeContent(
                                     songs = songs,
                                     recentlyPlayed = recentlyPlayed,
                                     likedSongs = spotlightLiked,
                                     playlists = spotlightPlaylists,
-                                    isInitialLoading = isLoading && songs.isEmpty(),
+                                    isInitialLoading = (isLoading && songs.isEmpty()) || !localPlaylistsLoaded,
                                     onSongLongPress = { song -> songOptionsTarget = song },
                                     onSongClick = { song ->
                                         playerViewModel.playQueue(songs, song)

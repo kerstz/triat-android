@@ -223,6 +223,13 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
         (localItems + savedItems + ytPlaylists).filterNot { it.id in hiddenIds }
     }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
 
+    /**
+     * False until the local playlists have been read off the main thread.
+     * [userPlaylists] is empty until then, so a "no playlists" state must
+     * wait for this or it flashes at every cold start.
+     */
+    val localPlaylistsLoaded: StateFlow<Boolean> = playlistRepository.isLoaded
+
     // --- Spotlight's "New for you" shelf ---
 
     private val _discoverySongs = MutableStateFlow<List<Song>>(emptyList())

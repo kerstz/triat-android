@@ -94,6 +94,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import androidx.compose.ui.platform.LocalContext
 import com.ivor.ivormusic.ui.components.PredictiveBackStack
+import com.ivor.ivormusic.ui.components.StateView
 import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.data.Song
 import com.ivor.ivormusic.data.SongSource
@@ -588,6 +589,7 @@ fun LibraryMainScreen(
     allSongsListState: LazyListState = rememberLazyListState()
 ) {
     val userPlaylists by viewModel.userPlaylists.collectAsStateWithLifecycle()
+    val localPlaylistsLoaded by viewModel.localPlaylistsLoaded.collectAsStateWithLifecycle()
     val localPlaylistIds by viewModel.localPlaylistIds.collectAsStateWithLifecycle()
     val savedPlaylistIds by viewModel.savedPlaylistIds.collectAsStateWithLifecycle()
     val hiddenPlaylists by viewModel.hiddenPlaylists.collectAsStateWithLifecycle()
@@ -819,6 +821,7 @@ fun LibraryMainScreen(
                     LibraryTab.Playlists -> {
                         PlaylistsGrid(
                             playlists = userPlaylists,
+                            playlistsLoaded = localPlaylistsLoaded,
                             localPlaylistIds = localPlaylistIds,
                             savedPlaylistIds = savedPlaylistIds,
                             likedSongs = likedSongs,
@@ -1371,7 +1374,9 @@ fun PlaylistsGrid(
     onHidePlaylist: (PlaylistDisplayItem) -> Unit = {},
     onUnhidePlaylist: (String) -> Unit = {},
     isLoggedIn: Boolean = false,
-    onImportTxtClick: (() -> Unit)? = null
+    onImportTxtClick: (() -> Unit)? = null,
+    /** False while the local playlists are still being read; hides the empty state. */
+    playlistsLoaded: Boolean = true
 ) {
     var showHiddenSheet by remember { mutableStateOf(false) }
 
@@ -1442,7 +1447,11 @@ fun PlaylistsGrid(
                 }
             }
         }
-        if (playlists.isEmpty()) {
+        if (playlists.isEmpty() && !playlistsLoaded) {
+            item(key = "playlists_loading", span = { GridItemSpan(maxLineSpan) }) {
+                StateView.Loading()
+            }
+        } else if (playlists.isEmpty()) {
             item(key = "playlists_empty", span = { GridItemSpan(maxLineSpan) }) {
                 EmptyLibraryState(
                     icon = Icons.AutoMirrored.Rounded.PlaylistAdd,
