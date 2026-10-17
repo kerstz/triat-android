@@ -3,6 +3,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
+import com.ivor.ivormusic.ui.components.StateView
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -106,11 +107,18 @@ fun NotInterestedScreen(
         }
     ) { scaffoldPadding ->
         if (hiddenVideos.isEmpty() && blockedChannels.isEmpty()) {
-            EmptyState(
+            Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding(scaffoldPadding)
-            )
+                    .padding(scaffoldPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                StateView.Empty(
+                    title = stringResource(R.string.ni_empty_title),
+                    body = stringResource(R.string.ni_empty_body),
+                    icon = Icons.Rounded.NotInterested
+                )
+            }
             return@Scaffold
         }
 
@@ -337,37 +345,6 @@ private fun HiddenVideoRow(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-        }
-    }
-}
-
-@Composable
-private fun EmptyState(modifier: Modifier = Modifier) {
-    Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.padding(32.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Rounded.NotInterested,
-                contentDescription = null,
-                modifier = Modifier.size(72.dp),
-                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.4f)
-            )
-            Spacer(Modifier.height(20.dp))
-            Text(
-                text = stringResource(R.string.ni_empty_title),
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.SemiBold,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(Modifier.height(6.dp))
-            Text(
-                text = stringResource(R.string.ni_empty_body),
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                textAlign = TextAlign.Center
-            )
         }
     }
 }

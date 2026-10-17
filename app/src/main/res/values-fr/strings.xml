@@ -12,6 +12,9 @@
     <string name="action_edit">Modifier</string>
     <string name="action_share">Partager</string>
     <string name="action_retry">Réessayer</string>
+    <string name="state_error_title">Ça n\'a pas marché</string>
+    <string name="state_offline_body">Hors ligne · tu écoutes ce qui est enregistré</string>
+    <string name="state_loading">Chargement</string>
     <string name="action_see_all">Tout afficher</string>
     <string name="action_play_all">Tout lire</string>
     <string name="action_show_more">Afficher plus</string>
@@ -882,6 +885,7 @@
     <string name="hs_classic">Classique</string>
     <string name="hs_classic_desc">Une grande vedette, puis des rangées</string>
     <string name="hs_spotlight_desc">Raccourcis, sélections rapides, étagères</string>
+    <string name="ar_load_failed">Impossible de charger cet artiste</string>
     <string name="sp_music_quality_wifi">Qualité de la musique en Wi-Fi</string>
     <string name="sp_music_quality_mobile">Qualité de la musique en données mobiles</string>
     <string name="ss_search_settings">Rechercher dans les paramètres</string>

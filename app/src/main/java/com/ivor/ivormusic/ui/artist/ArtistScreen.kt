@@ -134,6 +134,7 @@ import com.ivor.ivormusic.ui.components.PredictiveBackStack
 import com.ivor.ivormusic.ui.components.SEARCH_FIELD_MIN_ITEMS
 import com.ivor.ivormusic.ui.components.SearchField
 import com.ivor.ivormusic.ui.components.SongArtwork
+import com.ivor.ivormusic.ui.components.StateView
 import com.ivor.ivormusic.ui.components.VideoThumbnail
 import com.ivor.ivormusic.ui.components.releaseCaption
 import com.ivor.ivormusic.ui.home.HomeViewModel
@@ -337,6 +338,10 @@ fun ArtistScreen(
     // artists, which never reach the network.
     var artistPage by remember { mutableStateOf<ArtistPage?>(null) }
     var isLoading by remember { mutableStateOf(true) }
+    // True when the remote load failed or came back with no page at all, as
+    // opposed to a page that genuinely has no songs. Retry bumps loadAttempt.
+    var loadError by remember { mutableStateOf(false) }
+    var loadAttempt by remember { mutableIntStateOf(0) }
     var isLoadingMore by remember { mutableStateOf(false) }
     var canLoadMoreRemote by remember { mutableStateOf(true) }
     var visibleSongCount by remember { mutableIntStateOf(20) }
@@ -359,8 +364,9 @@ fun ArtistScreen(
     val scope = rememberCoroutineScope()
 
     // Fetch songs - first check local files, then fetch from internet
-    LaunchedEffect(artistName, artistId, songs) {
+    LaunchedEffect(artistName, artistId, songs, loadAttempt) {
         isLoading = true
+        loadError = false
         visibleSongCount = 20
         artistSongs = emptyList()
         fetchedAlbums = emptyList()
@@ -384,27 +390,40 @@ fun ArtistScreen(
             // Local albums are derived automatically below
             isLoading = false
         } else if (viewModel != null) {
-            // Resolve a channel id when the caller only knows the name
-            // (e.g. Library navigation passes the artist name as the id).
-            val resolvedId = artistId?.takeIf { it.startsWith("UC") }
-                ?: viewModel.searchArtists(artistName).let { results ->
-                    (results.firstOrNull { it.name.equals(artistName, ignoreCase = true) }
-                        ?: results.firstOrNull())?.id
-                }
+            var page: ArtistPage? = null
+            try {
+                // Resolve a channel id when the caller only knows the name
+                // (e.g. Library navigation passes the artist name as the id).
+                val resolvedId = artistId?.takeIf { it.startsWith("UC") }
+                    ?: viewModel.searchArtists(artistName).let { results ->
+                        (results.firstOrNull { it.name.equals(artistName, ignoreCase = true) }
+                            ?: results.firstOrNull())?.id
+                    }
 
-            resolvedChannelId = resolvedId
-            if (resolvedId != null) {
-                // One browse carries songs, both release shelves and the
-                // identity block; the page keeps them split for the sections.
-                val page = viewModel.getArtistPage(resolvedId)
-                artistPage = page
-                artistSongs = page?.songs.orEmpty()
-                fetchedAlbums = page?.albums.orEmpty()
-                fetchedSingles = page?.singles.orEmpty()
+                resolvedChannelId = resolvedId
+                if (resolvedId != null) {
+                    // One browse carries songs, both release shelves and the
+                    // identity block; the page keeps them split for the sections.
+                    page = viewModel.getArtistPage(resolvedId)
+                    artistPage = page
+                    artistSongs = page?.songs.orEmpty()
+                    fetchedAlbums = page?.albums.orEmpty()
+                    fetchedSingles = page?.singles.orEmpty()
+                }
+                // Fallback: plain name search if the artist page gave nothing
+                if (artistSongs.isEmpty()) {
+                    artistSongs = viewModel.searchArtistSongs(artistName)
+                }
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                loadError = true
             }
-            // Fallback: plain name search if the artist page gave nothing
-            if (artistSongs.isEmpty()) {
-                artistSongs = viewModel.searchArtistSongs(artistName)
+            // The data layer reports a failed request as null / empty rather
+            // than throwing, so "no page and nothing found" is the failure
+            // signal; a page that answered with no songs is a real empty.
+            if (page == null && artistSongs.isEmpty() && fetchedAlbums.isEmpty()) {
+                loadError = true
             }
             hasLocalSongs = false
             isLoading = false
@@ -790,7 +809,14 @@ fun ArtistScreen(
                             }
                         }
 
-                        if (artistSongs.isEmpty()) {
+                        if (loadError) {
+                            item(key = "error") {
+                                StateView.Error(
+                                    onRetry = { loadAttempt++ },
+                                    title = stringResource(R.string.ar_load_failed)
+                                )
+                            }
+                        } else if (artistSongs.isEmpty()) {
                             item(key = "empty") {
                                 Box(
                                     modifier = Modifier

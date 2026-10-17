@@ -3,6 +3,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.annotation.StringRes
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ivor.ivormusic.R
+import com.ivor.ivormusic.ui.components.StateView
 import androidx.compose.ui.res.stringResource
 
 import androidx.compose.animation.AnimatedContent
@@ -346,7 +347,13 @@ private fun MusicTab(
         }
 
         if (songs.isEmpty() && progress.isEmpty() && offline.isEmpty()) {
-            item { EmptyState(stringResource(R.string.dl_empty_music), Icons.Rounded.MusicNote) }
+            item {
+                StateView.Empty(
+                    title = stringResource(R.string.dl_empty_music),
+                    icon = Icons.Rounded.MusicNote,
+                    modifier = Modifier.padding(top = 48.dp)
+                )
+            }
         }
     }
 }
@@ -546,31 +553,5 @@ private fun DownloadedRow(
                 )
             }
         }
-    }
-}
-
-@Composable
-private fun EmptyState(
-    message: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 96.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f),
-            modifier = Modifier.size(56.dp)
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
     }
 }

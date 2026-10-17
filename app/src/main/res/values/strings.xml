@@ -62,6 +62,9 @@
     <string name="action_edit">Edit</string>
     <string name="action_share">Share</string>
     <string name="action_retry">Retry</string>
+    <string name="state_error_title">Something went wrong</string>
+    <string name="state_offline_body">Offline · playing what is saved</string>
+    <string name="state_loading">Loading</string>
     <string name="action_see_all">See all</string>
     <string name="action_play_all">Play all</string>
     <string name="action_show_more">Show More</string>
@@ -808,6 +811,7 @@
 
     <!-- Playback settings / captions sheets -->
 
+    <string name="ar_load_failed">Couldn\'t load this artist</string>
     <!-- Device videos in the video-mode Library -->
     <string name="dv_on_this_device">On this device</string>
 
