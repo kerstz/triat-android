@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Static launcher shortcuts (long-press the icon). targetPackage must be the
+    application id, and res/xml is not run through manifest placeholders, so the
+    debug build (applicationIdSuffix ".debug") ships its own copy of this file
+    in app/src/debug/res/xml. Keep the two in step.
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android">
+    <shortcut
+        android:shortcutId="shuffle_liked"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_shuffle"
+        android:shortcutShortLabel="@string/shortcut_shuffle_short"
+        android:shortcutLongLabel="@string/shortcut_shuffle_long">
+        <intent
+            android:action="org.triat.mobile.action.SHUFFLE_LIKED"
+            android:targetPackage="org.triat.mobile"
+            android:targetClass="com.ivor.ivormusic.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="library"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_library"
+        android:shortcutShortLabel="@string/shortcut_library_short"
+        android:shortcutLongLabel="@string/shortcut_library_long">
+        <intent
+            android:action="org.triat.mobile.action.LIBRARY"
+            android:targetPackage="org.triat.mobile"
+            android:targetClass="com.ivor.ivormusic.MainActivity" />
+    </shortcut>
+    <shortcut
+        android:shortcutId="search"
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_search"
+        android:shortcutShortLabel="@string/shortcut_search_short"
+        android:shortcutLongLabel="@string/shortcut_search_long">
+        <intent
+            android:action="org.triat.mobile.action.SEARCH"
+            android:targetPackage="org.triat.mobile"
+            android:targetClass="com.ivor.ivormusic.MainActivity" />
+    </shortcut>
+</shortcuts>

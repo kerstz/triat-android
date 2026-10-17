@@ -445,6 +445,11 @@ class MainActivity : ComponentActivity() {
      */
     private fun takeSharedLink(intent: Intent?) {
         if (intent == null) return
+        LauncherShortcut.fromAction(intent.action)?.let { shortcut ->
+            neutralize(intent)
+            pendingShortcut.value = shortcut
+            return
+        }
         val navTarget = intent.getStringExtra("navigate_to")
         if (navTarget != null) {
             neutralize(intent)
@@ -472,6 +477,9 @@ class MainActivity : ComponentActivity() {
 
     companion object {
         var pendingNavigation = androidx.compose.runtime.mutableStateOf<String?>(null)
+
+        /** A launcher shortcut waiting for the Home screen to act on it. */
+        val pendingShortcut = androidx.compose.runtime.mutableStateOf<LauncherShortcut?>(null)
     }
 }
 
@@ -591,6 +599,21 @@ fun MusicApp(
     val context = androidx.compose.ui.platform.LocalContext.current
     val navController = rememberNavController()
     val pendingNav by MainActivity.pendingNavigation
+    // A launcher shortcut is acted on by the Home screen, which owns the tabs,
+    // so a shortcut arriving over Settings or Downloads first pops back to it.
+    // Before onboarding is finished there is no Home to act on: drop it.
+    val pendingShortcut by MainActivity.pendingShortcut
+    LaunchedEffect(pendingShortcut, onboardingCompleted) {
+        if (pendingShortcut == null) return@LaunchedEffect
+        if (!onboardingCompleted) {
+            MainActivity.pendingShortcut.value = null
+        } else {
+            navController.navigate("home") {
+                popUpTo("home") { inclusive = false }
+                launchSingleTop = true
+            }
+        }
+    }
     LaunchedEffect(pendingNav) {
         val target = pendingNav
         if (target != null) {
@@ -683,7 +706,9 @@ fun MusicApp(
                     manualScan = manualScanEnabled,
                     localOnly = localOnlyMode,
                     spotlightHome = spotlightHome,
-                    nonExpressiveNavigationBar = nonExpressiveNavigationBar
+                    nonExpressiveNavigationBar = nonExpressiveNavigationBar,
+                    launcherShortcut = pendingShortcut,
+                    onLauncherShortcutConsumed = { MainActivity.pendingShortcut.value = null }
                 )
             }
             composable(

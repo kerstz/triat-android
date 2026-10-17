@@ -1670,4 +1670,12 @@
     <string name="acct_import_cookies_sub">Text, Netscape or JSON format for your personalised recommendations</string>
     <string name="ni_channel_blocked">%1$s won\'t be recommended</string>
     <string name="ni_channel_hidden">Channel hidden</string>
+
+    <!-- Launcher shortcuts: short label max 10 characters, long label max 25 -->
+    <string name="shortcut_shuffle_short">Shuffle</string>
+    <string name="shortcut_shuffle_long">Shuffle liked songs</string>
+    <string name="shortcut_library_short">Library</string>
+    <string name="shortcut_library_long">Open your library</string>
+    <string name="shortcut_search_short">Search</string>
+    <string name="shortcut_search_long">Search</string>
 </resources>

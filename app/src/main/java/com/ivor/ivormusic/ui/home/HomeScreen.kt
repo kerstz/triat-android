@@ -188,6 +188,9 @@ fun HomeScreen(
     spotlightHome: Boolean = false,
     /** Use Material 3's compact bar instead of the default floating toolbar. */
     nonExpressiveNavigationBar: Boolean = false,
+    /** A launcher shortcut to act on once, and the callback that clears it. */
+    launcherShortcut: com.ivor.ivormusic.LauncherShortcut? = null,
+    onLauncherShortcutConsumed: () -> Unit = {},
     /**
      * Hoisted so the video mini player - an overlay above the NavHost, outside
      * this composable - can follow the same toolbar this shell hides on scroll.
@@ -392,6 +395,37 @@ fun HomeScreen(
     // list rather than re-opening the playlist.
     var viewedPlaylistFromHome by remember {
         mutableStateOf<com.ivor.ivormusic.data.PlaylistDisplayItem?>(null)
+    }
+
+    // Long-press shortcuts from the launcher. Search and Library are a tab
+    // switch (the search field focuses itself when its tab appears). Shuffle
+    // plays the liked list through the same path as the Library's Shuffle
+    // button; with nothing liked there is nothing to shuffle, so it opens the
+    // Liked playlist instead.
+    val likedPlaylistName = stringResource(R.string.liked_songs)
+    val likedPlaylistOwner = stringResource(R.string.lib_uploader_you)
+    LaunchedEffect(launcherShortcut) {
+        val shortcut = launcherShortcut ?: return@LaunchedEffect
+        onLauncherShortcutConsumed()
+        when (shortcut) {
+            com.ivor.ivormusic.LauncherShortcut.SEARCH -> goToTab(1)
+            com.ivor.ivormusic.LauncherShortcut.LIBRARY -> goToTab(2)
+            // Launched on the screen's scope: consuming the request above
+            // changes this effect's key and would cancel the fetch in flight.
+            com.ivor.ivormusic.LauncherShortcut.SHUFFLE_LIKED -> scope.launch {
+                val liked = viewModel.fetchPlaylistSongs("LM")
+                if (liked.isNotEmpty()) {
+                    playerViewModel.playQueueShuffled(liked)
+                    showPlayerSheet = true
+                } else {
+                    noteLibraryReturn()
+                    viewedPlaylistFromHome = com.ivor.ivormusic.data.PlaylistDisplayItem(
+                        likedPlaylistName, "LM", likedPlaylistOwner, 0, null
+                    )
+                    goToTab(2)
+                }
+            }
+        }
     }
 
     // A playlist link shared or opened into the app, which lands at
