@@ -811,6 +811,7 @@
     <string name="ar_no_matching_songs">No songs match that</string>
     <string name="ar_matching_count">%1$d of %2$d</string>
     <string name="ar_no_songs">No songs found for this artist</string>
+    <string name="ar_load_failed">Couldn\'t load this artist</string>
     <string name="ar_more_play_options">More play options</string>
     <string name="ar_start_radio">Start radio</string>
     <string name="unknown_album">Unknown Album</string>
@@ -821,7 +822,6 @@
 
     <!-- Playback settings / captions sheets -->
 
-    <string name="ar_load_failed">Couldn\'t load this artist</string>
     <!-- Device videos in the video-mode Library -->
     <string name="dv_on_this_device">On this device</string>
 
@@ -1035,6 +1035,7 @@
     <string name="palette_style_title">Palette style</string>
     <string name="palette_style_description">Choose how colorful your theme feels. Previews update as you explore.</string>
     <string name="palette_style_presets_hint">Styles apply to preset palettes. Wallpaper follows your system colors; Black and White keep their own look.</string>
+    <string name="palette_style_triat_note">The Triat palette is fixed, so palette styles do not apply to it. Pick another palette to use them.</string>
     <string name="palette_style_tonal_spot">Tonal Spot</string>
     <string name="palette_style_vibrant">Vibrant</string>
     <string name="palette_style_expressive">Expressive</string>
@@ -1444,6 +1445,7 @@
     <string name="cd_queue">Queue</string>
     <string name="pl_end_of_queue">End of queue</string>
     <string name="psw_release_for">Release for</string>
+    <string name="palette_name_triat">Triat (default)</string>
     <string name="palette_name_nothing">Nothing</string>
     <string name="palette_name_electric">Electric</string>
     <string name="palette_name_magenta">Magenta Pop</string>

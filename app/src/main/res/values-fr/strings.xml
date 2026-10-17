@@ -885,6 +885,7 @@
     <string name="ar_no_matching_songs">Aucun titre ne correspond</string>
     <string name="ar_matching_count">%1$d sur %2$d</string>
     <string name="ar_no_songs">Aucun titre trouvé pour cet artiste</string>
+    <string name="ar_load_failed">Impossible de charger cet artiste</string>
     <string name="ar_more_play_options">Plus d\'options de lecture</string>
     <string name="ar_start_radio">Lancer la radio</string>
     <string name="unknown_album">Album inconnu</string>
@@ -895,7 +896,6 @@
     <string name="hs_classic">Classique</string>
     <string name="hs_classic_desc">Une grande vedette, puis des rangées</string>
     <string name="hs_spotlight_desc">Raccourcis, sélections rapides, étagères</string>
-    <string name="ar_load_failed">Impossible de charger cet artiste</string>
     <string name="sp_music_quality_wifi">Qualité de la musique en Wi-Fi</string>
     <string name="sp_music_quality_mobile">Qualité de la musique en données mobiles</string>
     <string name="ss_search_settings">Rechercher dans les paramètres</string>
@@ -1023,6 +1023,7 @@
     <string name="palette_style_title">Style de palette</string>
     <string name="palette_style_description">Choisis à quel point ton thème est coloré. Les aperçus se mettent à jour au fil de ton exploration.</string>
     <string name="palette_style_presets_hint">Les styles s\'appliquent aux palettes prédéfinies. Fond d\'écran suit les couleurs de ton système ; Noir et Blanc gardent leur propre rendu.</string>
+    <string name="palette_style_triat_note">La palette Triat est fixe : les styles de palette ne s\'appliquent pas. Choisis une autre palette pour les utiliser.</string>
     <string name="palette_style_tonal_spot">Tonal Spot</string>
     <string name="palette_style_vibrant">Vibrant</string>
     <string name="palette_style_expressive">Expressif</string>
@@ -1336,6 +1337,7 @@
     <string name="cd_queue">File d\'attente</string>
     <string name="pl_end_of_queue">Fin de la file</string>
     <string name="psw_release_for">Relâche pour</string>
+    <string name="palette_name_triat">Triat (par défaut)</string>
     <string name="palette_name_nothing">Nothing</string>
     <string name="palette_name_electric">Électrique</string>
     <string name="palette_name_magenta">Magenta pop</string>
