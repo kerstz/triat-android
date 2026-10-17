@@ -431,6 +431,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
                     controller: MediaController,
                     extras: android.os.Bundle
                 ) {
+                    applySleepTimerExtras(extras)
                     applyPlaybackSpeedExtras(extras)
                     applyPlayOrderExtras(extras)
                     applySponsorBlockExtras(extras)
@@ -713,6 +714,9 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         // shuffling would otherwise never be told which permutation it is in.
         applyPlayOrderExtras(ctrl.sessionExtras)
         applySponsorBlockExtras(ctrl.sessionExtras)
+        // Same reason for the timer: a player reopened after the activity died
+        // must pick the running countdown back up.
+        applySleepTimerExtras(ctrl.sessionExtras)
 
         // Rebuild queue from MediaSession
         val itemCount = ctrl.mediaItemCount
@@ -1479,6 +1483,52 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     // music kept playing, which is exactly what someone who has just set a
     // sleep timer does. It died silently and playback ran on. Everything below
     // is a remote control for the service's copy.
+
+    /** Wall-clock time when the sleep timer fires, or null when inactive. */
+    private val _sleepTimerEndsAt = MutableStateFlow<Long?>(null)
+    val sleepTimerEndsAt: StateFlow<Long?> = _sleepTimerEndsAt.asStateFlow()
+
+    /** True while playback is set to stop at the end of the current track. */
+    private val _sleepTimerEndOfTrack = MutableStateFlow(false)
+    val sleepTimerEndOfTrack: StateFlow<Boolean> = _sleepTimerEndOfTrack.asStateFlow()
+
+    /** Stop playback after [minutes]; the last 30 seconds fade out. */
+    fun startSleepTimer(minutes: Int) {
+        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_SET, minutes)
+    }
+
+    /** Stop playback when the track that is playing now finishes. */
+    fun startSleepTimerEndOfTrack() {
+        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_SET, 0)
+    }
+
+    fun cancelSleepTimer() {
+        sendSleepTimerCommand(MusicService.CMD_SLEEP_TIMER_CANCEL, 0)
+    }
+
+    private fun sendSleepTimerCommand(action: String, minutes: Int) {
+        val ctrl = controller ?: return
+        val args = android.os.Bundle().apply {
+            putInt(MusicService.ARG_SLEEP_TIMER_MINUTES, minutes)
+        }
+        ctrl.sendCustomCommand(
+            androidx.media3.session.SessionCommand(action, android.os.Bundle.EMPTY),
+            args
+        )
+    }
+
+    /**
+     * Adopt the timer state the service published. Also called on connect, so
+     * a player reopened after the activity was destroyed picks the running
+     * countdown back up instead of showing nothing.
+     */
+    private fun applySleepTimerExtras(extras: android.os.Bundle) {
+        if (!extras.containsKey(MusicService.EXTRA_SLEEP_TIMER_ENDS_AT)) return
+        val endsAt = extras.getLong(MusicService.EXTRA_SLEEP_TIMER_ENDS_AT, 0L)
+        _sleepTimerEndsAt.value = endsAt.takeIf { it > 0L }
+        _sleepTimerEndOfTrack.value =
+            extras.getBoolean(MusicService.EXTRA_SLEEP_TIMER_END_OF_TRACK, false)
+    }
 
 
 

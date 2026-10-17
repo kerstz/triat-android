@@ -147,6 +147,15 @@
     <string name="spotlight_hint_all">Play something and your home fills in around it.</string>
 
     <!-- Sleep timer -->
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_timer_status_track">This track</string>
+    <string name="sleep_timer_detail_track">Playback stops when the song playing now finishes</string>
+    <string name="sleep_timer_detail_duration">Playback fades out over the last 30 seconds, then pauses</string>
+    <string name="minutes_short">%1$d min</string>
+    <string name="sleep_timer_end_of_track">End of this track</string>
+    <string name="sleep_timer_turn_off">Turn off</string>
+    <string name="np_tile_sleep_timer">Sleep timer</string>
+    <string name="np_tile_sleep_end_of_track">End of track</string>
 
     <!-- Mini player / shared component content descriptions -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>

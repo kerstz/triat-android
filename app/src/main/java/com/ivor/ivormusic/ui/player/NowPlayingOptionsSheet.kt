@@ -50,8 +50,13 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import kotlinx.coroutines.delay
+import com.ivor.ivormusic.ui.components.SleepTimerSheet
+import com.ivor.ivormusic.ui.components.formatRemaining
+import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.mutableLongStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -144,6 +149,21 @@ fun NowPlayingOptionsSheet(
     onOpenAlbum: (PlaylistDisplayItem) -> Unit = {},
 ) {
     var showPlaylists by remember { mutableStateOf(false) }
+    var showSleepTimer by remember { mutableStateOf(false) }
+    val sleepEndsAt by viewModel.sleepTimerEndsAt.collectAsStateWithLifecycle()
+    val sleepEndOfTrack by viewModel.sleepTimerEndOfTrack.collectAsStateWithLifecycle()
+    // The tile shows the live countdown, so it ticks while the sheet is open.
+    var sleepRemainingMs by remember(sleepEndsAt) {
+        mutableLongStateOf((sleepEndsAt ?: 0L) - System.currentTimeMillis())
+    }
+    LaunchedEffect(sleepEndsAt) {
+        val endsAt = sleepEndsAt ?: return@LaunchedEffect
+        while (true) {
+            sleepRemainingMs = endsAt - System.currentTimeMillis()
+            if (sleepRemainingMs <= 0L) break
+            delay(1_000)
+        }
+    }
     val shuffleEnabled by viewModel.shuffleModeEnabled.collectAsStateWithLifecycle()
     val repeatMode by viewModel.repeatMode.collectAsStateWithLifecycle()
     val addToPlaylistItems by viewModel.addToPlaylistItems.collectAsStateWithLifecycle()
@@ -170,6 +190,32 @@ fun NowPlayingOptionsSheet(
                     onDismiss()
                 },
                 onDismissRequest = onDismiss
+            )
+        }
+        return
+    }
+
+    if (showSleepTimer) {
+        // Same reasoning as the playlist picker above: one palette through the
+        // whole flow. Picking, or turning the timer off, is the end of it, so
+        // that closes the options sheet as well; dismissing only goes back.
+        MaterialTheme(colorScheme = appColorScheme()) {
+            SleepTimerSheet(
+                endsAt = sleepEndsAt,
+                endOfTrack = sleepEndOfTrack,
+                onStartMinutes = {
+                    viewModel.startSleepTimer(it)
+                    onDismiss()
+                },
+                onStartEndOfTrack = {
+                    viewModel.startSleepTimerEndOfTrack()
+                    onDismiss()
+                },
+                onCancel = {
+                    viewModel.cancelSleepTimer()
+                    onDismiss()
+                },
+                onDismiss = { showSleepTimer = false }
             )
         }
         return
@@ -361,8 +407,29 @@ fun NowPlayingOptionsSheet(
                         viewModel.toggleRepeat()
                     }
                 )
-                // Keeps the two tiles on the grid the row above sets.
-                Spacer(modifier = Modifier.weight(2f))
+                val sleepActive = sleepEndOfTrack || sleepEndsAt != null
+                val sleepStatus = when {
+                    sleepEndOfTrack -> stringResource(R.string.np_tile_sleep_end_of_track)
+                    sleepEndsAt != null -> formatRemaining(sleepRemainingMs)
+                    else -> null
+                }
+                OptionTile(
+                    icon = Icons.Rounded.Bedtime,
+                    label = sleepStatus ?: stringResource(R.string.np_tile_sleep_timer),
+                    selected = sleepActive,
+                    // The label turns into the countdown, so the name has to
+                    // survive for a screen reader.
+                    stateText = sleepStatus?.let {
+                        stringResource(R.string.np_tile_sleep_timer) + ", " + it
+                    },
+                    modifier = Modifier.weight(1f),
+                    onClick = {
+                        haptics.performHapticFeedback(HapticFeedbackType.ToggleOn)
+                        showSleepTimer = true
+                    }
+                )
+                // Keeps the three tiles on the grid the row above sets.
+                Spacer(modifier = Modifier.weight(1f))
             }
 
             // Where this song came from, and what else can be done with it.

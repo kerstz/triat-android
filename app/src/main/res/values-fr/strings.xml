@@ -233,6 +233,15 @@
     <string name="song_options_speed_value">%1$d%%</string>
     <string name="cd_speed_reset">Revenir à la vitesse normale</string>
     <string name="np_tile_radio">Radio</string>
+    <string name="sleep_timer_title">Minuterie</string>
+    <string name="sleep_timer_status_track">Ce morceau</string>
+    <string name="sleep_timer_detail_track">La lecture s\'arrête à la fin du morceau en cours</string>
+    <string name="sleep_timer_detail_duration">Le volume baisse doucement pendant les 30 dernières secondes, puis la lecture se met en pause</string>
+    <string name="minutes_short">%1$d min</string>
+    <string name="sleep_timer_end_of_track">Fin de ce morceau</string>
+    <string name="sleep_timer_turn_off">Désactiver</string>
+    <string name="np_tile_sleep_timer">Minuterie</string>
+    <string name="np_tile_sleep_end_of_track">Fin du morceau</string>
     <string name="np_tile_playlist">Playlist</string>
     <string name="np_tile_like">J\'aime</string>
     <string name="np_tile_liked">Aimé</string>
