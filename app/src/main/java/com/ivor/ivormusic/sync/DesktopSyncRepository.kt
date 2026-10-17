@@ -250,7 +250,7 @@ class DesktopSyncRepository private constructor(context: Context) {
         when (result) {
             is SyncResult.Ok -> {
                 if (result.bound) store.markBoundConfirmed()
-                val changes = withContext(Dispatchers.IO) { apply(result.merged) }
+                val (changes, session) = withContext(Dispatchers.IO) { apply(result.merged) }
                 val now = System.currentTimeMillis()
                 store.lastSyncAt = now
                 // The merge worked, but last-writer-wins on clocks that differ
@@ -258,7 +258,7 @@ class DesktopSyncRepository private constructor(context: Context) {
                 val error = if (clockProblem(now, serverNow(result.merged))) ERROR_CLOCK else null
                 store.lastError = error
                 mutableState.update {
-                    it.copy(paired = store.paired(), lastSyncAt = now, lastError = error, lastChanges = describe(changes))
+                    it.copy(paired = store.paired(), lastSyncAt = now, lastError = error, lastChanges = describe(changes, session, desktop.name))
                 }
             }
             SyncResult.Unauthorized -> record(desktop, ERROR_UNPAIRED)
@@ -278,7 +278,7 @@ class DesktopSyncRepository private constructor(context: Context) {
      * phone now, not against the snapshot that was sent: an edit made while the
      * exchange was running is newer than the desktop's copy and must win.
      */
-    private suspend fun apply(merged: JSONObject): SyncChanges {
+    private suspend fun apply(merged: JSONObject): Pair<SyncChanges, SessionOutcome> {
         playlists.refreshPlaylists()
         val plan = SyncWire.plan(merged, playlists.userPlaylists.value, likes.likedSongs.value)
         for (p in plan.playlistsToWrite) playlists.applySynced(p.id, p.name, p.songs, p.updated)
@@ -291,31 +291,45 @@ class DesktopSyncRepository private constructor(context: Context) {
         // IncognitoMode, which only stops this phone from recording (or sending)
         // its own. Deduplicated, capped and counted by StatsRepository.
         val historyAdded = stats.mergeSyncedHistory(plan.history)
-        applySession(merged)
-        return SyncChanges.of(plan, historyAdded)
+        val session = applySession(merged)
+        return SyncChanges.of(plan, historyAdded) to session
     }
 
     /**
      * The YouTube session the desktop shares, if the user accepted it here.
      * Each application is a sign-in, so an unchanged session (same digest) is
      * left alone. It replaces the active account's cookies: that is what the
-     * consent is for.
+     * consent is for. Nothing is applied that [sharedSessionProblem] refuses
+     * (too large, control characters, no SAPISID or SID): then the session is
+     * not started and its digest not recorded, and the user is told.
      */
-    private fun applySession(merged: JSONObject) {
-        if (!store.shareSessionAccepted) return
+    private fun applySession(merged: JSONObject): SessionOutcome {
+        if (!store.shareSessionAccepted) return SessionOutcome.NONE
         val cookies = (merged.opt("cookies") as? String)?.trim().orEmpty()
-        if (cookies.isEmpty()) return
+        if (cookies.isEmpty()) return SessionOutcome.NONE
+        val problem = sharedSessionProblem(cookies)
+        if (problem != null) {
+            // The reason and the length only: never a cookie value.
+            KLog.w(TAG, "Ignored the shared YouTube session: $problem (${cookies.length} chars)")
+            return SessionOutcome.REJECTED
+        }
         val digest = sessionDigest(cookies)
-        if (digest == store.lastSessionDigest) return
+        if (digest == store.lastSessionDigest) return SessionOutcome.NONE
         SessionManager(appContext).startSession(cookies)
         store.lastSessionDigest = digest
+        return SessionOutcome.ACCEPTED
     }
 
-    private fun describe(changes: SyncChanges): String? {
-        val parts = changes.parts()
-        if (parts.isEmpty()) return null
+    private fun describe(changes: SyncChanges, session: SessionOutcome, desktopName: String): String? {
         val res = appContext.resources
-        return parts.joinToString(", ") { (kind, n) ->
+        val notes = when (session) {
+            SessionOutcome.NONE -> emptyList()
+            SessionOutcome.REJECTED -> listOf(res.getString(R.string.ds_session_rejected))
+            SessionOutcome.ACCEPTED -> listOf(res.getString(R.string.ds_session_received, desktopName))
+        }
+        val parts = changes.parts()
+        if (parts.isEmpty() && notes.isEmpty()) return null
+        return (parts.map { (kind, n) ->
             val id = when (kind) {
                 SyncChanges.Kind.PLAYLISTS_WRITTEN -> R.plurals.ds_changes_playlists_written
                 SyncChanges.Kind.PLAYLISTS_DELETED -> R.plurals.ds_changes_playlists_deleted
@@ -324,7 +338,7 @@ class DesktopSyncRepository private constructor(context: Context) {
                 SyncChanges.Kind.HISTORY_ADDED -> R.plurals.ds_changes_history_added
             }
             res.getQuantityString(id, n, n)
-        }
+        } + notes).joinToString(", ")
     }
 
     private fun refreshFromStore() {

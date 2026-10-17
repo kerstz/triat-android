@@ -365,6 +365,8 @@
         <item quantity="many">%1$d d\'écoutes ajoutées</item>
         <item quantity="other">%1$d écoutes ajoutées</item>
     </plurals>
+    <string name="ds_session_received">session YouTube reçue de %1$s</string>
+    <string name="ds_session_rejected">la session YouTube envoyée par le PC a été ignorée : elle est incomplète</string>
     <!-- Content and feeds settings screen -->
     <string name="sp_mode">Mode</string>
     <string name="sp_local_only">Local uniquement</string>

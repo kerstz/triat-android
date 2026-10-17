@@ -57,7 +57,7 @@ TRACK = {"id": "<videoId, 11 chars>", "title": "...", "artist": "...",
 ```
 
 - The response may also contain `"now"` (the desktop's epoch milliseconds). When it differs from the phone's clock by more than 120 s, the sync still applies but ends with `ERROR_CLOCK` (`clockProblem`, `SyncProblem.CLOCK`): last-writer-wins on skewed clocks picks the wrong side and the phone drops plays dated in its future.
-- The response may also contain `"cookies": "<Cookie header>"` if the user enabled sharing on the desktop.
+- The response may also contain `"cookies": "<Cookie header>"` if the user enabled sharing on the desktop. The phone applies it only if the user accepted the session here and `sharedSessionProblem` (`SharedSession.kt`) passes: at most 64 KiB (65536 chars), no control character or newline, and `YouTubeAuthUtils.missingRequiredCookies` empty (SAPISID and SID). A refused session is not started, its digest is not recorded, the log carries the reason and the length but no cookie, and the sync status says the session was ignored; an accepted one adds "YouTube session received from <desktop name>" to the status. There is no undo of the account switch (the consent is what authorises it).
 - A deleted playlist is `"deleted": true, "tracks": []`, with `updated` set to the deletion date. A removed like is `"liked": false, "track": null`.
 - **Only YouTube tracks** (11-character ids) are synchronized. The phone's local songs (`SongSource.LOCAL`) are excluded.
 - A deletion received from the desktop keeps the author's date: `unlikeSongAt(id, at)` records the tombstone with `at`, never now, so an edit made elsewhere in between still beats it (`ApplyPlan.likesToRemove` carries `(id, at)`).
@@ -71,6 +71,7 @@ TRACK = {"id": "<videoId, 11 chars>", "title": "...", "artist": "...",
 | `SyncCrypto.kt` | ECDH P-256 + HKDF key, pairing proofs, sealing of every exchange; byte-compatible with the desktop |
 | `SyncWire.kt` | Koda models to and from the wire JSON (`snapshot`), and what to apply from the merged state (`plan`) |
 | `SyncTombstones.kt` | Deleted playlists and unliked songs, so the desktop does not hand them back |
+| `SharedSession.kt` | The pure gate on the YouTube session a desktop shares (`sharedSessionProblem`) |
 | `SyncStore.kt` | The paired desktop, its key and the last sync state, in an encrypted preference file excluded from backups |
 | `DesktopDiscovery.kt` | mDNS discovery of `_triat._tcp`, one resolution at a time |
 | `DesktopSyncClient.kt` | HTTP client: `hello`, `pair`, `sync`; refuses any non-private host and loopback |
@@ -110,6 +111,7 @@ The decision lives in `AutoSyncPolicy.kt`, apart from everything Android so it c
 - `sync/DesktopSyncRepositoryTest.kt`: the pure decisions of the repository, on invented data.
 - `sync/SyncCryptoTest.kt`: interop vectors produced by the desktop; a failure means the two sides no longer understand each other.
 - `sync/SyncRefreshTest.kt`: which state changes count as a finished sync (`finishedSyncs`).
+- `sync/SharedSessionTest.kt`: the session gate (size, control characters, missing SAPISID or SID, valid).
 - `sync/SyncStoreTest.kt`: the saved pairing, the device id, forgetting and damaged records.
 - `sync/SyncWireTest.kt`: the wire format, the snapshot, the plan applied from a merged state and `mergeLocalSongs`, on invented data.
 - `ui/settings/DesktopSyncSettingsTest.kt`: what the code field keeps, how a typed address is read, how old a sync is called, which message each failure gets.

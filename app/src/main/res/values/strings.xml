@@ -1361,6 +1361,8 @@
         <item quantity="one">%1$d play added</item>
         <item quantity="other">%1$d plays added</item>
     </plurals>
+    <string name="ds_session_received">YouTube session received from %1$s</string>
+    <string name="ds_session_rejected">the YouTube session sent by the desktop was ignored: it is incomplete</string>
     <!-- Hardcoded labels lifted into resources -->
     <string name="cd_play_all">Play all</string>
     <string name="cd_finish_editing">Finish editing</string>
