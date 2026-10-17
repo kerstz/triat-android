@@ -3623,7 +3623,7 @@ fun PlaylistDetailScreen(
                                         thumbnailUrl = heroArt,
                                         highResThumbnailUrl = googleImageAtSize(heroArt, HERO_COVER_PX)
                                             ?.takeIf { it != heroArt },
-                                        contentDescription = null,
+                                        contentDescription = if (isLocalPlaylist) stringResource(R.string.lib_change_cover_art) else null,
                                         modifier = Modifier.fillMaxSize(),
                                         showProgress = false,
                                         placeholderColor = MaterialTheme.colorScheme.surfaceContainerHigh
