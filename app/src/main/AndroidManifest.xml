@@ -3,15 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <uses-permission android:name="android.permission.READ_MEDIA_AUDIO" />
-    <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
-    <!--
-        Android 14 lets someone grant access to a chosen subset of their media
-        rather than all of it. Without this the picker offers no such choice and
-        the only answers are "all videos" or "none"; with it, a partial grant
-        denies READ_MEDIA_VIDEO while still returning the selected files, which
-        LocalVideoAccess.PARTIAL is what surfaces.
-    -->
-    <uses-permission android:name="android.permission.READ_MEDIA_VISUAL_USER_SELECTED" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" android:maxSdkVersion="32" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
@@ -75,9 +66,10 @@
 
             <!--
                 "Open with" for YouTube links. Paths are constrained to what the
-                app can actually play, so Koda is not offered for channel or
-                account URLs it would only fail on. music.youtube.com links open
-                in the music player, the rest in the video player.
+                app can actually play, so Triat is not offered for channel or
+                account URLs it would only fail on. Every link plays as audio in
+                the music player: /shorts/, /live/, /embed/ and /v/ carry a
+                video id that YouTubeLinkParser resolves like a /watch link.
             -->
             <intent-filter android:autoVerify="false">
                 <action android:name="android.intent.action.VIEW" />
