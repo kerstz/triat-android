@@ -27,10 +27,12 @@ class MusicServiceBrowserTest {
         val session = mock(MediaLibrarySession::class.java)
         val browser = mock(MediaSession.ControllerInfo::class.java)
         val callback: MediaLibrarySession.Callback
+        val artworkKeys = mutableListOf<String>()
         init {
             set("serviceScope", ownedScope)
             set("browseSongs", songs)
             set("localBrowseSongs", songs)
+            set("autoArtworkUri", { key: String -> artworkKeys += key; null as Uri? })
             val type = MusicService::class.java.declaredClasses.single { it.simpleName == "LibrarySessionCallback" }
             callback = type.getDeclaredConstructor(MusicService::class.java).apply { isAccessible = true }
                 .newInstance(service) as MediaLibrarySession.Callback
@@ -89,6 +91,8 @@ class MusicServiceBrowserTest {
             assertEquals(listOf("LIBRARY", "RECOMMENDED", "PLAYLISTS"), root.map { it.mediaId })
             val library = f.callback.onGetChildren(f.session, f.browser, "LIBRARY", 0, Int.MAX_VALUE, null).await().value!!
             assertEquals(listOf("DOWNLOADS", "LIKED", "RECENT", "LOCAL_SONGS"), library.map { it.mediaId })
+            // Every category tile asked for its own artwork key, root then library.
+            assertEquals(listOf("library", "recommended", "playlists", "downloads", "liked", "recent", "device"), f.artworkKeys)
         }
     }
 

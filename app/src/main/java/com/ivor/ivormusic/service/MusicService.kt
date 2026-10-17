@@ -237,6 +237,12 @@ class MusicService : MediaLibraryService() {
                 mediaLibrarySession?.notifyChildrenChanged(id, songs.size, null)
             }
         } })
+    /**
+     * Category tile URI for a browse key. A field rather than a direct call so
+     * the JVM browse test can swap it: `Uri.Builder` returns null from every
+     * step under the stubbed android.jar.
+     */
+    private var autoArtworkUri: (String) -> Uri? = { key -> AutoArtwork.uriFor(this, key) }
     private data class BrowseSearchKey(val browser: MediaSession.ControllerInfo, val query: String)
     // Main-thread owned; retain terminal errors too so the legacy completion
     // notification does not trigger another network attempt on failure.
@@ -2407,7 +2413,7 @@ class MusicService : MediaLibraryService() {
                 // render artless grid tiles as a broken-image glyph - the
                 // warning triangles in the field photo. A deterministic tile
                 // from AutoArtworkProvider instead (content:// PNG, offline).
-                .setArtworkUri(AutoArtwork.categoryKey(mediaId)?.let { AutoArtwork.uriFor(this, it) })
+                .setArtworkUri(AutoArtwork.categoryKey(mediaId)?.let(autoArtworkUri))
                 .setExtras(contentStyleExtras(GRID_ITEM, LIST_ITEM))
                 .setIsBrowsable(true)
                 .setIsPlayable(false)
