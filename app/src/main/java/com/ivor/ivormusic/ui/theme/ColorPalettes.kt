@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.luminance
  * AMOLED is applied afterwards by the shared theme resolver.
  *
  * The special id [DYNAMIC_PALETTE_ID] is not seed-based: it means "use the
- * system wallpaper dynamic color" (Android 12+), the app's historical default.
+ * system wallpaper dynamic color" (Android 12+), the app's former default;
+ * the default is now [TRIAT_PALETTE_ID].
  */
 data class AppPalette(
     val id: String,
@@ -35,6 +36,10 @@ const val DYNAMIC_PALETTE_ID = "dynamic"
  * there is a genuinely distinct pick for every taste.
  */
 val APP_PALETTES: List<AppPalette> = listOf(
+    // Triat (default): hand-built from TriatTokens, see [triatDarkColorScheme].
+    // The seeds only feed generated playlist covers; the scheme ignores them
+    // and ignores PaletteStyle.
+    AppPalette(TRIAT_PALETTE_ID, R.string.palette_name_triat, "Triat", TriatTokens.signal, TriatTokens.ink3, TriatTokens.ink),
     // Triat: the Nothing desktop it comes from. Red is the one accent
     // (the active window border on that desktop), the rest stays grey.
     AppPalette("nothing", R.string.palette_name_nothing, "Triat", Color(0xFFD71921), Color(0xFF8A8A8A), Color(0xFFF2F2F2)),
@@ -138,12 +143,22 @@ private fun monochromeRoles(dark: Boolean, leanDark: Boolean): PaletteRoles {
     )
 }
 
-/** Full HCT scheme, including the tinted neutral surfaces used by every screen. */
+/**
+ * Full HCT scheme, including the tinted neutral surfaces used by every screen.
+ * Exception: [TRIAT_PALETTE_ID] in dark mode is built by hand from the tokens
+ * and ignores [style]; in light mode it reuses the "nothing" HCT scheme.
+ */
 fun buildPaletteColorScheme(
     palette: AppPalette,
     dark: Boolean,
     style: PaletteStyle = PaletteStyle.TONAL_SPOT,
 ): ColorScheme {
+    if (palette.id == TRIAT_PALETTE_ID) {
+        // Tokens define no complete light set yet (roadmap V2): light mode is
+        // the HCT scheme of "nothing" (same red identity), style ignored.
+        return if (dark) triatDarkColorScheme()
+        else buildPaletteColorScheme(findPalette("nothing")!!, dark = false, style = PaletteStyle.TONAL_SPOT)
+    }
     val monochrome = palette.id == "black" || palette.id == "white"
     val scheme = buildSeedColorScheme(
         palette.seedPrimary,

@@ -177,7 +177,7 @@ private fun RemoveSwipeBackground(target: SwipeToDismissBoxValue) {
 /**
  * The grab target for reordering a queue row.
  *
- * A real 44dp touch target around a 20dp glyph, because this is the only
+ * A real 48dp touch target around a 20dp glyph, because this is the only
  * reliable way to start a drag - see [queueDragHandle] - and a handle people
  * miss is a feature they do not have. It carries no click of its own, so
  * nothing competes with the drag for the gesture.
@@ -191,7 +191,7 @@ fun QueueDragHandle(
 ) {
     Box(
         modifier = modifier
-            .size(44.dp)
+            .size(48.dp)
             .queueDragHandle(state, rowKey),
         contentAlignment = Alignment.Center
     ) {

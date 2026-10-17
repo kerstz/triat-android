@@ -1370,8 +1370,7 @@ private fun GestureQueueView(
                                         onRemoveItem(queueItem)
                                         removal.onRemoved(song.title)
                                     },
-                                    enabled = queue.size > 1,
-                                    modifier = Modifier.size(32.dp)
+                                    enabled = queue.size > 1
                                 ) {
                                     Icon(
                                         imageVector = Icons.Filled.Close,

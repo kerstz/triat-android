@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.ivor.ivormusic.ui.theme.ThemeMode
 import com.ivor.ivormusic.ui.theme.PaletteStyle
+import com.ivor.ivormusic.ui.theme.TRIAT_PALETTE_ID
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -333,8 +334,11 @@ class ThemePreferences(context: Context) {
         const val KEY_APP_ICON = "app_icon"
         const val DEFAULT_APP_ICON = "default"
         private const val KEY_PALETTE_STYLE = "palette_style"
-        /** Default palette: follow the system wallpaper (Material You). */
-        const val DEFAULT_COLOR_PALETTE = "dynamic"
+        /**
+         * Default palette: Triat (true black, one red accent). Was "dynamic"
+         * (wallpaper) before; a stored choice always wins, including "dynamic".
+         */
+        const val DEFAULT_COLOR_PALETTE = TRIAT_PALETTE_ID
         private const val KEY_LOAD_LOCAL_SONGS = "load_local_songs"
         /** One-shot marker for [migrateLoadLocalSongsDefault]. */
         private const val KEY_LOAD_LOCAL_SONGS_DEFAULT_MIGRATED =
@@ -713,8 +717,8 @@ class ThemePreferences(context: Context) {
     }
 
     /**
-     * Get the stored color palette id. Defaults to "dynamic" (wallpaper color)
-     * to preserve the app's historical dynamic-color behavior.
+     * Get the stored color palette id. Defaults to [DEFAULT_COLOR_PALETTE]
+     * ("triat") when the user never picked one; explicit choices are kept.
      */
     private fun getColorPalettePreference(): String {
         return prefs.getString(KEY_COLOR_PALETTE, DEFAULT_COLOR_PALETTE) ?: DEFAULT_COLOR_PALETTE

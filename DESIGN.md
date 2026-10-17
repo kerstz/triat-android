@@ -227,7 +227,7 @@ If Koda's look is not to your taste, a lot is already adjustable in Settings bef
 
 - **Theme mode:** light, dark, or follow system
 - **AMOLED true black:** for OLED panels
-- **Color palette:** wallpaper-based dynamic color, or any of the 28 fixed palettes
+- **Color palette:** Triat (default: true black, white text, one red accent), wallpaper-based dynamic color, or any of the other fixed palettes
 - **Palette style:** Tonal Spot, Vibrant, Expressive, Fruit Salad or Monochrome for preset colors
 - **Album Art Colors:** recolor the expanded player from the current cover art
 - **Ambient artwork background** and the optional chromatic-mist effect

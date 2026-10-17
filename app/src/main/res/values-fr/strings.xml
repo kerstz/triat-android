@@ -78,6 +78,7 @@
 
 
     <string name="cd_drag_to_reorder">Faire glisser pour réorganiser</string>
+    <string name="cd_open_player">Ouvrir le lecteur</string>
     <string name="cd_move_up">Monter</string>
     <string name="cd_move_down">Descendre</string>
     <string name="cd_favorite">Favori</string>

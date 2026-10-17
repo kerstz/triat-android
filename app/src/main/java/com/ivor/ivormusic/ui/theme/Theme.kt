@@ -104,14 +104,21 @@ fun kodaColorScheme(
         findPalette(colorPalette)?.let { buildPaletteColorScheme(it, darkTheme, paletteStyle) }
             ?: baseColorScheme
     }
-    return if (darkTheme && amoledDark) palettedScheme.toAmoled() else palettedScheme
+    return palettedScheme.withAmoled(colorPalette, darkTheme && amoledDark)
 }
+
+/**
+ * AMOLED pass. Triat dark is already true black with its own veil ramp, so it
+ * is left untouched instead of being squashed onto the generic AMOLED ramp.
+ */
+internal fun ColorScheme.withAmoled(paletteId: String, amoled: Boolean): ColorScheme =
+    if (!amoled || paletteId == TRIAT_PALETTE_ID) this else toAmoled()
 
 @OptIn(ExperimentalMaterial3ExpressiveApi::class)
 @Composable
 fun IvorMusicTheme(
     darkTheme: Boolean = true, // Default to dark theme for this music app
-    colorPalette: String = DYNAMIC_PALETTE_ID, // "dynamic" = wallpaper color, else a fixed AppPalette id
+    colorPalette: String = TRIAT_PALETTE_ID, // "dynamic" = wallpaper color, else a fixed AppPalette id
     amoledDark: Boolean = false, // Pure black backgrounds when dark theme is active
     uiScale: Float = UI_SCALE_DEFAULT, // Multiplies every dp and sp in the app
     paletteStyle: PaletteStyle = PaletteStyle.TONAL_SPOT,

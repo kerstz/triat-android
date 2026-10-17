@@ -150,6 +150,7 @@
 
     <!-- Mini player / shared component content descriptions -->
     <string name="cd_drag_to_reorder">Drag to reorder</string>
+    <string name="cd_open_player">Open player</string>
     <string name="cd_move_up">Move up</string>
     <string name="cd_move_down">Move down</string>
     <string name="cd_favorite">Favorite</string>

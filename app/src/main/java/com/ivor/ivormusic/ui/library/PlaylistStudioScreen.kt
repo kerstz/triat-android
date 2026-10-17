@@ -883,7 +883,7 @@ private fun StudioCreateBar(
                                 song = song,
                                 contentDescription = song.title,
                                 modifier = Modifier
-                                    .size(44.dp)
+                                    .size(48.dp)
                                     .clip(RoundedCornerShape(12.dp))
                                     .clickable { onRemove(song) }
                             )

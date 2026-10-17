@@ -108,6 +108,9 @@ fun ColorPaletteScreen(
         kodaColorScheme(context, isDarkMode, DYNAMIC_PALETTE_ID, amoledDark)
     }
 
+    // Triat is hand-built from fixed tokens: the style selector has no effect on it.
+    val styleApplies = currentPalette != TRIAT_PALETTE_ID
+
     var isVisible by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { isVisible = true }
 
@@ -171,6 +174,7 @@ fun ColorPaletteScreen(
                             ToggleButton(
                                 checked = paletteStyle == style,
                                 onCheckedChange = { onPaletteStyleSelected(style) },
+                                enabled = styleApplies,
                                 shapes = when (index) {
                                     0 -> ButtonGroupDefaults.connectedLeadingButtonShapes()
                                     PaletteStyle.entries.lastIndex -> ButtonGroupDefaults.connectedTrailingButtonShapes()
@@ -180,7 +184,10 @@ fun ColorPaletteScreen(
                         }
                     }
                     Text(
-                        stringResource(R.string.palette_style_presets_hint),
+                        stringResource(
+                            if (styleApplies) R.string.palette_style_presets_hint
+                            else R.string.palette_style_triat_note
+                        ),
                         style = MaterialTheme.typography.bodySmall,
                         color = secondaryTextColor,
                     )
@@ -215,9 +222,8 @@ fun ColorPaletteScreen(
                 ) { palette ->
                     PaletteCard(
                         roles = remember(palette.id, isDarkMode, paletteStyle, amoledDark) {
-                            buildPaletteColorScheme(palette, isDarkMode, paletteStyle).let {
-                                if (isDarkMode && amoledDark) it.toAmoled() else it
-                            }
+                            buildPaletteColorScheme(palette, isDarkMode, paletteStyle)
+                                .withAmoled(palette.id, isDarkMode && amoledDark)
                         },
                         name = stringResource(palette.nameRes),
                         selected = currentPalette == palette.id,

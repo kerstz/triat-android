@@ -226,7 +226,7 @@ internal fun buildSettingsSearchIndex(
     ) { onOpenPage(SettingsPage.APPEARANCE) }
     entry(
         "palette", stringResource(R.string.sp_color_palette), stringResource(R.string.settings_appearance), Icons.Rounded.Palette,
-        listOf("colour", "accent", "dynamic", "material you", "monet", "wallpaper", "scheme")
+        listOf("colour", "accent", "triat", "dynamic", "material you", "monet", "wallpaper", "scheme")
     ) { onNavigateToColorPalette() }
     entry(
         "palette_style", stringResource(R.string.palette_style_title),

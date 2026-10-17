@@ -251,6 +251,7 @@ fun ExpandablePlayer(
 
     // Derive all properties from the single progress value
     val collapsedHeight = 80.dp
+    val openPlayerLabel = stringResource(R.string.cd_open_player)
     val collapsedWidthPadding = 16.dp
     val collapsedBottomPadding = collapsedBottomSpacing + bottomInset
     // Shared with MiniPlayerContent so the ripple and the container clip along
@@ -385,7 +386,10 @@ fun ExpandablePlayer(
                         )
                     }
                 }
-                .clickable(enabled = !isExpanded) { onExpandChange(true) },
+                .clickable(
+                    enabled = !isExpanded,
+                    onClickLabel = openPlayerLabel
+                ) { onExpandChange(true) },
             shape = RoundedCornerShape(cornerRadius.coerceAtLeast(0.dp)),
             color = containerColor,
             shadowElevation = pillShadowElevation.coerceAtLeast(0.dp)

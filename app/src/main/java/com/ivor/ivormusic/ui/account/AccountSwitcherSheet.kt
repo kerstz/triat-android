@@ -403,7 +403,7 @@ private fun ProfileRow(
             Spacer(Modifier.width(4.dp))
             Box(
                 modifier = Modifier
-                    .size(36.dp)
+                    .size(48.dp)
                     .clip(CircleShape)
                     .clickable(onClick = onRemove),
                 contentAlignment = Alignment.Center

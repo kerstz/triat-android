@@ -1036,7 +1036,7 @@ private fun SettingsHub(
         ThemeMode.LIGHT -> stringResource(R.string.theme_light)
         ThemeMode.DARK -> stringResource(R.string.theme_dark)
     }
-    val paletteName = if (colorPalette == ThemePreferences.DEFAULT_COLOR_PALETTE) {
+    val paletteName = if (colorPalette == com.ivor.ivormusic.ui.theme.DYNAMIC_PALETTE_ID) {
         stringResource(R.string.sv_dynamic)
     } else {
         com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.nameRes?.let { stringResource(it) }

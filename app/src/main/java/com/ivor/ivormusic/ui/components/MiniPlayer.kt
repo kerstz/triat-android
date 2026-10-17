@@ -213,7 +213,7 @@ fun MiniPlayerContent(
             // Play/Pause Button with shape morphing or Loading
             if (isBuffering && playWhenReady) {
                 Box(
-                    modifier = Modifier.size(44.dp),
+                    modifier = Modifier.size(48.dp),
                     contentAlignment = Alignment.Center
                 ) {
                     //Organic morphing loading with MaterialShapes
@@ -234,8 +234,7 @@ fun MiniPlayerContent(
                         // Same action as the artwork tap, so same feedback.
                         playerHaptics.playPause(!isPlaying)
                         onPlayPauseClick()
-                    },
-                    modifier = Modifier.size(44.dp)
+                    }
                 ) {
                     Icon(
                         imageVector = if (isPlaying) Icons.Default.Pause else Icons.Default.PlayArrow,
@@ -247,8 +246,7 @@ fun MiniPlayerContent(
             }
 
             IconButton(
-                onClick = onNextClick,
-                modifier = Modifier.size(44.dp)
+                onClick = onNextClick
             ) {
                 Icon(
                     imageVector = Icons.Default.SkipNext,

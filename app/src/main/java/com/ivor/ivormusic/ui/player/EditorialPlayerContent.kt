@@ -943,8 +943,7 @@ internal fun EditorialQueueView(
                                         onRemoveItem(queueItem)
                                         removal.onRemoved(song.title)
                                     },
-                                    enabled = queue.size > 1,
-                                    modifier = Modifier.size(32.dp)
+                                    enabled = queue.size > 1
                                 ) {
                                     Icon(
                                         Icons.Filled.Close, stringResource(R.string.cd_remove_from_queue),

@@ -248,7 +248,7 @@ internal fun AppearanceSettingsPage(
     onBack: () -> Unit
 ) {
     val currentAppIcon = remember(appIcon) { AppIcon.fromId(appIcon) }
-    val paletteName = if (colorPalette == ThemePreferences.DEFAULT_COLOR_PALETTE) {
+    val paletteName = if (colorPalette == com.ivor.ivormusic.ui.theme.DYNAMIC_PALETTE_ID) {
         stringResource(R.string.cp_dynamic_cd)
     } else {
         com.ivor.ivormusic.ui.theme.findPalette(colorPalette)?.nameRes?.let { stringResource(it) }
@@ -272,7 +272,8 @@ internal fun AppearanceSettingsPage(
                     SettingsRow(
                         icon = Icons.Rounded.Palette,
                         title = stringResource(R.string.sp_color_palette),
-                        subtitle = if (colorPalette == ThemePreferences.DEFAULT_COLOR_PALETTE ||
+                        subtitle = if (colorPalette == com.ivor.ivormusic.ui.theme.DYNAMIC_PALETTE_ID ||
+                            colorPalette == com.ivor.ivormusic.ui.theme.TRIAT_PALETTE_ID ||
                             colorPalette == "black" || colorPalette == "white") paletteName
                         else "$paletteName · ${stringResource(paletteStyle.labelRes)}",
                         onClick = onNavigateToColorPalette,
