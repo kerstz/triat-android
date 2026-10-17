@@ -153,6 +153,15 @@ android {
         }
     }
 
+    lint {
+        // app/lint.xml holds the policy; the baseline holds the debt that
+        // existed when lint joined CI, so only new problems fail the build.
+        lintConfig = file("lint.xml")
+        baseline = file("lint-baseline.xml")
+        abortOnError = true
+        checkDependencies = false
+    }
+
     testOptions {
         unitTests {
             // android.util.Log is a stub in JVM unit tests and throws
@@ -182,7 +191,11 @@ kotlin {
         jvmTarget = JvmTarget.JVM_11
         freeCompilerArgs.addAll(
             "-opt-in=androidx.compose.material3.ExperimentalMaterial3ExpressiveApi",
-            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api"
+            "-opt-in=androidx.compose.material3.ExperimentalMaterial3Api",
+            // Media3's @UnstableApi covers most of ExoPlayer and the session;
+            // the version is pinned in the catalog, so opt in module-wide
+            // (lint takes the same opt-in from app/lint.xml).
+            "-opt-in=androidx.media3.common.util.UnstableApi"
         )
     }
 }

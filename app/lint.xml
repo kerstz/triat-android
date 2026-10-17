@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+    Project lint policy. New problems fail `lintDebug` (and CI); the debt that
+    existed when lint was switched on lives in lint-baseline.xml, to be paid
+    down rather than added to. Regenerate the baseline only after fixing
+    entries in it: ./gradlew :app:updateLintBaseline
+-->
+<lint>
+    <!--
+        Locales other than English and French are partial by design
+        (docs/settings.md: new strings go only in values/strings.xml), so a
+        missing translation is the expected state, not a defect.
+    -->
+    <issue id="MissingTranslation" severity="ignore" />
+
+    <!--
+        Media3 marks most of the ExoPlayer and session surface @UnstableApi.
+        Triat is an app, not a library, and pins Media3 in the version
+        catalog, so the opt-in is taken once for the module (matching the
+        -opt-in compiler flag in app/build.gradle.kts) instead of annotating
+        some 300 call sites.
+    -->
+    <issue id="UnsafeOptInUsageError">
+        <option name="opt-in" value="androidx.media3.common.util.UnstableApi" />
+    </issue>
+
+    <!-- KTX-style rewrites are style suggestions, not defects. -->
+    <issue id="UseKtx" severity="ignore" />
+</lint>

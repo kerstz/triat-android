@@ -137,6 +137,23 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    # The JVM suite and lint gate the APK: a red test or a new lint error
+    # (anything not already in app/lint-baseline.xml) fails the run before
+    # an APK is built from it.
+    - name: Unit tests and lint
+      run: ./gradlew testDebugUnitTest lintDebug
+
+    - name: Upload test and lint reports
+      if: failure()
+      uses: actions/upload-artifact@v4
+      with:
+        name: debug-test-lint-reports
+        path: |
+          app/build/reports/tests/testDebugUnitTest/
+          app/build/reports/lint-results-debug.html
+        if-no-files-found: ignore
+        retention-days: 14
+
     - name: Build Debug APK
       run: ./gradlew assembleDebug
 

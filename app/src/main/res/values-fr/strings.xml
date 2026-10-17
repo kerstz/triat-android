@@ -245,6 +245,7 @@
     <string name="queue_save_default_name">File · %1$s</string>
     <plurals name="queue_saved_to_playlist">
         <item quantity="one">%1$d titre enregistré dans %2$s</item>
+        <item quantity="many">%1$d titres enregistrés dans %2$s</item>
         <item quantity="other">%1$d titres enregistrés dans %2$s</item>
     </plurals>
     <string name="ps_style_classic">Classique</string>
@@ -458,6 +459,7 @@
     <string name="sb_cat_filler_sub">Blagues et apartés dont on peut se passer</string>
     <plurals name="sb_active_categories">
         <item quantity="one">%1$d catégorie</item>
+        <item quantity="many">%1$d catégories</item>
         <item quantity="other">%1$d catégories</item>
     </plurals>
     <string name="sp_display_size_preview">Aperçu</string>
@@ -629,6 +631,7 @@
     <string name="share_playlist_chooser">Partager la playlist</string>
     <plurals name="vpl_video_count">
         <item quantity="one">%d vidéo</item>
+        <item quantity="many">%d vidéos</item>
         <item quantity="other">%d vidéos</item>
     </plurals>
     <string name="cd_shuffle">Aléatoire</string>
@@ -922,10 +925,12 @@
     <string name="lib_load_failed_body">Cette playlist est revenue vide. Vérifie ta connexion et réessaie.</string>
     <plurals name="n_plays">
         <item quantity="one">%1$d lecture</item>
+        <item quantity="many">%1$d lectures</item>
         <item quantity="other">%1$d lectures</item>
     </plurals>
     <plurals name="n_channels">
         <item quantity="one">%1$d chaîne</item>
+        <item quantity="many">%1$d chaînes</item>
         <item quantity="other">%1$d chaînes</item>
     </plurals>
     <string name="incognito_title">Navigation privée</string>
@@ -990,6 +995,7 @@
     <string name="link_error_body">Le contenu est peut-être privé, ou tu es hors ligne</string>
     <plurals name="n_results">
         <item quantity="one">%1$d résultat</item>
+        <item quantity="many">%1$d résultats</item>
         <item quantity="other">%1$d résultats</item>
     </plurals>
     <string name="palette_style_title">Style de palette</string>
@@ -1207,6 +1213,7 @@
     <string name="studio_empty_selection">Tu pourras toujours ajouter des titres plus tard</string>
     <plurals name="studio_songs_selected">
         <item quantity="one">%1$d titre</item>
+        <item quantity="many">%1$d titres</item>
         <item quantity="other">%1$d titres</item>
     </plurals>
     <string name="cd_studio_add_song">Ajouter à la playlist</string>
@@ -1235,6 +1242,7 @@
     <string name="import_already_added">Déjà dans cette playlist</string>
     <plurals name="import_add_n_songs">
         <item quantity="one">Ajouter %1$d titre</item>
+        <item quantity="many">Ajouter %1$d titres</item>
         <item quantity="other">Ajouter %1$d titres</item>
     </plurals>
     <string name="import_no_source_playlists">Rien à copier pour l\'instant. Les playlists et les titres likés apparaîtront ici.</string>
@@ -1251,6 +1259,7 @@
     <string name="sp_android_auto_sub">Triat absent de ta voiture ? Commence ici</string>
     <plurals name="lib_downloads_offline">
         <item quantity="one">%1$d titre dispo hors-ligne</item>
+        <item quantity="many">%1$d titres dispo hors-ligne</item>
         <item quantity="other">%1$d titres dispo hors-ligne</item>
     </plurals>
     <string name="ni_video_hidden">Vidéo masquée</string>
@@ -1258,6 +1267,7 @@
     <string name="ni_channels_blocked_sub">%1$d n\'apparaîtront plus dans tes fils</string>
     <plurals name="ni_hidden_count">
         <item quantity="one">%1$d masqué</item>
+        <item quantity="many">%1$d masqués</item>
         <item quantity="other">%1$d masqués</item>
     </plurals>
     <string name="ni_recommend_again_cd">Recommander à nouveau %1$s</string>
@@ -1282,10 +1292,12 @@
     <string name="cd_collapse">Réduire</string>
     <plurals name="report_log_lines">
         <item quantity="one">%1$d ligne de journal enregistrée pendant cette session</item>
+        <item quantity="many">%1$d lignes de journal enregistrées pendant cette session</item>
         <item quantity="other">%1$d lignes de journal enregistrées pendant cette session</item>
     </plurals>
     <plurals name="bk_accounts_signin_note">
         <item quantity="one">Une sauvegarde ne contient jamais de connexion : le compte qu\'elle contient devra être reconnecté après la restauration. Les comptes déjà connectés sur cet appareil le restent.</item>
+        <item quantity="many">Une sauvegarde ne contient jamais de connexion : les %1$d comptes qu\'elle contient devront être reconnectés après la restauration. Les comptes déjà connectés sur cet appareil le restent.</item>
         <item quantity="other">Une sauvegarde ne contient jamais de connexion : les %1$d comptes qu\'elle contient devront être reconnectés après la restauration. Les comptes déjà connectés sur cet appareil le restent.</item>
     </plurals>
     <string name="cookie_missing">Il manque %1$s. Copie la valeur complète des cookies et vérifie que ce navigateur est connecté.</string>
@@ -1345,6 +1357,7 @@
     <string name="sv_on">Activé</string>
     <plurals name="sv_on_folders_excluded">
         <item quantity="one">Activé, %1$d dossier exclu</item>
+        <item quantity="many">Activé, %1$d dossiers exclus</item>
         <item quantity="other">Activé, %1$d dossiers exclus</item>
     </plurals>
     <string name="sv_amoled_on">Fonds noir pur dans le thème sombre</string>
@@ -1365,6 +1378,7 @@
     <string name="sv_xfade_fixed">Chevauchement fixe de %1$d s</string>
     <plurals name="sv_folders_excluded">
         <item quantity="one">%1$d dossier exclu</item>
+        <item quantity="many">%1$d dossiers exclus</item>
         <item quantity="other">%1$d dossiers exclus</item>
     </plurals>
     <string name="bk_never_backed_up">Aucune sauvegarde faite depuis cet appareil</string>
@@ -1372,6 +1386,7 @@
     <string name="bk_last_yesterday">Dernière sauvegarde hier</string>
     <plurals name="bk_last_days_ago">
         <item quantity="one">Dernière sauvegarde il y a %1$d jour</item>
+        <item quantity="many">Dernière sauvegarde il y a %1$d jours</item>
         <item quantity="other">Dernière sauvegarde il y a %1$d jours</item>
     </plurals>
     <string name="bk_last_on">Dernière sauvegarde le %1$s</string>
@@ -1382,46 +1397,56 @@
     <string name="bk_saved_with">Sauvegarde enregistrée : %1$s</string>
     <plurals name="bk_n_video_playlists">
         <item quantity="one">%1$d playlist vidéo</item>
+        <item quantity="many">%1$d playlists vidéo</item>
         <item quantity="other">%1$d playlists vidéo</item>
     </plurals>
     <plurals name="bk_n_saved_playlists">
         <item quantity="one">%1$d playlist enregistrée</item>
+        <item quantity="many">%1$d playlists enregistrées</item>
         <item quantity="other">%1$d playlists enregistrées</item>
     </plurals>
     <plurals name="bk_n_liked_songs">
         <item quantity="one">%1$d chanson aimée</item>
+        <item quantity="many">%1$d chansons aimées</item>
         <item quantity="other">%1$d chansons aimées</item>
     </plurals>
     <plurals name="bk_n_blocked_channels">
         <item quantity="one">%1$d chaîne bloquée</item>
+        <item quantity="many">%1$d chaînes bloquées</item>
         <item quantity="other">%1$d chaînes bloquées</item>
     </plurals>
     <plurals name="bk_n_hidden_videos">
         <item quantity="one">%1$d vidéo masquée</item>
+        <item quantity="many">%1$d vidéos masquées</item>
         <item quantity="other">%1$d vidéos masquées</item>
     </plurals>
     <plurals name="bk_n_settings">
         <item quantity="one">%1$d réglage</item>
+        <item quantity="many">%1$d réglages</item>
         <item quantity="other">%1$d réglages</item>
     </plurals>
     <plurals name="bk_n_profiles">
         <item quantity="one">%1$d profil</item>
+        <item quantity="many">%1$d profils</item>
         <item quantity="other">%1$d profils</item>
     </plurals>
     <string name="lib_uploader_you">Toi</string>
     <plurals name="n_tracks">
         <item quantity="one">%1$d titre</item>
+        <item quantity="many">%1$d titres</item>
         <item quantity="other">%1$d titres</item>
     </plurals>
     <string name="dur_h_m">%1$d h %2$d min</string>
     <string name="dur_m">%1$d min</string>
     <string name="dur_s">%1$d s</string>
     <plurals name="lib_cached_songs_history_off">
-        <item quantity="one">1 titre en cache. Active l\'historique d\'écoute pour le lister</item>
+        <item quantity="one">%1$d titre en cache. Active l\'historique d\'écoute pour le lister</item>
+        <item quantity="many">%1$d titres en cache. Active l\'historique d\'écoute pour les lister</item>
         <item quantity="other">%1$d titres en cache. Active l\'historique d\'écoute pour les lister</item>
     </plurals>
     <plurals name="lib_n_tracks_auto">
         <item quantity="one">%1$d titre • Playlist automatique</item>
+        <item quantity="many">%1$d titres • Playlist automatique</item>
         <item quantity="other">%1$d titres • Playlist automatique</item>
     </plurals>
     <string name="lib_delete_yt_account_lead">Cela retire définitivement « %1$s » de ton compte YouTube.</string>
@@ -1433,27 +1458,33 @@
     <string name="rel_months_ago">il y a %1$d mois</string>
     <plurals name="rel_years_ago">
         <item quantity="one">il y a %1$d an</item>
+        <item quantity="many">il y a %1$d ans</item>
         <item quantity="other">il y a %1$d ans</item>
     </plurals>
     <string name="lh_matching">correspondants</string>
     <plurals name="lh_day_streak">
         <item quantity="one">Série de %1$d jour</item>
+        <item quantity="many">Série de %1$d jours</item>
         <item quantity="other">Série de %1$d jours</item>
     </plurals>
     <plurals name="lh_remove_plays">
         <item quantity="one">Retirer cette lecture</item>
+        <item quantity="many">Retirer ces %1$d lectures</item>
         <item quantity="other">Retirer ces %1$d lectures</item>
     </plurals>
     <plurals name="lh_clear_dialog_body">
         <item quantity="one">Cela supprime ta seule lecture. La rangée « Écoutés récemment », le tri « Les plus écoutés » de la bibliothèque et tes statistiques reposent sur cet historique et seront réinitialisés avec lui.</item>
+        <item quantity="many">Cela supprime les %1$d lectures. La rangée « Écoutés récemment », le tri « Les plus écoutés » de la bibliothèque et tes statistiques reposent sur cet historique et seront réinitialisés avec lui.</item>
         <item quantity="other">Cela supprime les %1$d lectures. La rangée « Écoutés récemment », le tri « Les plus écoutés » de la bibliothèque et tes statistiques reposent sur cet historique et seront réinitialisés avec lui.</item>
     </plurals>
     <plurals name="st_listened_plays">
         <item quantity="one">d\'écoute • %1$d lecture</item>
+        <item quantity="many">d\'écoute • %1$d lectures</item>
         <item quantity="other">d\'écoute • %1$d lectures</item>
     </plurals>
     <plurals name="st_n_days">
         <item quantity="one">%1$d jour</item>
+        <item quantity="many">%1$d jours</item>
         <item quantity="other">%1$d jours</item>
     </plurals>
     <string name="st_streak_best">Série • record : %1$d</string>
@@ -1461,11 +1492,13 @@
     <string name="st_to_go">Encore %1$d</string>
     <plurals name="st_next_milestone">
         <item quantity="one">Prochain palier : %1$d lecture</item>
+        <item quantity="many">Prochain palier : %1$d lectures</item>
         <item quantity="other">Prochain palier : %1$d lectures</item>
     </plurals>
     <string name="dl_action_with_size">Télécharger • %1$s</string>
     <plurals name="dl_n_active">
         <item quantity="one">%1$d en cours</item>
+        <item quantity="many">%1$d en cours</item>
         <item quantity="other">%1$d en cours</item>
     </plurals>
     <string name="dl_empty_music">Aucune musique téléchargée</string>
@@ -1476,10 +1509,12 @@
     <string name="pd_retry_items">Réessayer %1$s</string>
     <plurals name="pd_skipped_no_source">
         <item quantity="one">Aucune source téléchargeable pour %1$s : téléchargement ignoré.</item>
+        <item quantity="many">Aucune source téléchargeable pour %1$s : téléchargements ignorés.</item>
         <item quantity="other">Aucune source téléchargeable pour %1$s : téléchargements ignorés.</item>
     </plurals>
     <plurals name="search_n_matches">
         <item quantity="one">%1$d correspondance</item>
+        <item quantity="many">%1$d correspondances</item>
         <item quantity="other">%1$d correspondances</item>
     </plurals>
     <string name="as_sign_out_note">Le compte est déconnecté de cet appareil. Tes abonnements et tes recommandations masquées sont conservés, et rien ne change sur YouTube.</string>

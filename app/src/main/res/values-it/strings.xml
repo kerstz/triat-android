@@ -143,10 +143,12 @@
 
     <plurals name="n_songs">
         <item quantity="one">%1$d brano</item>
+        <item quantity="many">%1$d brani</item>
         <item quantity="other">%1$d brani</item>
     </plurals>
     <plurals name="n_playlists">
         <item quantity="one">%1$d playlist</item>
+        <item quantity="many">%1$d playlist</item>
         <item quantity="other">%1$d playlist</item>
     </plurals>
 
@@ -216,6 +218,7 @@
     <string name="queue_save_default_name">Coda · %1$s</string>
     <plurals name="queue_saved_to_playlist">
         <item quantity="one">%1$d brano salvato in %2$s</item>
+        <item quantity="many">%1$d brani salvati in %2$s</item>
         <item quantity="other">%1$d brani salvati in %2$s</item>
     </plurals>
     <string name="ps_style_classic">Classico</string>

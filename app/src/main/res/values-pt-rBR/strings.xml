@@ -143,10 +143,12 @@
 
     <plurals name="n_songs">
         <item quantity="one">%1$d música</item>
+        <item quantity="many">%1$d músicas</item>
         <item quantity="other">%1$d músicas</item>
     </plurals>
     <plurals name="n_playlists">
         <item quantity="one">%1$d playlist</item>
+        <item quantity="many">%1$d playlists</item>
         <item quantity="other">%1$d playlists</item>
     </plurals>
 
@@ -216,6 +218,7 @@
     <string name="queue_save_default_name">Fila · %1$s</string>
     <plurals name="queue_saved_to_playlist">
         <item quantity="one">%1$d música salva em %2$s</item>
+        <item quantity="many">%1$d músicas salvas em %2$s</item>
         <item quantity="other">%1$d músicas salvas em %2$s</item>
     </plurals>
     <string name="ps_style_classic">Clássico</string>

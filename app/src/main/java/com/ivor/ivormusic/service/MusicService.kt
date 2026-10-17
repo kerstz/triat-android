@@ -31,6 +31,7 @@ import androidx.media3.session.LibraryResult
 import androidx.media3.session.MediaLibraryService
 import androidx.media3.session.MediaSession
 import androidx.media3.session.SessionCommand
+import androidx.media3.session.SessionError
 import androidx.media3.session.SessionResult
 import com.google.common.collect.ImmutableList
 import com.google.common.util.concurrent.Futures
@@ -2017,7 +2018,7 @@ class MusicService : MediaLibraryService() {
             args: Bundle
         ): ListenableFuture<SessionResult> = if (!isOwnController(controller)) {
             // Defence in depth: Media3 already filters on the commands granted in onConnect.
-            Futures.immediateFuture(SessionResult(SessionResult.RESULT_ERROR_PERMISSION_DENIED))
+            Futures.immediateFuture(SessionResult(SessionError.ERROR_PERMISSION_DENIED))
         } else when (customCommand.customAction) {
             CMD_SKIP_NEXT -> {
                 requestManualSkip(forward = true)
@@ -2053,7 +2054,7 @@ class MusicService : MediaLibraryService() {
             CMD_RESTORE_PLAYBACK -> serviceScope.future {
                 if (session.player.mediaItemCount == 0) {
                     val restored = withContext(Dispatchers.IO) { loadPlaybackResumption() }
-                        ?: return@future SessionResult(SessionResult.RESULT_ERROR_IO)
+                        ?: return@future SessionResult(SessionError.ERROR_IO)
                     // A second controller can restore while the file read is
                     // suspended. Do not replace a queue that became live in
                     // the meantime (or reset its freshly changed position).
@@ -2080,12 +2081,12 @@ class MusicService : MediaLibraryService() {
             Player.COMMAND_SEEK_TO_NEXT,
             Player.COMMAND_SEEK_TO_NEXT_MEDIA_ITEM -> {
                 requestManualSkip(forward = true)
-                SessionResult.RESULT_ERROR_NOT_SUPPORTED
+                SessionError.ERROR_NOT_SUPPORTED
             }
             Player.COMMAND_SEEK_TO_PREVIOUS,
             Player.COMMAND_SEEK_TO_PREVIOUS_MEDIA_ITEM -> {
                 requestManualSkip(forward = false)
-                SessionResult.RESULT_ERROR_NOT_SUPPORTED
+                SessionError.ERROR_NOT_SUPPORTED
             }
             Player.COMMAND_SEEK_IN_CURRENT_MEDIA_ITEM,
             Player.COMMAND_SEEK_TO_DEFAULT_POSITION,
@@ -2262,7 +2263,7 @@ class MusicService : MediaLibraryService() {
                 findSongForBrowseId(mediaId)?.let { song ->
                     return@browseResult LibraryResult.ofItem(mapSongToMediaItem(song), null)
                 }
-                LibraryResult.ofError(SessionResult.RESULT_ERROR_BAD_VALUE)
+                LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
             }
         }
 
@@ -2275,7 +2276,7 @@ class MusicService : MediaLibraryService() {
             params: MediaLibraryService.LibraryParams?
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> {
             if (page < 0 || pageSize <= 0) {
-                return Futures.immediateFuture(LibraryResult.ofError(SessionResult.RESULT_ERROR_BAD_VALUE))
+                return Futures.immediateFuture(LibraryResult.ofError(SessionError.ERROR_BAD_VALUE))
             }
             if (parentId == "root") {
                 return Futures.immediateFuture(LibraryResult.ofItemList(mediaBrowsePage(getRootItems(), page, pageSize), params))
@@ -2297,7 +2298,7 @@ class MusicService : MediaLibraryService() {
             if (generation != browseGeneration) {
                 // Complete the legacy request, but never expose the old profile.
                 session.notifySearchResultChanged(browser, query, 0, params)
-                return@future LibraryResult.ofError(SessionResult.RESULT_ERROR_INVALID_STATE)
+                return@future LibraryResult.ofError(SessionError.ERROR_INVALID_STATE)
             }
             browseSearchResults[BrowseSearchKey(browser, query.trim())] = result
             // Required even for zero results/errors. Media3's legacy bridge
@@ -2316,7 +2317,7 @@ class MusicService : MediaLibraryService() {
             params: MediaLibraryService.LibraryParams?
         ): ListenableFuture<LibraryResult<ImmutableList<MediaItem>>> = browseResult {
             if (page < 0 || pageSize <= 0) {
-                return@browseResult LibraryResult.ofError(SessionResult.RESULT_ERROR_BAD_VALUE)
+                return@browseResult LibraryResult.ofError(SessionError.ERROR_BAD_VALUE)
             }
             val result = browseSearchResults[BrowseSearchKey(browser, query.trim())]
                 ?: loadBrowseSearch(query, params)
@@ -2341,16 +2342,16 @@ class MusicService : MediaLibraryService() {
             try {
                 val result = withTimeout(10_000L) { block() }
                 if (generation == browseGeneration) result
-                else LibraryResult.ofError(SessionResult.RESULT_ERROR_INVALID_STATE)
+                else LibraryResult.ofError(SessionError.ERROR_INVALID_STATE)
             } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
                 KLog.w(TAG, "Media browse request timed out", e)
-                LibraryResult.ofError(SessionResult.RESULT_ERROR_IO)
+                LibraryResult.ofError(SessionError.ERROR_IO)
             } catch (e: CancellationException) {
                 currentCoroutineContext().ensureActive()
-                LibraryResult.ofError(SessionResult.RESULT_ERROR_INVALID_STATE)
+                LibraryResult.ofError(SessionError.ERROR_INVALID_STATE)
             } catch (e: Exception) {
                 KLog.e(TAG, "Media browse request failed", e)
-                LibraryResult.ofError(SessionResult.RESULT_ERROR_IO)
+                LibraryResult.ofError(SessionError.ERROR_IO)
             }
         }
 
@@ -2366,13 +2367,13 @@ class MusicService : MediaLibraryService() {
         LibraryResult.ofItemList(searchSongsForBrowse(query).map(::mapSongToMediaItem), params)
     } catch (e: kotlinx.coroutines.TimeoutCancellationException) {
         KLog.w(TAG, "Media browse search timed out", e)
-        LibraryResult.ofError(SessionResult.RESULT_ERROR_IO)
+        LibraryResult.ofError(SessionError.ERROR_IO)
     } catch (e: CancellationException) {
         currentCoroutineContext().ensureActive()
-        LibraryResult.ofError(SessionResult.RESULT_ERROR_INVALID_STATE)
+        LibraryResult.ofError(SessionError.ERROR_INVALID_STATE)
     } catch (e: Exception) {
         KLog.e(TAG, "Media browse search failed", e)
-        LibraryResult.ofError(SessionResult.RESULT_ERROR_IO)
+        LibraryResult.ofError(SessionError.ERROR_IO)
     }
 
     // --- Browsing Helper Methods ---

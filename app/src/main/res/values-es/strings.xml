@@ -218,6 +218,7 @@
     <string name="queue_save_default_name">Cola · %1$s</string>
     <plurals name="queue_saved_to_playlist">
         <item quantity="one">Se guardó %1$d canción en %2$s</item>
+        <item quantity="many">Se guardaron %1$d canciones en %2$s</item>
         <item quantity="other">Se guardaron %1$d canciones en %2$s</item>
     </plurals>
     <string name="ps_style_classic">Clásico</string>
