@@ -13,7 +13,7 @@ The desktop side lives in the Triat desktop repository (`triat/core/sync.py`, `t
 ### 1.1 Discovery
 - mDNS / DNS-SD, service type **`_triat._tcp`**. TXT properties: `v` (version, "1"), `name` (for example "Triat - host-name"), `id` (the desktop's identifier, hex).
 - Default port **47823** (it may differ if that one is taken: use the port from the announcement).
-- A desktop announces every private IPv4 it has (Docker, VPN, link-local ones included). The phone keeps IPv4 only (the server binds IPv4) and prefers RFC1918 (10/8, 172.16/12, 192.168/16) over any other (`DesktopDiscovery.pickHost`).
+- A desktop announces every private IPv4 it has (Docker, VPN, link-local ones included). The phone keeps IPv4 only (the server binds IPv4) and prefers RFC1918 (10/8, 172.16/12, 192.168/16) over link-local; `pickHost` offers only what `isPrivateAddress` accepts, the very predicate the client applies, so nothing is listed that pairing would refuse.
 - A TXT `v` other than `SyncWire.VERSION` is listed with that `version`; pairing it answers "incompatible" rather than hiding it.
 - Fallback: manual entry of `ip:port`.
 
@@ -73,7 +73,7 @@ TRACK = {"id": "<videoId, 11 chars>", "title": "...", "artist": "...",
 | `SyncTombstones.kt` | Deleted playlists and unliked songs, so the desktop does not hand them back |
 | `SyncStore.kt` | The paired desktop, its key and the last sync state, in an encrypted preference file excluded from backups |
 | `DesktopDiscovery.kt` | mDNS discovery of `_triat._tcp`, one resolution at a time |
-| `DesktopSyncClient.kt` | HTTP client: `hello`, `pair`, `sync`; refuses any non-private host |
+| `DesktopSyncClient.kt` | HTTP client: `hello`, `pair`, `sync`; refuses any non-private host and loopback |
 | `DesktopSyncRepository.kt` | Process-wide owner of the pairing, the discovery list and the one-at-a-time sync |
 | `SyncRefresh.kt` | Tells every holder of its own `PlaylistRepository` that a sync wrote to disk |
 | `AutoSyncPolicy.kt` | The pure decision of when an automatic sync may run |
@@ -93,6 +93,7 @@ The decision lives in `AutoSyncPolicy.kt`, apart from everything Android so it c
 
 - `NsdManager` resolves one service at a time on older Android, so resolutions are queued.
 - Cleartext HTTP is allowed app-wide (`network_security_config.xml`), so `DesktopSyncClient` refuses any host that is not private (`isPrivateHost`), and every payload is sealed by `SyncCrypto`.
+- [scar] Loopback (127/8, `::1`) is refused as a desktop host, at every gate (client, its `PrivateOnlyDns`, `parsePairingUri`, manual entry, the saved pairing, discovery): otherwise a local app could pose as the desktop from a QR or a typed address. Only the JVM tests get in, through `DesktopSyncClient`'s `internal` constructor (`allowLoopbackForTests`); production uses the public one. Phone-side only, the protocol is unchanged.
 - `unlikeSong` writes a tombstone on purpose: without it the desktop would hand the like back. One that comes from the desktop uses `unlikeSongAt` so the tombstone keeps the author's date; a tombstone dated now is sent back to every device and beats a newer like.
 - `SyncTombstones.record`/`clear` read-modify-write one preference string from several instances: they share one process-wide lock.
 - The desktop does the merge; the phone sends a full snapshot and applies what comes back. Never change the protocol on one side only.
@@ -104,8 +105,8 @@ The decision lives in `AutoSyncPolicy.kt`, apart from everything Android so it c
 ## Tests
 
 - `sync/AutoSyncPolicyTest.kt`: the automatic sync's decision, on a clock the test moves by hand.
-- `sync/DesktopDiscoveryTest.kt`: TXT decoding and address choice (RFC1918 over other IPv4, no IPv6, no loopback), TXT version.
-- `sync/DesktopSyncClientTest.kt`: the HTTP client against a simulated desktop with the real `SyncCrypto`, and the private-host guard.
+- `sync/DesktopDiscoveryTest.kt`: TXT decoding and address choice (RFC1918 over link-local, no IPv6, nothing the client would refuse), TXT version.
+- `sync/DesktopSyncClientTest.kt`: the HTTP client against a simulated desktop with the real `SyncCrypto`, and the private-host guard (loopback refused unless the test switch is on).
 - `sync/DesktopSyncRepositoryTest.kt`: the pure decisions of the repository, on invented data.
 - `sync/SyncCryptoTest.kt`: interop vectors produced by the desktop; a failure means the two sides no longer understand each other.
 - `sync/SyncRefreshTest.kt`: which state changes count as a finished sync (`finishedSyncs`).

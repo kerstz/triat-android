@@ -82,7 +82,17 @@ sealed interface SyncResult {
  * interceptors and cache are dropped, since an app-wide interceptor (cookies,
  * user agent) has no business on a LAN exchange.
  */
-class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
+class DesktopSyncClient internal constructor(
+    base: OkHttpClient,
+    /**
+     * Lets the JVM tests talk to a simulated desktop on 127.0.0.1. Production
+     * builds go through the public constructor, which always passes false: the
+     * phone itself is never a desktop to sync with (docs/sync.md).
+     */
+    private val allowLoopbackForTests: Boolean,
+) {
+    constructor(base: OkHttpClient = OkHttpClient()) : this(base, false)
+
 
     private val client: OkHttpClient = base.newBuilder()
         .connectTimeout(CONNECT_TIMEOUT_S, TimeUnit.SECONDS)
@@ -94,7 +104,7 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         // A retry would replay a pairing proof, which the desktop counts as an attempt.
         .retryOnConnectionFailure(false)
         .proxy(Proxy.NO_PROXY)
-        .dns(PrivateOnlyDns())
+        .dns(PrivateOnlyDns(allowLoopback = allowLoopbackForTests))
         .cache(null)
         .cookieJar(CookieJar.NO_COOKIES)
         .apply {
@@ -115,8 +125,8 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
      * Used by the manual `ip:port` entry.
      */
     suspend fun hello(host: String, port: Int): FoundDesktop? = withContext(Dispatchers.IO) {
-        if (!isPrivateHost(host) || port !in PORTS) return@withContext null
-        val request = Request.Builder().url(urlFor(host, port, "v1/hello")).get().build()
+        if (!isPrivateHost(host, allowLoopbackForTests) || port !in PORTS) return@withContext null
+        val request = Request.Builder().url(urlFor(host, port, "v1/hello", allowLoopbackForTests)).get().build()
         val reply = try {
             roundTrip(quickClient, request, MAX_SMALL_REPLY)
         } catch (e: IOException) {
@@ -138,7 +148,7 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         deviceId: String,
         deviceName: String,
     ): PairResult = withContext(Dispatchers.IO) {
-        if (!isPrivateHost(host)) return@withContext PairResult.Failed(REASON_HOST)
+        if (!isPrivateHost(host, allowLoopbackForTests)) return@withContext PairResult.Failed(REASON_HOST)
         if (port !in PORTS) return@withContext PairResult.Failed(REASON_PORT)
         if (!isValidDeviceId(deviceId)) return@withContext PairResult.Failed(REASON_DEVICE)
         // A code of the wrong length cannot be right, and the desktop only
@@ -229,7 +239,7 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         deviceId: String,
         snapshot: JSONObject,
     ): SyncResult = withContext(Dispatchers.IO) {
-        if (!isPrivateHost(desktop.host)) return@withContext SyncResult.Failed(REASON_HOST)
+        if (!isPrivateHost(desktop.host, allowLoopbackForTests)) return@withContext SyncResult.Failed(REASON_HOST)
         if (desktop.port !in PORTS) return@withContext SyncResult.Failed(REASON_PORT)
         if (!isValidDeviceId(deviceId)) return@withContext SyncResult.Failed(REASON_DEVICE)
 
@@ -269,7 +279,7 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
         if (sealed.size > MAX_REQUEST) return SyncResult.Failed(REASON_TOO_LARGE)
 
         val request = Request.Builder()
-            .url(urlFor(desktop.host, desktop.port, "v1/sync"))
+            .url(urlFor(desktop.host, desktop.port, "v1/sync", allowLoopbackForTests))
             .header(DEVICE_HEADER, deviceId)
             .post(sealed.toRequestBody(OCTET_STREAM))
             .build()
@@ -318,14 +328,14 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
      */
     suspend fun unpair(desktop: SyncStore.PairedDesktop, deviceId: String): Boolean =
         withContext(Dispatchers.IO) {
-            if (!isPrivateHost(desktop.host) || desktop.port !in PORTS || !isValidDeviceId(deviceId)) {
+            if (!isPrivateHost(desktop.host, allowLoopbackForTests) || desktop.port !in PORTS || !isValidDeviceId(deviceId)) {
                 return@withContext false
             }
             try {
                 val nonce = SyncCrypto.newRequestNonce()
                 val sealed = SyncCrypto.sealRequest(desktop.key, JSONObject(), deviceId, nonce)
                 val request = Request.Builder()
-                    .url(urlFor(desktop.host, desktop.port, "v1/unpair"))
+                    .url(urlFor(desktop.host, desktop.port, "v1/unpair", allowLoopbackForTests))
                     .header(DEVICE_HEADER, deviceId)
                     .post(sealed.toRequestBody(OCTET_STREAM))
                     .build()
@@ -344,7 +354,7 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
 
     private suspend fun postJson(host: String, port: Int, path: String, body: JSONObject): Reply {
         val request = Request.Builder()
-            .url(urlFor(host, port, path))
+            .url(urlFor(host, port, path, allowLoopbackForTests))
             .post(body.toString().toRequestBody(JSON))
             .build()
         return roundTrip(client, request, MAX_SMALL_REPLY)
@@ -429,8 +439,8 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
          * point which forgets the check fails loudly instead of sending sync
          * traffic to an address that is not on the local network.
          */
-        internal fun urlFor(host: String, port: Int, path: String): HttpUrl {
-            require(isPrivateHost(host)) { "refusing a host that is not on the local network" }
+        internal fun urlFor(host: String, port: Int, path: String, allowLoopback: Boolean = false): HttpUrl {
+            require(isPrivateHost(host, allowLoopback)) { "refusing a host that is not on the local network" }
             require(port in PORTS) { "bad port" }
             return HttpUrl.Builder()
                 .scheme("http")
@@ -495,25 +505,33 @@ class DesktopSyncClient(base: OkHttpClient = OkHttpClient()) {
 }
 
 /**
- * Whether [host] is an address the sync may talk to: on this phone or on the
- * local network, never on the internet. Pure and strict on purpose: what it
+ * Whether [host] is an address the sync may talk to: on the local network,
+ * never on the internet and never on this phone itself (a local app could pose
+ * as the desktop). Pure and strict on purpose: what it
  * checks must be what the socket connects to, so anything ambiguous is refused.
  *
  * Accepted:
  * - IPv4 in dotted decimal: `10/8`, `172.16/12`, `192.168/16`, `169.254/16`
- *   (link-local) and `127/8` (loopback);
- * - IPv6 `fe80::/10` (link-local), `fc00::/7` (unique local) and `::1`, bare
+ *   (link-local);
+ * - IPv6 `fe80::/10` (link-local), `fc00::/7` (unique local), bare
  *   or in brackets, and an IPv4-mapped IPv6 address whose IPv4 part is one of
  *   the above;
  * - a `*.local` name (mDNS), which [PrivateOnlyDns] then requires to resolve
  *   to private addresses only.
  *
- * Refused: every other address (including `0.0.0.0`, `100.64/10`), every other
+ * Refused: loopback (`127/8`, `::1`, also as an IPv4-mapped address), every
+ * other address (including `0.0.0.0`, `100.64/10`), every other
  * name (`localhost` and public domains alike), IPv6 with a zone (`%wlan0`, it
  * cannot be put in a URL), short or padded IPv4 forms (`127.1`, `010.0.0.1`,
  * a single big number), anything with a port, a path, a user or a space in it.
  */
-fun isPrivateHost(host: String): Boolean {
+fun isPrivateHost(host: String): Boolean = isPrivateHost(host, allowLoopback = false)
+
+/**
+ * [isPrivateHost] with the one switch the JVM tests need. Only
+ * [DesktopSyncClient]'s internal constructor ever passes true.
+ */
+internal fun isPrivateHost(host: String, allowLoopback: Boolean): Boolean {
     if (host.isEmpty() || host.length > 255) return false
     if (host.startsWith("[") || host.contains(':')) {
         val literal = if (host.startsWith("[")) {
@@ -522,9 +540,9 @@ fun isPrivateHost(host: String): Boolean {
         } else {
             host
         }
-        return isPrivateIpv6Literal(literal)
+        return isPrivateIpv6Literal(literal, allowLoopback)
     }
-    parseIpv4(host)?.let { return isPrivateIpv4(it[0], it[1]) }
+    parseIpv4(host)?.let { return isPrivateIpv4(it[0], it[1], allowLoopback) }
     // Only digits and dots but not a strict dotted quad: an alternative
     // spelling of some address ("127.1", "2130706433"), never a name.
     if (host.all { it in '0'..'9' || it == '.' }) return false
@@ -545,14 +563,14 @@ private fun parseIpv4(text: String): IntArray? {
     return octets
 }
 
-private fun isPrivateIpv4(first: Int, second: Int): Boolean =
+private fun isPrivateIpv4(first: Int, second: Int, allowLoopback: Boolean): Boolean =
     first == 10 ||
-        first == 127 ||
+        (allowLoopback && first == 127) ||
         (first == 172 && second in 16..31) ||
         (first == 192 && second == 168) ||
         (first == 169 && second == 254)
 
-private fun isPrivateIpv6Literal(text: String): Boolean {
+private fun isPrivateIpv6Literal(text: String, allowLoopback: Boolean): Boolean {
     if (':' !in text) return false
     // Hex, colons and dots only (an embedded IPv4 tail): this is what keeps
     // getByName from ever being handed something it would look up by name.
@@ -562,15 +580,15 @@ private fun isPrivateIpv6Literal(text: String): Boolean {
     } catch (e: UnknownHostException) {
         return false
     }
-    return isPrivateAddress(address)
+    return isPrivateAddress(address, allowLoopback)
 }
 
 /** The address-level twin of [isPrivateHost], for what a name resolved to. */
-internal fun isPrivateAddress(address: InetAddress): Boolean {
+internal fun isPrivateAddress(address: InetAddress, allowLoopback: Boolean = false): Boolean {
     val bytes = address.address
     return when (address) {
-        is Inet4Address -> isPrivateIpv4(bytes[0].toInt() and 0xFF, bytes[1].toInt() and 0xFF)
-        is Inet6Address -> address.isLoopbackAddress ||
+        is Inet4Address -> isPrivateIpv4(bytes[0].toInt() and 0xFF, bytes[1].toInt() and 0xFF, allowLoopback)
+        is Inet6Address -> (allowLoopback && address.isLoopbackAddress) ||
             address.isLinkLocalAddress ||
             (bytes[0].toInt() and 0xFE) == 0xFC
         else -> false
@@ -597,11 +615,14 @@ private fun isLocalName(host: String): Boolean {
  * names, and the only names [isPrivateHost] lets through are `*.local`: if one
  * resolves, even partly, to a public address, the whole answer is refused.
  */
-internal class PrivateOnlyDns(private val delegate: Dns = Dns.SYSTEM) : Dns {
+internal class PrivateOnlyDns(
+    private val delegate: Dns = Dns.SYSTEM,
+    private val allowLoopback: Boolean = false,
+) : Dns {
     override fun lookup(hostname: String): List<InetAddress> {
-        if (!isPrivateHost(hostname)) throw UnknownHostException("$hostname is not a local host")
+        if (!isPrivateHost(hostname, allowLoopback)) throw UnknownHostException("$hostname is not a local host")
         val addresses = delegate.lookup(hostname)
-        if (addresses.isEmpty() || !addresses.all(::isPrivateAddress)) {
+        if (addresses.isEmpty() || !addresses.all { isPrivateAddress(it, allowLoopback) }) {
             throw UnknownHostException("$hostname does not resolve to a local address")
         }
         return addresses

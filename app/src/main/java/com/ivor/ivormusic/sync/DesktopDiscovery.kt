@@ -249,13 +249,15 @@ object DesktopDiscovery {
     }
 
     /**
-     * An IPv4 address, RFC1918 ones first (10/8, 172.16/12, 192.168/16): a
-     * desktop also announces Docker, VPN or link-local addresses the phone
-     * cannot use. IPv6 is dropped: the desktop server binds IPv4 only, so a
+     * An IPv4 address [isPrivateAddress] accepts (the very predicate the client
+     * applies to a host, so nothing is offered that pairing would refuse),
+     * RFC1918 ones first (10/8, 172.16/12, 192.168/16): a desktop also announces
+     * Docker, VPN or link-local addresses. Loopback and public ones are dropped.
+     * IPv6 is dropped: the desktop server binds IPv4 only, so a
      * connection to its IPv6 address is refused.
      */
     internal fun pickHost(addresses: List<InetAddress>): String? {
-        val v4 = addresses.filter { it is Inet4Address && !it.isLoopbackAddress && !it.isAnyLocalAddress }
+        val v4 = addresses.filter { it is Inet4Address && isPrivateAddress(it) }
         return (v4.firstOrNull { isRfc1918(it) } ?: v4.firstOrNull())?.hostAddress
     }
 

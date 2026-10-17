@@ -58,8 +58,10 @@ class DesktopDiscoveryTest {
     }
 
     @Test
-    fun `another IPv4 is the fallback when no private one is listed`() {
-        assertEquals("100.101.1.2", DesktopDiscovery.pickHost(listOf(ip(100, 101, 1, 2))))
+    fun `an address the client would refuse is never offered`() {
+        assertNull(DesktopDiscovery.pickHost(listOf(ip(100, 101, 1, 2))))
+        assertNull(DesktopDiscovery.pickHost(listOf(ip(8, 8, 8, 8))))
+        assertEquals("169.254.3.4", DesktopDiscovery.pickHost(listOf(ip(100, 101, 1, 2), ip(169, 254, 3, 4))))
     }
 
     @Test

@@ -6,6 +6,7 @@ import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.withTimeout
 import okhttp3.Dns
+import okhttp3.OkHttpClient
 import org.json.JSONObject
 import org.junit.After
 import org.junit.Assert.assertArrayEquals
@@ -42,14 +43,45 @@ class DesktopSyncClientTest {
     // ---- isPrivateHost --------------------------------------------------
 
     @Test
-    fun `private, loopback and link-local addresses are accepted`() {
+    fun `private and link-local addresses are accepted`() {
         listOf(
             "10.0.0.1", "10.255.255.255", "172.16.0.1", "172.20.5.5", "172.31.255.255",
-            "192.168.0.1", "192.168.1.20", "169.254.0.1", "169.254.10.10", "127.0.0.1", "127.255.0.3",
-            "fe80::1", "fe80::abcd:1234", "febf::1", "fc00::1", "fd12:3456:789a::1", "::1",
-            "[fe80::1]", "[fd12::5]", "[::1]", "::ffff:192.168.1.5",
+            "192.168.0.1", "192.168.1.20", "169.254.0.1", "169.254.10.10",
+            "fe80::1", "fe80::abcd:1234", "febf::1", "fc00::1", "fd12:3456:789a::1",
+            "[fe80::1]", "[fd12::5]", "::ffff:192.168.1.5",
             "pc.local", "PC.LOCAL", "my-desktop.local", "living_room.local", "a.b.local", "192-168-1-5.local",
         ).forEach { assertTrue("$it should be accepted", isPrivateHost(it)) }
+    }
+
+    @Test
+    fun `loopback addresses are refused in production`() {
+        listOf("127.0.0.1", "127.255.0.3", "127.0.0.0", "::1", "[::1]", "0:0:0:0:0:0:0:1", "::ffff:127.0.0.1")
+            .forEach { assertFalse("$it should be refused", isPrivateHost(it)) }
+        // Only the test switch lets them through.
+        listOf("127.0.0.1", "127.255.0.3", "::1", "[::1]")
+            .forEach { assertTrue("$it should pass the test switch", isPrivateHost(it, allowLoopback = true)) }
+        assertFalse(isPrivateHost("8.8.8.8", allowLoopback = true))
+    }
+
+    @Test
+    fun `a client with the defaults refuses a desktop on the phone itself`() = runBlocking {
+        val desktop = FakeDesktop().start()
+        val client = DesktopSyncClient()
+        val key = ByteArray(32) { 1 }
+        for (host in listOf("127.0.0.1", "::1", "[::1]")) {
+            assertNull(client.hello(host, desktop.port))
+            assertEquals(
+                PairResult.Failed(DesktopSyncClient.REASON_HOST),
+                client.pair(host, desktop.port, "K7QM2XPA", "phone-1", "Phone"),
+            )
+            assertEquals(
+                SyncResult.Failed(DesktopSyncClient.REASON_HOST),
+                client.sync(SyncStore.PairedDesktop("id", "n", host, desktop.port, key), "phone-1", JSONObject()),
+            )
+            assertFalse(client.unpair(SyncStore.PairedDesktop("id", "n", host, desktop.port, key), "phone-1"))
+        }
+        assertThrows(IllegalArgumentException::class.java) { DesktopSyncClient.urlFor("127.0.0.1", 47823, "v1/hello") }
+        Unit
     }
 
     @Test
@@ -95,6 +127,8 @@ class DesktopSyncClientTest {
         assertThrows(UnknownHostException::class.java) { PrivateOnlyDns(dnsOf(public)).lookup("pc.local") }
         assertThrows(UnknownHostException::class.java) { PrivateOnlyDns(dnsOf(home, public)).lookup("pc.local") }
         assertThrows(UnknownHostException::class.java) { PrivateOnlyDns(dnsOf()).lookup("pc.local") }
+        // A .local name pointing at the phone itself is refused too.
+        assertThrows(UnknownHostException::class.java) { PrivateOnlyDns(dnsOf(intArrayOf(127, 0, 0, 1))).lookup("pc.local") }
         // A public name never reaches the resolver at all.
         val untouched = object : Dns {
             override fun lookup(hostname: String): List<InetAddress> = error("must not be called")
@@ -116,7 +150,7 @@ class DesktopSyncClientTest {
 
     @Test
     fun `every entry point refuses a public host before sending anything`() = runBlocking {
-        val client = DesktopSyncClient()
+        val client = testClient()
         val key = ByteArray(32) { 1 }
         for (host in listOf("8.8.8.8", "example.com", "2001:db8::1", "localhost")) {
             assertNull(client.hello(host, 47823))
@@ -137,7 +171,7 @@ class DesktopSyncClientTest {
         val redirecting = FakeDesktop().start()
         redirecting.redirectTo = "http://127.0.0.1:${elsewhere.port}/v1/hello"
 
-        assertNull(DesktopSyncClient().hello("127.0.0.1", redirecting.port))
+        assertNull(testClient().hello("127.0.0.1", redirecting.port))
         assertEquals(listOf("GET /v1/hello"), redirecting.requests)
         assertTrue("the redirect target was contacted", elsewhere.requests.isEmpty())
     }
@@ -147,13 +181,13 @@ class DesktopSyncClientTest {
     @Test
     fun `hello identifies a desktop`() = runBlocking {
         val desktop = FakeDesktop().start()
-        val found = DesktopSyncClient().hello("127.0.0.1", desktop.port)
+        val found = testClient().hello("127.0.0.1", desktop.port)
         assertEquals(FoundDesktop("0123abcd0123abcd", "Triat — test-pc", "127.0.0.1", desktop.port), found)
     }
 
     @Test
     fun `hello refuses what is not a Triat desktop`() = runBlocking {
-        val client = DesktopSyncClient()
+        val client = testClient()
         val other = FakeDesktop().start().also { it.helloJson = """{"app":"something","v":1,"server_id":"x","name":"y"}""" }
         assertNull(client.hello("127.0.0.1", other.port))
         val noId = FakeDesktop().start().also { it.helloJson = """{"app":"triat","v":1,"server_id":null,"name":"y"}""" }
@@ -166,7 +200,7 @@ class DesktopSyncClientTest {
     @Test
     fun `hello reports another protocol version instead of not found`() = runBlocking {
         val newer = FakeDesktop().start().also { it.helloJson = """{"app":"triat","v":2,"server_id":"x","name":"y"}""" }
-        val found = DesktopSyncClient().hello("127.0.0.1", newer.port)
+        val found = testClient().hello("127.0.0.1", newer.port)
         assertEquals(2, found?.version)
         assertEquals("x", found?.serverId)
     }
@@ -184,7 +218,7 @@ class DesktopSyncClientTest {
         val slow = FakeDesktop().start().also { it.delayMs = 1500 }
         val started = System.nanoTime()
         try {
-            runBlocking { withTimeout(200) { DesktopSyncClient().hello("127.0.0.1", slow.port) } }
+            runBlocking { withTimeout(200) { testClient().hello("127.0.0.1", slow.port) } }
             error("hello should not have answered")
         } catch (expected: TimeoutCancellationException) {
             // The point: control came back well before the slow answer would have.
@@ -197,7 +231,7 @@ class DesktopSyncClientTest {
     @Test
     fun `pairing with the right code stores the shared key`() = runBlocking {
         val desktop = FakeDesktop().start()
-        val result = DesktopSyncClient().pair("127.0.0.1", desktop.port, "k7qm-2xpa", "phone-1", "Test phone")
+        val result = testClient().pair("127.0.0.1", desktop.port, "k7qm-2xpa", "phone-1", "Test phone")
 
         assertTrue(result.toString(), result is PairResult.Paired)
         val paired = (result as PairResult.Paired).desktop
@@ -215,14 +249,14 @@ class DesktopSyncClientTest {
     @Test
     fun `a wrong code is reported as such`() = runBlocking {
         val desktop = FakeDesktop().start()
-        assertEquals(PairResult.WrongCode, DesktopSyncClient().pair("127.0.0.1", desktop.port, "AAAAAAAA", "phone-1", "Phone"))
+        assertEquals(PairResult.WrongCode, testClient().pair("127.0.0.1", desktop.port, "AAAAAAAA", "phone-1", "Phone"))
         assertNull(desktop.pairedKey)
     }
 
     @Test
     fun `a code of the wrong length does not cost an attempt`() = runBlocking {
         val desktop = FakeDesktop().start()
-        val client = DesktopSyncClient()
+        val client = testClient()
         assertEquals(PairResult.WrongCode, client.pair("127.0.0.1", desktop.port, "K7QM", "phone-1", "Phone"))
         assertEquals(PairResult.WrongCode, client.pair("127.0.0.1", desktop.port, "", "phone-1", "Phone"))
         assertTrue(desktop.requests.isEmpty())
@@ -231,10 +265,10 @@ class DesktopSyncClientTest {
     @Test
     fun `pairing is closed when the desktop shows no code`() = runBlocking {
         val closedAtStart = FakeDesktop().start().also { it.pairingOpen = false }
-        assertEquals(PairResult.PairingClosed, DesktopSyncClient().pair("127.0.0.1", closedAtStart.port, "K7QM2XPA", "phone-1", "Phone"))
+        assertEquals(PairResult.PairingClosed, testClient().pair("127.0.0.1", closedAtStart.port, "K7QM2XPA", "phone-1", "Phone"))
 
         val closedAtFinish = FakeDesktop().start().also { it.finishStatus = 409 }
-        assertEquals(PairResult.PairingClosed, DesktopSyncClient().pair("127.0.0.1", closedAtFinish.port, "K7QM2XPA", "phone-1", "Phone"))
+        assertEquals(PairResult.PairingClosed, testClient().pair("127.0.0.1", closedAtFinish.port, "K7QM2XPA", "phone-1", "Phone"))
     }
 
     @Test
@@ -242,13 +276,13 @@ class DesktopSyncClientTest {
         val impostor = FakeDesktop().start().also { it.serverProofOverride = ByteArray(32) { 7 } }
         assertEquals(
             PairResult.Failed(DesktopSyncClient.REASON_PROOF),
-            DesktopSyncClient().pair("127.0.0.1", impostor.port, "K7QM2XPA", "phone-1", "Phone"),
+            testClient().pair("127.0.0.1", impostor.port, "K7QM2XPA", "phone-1", "Phone"),
         )
     }
 
     @Test
     fun `answers that are not the protocol fail cleanly`() = runBlocking {
-        val client = DesktopSyncClient()
+        val client = testClient()
         val badKey = FakeDesktop().start().also { it.startJson = """{"server_id":"a","name":"b","pub":"AAAA"}""" }
         assertEquals(PairResult.Failed(DesktopSyncClient.REASON_PROTOCOL), client.pair("127.0.0.1", badKey.port, "K7QM2XPA", "phone-1", "P"))
 
@@ -268,7 +302,7 @@ class DesktopSyncClientTest {
 
     @Test
     fun `a device id that cannot travel is refused`() = runBlocking {
-        val client = DesktopSyncClient()
+        val client = testClient()
         for (id in listOf("", "a".repeat(65), "with space", "café", "line\nbreak")) {
             assertEquals(PairResult.Failed(DesktopSyncClient.REASON_DEVICE), client.pair("127.0.0.1", 47823, "K7QM2XPA", id, "P"))
         }
@@ -279,7 +313,7 @@ class DesktopSyncClientTest {
     // ---- sync -----------------------------------------------------------
 
     private suspend fun pairedWith(desktop: FakeDesktop): SyncStore.PairedDesktop {
-        val result = DesktopSyncClient().pair("127.0.0.1", desktop.port, "K7QM2XPA", "phone-1", "Phone")
+        val result = testClient().pair("127.0.0.1", desktop.port, "K7QM2XPA", "phone-1", "Phone")
         return (result as PairResult.Paired).desktop
     }
 
@@ -290,7 +324,7 @@ class DesktopSyncClientTest {
         desktop.mergedJson = """{"v":1,"playlists":[{"uid":"u1","name":"Mix","updated":1700000000000,"deleted":false,"tracks":[]}],"likes":[],"history":[],"cookies":"a=b; c=d"}"""
 
         val snapshot = SyncWire.snapshot(emptyList(), emptyList(), emptyMap(), emptyList()).put("marker", "from-the-phone")
-        val result = DesktopSyncClient().sync(paired, "phone-1", snapshot)
+        val result = testClient().sync(paired, "phone-1", snapshot)
 
         assertTrue(result.toString(), result is SyncResult.Ok)
         val merged = (result as SyncResult.Ok).merged
@@ -305,7 +339,7 @@ class DesktopSyncClientTest {
     fun `a sync uses the bound framing with fresh ts and n`() = runBlocking {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
-        val client = DesktopSyncClient()
+        val client = testClient()
         val first = client.sync(paired, "phone-1", JSONObject().put("v", 1)) as SyncResult.Ok
         val second = client.sync(paired, "phone-1", JSONObject().put("v", 1)) as SyncResult.Ok
         assertTrue(first.bound && second.bound)
@@ -319,7 +353,7 @@ class DesktopSyncClientTest {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
         desktop.legacyOnly = true
-        val result = DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1))
+        val result = testClient().sync(paired, "phone-1", JSONObject().put("v", 1))
         assertTrue(result is SyncResult.Ok)
         assertFalse((result as SyncResult.Ok).bound)
         assertEquals(listOf("legacy"), desktop.syncRequests.toList())
@@ -330,7 +364,7 @@ class DesktopSyncClientTest {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop).copy(boundConfirmed = true)
         desktop.legacyOnly = true
-        assertEquals(SyncResult.Unauthorized, DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1)))
+        assertEquals(SyncResult.Unauthorized, testClient().sync(paired, "phone-1", JSONObject().put("v", 1)))
         assertTrue(desktop.syncRequests.isEmpty())
     }
 
@@ -341,7 +375,7 @@ class DesktopSyncClientTest {
         desktop.wrongReplyNonce = "00000000000000000000000000000000"
         assertEquals(
             SyncResult.Failed(DesktopSyncClient.REASON_PROTOCOL),
-            DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1)),
+            testClient().sync(paired, "phone-1", JSONObject().put("v", 1)),
         )
     }
 
@@ -349,9 +383,9 @@ class DesktopSyncClientTest {
     fun `unpair tells the desktop and never throws`() = runBlocking {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
-        assertTrue(DesktopSyncClient().unpair(paired, "phone-1"))
+        assertTrue(testClient().unpair(paired, "phone-1"))
         assertTrue(desktop.unpaired)
-        assertFalse(DesktopSyncClient().unpair(paired.copy(port = closedPort()), "phone-1"))
+        assertFalse(testClient().unpair(paired.copy(port = closedPort()), "phone-1"))
     }
 
     @Test
@@ -359,17 +393,17 @@ class DesktopSyncClientTest {
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
         desktop.syncStatus = 401
-        assertEquals(SyncResult.Unauthorized, DesktopSyncClient().sync(paired, "phone-1", JSONObject().put("v", 1)))
+        assertEquals(SyncResult.Unauthorized, testClient().sync(paired, "phone-1", JSONObject().put("v", 1)))
 
         // A key that is not the desktop's gets the same answer from the real desktop.
         val other = FakeDesktop().start().also { pairedWith(it) }
         val wrongKey = paired.copy(port = other.port, key = ByteArray(32) { 9 })
-        assertEquals(SyncResult.Unauthorized, DesktopSyncClient().sync(wrongKey, "phone-1", JSONObject().put("v", 1)))
+        assertEquals(SyncResult.Unauthorized, testClient().sync(wrongKey, "phone-1", JSONObject().put("v", 1)))
     }
 
     @Test
     fun `other statuses and bad answers are failures, never crashes`() = runBlocking {
-        val client = DesktopSyncClient()
+        val client = testClient()
         val desktop = FakeDesktop().start()
         val paired = pairedWith(desktop)
         val snapshot = JSONObject().put("v", 1)
@@ -402,6 +436,9 @@ class DesktopSyncClientTest {
     }
 
     // ---- the simulated desktop ------------------------------------------
+
+    /** The client under test: the production class, with the loopback switch the simulated desktop needs. */
+    private fun testClient() = DesktopSyncClient(OkHttpClient(), allowLoopbackForTests = true)
 
     private fun closedPort(): Int = ServerSocket(0, 1, InetAddress.getByAddress(byteArrayOf(127, 0, 0, 1))).use { it.localPort }
 
