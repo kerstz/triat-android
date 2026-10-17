@@ -407,6 +407,7 @@ fun BentoPlayerSheetContent(
                         }
                         BentoToggleTile(
                             checked = shuffleModeEnabled,
+                            stateText = shuffleStateText(shuffleModeEnabled),
                             onClick = { viewModel.toggleShuffle() },
                             uncheckedColor = tileColor,
                             uncheckedContent = onTileVariant
@@ -415,6 +416,7 @@ fun BentoPlayerSheetContent(
                         }
                         BentoToggleTile(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
+                            stateText = repeatStateText(repeatMode),
                             onClick = { viewModel.toggleRepeat() },
                             uncheckedColor = tileColor,
                             uncheckedContent = onTileVariant
@@ -557,6 +559,7 @@ private fun androidx.compose.foundation.layout.RowScope.BentoToggleTile(
     onClick: () -> Unit,
     uncheckedColor: Color,
     uncheckedContent: Color,
+    stateText: String? = null,
     content: @Composable () -> Unit
 ) {
     val corner by animateDpAsState(
@@ -571,7 +574,8 @@ private fun androidx.compose.foundation.layout.RowScope.BentoToggleTile(
         onClick = onClick,
         modifier = Modifier
             .weight(1f)
-            .fillMaxHeight(),
+            .fillMaxHeight()
+            .toggleStateText(stateText),
         shape = RoundedCornerShape(corner),
         color = if (checked) MaterialTheme.colorScheme.tertiaryContainer else uncheckedColor,
         contentColor = if (checked) MaterialTheme.colorScheme.onTertiaryContainer else uncheckedContent

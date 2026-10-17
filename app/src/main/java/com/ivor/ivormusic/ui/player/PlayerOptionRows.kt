@@ -213,6 +213,8 @@ internal fun OptionTile(
     enabled: Boolean = true,
     /** Replaces the icon while the action is in flight (a download starting). */
     loading: Boolean = false,
+    /** Spoken after the label for a mode tile (shuffle, repeat); null leaves it a plain button. */
+    stateText: String? = null,
 ) {
     val corner by animateDpAsState(
         targetValue = if (selected) 16.dp else 26.dp,
@@ -236,7 +238,7 @@ internal fun OptionTile(
 
     Surface(
         onClick = onClick,
-        modifier = modifier.heightIn(min = 86.dp),
+        modifier = modifier.heightIn(min = 86.dp).toggleStateText(stateText),
         enabled = enabled,
         shape = RoundedCornerShape(corner),
         color = container,

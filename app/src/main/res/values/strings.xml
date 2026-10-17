@@ -528,6 +528,10 @@
     <string name="cd_shuffle">Shuffle</string>
     <string name="cd_previous">Previous</string>
     <string name="cd_repeat">Repeat</string>
+    <string name="a11y_on">On</string>
+    <string name="a11y_off">Off</string>
+    <string name="a11y_repeat_all">Repeat all</string>
+    <string name="a11y_repeat_one">Repeat one</string>
     <string name="cd_local_file">Local File</string>
     <string name="ps_up_next">Up Next</string>
     <string name="ps_queue_empty">Queue is empty</string>

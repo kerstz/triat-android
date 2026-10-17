@@ -541,6 +541,7 @@ private fun EditorialNowPlayingView(
                 }
                 EditorialChip(
                     checked = shuffleModeEnabled,
+                    stateText = shuffleStateText(shuffleModeEnabled),
                     onClick = onToggleShuffle,
                     accent = accent,
                     field = field
@@ -549,6 +550,7 @@ private fun EditorialNowPlayingView(
                 }
                 EditorialChip(
                     checked = repeatMode != Player.REPEAT_MODE_OFF,
+                    stateText = repeatStateText(repeatMode),
                     onClick = onToggleRepeat,
                     accent = accent,
                     field = field
@@ -731,6 +733,7 @@ internal fun EditorialChip(
     accent: Color,
     field: Color,
     idle: Color = accent,
+    stateText: String? = null,
     content: @Composable () -> Unit
 ) {
     Surface(
@@ -738,7 +741,7 @@ internal fun EditorialChip(
         shape = CircleShape,
         color = if (checked) accent else Color.Transparent,
         contentColor = if (checked) field else idle,
-        modifier = Modifier.size(48.dp)
+        modifier = Modifier.size(48.dp).toggleStateText(stateText)
     ) {
         Box(contentAlignment = Alignment.Center) {
             content()

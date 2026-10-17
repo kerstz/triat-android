@@ -372,6 +372,7 @@ fun StickerPlayerSheetContent(
                         }
                         EditorialChip(
                             checked = shuffleModeEnabled,
+                            stateText = shuffleStateText(shuffleModeEnabled),
                             onClick = { viewModel.toggleShuffle() },
                             accent = chipColor,
                             field = onChip,
@@ -381,6 +382,7 @@ fun StickerPlayerSheetContent(
                         }
                         EditorialChip(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
+                            stateText = repeatStateText(repeatMode),
                             onClick = { viewModel.toggleRepeat() },
                             accent = chipColor,
                             field = onChip,

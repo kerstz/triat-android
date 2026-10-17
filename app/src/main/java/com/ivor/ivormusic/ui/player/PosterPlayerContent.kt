@@ -454,6 +454,7 @@ fun PosterPlayerSheetContent(
                                     ) {
                                         EditorialChip(
                                             checked = shuffleModeEnabled,
+                                            stateText = shuffleStateText(shuffleModeEnabled),
                                             onClick = { viewModel.toggleShuffle() },
                                             accent = glyph,
                                             field = scrim
@@ -521,6 +522,7 @@ fun PosterPlayerSheetContent(
                                         }
                                         EditorialChip(
                                             checked = repeatMode != Player.REPEAT_MODE_OFF,
+                                            stateText = repeatStateText(repeatMode),
                                             onClick = { viewModel.toggleRepeat() },
                                             accent = glyph,
                                             field = scrim

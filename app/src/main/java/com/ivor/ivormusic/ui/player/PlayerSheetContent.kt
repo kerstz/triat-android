@@ -572,6 +572,7 @@ private fun ExpressiveNowPlayingView(
                                 .weight(0.8f)
                                 .fillMaxHeight()
                                 .animateWidth(shuffleInteraction)
+                                .toggleStateText(shuffleStateText(shuffleModeEnabled))
                         ) {
                             Icon(
                                 Icons.Default.Shuffle,
@@ -701,6 +702,7 @@ private fun ExpressiveNowPlayingView(
                                 .weight(0.8f)
                                 .fillMaxHeight()
                                 .animateWidth(repeatInteraction)
+                                .toggleStateText(repeatStateText(repeatMode))
                         ) {
                             Icon(
                                 when (repeatMode) {

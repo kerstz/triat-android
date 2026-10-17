@@ -308,6 +308,7 @@ fun DialPlayerSheetContent(
                         }
                         EditorialChip(
                             checked = shuffleModeEnabled,
+                            stateText = shuffleStateText(shuffleModeEnabled),
                             onClick = { viewModel.toggleShuffle() },
                             accent = accent,
                             field = MaterialTheme.colorScheme.onPrimary,
@@ -317,6 +318,7 @@ fun DialPlayerSheetContent(
                         }
                         EditorialChip(
                             checked = repeatMode != Player.REPEAT_MODE_OFF,
+                            stateText = repeatStateText(repeatMode),
                             onClick = { viewModel.toggleRepeat() },
                             accent = accent,
                             field = MaterialTheme.colorScheme.onPrimary,

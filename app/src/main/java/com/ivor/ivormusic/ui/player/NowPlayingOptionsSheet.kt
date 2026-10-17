@@ -338,6 +338,7 @@ fun NowPlayingOptionsSheet(
                     icon = Icons.Rounded.Shuffle,
                     label = stringResource(R.string.cd_shuffle),
                     selected = shuffleEnabled,
+                    stateText = shuffleStateText(shuffleEnabled),
                     modifier = Modifier.weight(1f),
                     onClick = {
                         haptics.performHapticFeedback(
@@ -353,6 +354,7 @@ fun NowPlayingOptionsSheet(
                     },
                     label = stringResource(R.string.cd_repeat),
                     selected = repeatMode != Player.REPEAT_MODE_OFF,
+                    stateText = repeatStateText(repeatMode),
                     modifier = Modifier.weight(1f),
                     onClick = {
                         haptics.performHapticFeedback(HapticFeedbackType.ToggleOn)

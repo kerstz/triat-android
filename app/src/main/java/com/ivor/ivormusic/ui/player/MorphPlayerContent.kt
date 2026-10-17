@@ -364,7 +364,8 @@ fun MorphPlayerSheetContent(
                                 content = {
                                     IconToggleButton(
                                         checked = shuffleModeEnabled,
-                                        onCheckedChange = { viewModel.toggleShuffle() }
+                                        onCheckedChange = { viewModel.toggleShuffle() },
+                                        modifier = Modifier.toggleStateText(shuffleStateText(shuffleModeEnabled))
                                     ) {
                                         Icon(Icons.Default.Shuffle, stringResource(R.string.cd_shuffle))
                                     }
@@ -380,7 +381,8 @@ fun MorphPlayerSheetContent(
                                     }
                                     IconToggleButton(
                                         checked = repeatMode != Player.REPEAT_MODE_OFF,
-                                        onCheckedChange = { viewModel.toggleRepeat() }
+                                        onCheckedChange = { viewModel.toggleRepeat() },
+                                        modifier = Modifier.toggleStateText(repeatStateText(repeatMode))
                                     ) {
                                         Icon(
                                             if (repeatMode == Player.REPEAT_MODE_ONE) Icons.Default.RepeatOne

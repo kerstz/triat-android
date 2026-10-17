@@ -641,6 +641,10 @@
     <string name="cd_shuffle">Aléatoire</string>
     <string name="cd_previous">Précédent</string>
     <string name="cd_repeat">Répéter</string>
+    <string name="a11y_on">Activé</string>
+    <string name="a11y_off">Désactivé</string>
+    <string name="a11y_repeat_all">Tout répéter</string>
+    <string name="a11y_repeat_one">Répéter le titre</string>
     <string name="cd_local_file">Fichier local</string>
     <string name="cd_now_playing">En cours de lecture</string>
     <string name="cd_playing">En lecture</string>

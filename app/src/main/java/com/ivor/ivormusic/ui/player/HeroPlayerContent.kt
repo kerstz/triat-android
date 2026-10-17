@@ -462,6 +462,7 @@ fun HeroPlayerSheetContent(
                                 ) {
                                     HeroToggle(
                                         checked = shuffleModeEnabled,
+                                        stateText = shuffleStateText(shuffleModeEnabled),
                                         onClick = { viewModel.toggleShuffle() },
                                         ink = ink,
                                         accent = accent,
@@ -475,6 +476,7 @@ fun HeroPlayerSheetContent(
                                     }
                                     HeroToggle(
                                         checked = repeatMode != Player.REPEAT_MODE_OFF,
+                                        stateText = repeatStateText(repeatMode),
                                         onClick = { viewModel.toggleRepeat() },
                                         ink = ink,
                                         accent = accent,
@@ -643,6 +645,7 @@ private fun RowScope.HeroToggle(
     ink: Color,
     accent: Color,
     onAccent: Color,
+    stateText: String? = null,
     content: @Composable () -> Unit
 ) {
     val corner by animateDpAsState(
@@ -661,6 +664,7 @@ private fun RowScope.HeroToggle(
         modifier = Modifier
             .weight(1f)
             .fillMaxHeight()
+            .toggleStateText(stateText)
     ) {
         Box(contentAlignment = Alignment.Center) { content() }
     }
