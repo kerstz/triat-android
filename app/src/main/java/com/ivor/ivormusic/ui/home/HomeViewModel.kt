@@ -947,7 +947,10 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
             return (manuallyLiked + ytLiked + likedLocalSongs).distinctBy { it.id }
         }
 
-        // Check local first
+        // Check local first. The repository reads its files off the main
+        // thread now, so a cold-start open waits for that read rather than
+        // finding nothing and asking YouTube for a local playlist id.
+        playlistRepository.awaitLoaded()
         val localPlaylist = playlistRepository.userPlaylists.value.find { it.id == playlistId }
         if (localPlaylist != null) {
             return localPlaylist.songs
