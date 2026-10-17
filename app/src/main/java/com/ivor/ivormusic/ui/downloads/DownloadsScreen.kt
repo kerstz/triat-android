@@ -42,7 +42,6 @@ import androidx.compose.material.icons.rounded.MusicNote
 import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material.icons.rounded.Schedule
-import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
@@ -137,12 +136,8 @@ private fun SegmentDivider(inset: Dp) {
 }
 
 /**
- * Downloads library, split by media type.
- *
- * Music and video are genuinely different things - one feeds the queue, the
- * other opens the video player - so they get separate tabs rather than one
- * mixed list. In-flight transfers appear under the tab they belong to, so a
- * video downloading while the Music tab is open is not silently invisible.
+ * Downloads library: finished songs plus the in-flight transfers, which the
+ * user can pause, resume, retry or cancel one by one or all at once.
  */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalMaterial3ExpressiveApi::class)
 @Composable

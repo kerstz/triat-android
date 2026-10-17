@@ -36,7 +36,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.SkipNext
 import androidx.compose.material.icons.rounded.PlayCircle
-import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
@@ -72,9 +71,7 @@ import androidx.compose.material.icons.rounded.AutoAwesome
 import androidx.compose.material.icons.rounded.Save
 import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.SignalCellularAlt
-import androidx.compose.material.icons.rounded.Subscriptions
 import androidx.compose.material.icons.rounded.ToggleOn
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.ArrowUpward
@@ -129,10 +126,8 @@ import com.ivor.ivormusic.ui.theme.ThemeMode
 /**
  * The settings detail pages. Each one owns a single category from the hub.
  *
- * The re-sort matters as much as the split: video quality used to sit under
- * "Content Mode" while music quality sat under "Playback", so the same decision
- * lived in two places. Both now live on [PlaybackSettingsPage] behind one
- * Wi-Fi/mobile switch.
+ * Streaming quality lives on [PlaybackSettingsPage] behind one Wi-Fi/mobile
+ * switch.
  */
 
 /* ------------------------------------------------------------------ */
@@ -1477,11 +1472,6 @@ internal fun ContentSettingsPage(
     }
 }
 
-/* ------------------------------------------------------------------ */
-/* Video Home                                                         */
-/* ------------------------------------------------------------------ */
-
-
 /**
  * A reorder step, drawn narrower than a default [IconButton] because two of
  * them plus a switch and a label share one row on a phone. The size modifier is
@@ -1511,10 +1501,6 @@ private fun DestinationStepper(
         )
     }
 }
-
-/* ------------------------------------------------------------------ */
-/* Subscriptions                                                       */
-/* ------------------------------------------------------------------ */
 
 /* ------------------------------------------------------------------ */
 /* Storage and cache                                                   */

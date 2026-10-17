@@ -21,7 +21,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddLink
 import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material.icons.automirrored.rounded.Comment
 import androidx.compose.material.icons.automirrored.rounded.Logout
 import androidx.compose.material.icons.automirrored.rounded.QueueMusic
@@ -70,10 +69,8 @@ import androidx.compose.material.icons.rounded.Security
 import androidx.compose.material.icons.rounded.SwapHoriz
 import androidx.compose.material.icons.rounded.SettingsBackupRestore
 import androidx.compose.material.icons.rounded.SignalCellularAlt
-import androidx.compose.material.icons.rounded.Subscriptions
 import androidx.compose.material.icons.rounded.ToggleOn
 import androidx.compose.material.icons.rounded.Vibration
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material.icons.rounded.Visibility
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -430,7 +427,7 @@ internal fun buildSettingsSearchIndex(
 
     entry(
         "playback_preload", stringResource(R.string.sp_playback_preload), stringResource(R.string.settings_storage_and_cache), Icons.Rounded.SkipNext,
-        listOf("preload", "prefetch", "automatic", "upcoming", "next song", "shorts", "buffer")
+        listOf("preload", "prefetch", "automatic", "upcoming", "next song", "buffer")
     ) { onOpenPage(SettingsPage.STORAGE) }
 
     // Backup and restore. Three entries rather than one, because people arrive

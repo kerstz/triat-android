@@ -144,11 +144,11 @@
     <string name="settings_version_subtitle">Version %1$s (%2$d)</string>
 
     <string name="profiles_title">Profils</string>
-    <string name="profiles_description">Les abonnements et les recommandations masquées sont conservés par profil. Les playlists, les titres aimés et les téléchargements sont partagés.</string>
+    <string name="profiles_description">Les recommandations masquées sont conservées par profil. Les playlists, les titres aimés et les téléchargements sont partagés.</string>
     <string name="add_youtube_account">Ajouter un compte YouTube</string>
     <string name="add_youtube_account_subtitle">Se connecter avec un autre compte Google</string>
     <string name="add_device_profile">Ajouter un profil sur cet appareil</string>
-    <string name="add_device_profile_subtitle">Abonnements séparés, sans compte requis</string>
+    <string name="add_device_profile_subtitle">Recommandations séparées, sans compte requis</string>
     <string name="profile_signed_out">Déconnecté - touchez pour vous connecter</string>
     <string name="profile_session_expired">Session expirée - touchez pour vous reconnecter</string>
     <string name="profile_on_this_device">Sur cet appareil</string>
@@ -285,7 +285,7 @@
     <string name="action_rename">Renommer</string>
     <string name="delete_playlist_q">Supprimer la playlist ?</string>
     <string name="delete_playlist">Supprimer la playlist</string>
-    <string name="vl_no_videos">Aucune vidéo dans cette playlist</string>
+    <string name="vl_no_videos">Aucun titre dans cette playlist</string>
     <string name="sc_today">Aujourd\'hui</string>
     <string name="sc_this_week">Cette semaine</string>
     <!-- Page de synchro avec l'ordinateur -->
@@ -390,8 +390,8 @@
     <string name="si_local_only">Coupe tout accès internet. Seuls les téléchargements et les fichiers de cet appareil se lisent ; la recherche, le streaming et toutes les surfaces YouTube restent éteints jusqu\'à ce que tu réactives.</string>
     <string name="sp_recommendations">Recommandations</string>
     <string name="sp_not_recommended">Non recommandé</string>
-    <string name="sp_not_recommended_sub">Vidéos et chaînes que tu as masquées de tes fils</string>
-    <string name="si_not_interested">Tout ce que tu as demandé à Triat de ne plus recommander — vidéos masquées et chaînes bloquées. Tout peut être réaffiché ici.</string>
+    <string name="sp_not_recommended_sub">Titres et artistes que tu as masqués de tes fils</string>
+    <string name="si_not_interested">Tout ce que tu as demandé à Triat de ne plus recommander — titres masqués et artistes bloqués. Tout peut être réaffiché ici.</string>
     <string name="sp_show_recent_searches">Afficher les recherches récentes</string>
     <string name="sp_show_recent_searches_sub">Tes recherches passées sous la barre de recherche</string>
     <string name="si_recent_searches">Affiche tes recherches passées quand tu touches le champ de recherche. Les désactiver les masque sans les supprimer.</string>
@@ -399,7 +399,7 @@
     <string name="sp_replace_session_cookies">Remplacer les cookies de session</string>
     <string name="sp_replace_session_cookies_sub">Colle un nouvel en-tête de cookies si ta session expire</string>
     <string name="sp_sign_out_sub">Déconnecter ton compte YouTube</string>
-    <string name="sp_signed_out_info">Triat fonctionne sans connexion. Te connecter ajoute tes playlists, tes titres likés, tes abonnements et ton historique de visionnage.</string>
+    <string name="sp_signed_out_info">Triat fonctionne sans connexion. Te connecter ajoute tes playlists, tes titres likés et ton historique d\'écoute.</string>
     <string name="sp_connect_youtube_music">Connecter YouTube Music</string>
     <string name="sp_connect_youtube_music_sub">Connecte-toi pour accéder à tes playlists et à tes titres likés</string>
     <string name="sp_sign_in_cookies">Se connecter avec des cookies</string>
@@ -539,13 +539,13 @@
     <string name="si_playlist_swipe">Actions rapides quand tu balaies un titre dans une playlist. File d\'attente l\'ajoute à la fin de la file en cours. Retirer ne fonctionne que si la playlist est modifiable, et une liste YouTube qui n\'est pas à toi propose uniquement Lire et File d\'attente.</string>
     <string name="sp_downloads">Téléchargements</string>
     <string name="sp_private_downloads">Téléchargements privés</string>
-    <string name="sp_private_downloads_on">Les nouveaux contenus audio et vidéo restent dans Triat et sont supprimés à la désinstallation</string>
-    <string name="sp_private_downloads_off">Les nouveaux contenus audio et vidéo apparaissent dans Downloads/Triat</string>
+    <string name="sp_private_downloads_on">Les nouveaux téléchargements restent dans Triat et sont supprimés à la désinstallation</string>
+    <string name="sp_private_downloads_off">Les nouveaux téléchargements apparaissent dans Downloads/Triat</string>
     <string name="sp_private_downloads_note">Les pochettes restent masquées dans la Galerie dans les deux modes. Les téléchargements existants ne bougent pas.</string>
     <string name="sp_cache">Cache</string>
     <string name="sp_playback_preload">Précharger les médias à venir</string>
-    <string name="sp_playback_preload_sub">Préparer la musique et les Shorts à venir avant de les lire</string>
-    <string name="sp_playback_cache_note">La musique utilise la limite de stockage ci-dessus. Les données vidéo et Shorts sont effacées cinq minutes après la fermeture des deux lecteurs. Désactiver le cache arrête les nouvelles écritures au prochain chargement. Les téléchargements sont conservés à part. Le fondu enchaîné peut quand même préparer le titre suivant s\'il est activé.</string>
+    <string name="sp_playback_preload_sub">Préparer les prochains titres avant de les lire</string>
+    <string name="sp_playback_cache_note">La musique utilise la limite de stockage ci-dessus. Désactiver le cache arrête les nouvelles écritures au prochain chargement. Les téléchargements sont conservés à part. Le fondu enchaîné peut quand même préparer le titre suivant s\'il est activé.</string>
     <string name="sp_cache_music">Mettre la musique en cache</string>
     <string name="sp_cache_music_sub">Garder les titres diffusés pour une relecture plus rapide et l\'écoute hors ligne</string>
     <string name="sp_local_cache">Cache de musique</string>
@@ -581,9 +581,9 @@
     <string name="ob_continue">Continuer</string>
     <string name="ob_start_listening">Commencer à écouter</string>
     <string name="ob_welcome_title">Bienvenue dans Triat</string>
-    <string name="ob_welcome_body">De la musique et des vidéos, tes fichiers locaux, et un lecteur qui s\'adapte à toi. Quelques choix rapides et c\'est parti.</string>
+    <string name="ob_welcome_body">Ta musique, tes fichiers locaux, et un lecteur qui s\'adapte à toi. Quelques choix rapides et c\'est parti.</string>
     <string name="ob_feat_stream_title">Écoute tout</string>
-    <string name="ob_feat_stream_sub">Musique et vidéos propulsées par YouTube Music</string>
+    <string name="ob_feat_stream_sub">Musique propulsée par YouTube Music</string>
     <string name="ob_feat_local_title">Ta bibliothèque locale</string>
     <string name="ob_feat_local_sub">Les titres déjà présents sur cet appareil se lisent au même endroit</string>
     <string name="ob_feat_custom_title">À ton image</string>
@@ -647,9 +647,9 @@
     <string name="remove_from_account_q">Retirer de ton compte YouTube ?</string>
     <string name="share_playlist_chooser">Partager la playlist</string>
     <plurals name="vpl_video_count">
-        <item quantity="one">%d vidéo</item>
-        <item quantity="many">%d vidéos</item>
-        <item quantity="other">%d vidéos</item>
+        <item quantity="one">%d titre</item>
+        <item quantity="many">%d titres</item>
+        <item quantity="other">%d titres</item>
     </plurals>
     <string name="cd_shuffle">Aléatoire</string>
     <string name="cd_previous">Précédent</string>
@@ -700,16 +700,16 @@
     <string name="lh_clear_dialog_title">Effacer l\'historique d\'écoute ?</string>
     <string name="action_clear">Effacer</string>
     <string name="ni_unblock_all_q">Débloquer toutes les chaînes ?</string>
-    <string name="ni_unhide_all_q">Réafficher toutes les vidéos ?</string>
+    <string name="ni_unhide_all_q">Réafficher tous les titres ?</string>
     <string name="ni_unblock_body">Toutes les chaînes que tu as bloquées pourront de nouveau être recommandées.</string>
-    <string name="ni_unhide_body">Toutes les vidéos que tu as masquées pourront de nouveau apparaître dans tes fils.</string>
+    <string name="ni_unhide_body">Tous les titres que tu as masqués pourront de nouveau apparaître dans tes fils.</string>
     <string name="ni_unblock_all">Tout débloquer</string>
     <string name="ni_unhide_all">Tout réafficher</string>
     <string name="ni_nothing_hidden">Rien de masqué</string>
     <string name="ni_empty_title">Rien de masqué pour l\'instant</string>
-    <string name="ni_section_items">Vidéos et titres</string>
+    <string name="ni_section_items">Titres</string>
     <string name="ni_section_sources">Chaînes et artistes</string>
-    <string name="ni_empty_body">Appuie longuement sur une vidéo ou un titre et choisis \"Pas intéressé\" ou \"Ne pas recommander\" pour le garder hors de tes fils.</string>
+    <string name="ni_empty_body">Appuie longuement sur un titre et choisis \"Pas intéressé\" ou \"Ne pas recommander\" pour le garder hors de tes fils.</string>
     <string name="bk_write_failed">Ce fichier n\'a pas pu être écrit. Choisis un autre dossier et réessaie.</string>
     <string name="bk_read_failed">Ce fichier n\'a pas pu être lu comme une sauvegarde Triat.</string>
     <string name="bk_this_install">Cette installation</string>
@@ -718,16 +718,16 @@
     <string name="bk_restore">Restaurer depuis une sauvegarde</string>
     <string name="bk_restore_sub">Remplace ce qui se trouve sur cet appareil</string>
     <string name="bk_holds">Ce que contient une sauvegarde</string>
-    <string name="bk_hold_1">Les playlists de musique et de vidéos que tu as créées, avec leurs pochettes</string>
-    <string name="bk_hold_2">Les titres likés, ainsi que les playlists et albums que tu as enregistrés dans l\'un ou l\'autre mode</string>
-    <string name="bk_hold_3">Les statistiques d\'écoute, l\'historique de visionnage et les recherches</string>
+    <string name="bk_hold_1">Les playlists que tu as créées, avec leurs pochettes</string>
+    <string name="bk_hold_2">Les titres likés, ainsi que les playlists et albums que tu as enregistrés</string>
+    <string name="bk_hold_3">Les statistiques d\'écoute, l\'historique et les recherches</string>
     <string name="bk_hold_4">Les chaînes suivies et leurs groupes, par profil</string>
-    <string name="bk_hold_5">Les chaînes et vidéos que tu as demandé de ne plus recommander</string>
-    <string name="bk_hold_6">Tous les réglages des deux modes, de la palette et du style du lecteur à la qualité par réseau</string>
+    <string name="bk_hold_5">Les chaînes et titres que tu as demandé de ne plus recommander</string>
+    <string name="bk_hold_6">Tous les réglages, de la palette et du style du lecteur à la qualité par réseau</string>
     <string name="bk_not_holds">Ce qu\'elle ne contient pas</string>
     <string name="bk_not_1">Ta connexion Google. Les comptes reviennent par leur nom et demandent à être reconnectés, donc le fichier peut être gardé sans risque dans le cloud ou envoyé par mail à toi-même.</string>
-    <string name="bk_not_2">Les contenus audio et vidéo téléchargés. Ces fichiers se trouvent dans Downloads/Triat et survivent à une désinstallation par eux-mêmes ; les inclure ici ferait peser la sauvegarde plusieurs gigaoctets.</string>
-    <string name="bk_not_3">Les médias de lecture en cache, qui se reconstituent tout seuls au fil de ton écoute et de ton visionnage.</string>
+    <string name="bk_not_2">Les contenus audio téléchargés. Ces fichiers se trouvent dans Downloads/Triat et survivent à une désinstallation par eux-mêmes ; les inclure ici ferait peser la sauvegarde plusieurs gigaoctets.</string>
+    <string name="bk_not_3">Les médias de lecture en cache, qui se reconstituent tout seuls au fil de ton écoute.</string>
     <string name="bk_writing">Écriture de ta sauvegarde</string>
     <string name="bk_reading">Lecture de ce fichier</string>
     <string name="bk_restoring">Restauration</string>
@@ -1012,7 +1012,7 @@
     <string name="link_preparing_song">Préparation du titre</string>
     <string name="link_header_playlist">Playlist YouTube</string>
     <string name="link_tap_to_play_songs">%1$d titres • Touche pour lire</string>
-    <string name="link_tap_to_play_videos">%1$d vidéos • Touche pour lire</string>
+    <string name="link_tap_to_play_videos">%1$d titres • Touche pour lire</string>
     <string name="link_error_title">Impossible de charger ce lien</string>
     <string name="link_error_body">Le contenu est peut-être privé, ou tu es hors ligne</string>
     <plurals name="n_results">
@@ -1087,14 +1087,14 @@
     <string name="sp_home_spotlight">Spotlight</string>
     <string name="sp_nav_floating">Flottante</string>
     <string name="sp_nav_standard">Standard</string>
-    <string name="si_hub_account">Connecte un compte YouTube Music pour importer tes playlists, likes, historique et abonnements. Triat fonctionne parfaitement sans connexion ; te connecter débloque les fils personnalisés.</string>
+    <string name="si_hub_account">Connecte un compte YouTube Music pour importer tes playlists, likes et historique. Triat fonctionne parfaitement sans connexion ; te connecter débloque les fils personnalisés.</string>
     <string name="si_hub_appearance">Tout ce qui concerne l\'apparence de Triat : thème, couleurs, icône de l\'app, taille d\'affichage, disposition de l\'Accueil, style de navigation et retour au toucher.</string>
     <string name="si_hub_player">Choisis parmi huit designs de lecteur et décide comment il utilise les couleurs de la pochette.</string>
     <string name="si_hub_playback">Transitions entre les titres, égalisation du volume, comportement de la file d\'attente et qualité de streaming choisie par réseau.</string>
-    <string name="si_hub_content">Bascule entre le mode musique et le mode vidéo, passe en mode entièrement hors ligne et ajuste les Shorts, les fils et les recommandations.</string>
+    <string name="si_hub_content">Passe en mode entièrement hors ligne, choisis d\'où vient la musique et ajuste les fils et les recommandations.</string>
     <string name="si_hub_sponsorblock">Ignore automatiquement les passages sponsorisés et autres segments des titres, à partir d\'horodatages envoyés par la communauté. Désactivé par défaut.</string>
     <string name="si_hub_storage">L\'emplacement des téléchargements, ce qui est mis en cache pour les relectures instantanées et l\'espace que Triat a le droit d\'utiliser.</string>
-    <string name="si_hub_notifications">Des alertes pour les nouvelles vidéos des chaînes que tu suis, et la progression en direct des téléchargements et de la lecture dans la barre d\'état.</string>
+    <string name="si_hub_notifications">La progression en direct des téléchargements et de la lecture dans la barre d\'état.</string>
     <string name="si_hub_local_library">Affiche les fichiers musicaux déjà présents sur cet appareil à côté de YouTube Music dans ta bibliothèque.</string>
     <string name="si_hub_backup">Enregistre tes réglages, playlists, historique et statistiques dans un seul fichier que tu peux restaurer sur n\'importe quel appareil.</string>
     <string name="si_hub_advanced">Correctifs pour les économiseurs de batterie trop agressifs, aide pour Android Auto, limite de temps quotidienne et signalement de bugs.</string>
@@ -1111,7 +1111,7 @@
     <string name="si_music_history">Garde sur cet appareil un journal des titres que tu écoutes. Il alimente tes statistiques et les titres récents. Distinct de l\'historique de ton compte YouTube.</string>
     <string name="si_private_downloads">Stocke les téléchargements dans le dossier privé de Triat, invisible pour les autres apps et la galerie, au lieu du dossier partagé Downloads/Triat.</string>
     <string name="si_cache_music">Garde sur le disque les titres diffusés récemment pour que les relectures démarrent instantanément et ne consomment pas de données. Les entrées les plus anciennes sont évincées quand la limite ci-dessous est atteinte.</string>
-    <string name="si_preload">Récupère le début des prochains titres et Shorts avant que tu n\'y arrives, pour que les sauts démarrent instantanément. Consomme un peu de données sur les réseaux limités.</string>
+    <string name="si_preload">Récupère le début des prochains titres avant que tu n\'y arrives, pour que les sauts démarrent instantanément. Consomme un peu de données sur les réseaux limités.</string>
     <string name="si_load_local_songs">Analyse cet appareil à la recherche de fichiers musicaux et les affiche dans ta bibliothèque à côté de YouTube Music. Nécessite l\'autorisation d\'accès aux fichiers audio.</string>
     <string name="si_compat_scan">Lit les fichiers musicaux directement depuis le stockage au lieu de l\'index multimédia d\'Android. Corrige les titres manquants sur HyperOS et MIUI, mais nécessite l\'autorisation d\'accès à tous les fichiers.</string>
     <string name="si_battery">Les économiseurs de batterie agressifs coupent la lecture en arrière-plan. Ceci demande à Android de laisser Triat tourner pendant la lecture de la musique.</string>
@@ -1205,7 +1205,7 @@
     <string name="lastfm_member_since">Membre depuis</string>
     <string name="lastfm_how_it_works">Écoute et confidentialité</string>
     <string name="lastfm_scrobble_definition">Qu\'est-ce qu\'un scrobble ?</string>
-    <string name="lastfm_scrobble_explanation">Une trace d\'un titre que tu as écouté. Triat en envoie un après la moitié du titre ou quatre minutes, selon ce qui arrive en premier. Les titres doivent durer plus de 30 secondes. Les vidéos sont exclues.</string>
+    <string name="lastfm_scrobble_explanation">Une trace d\'un titre que tu as écouté. Triat en envoie un après la moitié du titre ou quatre minutes, selon ce qui arrive en premier. Les titres doivent durer plus de 30 secondes.</string>
     <string name="lastfm_privacy_title">Tu gardes le contrôle</string>
     <string name="lastfm_privacy_body">La navigation privée et Local uniquement mettent Last.fm en pause. Désactive-le pour arrêter d\'envoyer les lectures, ou déconnecte-toi pour effacer le compte enregistré de cet appareil.</string>
     <string name="lastfm_pro">Last.fm Pro</string>
@@ -1284,7 +1284,7 @@
         <item quantity="many">%1$d titres dispo hors-ligne</item>
         <item quantity="other">%1$d titres dispo hors-ligne</item>
     </plurals>
-    <string name="ni_video_hidden">Vidéo masquée</string>
+    <string name="ni_video_hidden">Titre masqué</string>
     <string name="ni_song_hidden">Titre masqué</string>
     <string name="ni_channels_blocked_sub">%1$d n\'apparaîtront plus dans tes fils</string>
     <plurals name="ni_hidden_count">
@@ -1294,7 +1294,7 @@
     </plurals>
     <string name="ni_recommend_again_cd">Recommander à nouveau %1$s</string>
     <string name="ni_unhide_cd">Démasquer %1$s</string>
-    <string name="acct_profile_own_data">Il a ses propres abonnements et recommandations masquées, sans aucun compte Google.</string>
+    <string name="acct_profile_own_data">Il a ses propres recommandations masquées, sans aucun compte Google.</string>
     <string name="dl_music_quality_note">Sur ce réseau, la musique suit ton réglage de qualité : %1$s.</string>
     <string name="dl_music_quality_low">Basse</string>
     <string name="lib_your_playlists_count">Tes playlists • %1$d</string>
@@ -1438,9 +1438,9 @@
         <item quantity="other">%1$d chaînes bloquées</item>
     </plurals>
     <plurals name="bk_n_hidden_videos">
-        <item quantity="one">%1$d vidéo masquée</item>
-        <item quantity="many">%1$d vidéos masquées</item>
-        <item quantity="other">%1$d vidéos masquées</item>
+        <item quantity="one">%1$d titre masqué</item>
+        <item quantity="many">%1$d titres masqués</item>
+        <item quantity="other">%1$d titres masqués</item>
     </plurals>
     <plurals name="bk_n_settings">
         <item quantity="one">%1$d réglage</item>
@@ -1539,9 +1539,9 @@
         <item quantity="many">%1$d correspondances</item>
         <item quantity="other">%1$d correspondances</item>
     </plurals>
-    <string name="as_sign_out_note">Le compte est déconnecté de cet appareil. Tes abonnements et tes recommandations masquées sont conservés, et rien ne change sur YouTube.</string>
-    <string name="as_remove_local_note">Ses abonnements et ses recommandations masquées sont supprimés. Les playlists, les titres aimés et les téléchargements sont partagés et restent.</string>
-    <string name="as_remove_account_note">Déconnecte ce compte sur cet appareil et supprime ses abonnements et ses recommandations masquées. Rien ne change sur YouTube lui-même.</string>
+    <string name="as_sign_out_note">Le compte est déconnecté de cet appareil. Tes recommandations masquées sont conservées, et rien ne change sur YouTube.</string>
+    <string name="as_remove_local_note">Ses recommandations masquées sont supprimées. Les playlists, les titres aimés et les téléchargements sont partagés et restent.</string>
+    <string name="as_remove_account_note">Déconnecte ce compte sur cet appareil et supprime ses recommandations masquées. Rien ne change sur YouTube lui-même.</string>
     <string name="tl_unlimited">Illimité</string>
     <string name="dur_h">%1$d h</string>
     <string name="tl_used_locked">%1$s d\'utilisation - verrouillé jusqu\'à minuit</string>

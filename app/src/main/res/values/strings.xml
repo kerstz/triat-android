@@ -242,7 +242,7 @@
     <string name="sp_replace_session_cookies">Replace Session Cookies</string>
     <string name="sp_replace_session_cookies_sub">Paste a fresh cookie header if your session goes stale</string>
     <string name="sp_sign_out_sub">Disconnect your YouTube account</string>
-    <string name="sp_signed_out_info">Triat works signed out. Signing in adds your playlists, liked songs, subscriptions and watch history.</string>
+    <string name="sp_signed_out_info">Triat works signed out. Signing in adds your playlists, liked songs and listening history.</string>
     <string name="sp_connect_youtube_music">Connect YouTube Music</string>
     <string name="sp_connect_youtube_music_sub">Sign in to access your playlists and liked songs</string>
     <string name="sp_sign_in_cookies">Sign In With Cookies</string>
@@ -406,16 +406,16 @@
     <string name="swipe_action_options">Options</string>
     <string name="si_playlist_swipe">Quick actions when you swipe a song in a playlist. Queue appends it to the playing queue. Remove only swipes where the playlist can be edited, and a YouTube list that is not yours only ever offers Play and Queue.</string>
     <string name="sp_not_recommended">Not Recommended</string>
-    <string name="sp_not_recommended_sub">Videos and channels you\'ve hidden from your feeds</string>
+    <string name="sp_not_recommended_sub">Songs and artists you\'ve hidden from your feeds</string>
     <string name="sp_downloads">Downloads</string>
     <string name="sp_private_downloads">Private downloads</string>
-    <string name="sp_private_downloads_on">New audio and video stay inside Triat and are removed on uninstall</string>
-    <string name="sp_private_downloads_off">New audio and video appear in Downloads/Triat</string>
-    <string name="sp_private_downloads_note">Album art stays hidden from Gallery in either mode. Existing downloads stay where they are.</string>
+    <string name="sp_private_downloads_on">New downloads stay inside Triat and are removed on uninstall</string>
+    <string name="sp_private_downloads_off">New downloads appear in Downloads/Triat</string>
+    <string name="sp_private_downloads_note">Album art stays hidden from Gallery in either setting. Existing downloads stay where they are.</string>
     <string name="sp_cache">Cache</string>
     <string name="sp_playback_preload">Preload upcoming media</string>
-    <string name="sp_playback_preload_sub">Prepare upcoming music and Shorts before you play them</string>
-    <string name="sp_playback_cache_note">Music uses the storage limit above. Video and Shorts data clears five minutes after both players close. Turning caching off stops new writes on the next load. Downloads are kept separately. Crossfade may still prepare the next song when enabled.</string>
+    <string name="sp_playback_preload_sub">Prepare upcoming songs before you play them</string>
+    <string name="sp_playback_cache_note">Music uses the storage limit above. Turning caching off stops new writes on the next load. Downloads are kept separately. Crossfade may still prepare the next song when enabled.</string>
     <string name="sp_cache_music">Cache music</string>
     <string name="sp_cache_music_sub">Keep streamed songs for faster replay and offline listening</string>
     <string name="sp_local_cache">Music cache</string>
@@ -453,9 +453,9 @@
     <string name="ob_continue">Continue</string>
     <string name="ob_start_listening">Start listening</string>
     <string name="ob_welcome_title">Welcome to Triat</string>
-    <string name="ob_welcome_body">Music and videos, your local files, and a player that adapts to you. A few quick choices and you are in.</string>
+    <string name="ob_welcome_body">Your music, your local files, and a player that adapts to you. A few quick choices and you are in.</string>
     <string name="ob_feat_stream_title">Stream anything</string>
-    <string name="ob_feat_stream_sub">Music and videos powered by YouTube Music</string>
+    <string name="ob_feat_stream_sub">Music powered by YouTube Music</string>
     <string name="ob_feat_local_title">Your local library</string>
     <string name="ob_feat_local_sub">Songs already on this device play right alongside</string>
     <string name="ob_feat_custom_title">Made yours</string>
@@ -527,10 +527,10 @@
     <string name="cd_playlist_options">Playlist options</string>
     <string name="remove_from_account_q">Remove from your YouTube account?</string>
     <string name="share_playlist_chooser">Share playlist</string>
-    <string name="vl_no_videos">No videos in this playlist</string>
+    <string name="vl_no_videos">No songs in this playlist</string>
     <plurals name="vpl_video_count">
-        <item quantity="one">%d video</item>
-        <item quantity="other">%d videos</item>
+        <item quantity="one">%d song</item>
+        <item quantity="other">%d songs</item>
     </plurals>
 
     <!-- Subscriptions -->
@@ -606,16 +606,16 @@
 
     <!-- Not interested -->
     <string name="ni_unblock_all_q">Unblock all channels?</string>
-    <string name="ni_unhide_all_q">Unhide all videos?</string>
+    <string name="ni_unhide_all_q">Unhide all songs?</string>
     <string name="ni_unblock_body">Every channel you blocked can be recommended again.</string>
-    <string name="ni_unhide_body">Every video you hid can show up in your feeds again.</string>
+    <string name="ni_unhide_body">Every song you hid can show up in your feeds again.</string>
     <string name="ni_unblock_all">Unblock all</string>
     <string name="ni_unhide_all">Unhide all</string>
     <string name="ni_nothing_hidden">Nothing hidden</string>
     <string name="ni_empty_title">Nothing hidden yet</string>
-    <string name="ni_section_items">Videos and songs</string>
+    <string name="ni_section_items">Songs</string>
     <string name="ni_section_sources">Channels and artists</string>
-    <string name="ni_empty_body">Long-press any video or song and choose \"Not interested\" or \"Don\'t recommend\" to keep it out of your feeds.</string>
+    <string name="ni_empty_body">Long-press any song and choose \"Not interested\" or \"Don\'t recommend\" to keep it out of your feeds.</string>
 
     <!-- Watch history -->
 
@@ -628,16 +628,16 @@
     <string name="bk_restore">Restore from a backup</string>
     <string name="bk_restore_sub">Replaces what is on this device</string>
     <string name="bk_holds">What a backup holds</string>
-    <string name="bk_hold_1">Music and video playlists you built, with their artwork</string>
-    <string name="bk_hold_2">Liked songs, and the playlists and albums you saved in either mode</string>
-    <string name="bk_hold_3">Listening stats, watch history and searches</string>
+    <string name="bk_hold_1">Playlists you built, with their artwork</string>
+    <string name="bk_hold_2">Liked songs, and the playlists and albums you saved</string>
+    <string name="bk_hold_3">Listening stats, history and searches</string>
     <string name="bk_hold_4">Followed channels and their groups, per profile</string>
-    <string name="bk_hold_5">Channels and videos you asked not to be recommended</string>
-    <string name="bk_hold_6">Every setting in both modes, from palette and player style to per-network quality</string>
+    <string name="bk_hold_5">Channels and songs you asked not to be recommended</string>
+    <string name="bk_hold_6">Every setting, from palette and player style to per-network quality</string>
     <string name="bk_not_holds">What it does not</string>
     <string name="bk_not_1">Your Google sign-in. Accounts come back by name and ask to be signed into again, so the file is safe to keep in cloud storage or mail to yourself.</string>
-    <string name="bk_not_2">Downloaded audio and video. Those files live in Downloads/Triat and survive an uninstall on their own; putting them in here would make the backup gigabytes.</string>
-    <string name="bk_not_3">Cached playback media, which rebuilds itself as you listen and watch.</string>
+    <string name="bk_not_2">Downloaded audio. Those files live in Downloads/Triat and survive an uninstall on their own; putting them in here would make the backup gigabytes.</string>
+    <string name="bk_not_3">Cached playback media, which rebuilds itself as you listen.</string>
     <string name="bk_writing">Writing your backup</string>
     <string name="bk_reading">Reading that file</string>
     <string name="bk_restoring">Restoring</string>
@@ -922,11 +922,11 @@
 
     <!-- Profile switcher -->
     <string name="profiles_title">Profiles</string>
-    <string name="profiles_description">Subscriptions and hidden recommendations are kept per profile. Playlists, liked songs and downloads are shared.</string>
+    <string name="profiles_description">Hidden recommendations are kept per profile. Playlists, liked songs and downloads are shared.</string>
     <string name="add_youtube_account">Add YouTube account</string>
     <string name="add_youtube_account_subtitle">Sign in to another Google account</string>
     <string name="add_device_profile">Add profile on this device</string>
-    <string name="add_device_profile_subtitle">Separate subscriptions, no account needed</string>
+    <string name="add_device_profile_subtitle">Separate recommendations, no account needed</string>
     <string name="incognito_title">Incognito</string>
     <string name="incognito_subtitle">Pause watch, search and listening history. Downloads, playlists and likes still save.</string>
     <string name="profile_signed_out">Signed out - tap to sign in</string>
@@ -1015,7 +1015,7 @@
     <string name="link_preparing_song">Getting the song ready</string>
     <string name="link_header_playlist">YouTube Playlist</string>
     <string name="link_tap_to_play_songs">%1$d songs • Tap to play</string>
-    <string name="link_tap_to_play_videos">%1$d videos • Tap to play</string>
+    <string name="link_tap_to_play_videos">%1$d tracks • Tap to play</string>
     <string name="link_error_title">Couldn\'t load this link</string>
     <string name="link_error_body">The content may be private, or you\'re offline</string>
 
@@ -1105,14 +1105,14 @@
     <string name="sp_nav_standard">Standard</string>
 
     <!-- Hub category explanations (long press) -->
-    <string name="si_hub_account">Connect a YouTube Music account to bring in your playlists, likes, history and subscriptions. Triat works fully signed out; signing in unlocks the personalised feeds.</string>
+    <string name="si_hub_account">Connect a YouTube Music account to bring in your playlists, likes and history. Triat works fully signed out; signing in unlocks the personalised feeds.</string>
     <string name="si_hub_appearance">Everything about how Triat looks and feels: theme, colors, app icon, display size, Home layout, navigation style and touch feedback.</string>
     <string name="si_hub_player">Choose between eight now-playing designs and control how the player uses album artwork colors.</string>
     <string name="si_hub_playback">Song transitions, volume levelling, queue behavior, and streaming quality chosen per network.</string>
-    <string name="si_hub_content">Switch between music and video mode, go fully offline, and tune Shorts, feeds and recommendations.</string>
+    <string name="si_hub_content">Go fully offline, choose where music comes from, and tune feeds and recommendations.</string>
     <string name="si_hub_sponsorblock">Skips sponsor reads and other segments in tracks automatically, using community-submitted timestamps. Off by default.</string>
     <string name="si_hub_storage">Where downloads are kept, what gets cached for instant replays, and how much space Triat is allowed to use.</string>
-    <string name="si_hub_notifications">Alerts for new uploads from channels you follow, and live status-bar progress for downloads and playback.</string>
+    <string name="si_hub_notifications">Live status-bar progress for downloads and playback.</string>
     <string name="si_hub_local_library">Show music files already on this device alongside YouTube Music in your library.</string>
     <string name="si_hub_backup">Save settings, playlists, history and stats into one file you can restore on any device.</string>
     <string name="si_hub_advanced">Fixes for aggressive battery savers, Android Auto help, a daily time limit, and bug reporting.</string>
@@ -1131,10 +1131,10 @@
     <string name="si_music_history">Keeps a log on this device of the songs you play. It powers your stats and recently played. Separate from your YouTube account\'s history.</string>
     <string name="si_local_only">Cuts all internet use. Only downloads and files on this device play; search, streaming and every YouTube surface stay off until you switch back.</string>
     <string name="si_recent_searches">Shows your past searches when you tap the search field. Turning this off hides them without deleting them.</string>
-    <string name="si_not_interested">Everything you have told Triat to stop recommending - hidden videos and blocked channels. Anything can be un-hidden here.</string>
+    <string name="si_not_interested">Everything you have told Triat to stop recommending - hidden songs and blocked artists. Anything can be un-hidden here.</string>
     <string name="si_private_downloads">Stores downloads inside Triat\'s private folder, invisible to other apps and the gallery, instead of the shared Downloads/Triat folder.</string>
     <string name="si_cache_music">Keeps recently streamed songs on disk so replays start instantly and cost no data. The oldest entries are evicted when the limit below is reached.</string>
-    <string name="si_preload">Fetches the beginning of upcoming songs and Shorts before you reach them, so skips start instantly. Costs some data on metered networks.</string>
+    <string name="si_preload">Fetches the beginning of upcoming songs before you reach them, so skips start instantly. Costs some data on metered networks.</string>
     <string name="si_load_local_songs">Scans this device for music files and shows them in your library next to YouTube Music. Needs the audio files permission.</string>
     <string name="si_compat_scan">Reads music files directly from storage instead of Android\'s media index. Fixes songs missing on HyperOS and MIUI, but needs the all-files permission.</string>
     <string name="si_battery">Aggressive battery savers kill background playback. This asks Android to leave Triat running while music plays.</string>
@@ -1228,7 +1228,7 @@
     <string name="lastfm_member_since">Member since</string>
     <string name="lastfm_how_it_works">Listening and privacy</string>
     <string name="lastfm_scrobble_definition">What is a scrobble?</string>
-    <string name="lastfm_scrobble_explanation">A record of a song you listened to. Triat sends one after half the song or four minutes, whichever comes first. Songs must be longer than 30 seconds. Videos are excluded.</string>
+    <string name="lastfm_scrobble_explanation">A record of a song you listened to. Triat sends one after half the song or four minutes, whichever comes first. Songs must be longer than 30 seconds.</string>
     <string name="lastfm_privacy_title">You stay in control</string>
     <string name="lastfm_privacy_body">Incognito and Local Only pause Last.fm. Turn it off to stop sending plays, or disconnect to erase the saved account from this device.</string>
     <string name="lastfm_pro">Last.fm Pro</string>
@@ -1395,7 +1395,7 @@
         <item quantity="one">%1$d song available offline</item>
         <item quantity="other">%1$d songs available offline</item>
     </plurals>
-    <string name="ni_video_hidden">Video hidden</string>
+    <string name="ni_video_hidden">Song hidden</string>
     <string name="ni_song_hidden">Song hidden</string>
     <string name="ni_channels_blocked_sub">%1$d won\'t appear in your feeds</string>
     <plurals name="ni_hidden_count">
@@ -1404,7 +1404,7 @@
     </plurals>
     <string name="ni_recommend_again_cd">Recommend %1$s again</string>
     <string name="ni_unhide_cd">Unhide %1$s</string>
-    <string name="acct_profile_own_data">It gets its own subscriptions and hidden recommendations, with no Google account involved.</string>
+    <string name="acct_profile_own_data">It gets its own hidden recommendations, with no Google account involved.</string>
     <string name="dl_music_quality_note">Music uses your %1$s quality setting for this network.</string>
     <string name="dl_music_quality_low">Low</string>
     <string name="lib_your_playlists_count">Your playlists • %1$d</string>
@@ -1539,8 +1539,8 @@
         <item quantity="other">%1$d blocked channels</item>
     </plurals>
     <plurals name="bk_n_hidden_videos">
-        <item quantity="one">%1$d hidden video</item>
-        <item quantity="other">%1$d hidden videos</item>
+        <item quantity="one">%1$d hidden song</item>
+        <item quantity="other">%1$d hidden songs</item>
     </plurals>
     <plurals name="bk_n_settings">
         <item quantity="one">%1$d setting</item>
@@ -1624,9 +1624,9 @@
         <item quantity="one">%1$d match</item>
         <item quantity="other">%1$d matches</item>
     </plurals>
-    <string name="as_sign_out_note">The account is disconnected from this device. Your subscriptions and hidden recommendations stay, and nothing changes on YouTube.</string>
-    <string name="as_remove_local_note">Its subscriptions and hidden recommendations are deleted. Playlists, liked songs and downloads are shared and stay.</string>
-    <string name="as_remove_account_note">Signs this account out on this device and deletes its subscriptions and hidden recommendations. Nothing changes on YouTube itself.</string>
+    <string name="as_sign_out_note">The account is disconnected from this device. Your hidden recommendations stay, and nothing changes on YouTube.</string>
+    <string name="as_remove_local_note">Its hidden recommendations are deleted. Playlists, liked songs and downloads are shared and stay.</string>
+    <string name="as_remove_account_note">Signs this account out on this device and deletes its hidden recommendations. Nothing changes on YouTube itself.</string>
     <string name="tl_unlimited">Unlimited</string>
     <string name="dur_h">%1$dh</string>
     <string name="tl_used_locked">%1$s used - locked until midnight</string>

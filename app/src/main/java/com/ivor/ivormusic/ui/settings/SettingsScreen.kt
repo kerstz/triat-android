@@ -67,7 +67,6 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.BookmarkAdd
 import androidx.compose.material.icons.rounded.FilterList
-import androidx.compose.material.icons.rounded.Subscriptions
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.material.icons.rounded.AddLink
 import androidx.compose.material.icons.rounded.Animation
@@ -132,7 +131,6 @@ import androidx.compose.material3.ButtonGroupDefaults
 import androidx.compose.material3.ToggleButton
 import androidx.compose.material3.ToggleButtonDefaults
 import androidx.compose.material3.MaterialShapes
-import androidx.compose.material.icons.rounded.VideoLibrary
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.RadioButton
@@ -534,8 +532,6 @@ fun SettingsScreen(
 
     // Which per-network quality picker is open, if any
     var qualityDialogTarget by remember { mutableStateOf<QualityDialogTarget?>(null) }
-
-    // Which subscription-routing picker is open, if any
 
     // Dialog state for Folder Exclusion
     var showFolderExclusionDialog by remember { mutableStateOf(false) }
