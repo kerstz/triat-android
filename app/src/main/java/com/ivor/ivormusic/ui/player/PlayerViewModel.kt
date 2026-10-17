@@ -210,11 +210,20 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     val downloadingIds = downloadRepository.downloadingIds
     val downloadProgress = downloadRepository.downloadProgress
 
+    // Everything from here down to the playlists is first needed by a gesture
+    // (a play event, a radio fill, the Add to Playlist sheet), never by the
+    // first frame, so each is built on first use rather than in the constructor
+    // that runs on the main thread. None of them starts a collection or
+    // registers a listener that has to exist from the start. NewPipe's setup is
+    // preloaded by IvorMusicApplication, which makes the first of these cheap.
+
     // YouTube Repository for fetching more songs
-    private val youTubeRepository = com.ivor.ivormusic.data.YouTubeRepository(context)
+    private val youTubeRepository by lazy { com.ivor.ivormusic.data.YouTubeRepository(context) }
 
     // Taste-profile based recommendations for the auto-queue
-    private val recommendationEngine = com.ivor.ivormusic.data.RecommendationEngine(context, youTubeRepository)
+    private val recommendationEngine by lazy {
+        com.ivor.ivormusic.data.RecommendationEngine(context, youTubeRepository)
+    }
 
     // Loading state for "Load More" button
     private val _isLoadingMore = MutableStateFlow(false)
@@ -222,8 +231,8 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     
     
     // Stats Repository
-    private val statsRepository = com.ivor.ivormusic.data.StatsRepository(context)
-    private val tasteSignals = com.ivor.ivormusic.data.TasteSignals(context)
+    private val statsRepository by lazy { com.ivor.ivormusic.data.StatsRepository(context) }
+    private val tasteSignals by lazy { com.ivor.ivormusic.data.TasteSignals(context) }
 
     // Playback session snapshots for resume-on-reopen
     private val playbackSessionRepository = com.ivor.ivormusic.data.PlaybackSessionRepository(context)
@@ -244,13 +253,16 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     private val _youtubeAddablePlaylists =
         MutableStateFlow<List<com.ivor.ivormusic.data.PlaylistDisplayItem>>(emptyList())
 
-    private val hiddenPlaylistsRepository =
+    private val hiddenPlaylistsRepository by lazy {
         com.ivor.ivormusic.data.HiddenPlaylistsRepository(context)
+    }
 
-    private val notInterestedActions = com.ivor.ivormusic.data.NotInterestedActions(
-        com.ivor.ivormusic.data.NotInterestedRepository(context),
-        youTubeRepository
-    )
+    private val notInterestedActions by lazy {
+        com.ivor.ivormusic.data.NotInterestedActions(
+            com.ivor.ivormusic.data.NotInterestedRepository(context),
+            youTubeRepository
+        )
+    }
 
     /**
      * Stop recommending this song's artist, from the player's overflow.
@@ -271,7 +283,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
      * that is invisible everywhere else is how a song ends up somewhere its
      * owner cannot find it.
      */
-    val addToPlaylistItems: StateFlow<List<com.ivor.ivormusic.data.PlaylistDisplayItem>> =
+    val addToPlaylistItems: StateFlow<List<com.ivor.ivormusic.data.PlaylistDisplayItem>> by lazy {
         kotlinx.coroutines.flow.combine(
             localPlaylists,
             _youtubeAddablePlaylists,
@@ -280,6 +292,7 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
             val hiddenIds = hidden.map { it.playlistId }.toSet()
             (local + youtube).filterNot { it.id in hiddenIds }
         }.stateIn(viewModelScope, kotlinx.coroutines.flow.SharingStarted.WhileSubscribed(5000), emptyList())
+    }
 
     /** Fetch the user's YouTube playlists for the Add to Playlist sheet (once per session). */
     fun loadYouTubePlaylistsForSheet() {
@@ -291,13 +304,14 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     }
         
     // Cache & Crossfade Settings exposed for UI
-    private val themePreferences = com.ivor.ivormusic.data.ThemePreferences(context)
-    val cacheEnabled = themePreferences.cacheEnabled
-    val maxCacheSizeMb = themePreferences.maxCacheSizeMb
+    // 50+ keys read on construction, and its flows are only drawn by Settings.
+    private val themePreferences by lazy { com.ivor.ivormusic.data.ThemePreferences(context) }
+    val cacheEnabled by lazy { themePreferences.cacheEnabled }
+    val maxCacheSizeMb by lazy { themePreferences.maxCacheSizeMb }
     val currentCacheSize = com.ivor.ivormusic.data.CacheManager.currentCacheSizeBytes
     
-    val crossfadeEnabled = themePreferences.crossfadeEnabled
-    val crossfadeDurationMs = themePreferences.crossfadeDurationMs
+    val crossfadeEnabled by lazy { themePreferences.crossfadeEnabled }
+    val crossfadeDurationMs by lazy { themePreferences.crossfadeDurationMs }
 
     init {
         initializeController()
@@ -307,6 +321,14 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
         // instance of the repository, whose cache this one cannot see. The
         // Add to Playlist sheet reads them from here.
         viewModelScope.reloadAfterEachSync(context) { playlistRepository.refreshPlaylists() }
+        // The lazy repositories above stay off the constructor, but the first
+        // track change and the first stream request would otherwise build the
+        // two heavy ones on the main thread. Touching them here, off it, makes
+        // that later first use a plain read. `lazy` is thread-safe.
+        viewModelScope.launch(kotlinx.coroutines.Dispatchers.Default) {
+            themePreferences
+            youTubeRepository
+        }
     }
 
     /**
@@ -1851,6 +1873,9 @@ class PlayerViewModel(private val context: Context) : ViewModel() {
     fun addToPlaylist(playlistId: String, song: Song? = _currentSong.value) {
         if (song == null) return
         viewModelScope.launch {
+            // Not before the first read: an empty cache then is "not loaded", and
+            // the song would go to the YouTube branch or nowhere.
+            playlistRepository.awaitLoaded()
             val isLocal = playlistRepository.userPlaylists.value.any { it.id == playlistId }
             if (isLocal) {
                 playlistRepository.addSongToPlaylist(playlistId, song)

@@ -3,6 +3,11 @@ package com.ivor.ivormusic.data
 import com.ivor.ivormusic.util.KLog
 
 import android.content.Context
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -192,8 +197,21 @@ class SavedPlaylistsRepository(context: Context) {
 
     // ---------------- Persistence ----------------
 
+    /**
+     * The in-memory [state] is the source of truth and changes synchronously,
+     * so every reader sees the toggle at once; only the serialisation and the
+     * preferences write go to a single IO lane. The lane is serial and each
+     * write reads [state] at the moment it runs, so writes cannot land out of
+     * order and a burst of toggles collapses to the latest content. The stored
+     * key and format are unchanged, which is what [BackupRepository] copies.
+     */
     private fun persist(items: List<SavedPlaylist>) {
         state.value = items
+        persistScope.launch { writeCurrentState() }
+    }
+
+    private fun writeCurrentState() {
+        val items = state.value
         val array = JSONArray()
         items.forEach { item ->
             array.put(
@@ -246,6 +264,12 @@ class SavedPlaylistsRepository(context: Context) {
         private const val KEY_SAVED = "playlists"
 
         private val LOCK = Any()
+
+        /** One serial IO lane for the whole process; see [persist]. */
+        @OptIn(ExperimentalCoroutinesApi::class)
+        private val persistScope = CoroutineScope(
+            SupervisorJob() + Dispatchers.IO.limitedParallelism(1)
+        )
 
         @Volatile
         private var shared: MutableStateFlow<List<SavedPlaylist>>? = null
