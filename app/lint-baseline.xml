@@ -851,16 +851,6 @@
             column="19"/>
     </issue>
 
-    <issue
-        id="SourceLockedOrientationActivity"
-        message="You should not lock orientation of your activities, so that you can support a good user experience for any device or orientation"
-        errorLine1="        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/java/com/ivor/ivormusic/MainActivity.kt"
-            line="131"
-            column="9"/>
-    </issue>
 
     <issue
         id="LocalContextGetResourceValueCall"
@@ -1467,16 +1457,6 @@
             column="9"/>
     </issue>
 
-    <issue
-        id="DiscouragedApi"
-        message="Fixed screen orientations will be ignored in most cases, starting from Android 16. Android is moving toward a model where apps are expected to adapt to various orientations, display sizes, and aspect ratios."
-        errorLine1="            android:screenOrientation=&quot;portrait&quot;"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/AndroidManifest.xml"
-            line="46"
-            column="13"/>
-    </issue>
 
     <issue
         id="UseAppTint"
