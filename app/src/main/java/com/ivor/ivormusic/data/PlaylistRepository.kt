@@ -11,7 +11,16 @@ import android.graphics.Paint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.CancellationException
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -23,40 +32,77 @@ import java.io.File
 import java.util.UUID
 import kotlin.random.Random
 
-class PlaylistRepository(private val context: Context) {
+class PlaylistRepository(
+    private val context: Context,
+    private val scope: CoroutineScope = defaultScope,
+) {
 
     private val playlistDir = File(context.filesDir, "playlists")
     private val coversDir = File(context.filesDir, "playlist_covers")
-    
-    // Cache of playlists
+
+    // Cache of playlists, newest first. Empty until the first load finishes;
+    // [isLoaded] tells "not read yet" from "read, and there are none".
     private val _userPlaylists = MutableStateFlow<List<UserPlaylist>>(emptyList())
     val userPlaylists: StateFlow<List<UserPlaylist>> = _userPlaylists.asStateFlow()
 
-    private val json = Json { 
-        ignoreUnknownKeys = true 
+    private val _isLoaded = MutableStateFlow(false)
+
+    /**
+     * False until the playlists have been read from disk once. A screen that
+     * draws an empty state off [userPlaylists] should wait for this, or it
+     * flashes "no playlists" at every cold start. Never goes back to false:
+     * [refreshPlaylists] swaps the list without un-loading it.
+     */
+    val isLoaded: StateFlow<Boolean> = _isLoaded.asStateFlow()
+
+    private val json = Json {
+        ignoreUnknownKeys = true
         prettyPrint = true
         isLenient = true
     }
 
-    init {
-        if (!playlistDir.exists()) playlistDir.mkdirs()
-        if (!coversDir.exists()) coversDir.mkdirs()
-        loadPlaylists()
-        kotlinx.coroutines.CoroutineScope(Dispatchers.IO).launch {
-            autoRepairUnresolvedTitles()
+    /**
+     * Serialises the disk write and the cache update of one playlist, and the
+     * full reload, so a reload that read an older file can never overwrite the
+     * list after a newer write has landed. Only ever taken on an IO thread.
+     */
+    private val diskLock = Any()
+
+    private val initialLoad: Job = scope.launch(Dispatchers.IO) {
+        try {
+            loadPlaylists()
+        } catch (e: CancellationException) {
+            throw e
+        } catch (e: Exception) {
+            // Loaded-and-empty beats never-loaded: waiters must not hang.
+            KLog.e(TAG, "Could not read the playlists", e)
+            _isLoaded.value = true
+        }
+        if (autoRepairStarted.compareAndSet(false, true)) {
+            try {
+                autoRepairUnresolvedTitles()
+            } catch (e: CancellationException) {
+                throw e
+            } catch (e: Exception) {
+                KLog.w(TAG, "Title repair failed", e)
+            }
         }
     }
 
-    private fun savePlaylistSync(playlist: UserPlaylist) {
-        val file = File(playlistDir, "${playlist.id}.json")
-        val jsonString = json.encodeToString(playlist)
-        file.writeText(jsonString)
-        loadPlaylists()
+    /**
+     * Suspends until the first read from disk is done. Every method that
+     * decides from the cached list (find a playlist, then write it back) calls
+     * this first: running before the load would find nothing and silently do
+     * nothing, which is a lost tap, not an empty library.
+     */
+    suspend fun awaitLoaded() {
+        if (!_isLoaded.value) _isLoaded.first { it }
     }
 
-    private fun loadPlaylists() {
-        // Load on background thread logic should be called from coroutine, but for init we do minimal
-        // We'll expose suspend functions for ops
+    /** Full read of the directory. Blocking: IO threads only. */
+    private fun loadPlaylists() = synchronized(diskLock) {
+        if (!playlistDir.exists()) playlistDir.mkdirs()
+        if (!coversDir.exists()) coversDir.mkdirs()
         val files = playlistDir.listFiles { _, name -> name.endsWith(".json") }
         val loaded = files?.mapNotNull { file ->
             try {
@@ -66,10 +112,12 @@ class PlaylistRepository(private val context: Context) {
                 null
             }
         }?.sortedByDescending { it.createdAt } ?: emptyList()
-        
+
         _userPlaylists.value = loaded
+        _isLoaded.value = true
     }
-    
+
+    /** Full reload from disk: what a sync that wrote files from another instance needs. */
     suspend fun refreshPlaylists() = withContext(Dispatchers.IO) {
         loadPlaylists()
     }
@@ -79,6 +127,7 @@ class PlaylistRepository(private val context: Context) {
      * in non-blocking background chunks of 10 and saves updated playlist JSON to disk.
      */
     suspend fun autoRepairUnresolvedTitles() = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val currentPlaylists = _userPlaylists.value
         for (playlist in currentPlaylists) {
             val placeholders = playlist.songs.filter { song ->
@@ -105,10 +154,8 @@ class PlaylistRepository(private val context: Context) {
                     }.awaitAll()
                 }
                 if (modified) {
-                    val updatedPlaylist = playlist.copy(songs = updatedSongs)
-                    val file = File(playlistDir, "${playlist.id}.json")
-                    runCatching { file.writeText(json.encodeToString(updatedPlaylist)) }
-                    loadPlaylists()
+                    val updatedPlaylist = playlist.copy(songs = updatedSongs.toList())
+                    runCatching { writePlaylist(updatedPlaylist) }
                 }
             }
         }
@@ -121,11 +168,7 @@ class PlaylistRepository(private val context: Context) {
                 .url(url)
                 .header("User-Agent", "Mozilla/5.0 (Linux; Android 10; K)")
                 .build()
-            val client = okhttp3.OkHttpClient.Builder()
-                .connectTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
-                .build()
-            client.newCall(request).execute().use { response ->
+            oembedClient.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
                     val body = response.body?.string()
                     if (!body.isNullOrBlank()) {
@@ -153,11 +196,7 @@ class PlaylistRepository(private val context: Context) {
         try {
             val url = "https://noembed.com/embed?url=https://www.youtube.com/watch?v=$videoId"
             val request = okhttp3.Request.Builder().url(url).build()
-            val client = okhttp3.OkHttpClient.Builder()
-                .connectTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
-                .readTimeout(4, java.util.concurrent.TimeUnit.SECONDS)
-                .build()
-            client.newCall(request).execute().use { response ->
+            oembedClient.newCall(request).execute().use { response ->
                 if (response.isSuccessful) {
                     val body = response.body?.string()
                     if (!body.isNullOrBlank()) {
@@ -210,6 +249,7 @@ class PlaylistRepository(private val context: Context) {
     }
     
     suspend fun addSongToPlaylist(playlistId: String, song: Song) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val currentList = _userPlaylists.value
         val playlist = currentList.find { it.id == playlistId } ?: return@withContext
         
@@ -235,6 +275,7 @@ class PlaylistRepository(private val context: Context) {
      * @return how many songs were actually added.
      */
     suspend fun addSongsToPlaylist(playlistId: String, songs: List<Song>): Int = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext 0
         val seen = playlist.songs.mapTo(HashSet()) { it.id }
         val toAdd = songs.filter { seen.add(it.id) }
@@ -244,6 +285,7 @@ class PlaylistRepository(private val context: Context) {
     }
 
     suspend fun removeSongFromPlaylist(playlistId: String, songId: String) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val currentList = _userPlaylists.value
         val playlist = currentList.find { it.id == playlistId } ?: return@withContext
         
@@ -258,6 +300,7 @@ class PlaylistRepository(private val context: Context) {
         fromIndex: Int,
         toIndex: Int
     ) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext
         if (fromIndex == toIndex) return@withContext
         if (fromIndex !in playlist.songs.indices || toIndex !in playlist.songs.indices) return@withContext
@@ -274,6 +317,7 @@ class PlaylistRepository(private val context: Context) {
         playlistId: String,
         songs: List<Song>
     ) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext
         savePlaylist(playlist.copy(songs = songs))
     }
@@ -281,16 +325,18 @@ class PlaylistRepository(private val context: Context) {
     suspend fun deletePlaylist(playlistId: String) = withContext(Dispatchers.IO) {
         com.ivor.ivormusic.sync.SyncTombstones(context)
             .record(com.ivor.ivormusic.sync.SyncTombstones.PLAYLIST, playlistId)
+        awaitLoaded()
         val file = File(playlistDir, "$playlistId.json")
-        if (file.exists()) file.delete()
+        synchronized(diskLock) {
+            if (file.exists()) file.delete()
+            _userPlaylists.update { PlaylistListOps.remove(it, playlistId) }
+        }
         
         // Also delete cover art. Both kinds carry a timestamp in the name, so
         // this matches on the prefix rather than one fixed file.
         coversDir.listFiles { _, fileName ->
             fileName.startsWith("cover_$playlistId") || fileName.startsWith("custom_$playlistId")
         }?.forEach { it.delete() }
-
-        loadPlaylists()
     }
 
     suspend fun updatePlaylist(
@@ -299,6 +345,7 @@ class PlaylistRepository(private val context: Context) {
         description: String?,
         coverSeeds: Pair<Int, Int>? = null
     ) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext
         val trimmedName = name.trim()
         if (trimmedName.isBlank()) return@withContext
@@ -341,6 +388,7 @@ class PlaylistRepository(private val context: Context) {
      */
     suspend fun setCustomCover(playlistId: String, source: android.net.Uri): Boolean =
         withContext(Dispatchers.IO) {
+            awaitLoaded()
             val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext false
             val decoded = try {
                 context.contentResolver.openInputStream(source)?.use { input ->
@@ -390,6 +438,7 @@ class PlaylistRepository(private val context: Context) {
         playlistId: String,
         coverSeeds: Pair<Int, Int>? = null
     ) = withContext(Dispatchers.IO) {
+        awaitLoaded()
         val playlist = _userPlaylists.value.find { it.id == playlistId } ?: return@withContext
         val previous = playlist.coverUri
         val regenerated = generateCoverArt(playlist.name, playlist.id, coverSeeds)
@@ -457,10 +506,13 @@ class PlaylistRepository(private val context: Context) {
 
     /** Writes without touching [UserPlaylist.updatedAt]: the sync keeps the author's date. */
     private fun writePlaylist(playlist: UserPlaylist) {
-        val file = File(playlistDir, "${playlist.id}.json")
         val jsonString = json.encodeToString(playlist)
-        file.writeText(jsonString)
-        loadPlaylists() // Update cache
+        synchronized(diskLock) {
+            if (!playlistDir.exists()) playlistDir.mkdirs()
+            File(playlistDir, "${playlist.id}.json").writeText(jsonString)
+            // The one playlist changed, so only that one changes in the cache.
+            _userPlaylists.update { PlaylistListOps.upsert(it, playlist) }
+        }
     }
 
     /**
@@ -469,6 +521,7 @@ class PlaylistRepository(private val context: Context) {
      */
     suspend fun applySynced(id: String, name: String, songs: List<Song>, updatedAt: Long) =
         withContext(Dispatchers.IO) {
+            awaitLoaded()
             val current = _userPlaylists.value.find { it.id == id }
             val base = current ?: UserPlaylist(
                 id = id, name = name, description = null,
@@ -481,11 +534,14 @@ class PlaylistRepository(private val context: Context) {
 
     /** A deletion received from Triat desktop: no new tombstone, it came from one. */
     suspend fun deleteSynced(id: String) = withContext(Dispatchers.IO) {
-        File(playlistDir, "$id.json").takeIf { it.exists() }?.delete()
+        awaitLoaded()
+        synchronized(diskLock) {
+            File(playlistDir, "$id.json").takeIf { it.exists() }?.delete()
+            _userPlaylists.update { PlaylistListOps.remove(it, id) }
+        }
         coversDir.listFiles { _, fileName ->
             fileName.startsWith("cover_$id") || fileName.startsWith("custom_$id")
         }?.forEach { it.delete() }
-        loadPlaylists()
     }
     
     /**
@@ -678,7 +734,45 @@ class PlaylistRepository(private val context: Context) {
     companion object {
         private const val TAG = "PlaylistRepository"
 
+        /** The repository is built per ViewModel; its IO work belongs to the process, not to one of them. */
+        private val defaultScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
+
+        /** The unresolved-title sweep makes network calls; once per process is plenty from `init`. */
+        private val autoRepairStarted = AtomicBoolean(false)
+
+        /**
+         * One client for every oEmbed lookup, riding the process-wide
+         * connection pool and dispatcher instead of building both per call.
+         */
+        private val oembedClient: OkHttpClient by lazy {
+            YouTubeRepository.sharedTransportBuilder()
+                .connectTimeout(4, TimeUnit.SECONDS)
+                .readTimeout(4, TimeUnit.SECONDS)
+                .build()
+        }
+
         /** Edge of every stored cover, generated or chosen. */
         private const val COVER_SIZE = 1000
     }
+}
+
+/**
+ * The in-memory list edits, kept pure so the ordering rule is testable: the
+ * list is always newest-created first, whatever was just written.
+ */
+internal object PlaylistListOps {
+    /** Replaces the playlist with the same id, or inserts it; stays sorted by createdAt, newest first. */
+    fun upsert(list: List<UserPlaylist>, playlist: UserPlaylist): List<UserPlaylist> {
+        val index = list.indexOfFirst { it.id == playlist.id }
+        val next = if (index >= 0) {
+            list.toMutableList().also { it[index] = playlist }
+        } else {
+            list + playlist
+        }
+        // Stable, so equal createdAt keep their relative order.
+        return next.sortedByDescending { it.createdAt }
+    }
+
+    fun remove(list: List<UserPlaylist>, id: String): List<UserPlaylist> =
+        if (list.any { it.id == id }) list.filterNot { it.id == id } else list
 }

@@ -264,6 +264,26 @@ class YouTubeRepository(private val context: Context) {
             timeUnit = TimeUnit.MINUTES,
         )
 
+        /**
+         * A client builder on the process-wide dispatcher and connection pool,
+         * for callers outside this class that make occasional plain requests
+         * (oEmbed lookups) and should not build a pool of their own.
+         */
+        fun sharedTransportBuilder(): OkHttpClient.Builder = OkHttpClient.Builder()
+            .dispatcher(sharedHttpDispatcher)
+            .connectionPool(sharedConnectionPool)
+
+        /**
+         * Runs the one-time NewPipe setup by building a throwaway repository.
+         * Called from the Application's startup scope so the first repository
+         * a screen builds finds NewPipe ready instead of paying for it on the
+         * main thread. Idempotent and thread-safe: [initializeNewPipe] takes
+         * [newPipeInitLock], and a later instance returns at the flag.
+         */
+        fun preloadNewPipe(context: Context) {
+            YouTubeRepository(context.applicationContext)
+        }
+
         private fun httpCache(context: Context): okhttp3.Cache? {
             sharedHttpCache?.let { return it }
             return synchronized(httpCacheLock) {
