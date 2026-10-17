@@ -529,21 +529,17 @@ private fun spotlightQuickPickCaption(filter: SpotlightFilter): String? = when (
 
 internal sealed interface Shortcut {
     val key: String
-    val title: String
 
     data class Liked(val count: Int) : Shortcut {
         override val key = "liked"
-        override val title = "Liked songs"
     }
 
     data class Playlist(val playlist: PlaylistDisplayItem) : Shortcut {
         override val key = "pl-${playlist.id}"
-        override val title = playlist.name
     }
 
     data class Track(val song: Song) : Shortcut {
         override val key = "tr-${song.id}"
-        override val title = song.title
     }
 }
 

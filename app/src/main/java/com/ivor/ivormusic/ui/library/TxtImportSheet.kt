@@ -57,6 +57,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.pluralStringResource
+import androidx.compose.ui.res.stringResource
+import com.ivor.ivormusic.R
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
@@ -97,7 +100,8 @@ fun TxtImportSheet(
     var extractedVideoIds by remember { mutableStateOf<List<String>>(emptyList()) }
 
     var createNewPlaylist by remember { mutableStateOf(true) }
-    var playlistNameInput by remember { mutableStateOf("Import TXT") }
+    val defaultPlaylistName = stringResource(R.string.txt_default_name)
+    var playlistNameInput by remember { mutableStateOf(defaultPlaylistName) }
     var selectedPlaylistId by remember { mutableStateOf<String?>(null) }
 
     var isDropdownExpanded by remember { mutableStateOf(false) }
@@ -206,18 +210,18 @@ fun TxtImportSheet(
                 Spacer(modifier = Modifier.width(14.dp))
                 Column(modifier = Modifier.weight(1f)) {
                     Text(
-                        text = "Importer des liens TXT",
+                        text = stringResource(R.string.txt_import_title),
                         style = MaterialTheme.typography.titleLarge,
                         fontWeight = FontWeight.Bold
                     )
                     Text(
-                        text = "Crée une playlist à partir d'un fichier .txt ou de liens YouTube",
+                        text = stringResource(R.string.txt_import_subtitle),
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
                 IconButton(onClick = onDismiss) {
-                    Icon(Icons.Rounded.Close, contentDescription = "Fermer")
+                    Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.action_close))
                 }
             }
 
@@ -236,7 +240,7 @@ fun TxtImportSheet(
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(
-                            text = "1. Source des liens",
+                            text = stringResource(R.string.txt_step_source),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.SemiBold
                         )
@@ -247,7 +251,7 @@ fun TxtImportSheet(
                         ) {
                             Icon(Icons.Rounded.Description, contentDescription = null, modifier = Modifier.size(18.dp))
                             Spacer(modifier = Modifier.width(6.dp))
-                            Text(text = "Fichier .txt")
+                            Text(text = stringResource(R.string.txt_file_button))
                         }
                     }
 
@@ -290,7 +294,7 @@ fun TxtImportSheet(
                             fileName = null
                             extractedVideoIds = parseTextToVideoIds(it)
                         },
-                        placeholder = { Text("Colle ici tes liens YouTube / TXT...") },
+                        placeholder = { Text(stringResource(R.string.txt_paste_hint)) },
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(120.dp),
@@ -313,9 +317,9 @@ fun TxtImportSheet(
                         Spacer(modifier = Modifier.width(6.dp))
                         Text(
                             text = if (extractedVideoIds.isNotEmpty())
-                                "${extractedVideoIds.size} titres YouTube détectés"
+                                pluralStringResource(R.plurals.txt_detected_count, extractedVideoIds.size, extractedVideoIds.size)
                             else
-                                "Aucun lien détecté pour l'instant",
+                                stringResource(R.string.txt_none_detected),
                             style = MaterialTheme.typography.bodySmall,
                             fontWeight = if (extractedVideoIds.isNotEmpty()) FontWeight.Bold else FontWeight.Normal,
                             color = if (extractedVideoIds.isNotEmpty()) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
@@ -334,7 +338,7 @@ fun TxtImportSheet(
             ) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "2. Destination",
+                        text = stringResource(R.string.txt_step_destination),
                         style = MaterialTheme.typography.titleMedium,
                         fontWeight = FontWeight.SemiBold
                     )
@@ -355,7 +359,7 @@ fun TxtImportSheet(
                         )
                         Spacer(modifier = Modifier.width(8.dp))
                         Text(
-                            text = "Créer une nouvelle playlist",
+                            text = stringResource(R.string.txt_new_playlist),
                             style = MaterialTheme.typography.bodyLarge
                         )
                     }
@@ -364,7 +368,7 @@ fun TxtImportSheet(
                         OutlinedTextField(
                             value = playlistNameInput,
                             onValueChange = { playlistNameInput = it },
-                            label = { Text("Nom de la playlist") },
+                            label = { Text(stringResource(R.string.txt_playlist_name)) },
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .padding(start = 36.dp, top = 4.dp, bottom = 8.dp),
@@ -388,7 +392,7 @@ fun TxtImportSheet(
                             )
                             Spacer(modifier = Modifier.width(8.dp))
                             Text(
-                                text = "Ajouter à une playlist existante",
+                                text = stringResource(R.string.txt_existing_playlist),
                                 style = MaterialTheme.typography.bodyLarge
                             )
                         }
@@ -444,9 +448,9 @@ fun TxtImportSheet(
 
                     scope.launch(Dispatchers.IO) {
                         val finalPlaylistName = if (createNewPlaylist) {
-                            playlistNameInput.trim().ifEmpty { "Import TXT" }
+                            playlistNameInput.trim().ifEmpty { defaultPlaylistName }
                         } else {
-                            userPlaylists.find { it.id == selectedPlaylistId }?.name ?: "Import TXT"
+                            userPlaylists.find { it.id == selectedPlaylistId }?.name ?: defaultPlaylistName
                         }
 
                         val refs = parseTextToVideoRefs(pastedText)
@@ -464,7 +468,9 @@ fun TxtImportSheet(
                         val targetId = if (createNewPlaylist) {
                             viewModel.createLocalPlaylistWithSongs(
                                 name = finalPlaylistName,
-                                description = "Importé depuis TXT (${songsToImport.size} titres)",
+                                description = context.resources.getQuantityString(
+                                    R.plurals.txt_imported_description, songsToImport.size, songsToImport.size
+                                ),
                                 songs = songsToImport
                             )
                         } else {
@@ -475,7 +481,9 @@ fun TxtImportSheet(
                             } else {
                                 viewModel.createLocalPlaylistWithSongs(
                                     name = finalPlaylistName,
-                                    description = "Importé depuis TXT (${songsToImport.size} titres)",
+                                    description = context.resources.getQuantityString(
+                                    R.plurals.txt_imported_description, songsToImport.size, songsToImport.size
+                                ),
                                     songs = songsToImport
                                 )
                             }
@@ -501,7 +509,7 @@ fun TxtImportSheet(
                         strokeWidth = 2.dp
                     )
                     Spacer(modifier = Modifier.width(10.dp))
-                    Text("Importation en cours...")
+                    Text(stringResource(R.string.txt_importing))
                 } else {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.PlaylistAdd,
@@ -510,9 +518,9 @@ fun TxtImportSheet(
                     Spacer(modifier = Modifier.width(10.dp))
                     Text(
                         text = if (extractedVideoIds.isNotEmpty())
-                            "Importer ${extractedVideoIds.size} titres"
+                            pluralStringResource(R.plurals.txt_import_n, extractedVideoIds.size, extractedVideoIds.size)
                         else
-                            "Démarrer l'importation",
+                            stringResource(R.string.txt_start_import),
                         fontWeight = FontWeight.Bold,
                         style = MaterialTheme.typography.titleMedium
                     )

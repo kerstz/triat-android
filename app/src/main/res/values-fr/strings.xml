@@ -1553,4 +1553,34 @@
     <string name="untitled">Sans titre</string>
     <string name="dur_long_h_m">%1$d h %2$d min</string>
     <string name="dur_long_m">%1$d min</string>
+    <string name="txt_import_title">Importer des liens TXT</string>
+    <string name="txt_import_subtitle">Crée une playlist à partir d\'un fichier .txt ou de liens YouTube</string>
+    <string name="txt_step_source">1. Source des liens</string>
+    <string name="txt_file_button">Fichier .txt</string>
+    <string name="txt_paste_hint">Colle ici tes liens YouTube / TXT...</string>
+    <plurals name="txt_detected_count">
+        <item quantity="one">%1$d titre YouTube détecté</item>
+        <item quantity="other">%1$d titres YouTube détectés</item>
+    </plurals>
+    <string name="txt_none_detected">Aucun lien détecté pour l\'instant</string>
+    <string name="txt_step_destination">2. Destination</string>
+    <string name="txt_new_playlist">Créer une nouvelle playlist</string>
+    <string name="txt_playlist_name">Nom de la playlist</string>
+    <string name="txt_existing_playlist">Ajouter à une playlist existante</string>
+    <string name="txt_default_name">Import TXT</string>
+    <plurals name="txt_imported_description">
+        <item quantity="one">Importé depuis TXT (%1$d titre)</item>
+        <item quantity="other">Importé depuis TXT (%1$d titres)</item>
+    </plurals>
+    <string name="txt_importing">Importation en cours...</string>
+    <plurals name="txt_import_n">
+        <item quantity="one">Importer %1$d titre</item>
+        <item quantity="other">Importer %1$d titres</item>
+    </plurals>
+    <string name="txt_start_import">Démarrer l\'importation</string>
+    <string name="lib_import_txt">Importer TXT</string>
+    <string name="acct_import_cookies">Importer mes cookies YouTube</string>
+    <string name="acct_import_cookies_sub">Format texte, Netscape ou JSON pour tes recommandations perso</string>
+    <string name="ni_channel_blocked">%1$s ne sera plus recommandé</string>
+    <string name="ni_channel_hidden">Chaîne masquée</string>
 </resources>

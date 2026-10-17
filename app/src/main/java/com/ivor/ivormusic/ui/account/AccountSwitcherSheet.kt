@@ -183,8 +183,8 @@ fun AccountSwitcherSheet(
             if (onImportCookies != null) {
                 AddRow(
                     icon = Icons.Rounded.Cookie,
-                    title = "Importer mes cookies YouTube",
-                    subtitle = "Format texte, Netscape ou JSON pour tes recommandations perso",
+                    title = stringResource(R.string.acct_import_cookies),
+                    subtitle = stringResource(R.string.acct_import_cookies_sub),
                     onClick = {
                         onDismiss()
                         onImportCookies()

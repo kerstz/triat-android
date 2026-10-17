@@ -306,7 +306,11 @@ class NotInterestedRepository(context: Context) {
         saveBlocked(listOf(BlockedChannel(id, name, avatarUrl)) + blockedState.value)
         sharedLastAction!!.value = UndoableAction(
             scope = NotInterestedScope.CHANNEL,
-            message = if (name.isNotBlank()) "$name won't be recommended" else "Channel hidden",
+            message = if (name.isNotBlank()) {
+                appContext.getString(R.string.ni_channel_blocked, name)
+            } else {
+                appContext.getString(R.string.ni_channel_hidden)
+            },
             channelId = id,
             channelName = name,
             undoToken = undoToken

@@ -1638,4 +1638,34 @@
     <string name="untitled">Untitled</string>
     <string name="dur_long_h_m">%1$d hr %2$d min</string>
     <string name="dur_long_m">%1$d min</string>
+    <string name="txt_import_title">Import TXT links</string>
+    <string name="txt_import_subtitle">Create a playlist from a .txt file or YouTube links</string>
+    <string name="txt_step_source">1. Link source</string>
+    <string name="txt_file_button">.txt file</string>
+    <string name="txt_paste_hint">Paste your YouTube / TXT links here...</string>
+    <plurals name="txt_detected_count">
+        <item quantity="one">%1$d YouTube song detected</item>
+        <item quantity="other">%1$d YouTube songs detected</item>
+    </plurals>
+    <string name="txt_none_detected">No links detected yet</string>
+    <string name="txt_step_destination">2. Destination</string>
+    <string name="txt_new_playlist">Create a new playlist</string>
+    <string name="txt_playlist_name">Playlist name</string>
+    <string name="txt_existing_playlist">Add to an existing playlist</string>
+    <string name="txt_default_name">TXT import</string>
+    <plurals name="txt_imported_description">
+        <item quantity="one">Imported from TXT (%1$d song)</item>
+        <item quantity="other">Imported from TXT (%1$d songs)</item>
+    </plurals>
+    <string name="txt_importing">Importing...</string>
+    <plurals name="txt_import_n">
+        <item quantity="one">Import %1$d song</item>
+        <item quantity="other">Import %1$d songs</item>
+    </plurals>
+    <string name="txt_start_import">Start import</string>
+    <string name="lib_import_txt">Import TXT</string>
+    <string name="acct_import_cookies">Import my YouTube cookies</string>
+    <string name="acct_import_cookies_sub">Text, Netscape or JSON format for your personalised recommendations</string>
+    <string name="ni_channel_blocked">%1$s won\'t be recommended</string>
+    <string name="ni_channel_hidden">Channel hidden</string>
 </resources>

@@ -1424,7 +1424,7 @@ fun PlaylistsGrid(
                                     modifier = Modifier.size(18.dp)
                                 )
                                 Spacer(Modifier.width(4.dp))
-                                Text("Importer TXT")
+                                Text(stringResource(R.string.lib_import_txt))
                             }
                         }
                         if (hiddenPlaylists.isNotEmpty()) {
@@ -2123,7 +2123,7 @@ private fun EditPlaylistDialog(
                     ) {
                         Icon(Icons.Rounded.Image, contentDescription = null, modifier = Modifier.size(18.dp))
                         Spacer(modifier = Modifier.width(8.dp))
-                        Text("Changer la photo de couverture")
+                        Text(stringResource(R.string.lib_change_cover_art))
                     }
                 }
             }
