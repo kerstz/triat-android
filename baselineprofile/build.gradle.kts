@@ -29,11 +29,27 @@ android {
 }
 
 // Generation needs a rooted or userdebug device. The Pixel_10 AVD is a Google
-// Play image and cannot be rooted; Triat_Bench (android-36, google_apis) can.
+// Play image and cannot be rooted; Triat_Bench (android-36, google_apis) can,
+// and so can the Gradle managed device below (an AOSP image), which is what
+// the baseline-profile CI workflow uses. Locally the connected device is the
+// default; -Ptriat.baselineProfile.managed switches to the managed device.
 // See docs/baseline-profile.md.
+val useManagedDevice = providers.gradleProperty("triat.baselineProfile.managed").isPresent
+
+android {
+    testOptions.managedDevices.allDevices {
+        create<com.android.build.api.dsl.ManagedVirtualDevice>("pixel6Api34") {
+            device = "Pixel 6"
+            apiLevel = 34
+            systemImageSource = "aosp"
+        }
+    }
+}
+
 baselineProfile {
     managedDevices.clear()
-    useConnectedDevices = true
+    if (useManagedDevice) managedDevices += "pixel6Api34"
+    useConnectedDevices = !useManagedDevice
 }
 
 dependencies {

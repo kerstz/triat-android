@@ -209,9 +209,12 @@ android.defaultConfig.apply {
 }
 
 dependencies {
-    // Supplies app/src/main/baseline-prof.txt, which AGP packages as the
-    // app's ART profile. profileinstaller already arrives transitively
-    // through Compose and installs it on first run.
+    // The generator module. Its output lands in
+    // app/src/release/generated/baselineProfiles/ (baseline-prof.txt and
+    // startup-prof.txt), which AGP packages as the app's ART profile;
+    // profileinstaller arrives transitively through Compose and installs it.
+    // No profile is committed yet: generation needs a userdebug/AOSP device
+    // or the manual CI workflow (docs/baseline-profile.md).
     baselineProfile(project(":baselineprofile"))
 
     coreLibraryDesugaring(libs.desugar.jdk.libs.nio)
