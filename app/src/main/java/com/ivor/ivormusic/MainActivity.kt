@@ -18,6 +18,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
@@ -57,6 +59,8 @@ import com.ivor.ivormusic.data.VideoItem
 import com.ivor.ivormusic.ui.home.HomeScreen
 import com.ivor.ivormusic.ui.home.HomeViewModel
 import com.ivor.ivormusic.ui.player.PlayerViewModel
+import com.ivor.ivormusic.ui.adaptive.LocalWindowLayout
+import com.ivor.ivormusic.ui.adaptive.windowLayoutFor
 import com.ivor.ivormusic.ui.theme.IvorMusicTheme
 import com.ivor.ivormusic.ui.theme.PaletteStyle
 import com.ivor.ivormusic.ui.theme.ThemeViewModel
@@ -95,9 +99,6 @@ private val NON_EXPRESSIVE_NAV_BAR_RESERVE = 80.dp
 /** Height the collapsed music player occupies above the navigation bar. */
 private val MUSIC_PILL_RESERVE = 88.dp
 
-
-/** Smallest width, in dp, from which the app follows the device orientation. */
-private const val LARGE_SCREEN_MIN_DP = 600
 
 class MainActivity : ComponentActivity() {
 
@@ -205,6 +206,14 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
+            // Measured here, outside the theme, so the interface-scale density
+            // override never changes which layout a window gets.
+            val windowSize = LocalWindowInfo.current.containerDpSize
+            val windowLayout = remember(windowSize.width.value, windowSize.height.value) {
+                windowLayoutFor(windowSize.width.value, windowSize.height.value)
+            }
+
+            CompositionLocalProvider(LocalWindowLayout provides windowLayout) {
             IvorMusicTheme(
                 darkTheme = isDarkTheme,
                 colorPalette = colorPalette,
@@ -332,6 +341,7 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+            }
         }
     }
 
@@ -345,7 +355,7 @@ class MainActivity : ComponentActivity() {
      * recreating it and the policy is re-evaluated.
      */
     private fun applyOrientationPolicy() {
-        val wanted = if (resources.configuration.smallestScreenWidthDp < LARGE_SCREEN_MIN_DP) {
+        val wanted = if (resources.configuration.smallestScreenWidthDp < com.ivor.ivormusic.ui.adaptive.LARGE_SCREEN_MIN_DP) {
             android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         } else {
             android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED

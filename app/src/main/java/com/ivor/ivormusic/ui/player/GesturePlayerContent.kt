@@ -15,6 +15,8 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
@@ -60,6 +62,7 @@ import androidx.compose.ui.zIndex
 import androidx.media3.common.Player
 import coil.compose.AsyncImage
 import com.ivor.ivormusic.data.Song
+import com.ivor.ivormusic.ui.adaptive.LocalWindowLayout
 import com.ivor.ivormusic.data.MusicQueueItem
 import com.ivor.ivormusic.ui.components.QueueDragHandle
 import com.ivor.ivormusic.ui.components.QueueRowContainer
@@ -311,80 +314,60 @@ private fun GestureNowPlayingView(
                 modifier = Modifier.fillMaxSize()
             )
             
-            Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .statusBarsPadding()
-                .padding(top = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
-        ) {
-            // ========== 1. TOP BAR ==========
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Collapse and queue are glyphs, not pills: the accent and the
-                // only filled container on this screen belong to playback.
-                IconButton(onClick = onCollapse, modifier = Modifier.size(48.dp)) {
-                    Icon(
-                        Icons.Default.KeyboardArrowDown,
-                        stringResource(R.string.cd_collapse),
-                        modifier = Modifier.size(28.dp),
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-
-
-                // Queue and overflow sit together because they are the same
-                // kind of thing - ways out of the now-playing screen - and the
-                // overflow used to hold a whole row of its own below the
-                // transport for one glyph.
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
+            // The pieces both layouts are made of. The portrait column and the
+            // landscape row below place the same composables, so a control can
+            // never exist in one and not the other.
+            val sideBySide = LocalWindowLayout.current.isWideLandscape
+            val progressModifier = if (sideBySide) Modifier.fillMaxWidth(0.9f) else Modifier.width(progressBarWidth)
+            val topBar: @Composable () -> Unit = {
+                // ========== 1. TOP BAR ==========
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // Collapse and queue are glyphs, not pills: the accent and the
+                    // only filled container on this screen belong to playback.
+                    IconButton(onClick = onCollapse, modifier = Modifier.size(48.dp)) {
                         Icon(
-                            Icons.AutoMirrored.Filled.QueueMusic,
-                            stringResource(R.string.cd_queue),
-                            modifier = Modifier.size(24.dp),
+                            Icons.Default.KeyboardArrowDown,
+                            stringResource(R.string.cd_collapse),
+                            modifier = Modifier.size(28.dp),
                             tint = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
-                    IconButton(onClick = onShowOptions, modifier = Modifier.size(48.dp)) {
-                        Icon(
-                            Icons.Rounded.MoreVert,
-                            stringResource(R.string.cd_more_options),
-                            modifier = Modifier.size(24.dp),
-                            tint = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
+
+
+                    // Queue and overflow sit together because they are the same
+                    // kind of thing - ways out of the now-playing screen - and the
+                    // overflow used to hold a whole row of its own below the
+                    // transport for one glyph.
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = onShowQueue, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                Icons.AutoMirrored.Filled.QueueMusic,
+                                stringResource(R.string.cd_queue),
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        IconButton(onClick = onShowOptions, modifier = Modifier.size(48.dp)) {
+                            Icon(
+                                Icons.Rounded.MoreVert,
+                                stringResource(R.string.cd_more_options),
+                                modifier = Modifier.size(24.dp),
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
                     }
                 }
             }
-            
-            // "Playing From / album" header removed to keep the player minimal.
-
-            // ========== CENTER CONTENT (vertically centered) ==========
-            // Centred in the space it is given, not pinned to the top of it.
-            // Artwork, title and bar are one block, and with the overflow row
-            // gone the slack all fell between that block and the transport -
-            // a hole in the middle of the screen. Centred, the slack splits
-            // above and below and reads as breathing room.
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .fillMaxWidth(),
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
-            ) {
-                // Push album down slightly
-                Spacer(modifier = Modifier.height(16.dp))
-                
+            val artwork: @Composable () -> Unit = {
                 // ========== 3. ALBUM ART ==========
                 BoxWithConstraints(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = (if (sideBySide) Modifier.fillMaxSize() else Modifier.fillMaxWidth())
                         .padding(horizontal = 0.dp),
                     contentAlignment = Alignment.Center
                 ) {
@@ -395,7 +378,7 @@ private fun GestureNowPlayingView(
                     }
                     
                     // Use FULL available width for HUGE album art - ensure positive size
-                    val albumSize = maxWidth.coerceAtLeast(1.dp)
+                    val albumSize = (if (sideBySide) minOf(maxWidth, maxHeight) else maxWidth).coerceAtLeast(1.dp)
                     
                     Box(
                         modifier = Modifier.size(albumSize),
@@ -422,6 +405,209 @@ private fun GestureNowPlayingView(
                         }
                     }
                 }
+            }
+            val infoAndProgress: @Composable () -> Unit = {
+                // ========== 4. SONG INFO ==========
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .swipeToSkip(swipeToSkip)
+                        .swipeToSkipFollow(swipeToSkip)
+                        .padding(horizontal = 24.dp),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = currentSong?.title?.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
+                        // The artwork is this player's subject; a bold
+                        // headline over it made two things shout at
+                        // once and neither won.
+                        style = MaterialTheme.typography.headlineSmall.copy(
+                            fontWeight = FontWeight.SemiBold
+                        ),
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        color = onSurfaceColor,
+                        textAlign = TextAlign.Center
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    val artistName = currentSong?.artist?.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)
+                    Text(
+                        text = artistName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = onSurfaceVariantColor,
+                        modifier = Modifier
+                            .clickable(enabled = artistName != stringResource(R.string.unknown_artist)) { onArtistClick(artistName) },
+                        textAlign = TextAlign.Center
+                    )
+                }
+                        
+                Spacer(modifier = Modifier.height(20.dp))
+                // ========== 5. WAVY PROGRESS BAR (Expressive Style) ==========
+                        
+                Column(
+                    modifier = Modifier
+                        .then(progressModifier)
+                ) {
+                    // Track the finger locally while scrubbing; seek once on
+                    // release instead of on every drag frame (rebuffer storms).
+                    var scrubPosition by remember { mutableStateOf<Float?>(null) }
+                    val displayedProgress = scrubPosition?.toLong() ?: progress
+                    // Advanced from the clock each frame rather than
+                    // sprung toward a once-a-second sample - see
+                    // rememberSmoothProgress.
+                    val smoothProgress = rememberSmoothProgress(
+                        positionMs = progress,
+                        durationMs = duration,
+                        isPlaying = isPlaying,
+                        scrubPositionMs = scrubPosition
+                    )
+
+                    val thickStroke = Stroke(width = with(LocalDensity.current) { 6.dp.toPx() }, cap = StrokeCap.Round)
+
+                    // Wavy progress with invisible slider overlay for touch
+                    Box(contentAlignment = Alignment.Center) {
+                        ExpressiveScrubber(
+                            progress = { smoothProgress.value },
+                            modifier = Modifier.fillMaxWidth().height(scrubberTrackHeight(14.dp)),
+                            stroke = thickStroke,
+                            trackStroke = thickStroke,
+                            color = primaryColor,
+                            trackColor = onSurfaceVariantColor.copy(alpha = 0.15f)
+                        )
+
+                        // Invisible slider for touch interaction
+                        Slider(
+                            interactionSource = LocalPlayerScrubInteraction.current,
+                            value = scrubPosition ?: progress.toFloat(),
+                            onValueChange = { scrubPosition = it },
+                            onValueChangeFinished = {
+                                scrubPosition?.let { onSeekTo(it.toLong()) }
+                                scrubPosition = null
+                            },
+                            valueRange = 0f..(duration.toFloat().coerceAtLeast(1f)),
+                            colors = SliderDefaults.colors(
+                                thumbColor = Color.Transparent,
+                                activeTrackColor = Color.Transparent,
+                                inactiveTrackColor = Color.Transparent
+                            ),
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                    }
+
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 4.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        // Reference, not content: small and quiet, so
+                        // the eye reads the bar and finds the numbers
+                        // only when it goes looking for them.
+                        Text(
+                            text = formatDuration(displayedProgress),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = onSurfaceVariantColor.copy(alpha = 0.7f)
+                        )
+                        Text(
+                            text = formatDuration(duration),
+                            style = MaterialTheme.typography.labelSmall,
+                            color = onSurfaceVariantColor.copy(alpha = 0.7f)
+                        )
+                    }
+                }
+            }
+            val transport: @Composable () -> Unit = {
+                CoverflowTransportRow(
+                    isPlaying = isPlaying,
+                    isBuffering = isBuffering,
+                    onPlayPauseToggle = onPlayPauseToggle,
+                    onNext = onNext,
+                    onPrevious = onPrevious,
+                    primaryColor = primaryColor,
+                    onSurfaceVariantColor = onSurfaceVariantColor
+                )
+            }
+
+            if (sideBySide) {
+                // Wide and short (a tablet or unfolded foldable in landscape): the
+                // artwork takes the left half at the height it has, and the song,
+                // bar and transport sit on the right. The right half scrolls when
+                // the font scale makes it taller than the window.
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .windowInsetsPadding(WindowInsets.displayCutout.only(WindowInsetsSides.Horizontal))
+                        .statusBarsPadding()
+                        .padding(top = 16.dp)
+                ) {
+                    topBar()
+                    Row(
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .navigationBarsPadding()
+                            .padding(bottom = 16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight()
+                                .padding(horizontal = 24.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            artwork()
+                        }
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .verticalScroll(rememberScrollState()),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                infoAndProgress()
+                                PlayerVisualizerSlot(modifier = Modifier.fillMaxWidth())
+                                Spacer(modifier = Modifier.height(16.dp))
+                                transport()
+                            }
+                        }
+                    }
+                }
+            } else {
+            Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .padding(top = 16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceBetween
+        ) {
+            topBar()
+            
+            // "Playing From / album" header removed to keep the player minimal.
+
+            // ========== CENTER CONTENT (vertically centered) ==========
+            // Centred in the space it is given, not pinned to the top of it.
+            // Artwork, title and bar are one block, and with the overflow row
+            // gone the slack all fell between that block and the transport -
+            // a hole in the middle of the screen. Centred, the slack splits
+            // above and below and reads as breathing room.
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                // Push album down slightly
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                artwork()
                 
                 // Centered song info and progress area
                 Box(
@@ -434,114 +620,7 @@ private fun GestureNowPlayingView(
                         modifier = Modifier.fillMaxWidth(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        // ========== 4. SONG INFO ==========
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .swipeToSkip(swipeToSkip)
-                                .swipeToSkipFollow(swipeToSkip)
-                                .padding(horizontal = 24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally
-                        ) {
-                            Text(
-                                text = currentSong?.title?.takeIf { !isUnknownTitle(it) } ?: stringResource(R.string.untitled),
-                                // The artwork is this player's subject; a bold
-                                // headline over it made two things shout at
-                                // once and neither won.
-                                style = MaterialTheme.typography.headlineSmall.copy(
-                                    fontWeight = FontWeight.SemiBold
-                                ),
-                                maxLines = 1,
-                                overflow = TextOverflow.Ellipsis,
-                                color = onSurfaceColor,
-                                textAlign = TextAlign.Center
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            val artistName = currentSong?.artist?.takeIf { !isUnknownArtist(it) } ?: stringResource(R.string.unknown_artist)
-                            Text(
-                                text = artistName,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = onSurfaceVariantColor,
-                                modifier = Modifier
-                                    .clickable(enabled = artistName != stringResource(R.string.unknown_artist)) { onArtistClick(artistName) },
-                                textAlign = TextAlign.Center
-                            )
-                        }
-                        
-                        Spacer(modifier = Modifier.height(20.dp))
-                        // ========== 5. WAVY PROGRESS BAR (Expressive Style) ==========
-                        
-                        Column(
-                            modifier = Modifier
-                                .width(progressBarWidth)
-                        ) {
-                            // Track the finger locally while scrubbing; seek once on
-                            // release instead of on every drag frame (rebuffer storms).
-                            var scrubPosition by remember { mutableStateOf<Float?>(null) }
-                            val displayedProgress = scrubPosition?.toLong() ?: progress
-                            // Advanced from the clock each frame rather than
-                            // sprung toward a once-a-second sample - see
-                            // rememberSmoothProgress.
-                            val smoothProgress = rememberSmoothProgress(
-                                positionMs = progress,
-                                durationMs = duration,
-                                isPlaying = isPlaying,
-                                scrubPositionMs = scrubPosition
-                            )
-
-                            val thickStroke = Stroke(width = with(LocalDensity.current) { 6.dp.toPx() }, cap = StrokeCap.Round)
-
-                            // Wavy progress with invisible slider overlay for touch
-                            Box(contentAlignment = Alignment.Center) {
-                                ExpressiveScrubber(
-                                    progress = { smoothProgress.value },
-                                    modifier = Modifier.fillMaxWidth().height(scrubberTrackHeight(14.dp)),
-                                    stroke = thickStroke,
-                                    trackStroke = thickStroke,
-                                    color = primaryColor,
-                                    trackColor = onSurfaceVariantColor.copy(alpha = 0.15f)
-                                )
-
-                                // Invisible slider for touch interaction
-                                Slider(
-                                    interactionSource = LocalPlayerScrubInteraction.current,
-                                    value = scrubPosition ?: progress.toFloat(),
-                                    onValueChange = { scrubPosition = it },
-                                    onValueChangeFinished = {
-                                        scrubPosition?.let { onSeekTo(it.toLong()) }
-                                        scrubPosition = null
-                                    },
-                                    valueRange = 0f..(duration.toFloat().coerceAtLeast(1f)),
-                                    colors = SliderDefaults.colors(
-                                        thumbColor = Color.Transparent,
-                                        activeTrackColor = Color.Transparent,
-                                        inactiveTrackColor = Color.Transparent
-                                    ),
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(horizontal = 4.dp),
-                                horizontalArrangement = Arrangement.SpaceBetween
-                            ) {
-                                // Reference, not content: small and quiet, so
-                                // the eye reads the bar and finds the numbers
-                                // only when it goes looking for them.
-                                Text(
-                                    text = formatDuration(displayedProgress),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = onSurfaceVariantColor.copy(alpha = 0.7f)
-                                )
-                                Text(
-                                    text = formatDuration(duration),
-                                    style = MaterialTheme.typography.labelSmall,
-                                    color = onSurfaceVariantColor.copy(alpha = 0.7f)
-                                )
-                            }
-                        }
+                        infoAndProgress()
                     }
                 }
             }
@@ -552,15 +631,7 @@ private fun GestureNowPlayingView(
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                CoverflowTransportRow(
-                    isPlaying = isPlaying,
-                    isBuffering = isBuffering,
-                    onPlayPauseToggle = onPlayPauseToggle,
-                    onNext = onNext,
-                    onPrevious = onPrevious,
-                    primaryColor = primaryColor,
-                    onSurfaceVariantColor = onSurfaceVariantColor
-                )
+                transport()
                 // Lifts the transport toward the bar it belongs to. The
                 // column spreads its slack between the two, so the way to
                 // close the gap above the controls is to leave more below
@@ -568,6 +639,7 @@ private fun GestureNowPlayingView(
                 Spacer(modifier = Modifier.height(96.dp))
             }
         }
+            }
         }
     }
 }
