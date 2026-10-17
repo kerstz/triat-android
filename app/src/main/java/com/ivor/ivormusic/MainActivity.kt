@@ -96,6 +96,9 @@ private val NON_EXPRESSIVE_NAV_BAR_RESERVE = 80.dp
 private val MUSIC_PILL_RESERVE = 88.dp
 
 
+/** Smallest width, in dp, from which the app follows the device orientation. */
+private const val LARGE_SCREEN_MIN_DP = 600
+
 class MainActivity : ComponentActivity() {
 
     // A YouTube link shared or opened into Koda, picked up by SharedLinkHandler
@@ -124,18 +127,13 @@ class MainActivity : ComponentActivity() {
         // Remove splash instantly when ready — the AVD entrance animation is the show
         splashScreen.setOnExitAnimationListener { it.remove() }
 
-        // The app is portrait-only, like YouTube: rotating the device must not
-        // rotate the app UI. The only exception is fullscreen video playback,
-        // which temporarily requests landscape from VideoPlayerContent and
-        // restores portrait when it exits.
-        requestedOrientation = android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        applyOrientationPolicy()
 
         enableEdgeToEdge()
-        // Treat camera cutouts as usable edge-to-edge space everywhere. The
-        // old video-only toggle restored DEFAULT on exit, which could
-        // letterbox the rest of the app for the remainder of the session.
-        // Controls still handle status/navigation bars independently; only
-        // the notch-specific exclusion is deliberately ignored.
+        // Treat camera cutouts as usable edge-to-edge space everywhere, so the
+        // app never letterboxes around a notch. Controls still handle
+        // status/navigation bars independently; only the notch-specific
+        // exclusion is deliberately ignored.
         window.attributes = window.attributes.also {
             it.layoutInDisplayCutoutMode =
                 WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_ALWAYS
@@ -335,6 +333,29 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    /**
+     * Phones stay in portrait, like YouTube: rotating the device must not
+     * rotate the app UI. From 600dp of smallest width (tablets, unfolded
+     * foldables) the activity follows the device. Android 16 with targetSdk 36
+     * ignores a requested orientation on those displays anyway, so the manifest
+     * no longer pins one. The activity handles orientation, screenSize and
+     * smallestScreenSize itself, so a fold or unfold arrives here rather than
+     * recreating it and the policy is re-evaluated.
+     */
+    private fun applyOrientationPolicy() {
+        val wanted = if (resources.configuration.smallestScreenWidthDp < LARGE_SCREEN_MIN_DP) {
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        } else {
+            android.content.pm.ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        }
+        if (requestedOrientation != wanted) requestedOrientation = wanted
+    }
+
+    override fun onConfigurationChanged(newConfig: android.content.res.Configuration) {
+        super.onConfigurationChanged(newConfig)
+        applyOrientationPolicy()
     }
 
     /**
