@@ -101,6 +101,7 @@ import androidx.compose.material.icons.rounded.SignalCellularAlt
 import androidx.compose.material.icons.rounded.SwipeRight
 import androidx.compose.material.icons.rounded.Wallpaper
 import androidx.compose.material.icons.rounded.Wifi
+import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.ThumbDown
 import androidx.compose.material.icons.rounded.ThumbUp
 import androidx.compose.material.icons.rounded.ToggleOn
@@ -524,6 +525,7 @@ fun SettingsScreen(
 
     // Dialog state for About
     var showAboutDialog by remember { mutableStateOf(false) }
+    var showFontsDialog by remember { mutableStateOf(false) }
 
     // The one dialog behind every hold-to-explain gesture. Rows hand their
     // request up through LocalSettingsInfoSink because a dialog owned by a
@@ -558,6 +560,7 @@ fun SettingsScreen(
         onOpenPage = { page = it },
         onOpenQualityPicker = { qualityDialogTarget = it },
         onShowAbout = { showAboutDialog = true },
+        onShowFonts = { showFontsDialog = true },
         onOpenFolderExclusion = openFolderExclusion,
         onNavigateToColorPalette = onNavigateToColorPalette,
         onNavigateToNotInterested = onNavigateToNotInterested,
@@ -919,8 +922,13 @@ fun SettingsScreen(
     if (showAboutDialog) {
         ExpressiveAboutDialog(
             onDismiss = { showAboutDialog = false },
-            onNavigateToUpdate = onNavigateToUpdate
+            onNavigateToUpdate = onNavigateToUpdate,
+            onShowFonts = { showFontsDialog = true }
         )
+    }
+
+    if (showFontsDialog) {
+        FontLicensesDialog(onDismiss = { showFontsDialog = false })
     }
 
     if (showTxtImportSheet) {
@@ -1684,6 +1692,60 @@ private fun StreamQualityDialog(
     }
 }
 
+/** Licence notice for the bundled fonts: copyright, upstream and the full OFL text. */
+@Composable
+private fun FontLicensesDialog(onDismiss: () -> Unit) {
+    val context = LocalContext.current
+    val notices = remember {
+        listOf(
+            Triple("Doto", "Copyright 2024 The Doto Project Authors", "https://github.com/oliverlalan/Doto") to R.raw.ofl_doto,
+            Triple("Geist", "Copyright 2024 The Geist Project Authors", "https://github.com/vercel/geist-font") to R.raw.ofl_geist
+        ).map { (info, res) ->
+            val text = runCatching {
+                context.resources.openRawResource(res).bufferedReader().use { it.readText() }
+            }.getOrDefault("")
+            info to text
+        }
+    }
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        shape = RoundedCornerShape(28.dp),
+        title = { Text(text = stringResource(R.string.about_fonts)) },
+        text = {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+            ) {
+                notices.forEach { (info, licence) ->
+                    Text(text = info.first, style = MaterialTheme.typography.titleMedium)
+                    Text(text = info.second, style = MaterialTheme.typography.bodyMedium)
+                    Text(
+                        text = info.third,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                    Text(
+                        text = licence,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.padding(top = 8.dp, bottom = 20.dp)
+                    )
+                }
+            }
+        },
+        confirmButton = {
+            OutlinedButton(
+                onClick = onDismiss,
+                shape = RoundedCornerShape(16.dp),
+                modifier = Modifier.height(48.dp)
+            ) {
+                Text(text = stringResource(R.string.action_close), fontWeight = FontWeight.SemiBold)
+            }
+        }
+    )
+}
+
 /** The project Triat is forked from; credited on the About page. */
 private const val KODA_REPO_URL = "https://github.com/Ivorisnoob/Koda"
 
@@ -1691,7 +1753,8 @@ private const val KODA_REPO_URL = "https://github.com/Ivorisnoob/Koda"
 @Composable
 private fun ExpressiveAboutDialog(
     onDismiss: () -> Unit,
-    onNavigateToUpdate: () -> Unit
+    onNavigateToUpdate: () -> Unit,
+    onShowFonts: () -> Unit
 ) {
     val context = LocalContext.current
     val githubUrl = "https://github.com/${BuildConfig.GITHUB_REPO}"
@@ -1955,6 +2018,14 @@ private fun ExpressiveAboutDialog(
                                     title = stringResource(R.string.about_license),
                                     subtitle = stringResource(R.string.about_license_subtitle),
                                     onClick = { context.openAboutLink("$githubUrl/blob/main/LICENSE") },
+                                    showChevron = true,
+                                )
+                                SettingsDivider()
+                                SettingsRow(
+                                    icon = Icons.Rounded.TextFields,
+                                    title = stringResource(R.string.about_fonts),
+                                    subtitle = stringResource(R.string.about_fonts_subtitle),
+                                    onClick = onShowFonts,
                                     showChevron = true,
                                 )
                                 SettingsDivider()

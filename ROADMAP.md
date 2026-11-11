@@ -92,7 +92,7 @@ Open items left by the October 2026 review (`docs/review/REVIEW-ANDROID.md` in t
 - **`allowBackup="true"` (SEC-3)** sends history, searches and the blocklist to Google Drive on top of the app's own backup. Left for the maintainer to decide.
 - **Only the Gesture player adapts to landscape on large screens**; the other eight styles draw their portrait column, and Home/Library have no NavigationRail or list-detail yet (P1-6 remainder).
 - **Hardcoded colors and font sizes remain (UX-2, UX-3)**: SearchScreen, HomeScreen overlays, settings components; and `items()` without keys in several lists (PERF-3).
-- **Most springs are still bouncy**: `TriatMotion` defines the calm specs but the existing call sites were not migrated; Doto/Geist are not embedded and fonts still come from the Google Fonts provider (roadmap A1/A2/A11).
+- **Most springs are still bouncy**: `TriatMotion` defines the calm specs but the existing call sites were not migrated. Doto and Geist are now bundled (`res/font`, OFL 1.1) and the Google Fonts provider is gone (roadmap A1/A2/A11 done).
 - **The Triat palette in light mode** falls back to the tinted "nothing" HCT scheme, and the `signal` red is 3.8:1 on black, so it must not carry small text.
 - **Display titles rebuilt from stored data** (history, last-played, downloads index) skip the title cleaner, so songs saved before it keep their old "(Official Video)" titles.
 

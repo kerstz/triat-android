@@ -32,6 +32,7 @@ import androidx.compose.material.icons.rounded.AccountCircle
 import androidx.compose.material.icons.rounded.Bedtime
 import androidx.compose.material.icons.rounded.BrightnessMedium
 import androidx.compose.material.icons.rounded.BugReport
+import androidx.compose.material.icons.rounded.TextFields
 import androidx.compose.material.icons.rounded.NotificationsActive
 import androidx.compose.material.icons.rounded.Bolt
 import androidx.compose.material.icons.rounded.BookmarkAdd
@@ -168,6 +169,7 @@ internal fun buildSettingsSearchIndex(
     onOpenPage: (SettingsPage) -> Unit,
     onOpenQualityPicker: (QualityDialogTarget) -> Unit,
     onShowAbout: () -> Unit,
+    onShowFonts: () -> Unit,
     onOpenFolderExclusion: () -> Unit,
     onNavigateToColorPalette: () -> Unit,
     onNavigateToNotInterested: () -> Unit,
@@ -530,6 +532,10 @@ internal fun buildSettingsSearchIndex(
         "about", stringResource(R.string.settings_section_about), stringResource(R.string.settings_section_about), Icons.Rounded.Info,
         listOf("version", "update", "changelog", "github", "licence", "build")
     ) { onShowAbout() }
+    entry(
+        "fonts", stringResource(R.string.about_fonts), stringResource(R.string.settings_section_about), Icons.Rounded.TextFields,
+        listOf("fonts", "font", "police", "polices", "licence", "license", "OFL", "Doto", "Geist", "typography")
+    ) { onShowFonts() }
 }
 
 /* ------------------------------------------------------------------ */

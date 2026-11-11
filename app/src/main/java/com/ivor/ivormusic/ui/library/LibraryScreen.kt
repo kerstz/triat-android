@@ -111,7 +111,7 @@ import com.ivor.ivormusic.ui.components.ExpressivePullToRefresh
 import com.ivor.ivormusic.ui.components.VideoThumbnail
 import com.ivor.ivormusic.ui.downloads.MusicPlaylistDownloadAction
 import com.ivor.ivormusic.ui.player.rememberArtworkColorScheme
-import com.ivor.ivormusic.ui.theme.MontserratFamily
+import com.ivor.ivormusic.ui.theme.GeistFamily
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.mutableFloatStateOf
 import com.ivor.ivormusic.ui.home.HomeViewModel
@@ -3751,7 +3751,7 @@ fun PlaylistDetailScreen(
                         Text(
                             text = resolvedPlaylist.name,
                             style = MaterialTheme.typography.displaySmall.copy(
-                                fontFamily = MontserratFamily,
+                                fontFamily = GeistFamily,
                                 fontWeight = FontWeight.Bold,
                                 letterSpacing = (-0.02).em,
                                 lineHeight = 1.08.em

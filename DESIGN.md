@@ -192,10 +192,10 @@ AMOLED mode does not simply set the background to black. It compresses the whole
 
 ## Typography
 
-Two families, each doing a specific job:
+Two families, each doing a specific job, both bundled in `res/font` under the SIL Open Font License 1.1 (no Google Fonts provider, no network fetch; the licence texts are shown from Settings > About > Fonts):
 
-- **Roboto Flex:** the variable-axis workhorse. Body and label styles run at width 100, while `headlineSmall` uses a width-110 / weight-600 variant so section headers hold a tighter column without switching family.
-- **Montserrat:** loaded through the Google Fonts provider across seven weights, and applied to `displayLarge`: 68sp SemiBold, stretched to `scaleX = 1.5f` with `-0.05em` tracking and an `0.8em` line height. That single style is what gives the app's big headers their poster-like presence.
+- **Geist:** the text face of the whole app, all fifteen Material roles, in four weights (400 to 700) through the variable `wght` axis (`GeistFamily`).
+- **Doto:** the dot-matrix display face, only for the big numbers and the big screen titles exposed by `TriatType` (`displayXl`, `displayL`, `displayM`, `numeric` with tabular figures). Never for song titles or running text.
 
 ---
 

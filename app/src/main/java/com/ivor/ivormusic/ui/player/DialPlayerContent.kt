@@ -59,7 +59,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -72,6 +71,7 @@ import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
 import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.ui.components.LikeBurstIcon
+import com.ivor.ivormusic.ui.theme.TriatType
 import kotlin.math.abs
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -227,7 +227,8 @@ fun DialPlayerSheetContent(
                     Text(
                         text = "${formatEditorialTime(progress)}  /  ${formatEditorialTime(duration)}",
                         style = MaterialTheme.typography.titleMedium.copy(
-                            fontFamily = FontFamily.Monospace,
+                            fontFamily = TriatType.numeric.fontFamily,
+                            fontFeatureSettings = TriatType.numeric.fontFeatureSettings,
                             letterSpacing = 2.sp
                         ),
                         color = ink,

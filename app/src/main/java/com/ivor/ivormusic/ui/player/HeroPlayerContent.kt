@@ -84,7 +84,7 @@ import com.ivor.ivormusic.data.PlaylistDisplayItem
 import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
 import com.ivor.ivormusic.ui.components.LikeBurstIcon
-import com.ivor.ivormusic.ui.theme.MontserratFamily
+import com.ivor.ivormusic.ui.theme.GeistFamily
 import kotlin.math.roundToInt
 
 /** Share of the deck's width the play disc takes; the pills get the rest. */
@@ -274,8 +274,8 @@ fun HeroPlayerSheetContent(
                                         Text(
                                             text = shown,
                                             style = MaterialTheme.typography.displaySmall.copy(
-                                                fontFamily = MontserratFamily,
-                                                fontWeight = FontWeight.ExtraBold,
+                                                fontFamily = GeistFamily,
+                                                fontWeight = FontWeight.Bold,
                                                 letterSpacing = (-0.02).em,
                                                 lineHeight = 1.0.em
                                             ),

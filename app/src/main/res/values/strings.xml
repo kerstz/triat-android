@@ -269,6 +269,8 @@
     <string name="about_based_on_subtitle">The open-source player Triat grew from · Open on GitHub</string>
     <string name="about_license">License</string>
     <string name="about_license_subtitle">GNU General Public License v3.0</string>
+    <string name="about_fonts">Fonts</string>
+    <string name="about_fonts_subtitle">Doto and Geist, SIL Open Font License 1.1</string>
     <string name="about_report_issue_subtitle">Open a new issue on GitHub</string>
     <string name="about_open_source_note">Triat is based on Koda by Ivorisnoob and stays open source under GPL-3.0. The app mark and build details above are bundled with the app, so this page is complete before anything is fetched.</string>
     <string name="cd_profile_picture">Profile Picture</string>

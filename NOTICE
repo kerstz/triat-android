@@ -1,0 +1,15 @@
+Triat for Android includes third-party fonts:
+
+Doto
+  Copyright 2024 The Doto Project Authors (https://github.com/oliverlalan/Doto)
+  Licence: SIL Open Font License 1.1
+  Upstream: https://github.com/oliverlalan/Doto
+  File in the app: app/src/main/res/font/doto.ttf
+  Full licence text: app/src/main/res/raw/ofl_doto.txt
+
+Geist
+  Copyright 2024 The Geist Project Authors (https://github.com/vercel/geist-font.git)
+  Licence: SIL Open Font License 1.1
+  Upstream: https://github.com/vercel/geist-font
+  File in the app: app/src/main/res/font/geist.ttf
+  Full licence text: app/src/main/res/raw/ofl_geist.txt

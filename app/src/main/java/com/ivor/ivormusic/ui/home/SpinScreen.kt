@@ -115,7 +115,7 @@ import com.ivor.ivormusic.data.googleImageAtSize
 import com.ivor.ivormusic.data.isUnknownArtist
 import com.ivor.ivormusic.data.isUnknownTitle
 import com.ivor.ivormusic.ui.library.songRowClick
-import com.ivor.ivormusic.ui.theme.MontserratFamily
+import com.ivor.ivormusic.ui.theme.GeistFamily
 import com.ivor.ivormusic.util.rememberKodaHaptics
 import kotlin.math.abs
 import kotlin.random.Random
@@ -405,7 +405,7 @@ private fun SpinScreen(
                 Text(
                     text = stringResource(R.string.spin_title),
                     style = MaterialTheme.typography.headlineLarge.copy(
-                        fontFamily = MontserratFamily,
+                        fontFamily = GeistFamily,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.02).em
                     ),

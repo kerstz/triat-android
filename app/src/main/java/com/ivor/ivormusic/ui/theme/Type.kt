@@ -6,92 +6,105 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontVariation
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.googlefonts.Font
-import androidx.compose.ui.text.googlefonts.GoogleFont
-import androidx.compose.ui.text.googlefonts.R as GoogleFontsR
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.ivor.ivormusic.R
 
-// Material 3 Expressive Typography using Roboto Flex Variable Font
-// Using FontVariation.width() for wider/condensed text styles
+// Fonts are bundled (res/font, SIL OFL 1.1): no network fetch, no Play services dependency.
 
-// Google Font Provider
-val provider = GoogleFont.Provider(
-    providerAuthority = "com.google.android.gms.fonts",
-    providerPackage = "com.google.android.gms",
-    certificates = GoogleFontsR.array.com_google_android_gms_fonts_certs
+private fun geist(weight: Int) = Font(
+    resId = R.font.geist,
+    weight = FontWeight(weight),
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight))
 )
 
-val RobotoFlexFont = GoogleFont("Roboto Flex")
-
-// Standard width (100f) - for body text and regular content
-val RobotoFlex = FontFamily(
-    Font(
-        googleFont = RobotoFlexFont,
-        fontProvider = provider,
-        weight = FontWeight.Normal,
-        variationSettings = FontVariation.Settings(
-            FontVariation.width(100f),
-            FontVariation.weight(400)
-        )
-    )
+private fun doto(weight: Int) = Font(
+    resId = R.font.doto,
+    weight = FontWeight(weight),
+    // ROND axis stays at its default (0, square dots).
+    variationSettings = FontVariation.Settings(FontVariation.weight(weight))
 )
 
-val MontserratFont = GoogleFont("Montserrat")
+/** Geist: the text face of the whole app (all 15 Material roles). */
+val GeistFamily = FontFamily(geist(400), geist(500), geist(600), geist(700))
 
-val MontserratFamily = FontFamily(
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.Black),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.ExtraBold),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.Bold),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.SemiBold),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.Medium),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.Normal),
-    Font(googleFont = MontserratFont, fontProvider = provider, weight = FontWeight.Light),
-)
+/**
+ * Doto: dot-matrix display face. Only for big numbers and big screen titles through [TriatType].
+ * Never for song titles or running text.
+ */
+val DotoFamily = FontFamily(doto(700), doto(800))
 
-// Medium width (110f) - for section headers
-val RobotoFlexMediumWidth = FontFamily(
-    Font(
-        googleFont = RobotoFlexFont,
-        fontProvider = provider,
-        weight = FontWeight.SemiBold,
-        variationSettings = FontVariation.Settings(
-            FontVariation.width(110f),
-            FontVariation.weight(600)
-        )
-    )
+private fun geistStyle(
+    weight: FontWeight,
+    size: Int,
+    line: Int,
+    spacingEm: Float = 0f
+) = TextStyle(
+    fontFamily = GeistFamily,
+    fontWeight = weight,
+    fontSize = size.sp,
+    lineHeight = line.sp,
+    letterSpacing = spacingEm.em,
+    platformStyle = PlatformTextStyle(includeFontPadding = false)
 )
 
 val Typography = Typography(
-    displayLarge = TextStyle(
-        fontFamily = RobotoFlex,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 36.sp,
-        lineHeight = 44.sp,
-        letterSpacing = (-0.02).em,
-        platformStyle = PlatformTextStyle(includeFontPadding = false)
-    ),
-    headlineSmall = TextStyle(
-        fontFamily = RobotoFlexMediumWidth,
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 24.sp,
-        lineHeight = 32.sp
-    ),
-    bodyLarge = TextStyle(
-        fontFamily = RobotoFlex,
-        fontWeight = FontWeight.Normal,
-        fontSize = 16.sp,
-        lineHeight = 24.sp,
-        letterSpacing = 0.5.sp
-    ),
-    labelMedium = TextStyle(
-        fontFamily = RobotoFlex,
-        fontWeight = FontWeight.Medium,
-        fontSize = 12.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    )
+    displayLarge = geistStyle(FontWeight.SemiBold, 44, 48, -0.02f),
+    displayMedium = geistStyle(FontWeight.SemiBold, 36, 40, -0.02f),
+    displaySmall = geistStyle(FontWeight.SemiBold, 28, 32, -0.01f),
+    headlineLarge = geistStyle(FontWeight.SemiBold, 28, 34),
+    headlineMedium = geistStyle(FontWeight.SemiBold, 24, 30),
+    headlineSmall = geistStyle(FontWeight.SemiBold, 22, 28),
+    titleLarge = geistStyle(FontWeight.SemiBold, 22, 28),
+    titleMedium = geistStyle(FontWeight.SemiBold, 18, 24),
+    titleSmall = geistStyle(FontWeight.SemiBold, 16, 22),
+    bodyLarge = geistStyle(FontWeight.Normal, 15, 22),
+    bodyMedium = geistStyle(FontWeight.Normal, 14, 20),
+    bodySmall = geistStyle(FontWeight.Normal, 12, 16),
+    labelLarge = geistStyle(FontWeight.Medium, 14, 20),
+    labelMedium = geistStyle(FontWeight.Medium, 12, 16),
+    labelSmall = geistStyle(FontWeight.Medium, 11, 16)
 )
+
+/**
+ * Display styles in Doto, for big numbers (durations, counters, timer) and big screen titles only.
+ * Song titles, artist names and running text stay on MaterialTheme.typography (Geist).
+ */
+object TriatType {
+    val displayXl = TextStyle(
+        fontFamily = DotoFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = TriatTokens.displayXlSp.sp,
+        lineHeight = TriatTokens.displayXlSp.sp,
+        letterSpacing = (-0.02f).em,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
+    )
+    val displayL = TextStyle(
+        fontFamily = DotoFamily,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = TriatTokens.displayLSp.sp,
+        lineHeight = 34.sp,
+        letterSpacing = (-0.01f).em,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
+    )
+    val displayM = TextStyle(
+        fontFamily = DotoFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = TriatTokens.displayMSp.sp,
+        lineHeight = 26.sp,
+        platformStyle = PlatformTextStyle(includeFontPadding = false)
+    )
+
+    /** Geist with tabular figures, for small times and counters that must not jitter. */
+    val numeric = TextStyle(
+        fontFamily = GeistFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        fontFeatureSettings = "tnum"
+    )
+    val numericSmall = numeric.copy(fontSize = TriatTokens.metaSp.sp)
+}

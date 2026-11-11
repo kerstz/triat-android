@@ -252,7 +252,6 @@ dependencies {
     // The background upload check over the local subscriptions feed.
     implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.androidx.graphics.shapes)
-    implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.androidx.palette)
 
     // YouTube Music Integration

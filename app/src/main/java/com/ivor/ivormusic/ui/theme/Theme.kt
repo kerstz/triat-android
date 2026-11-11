@@ -4,13 +4,11 @@ import android.app.Activity
 import android.os.Build
 import androidx.annotation.ChecksSdkIntAtLeast
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.ExperimentalMaterial3ExpressiveApi
 import androidx.compose.material3.MaterialExpressiveTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.MotionScheme
-import androidx.compose.material3.Shapes
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
@@ -28,7 +26,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import androidx.core.view.WindowCompat
 import com.ivor.ivormusic.data.UI_SCALE_DEFAULT
 
@@ -61,14 +58,6 @@ internal fun ColorScheme.toAmoled(): ColorScheme = copy(
     surfaceContainer = Color(0xFF101010),
     surfaceContainerHigh = Color(0xFF181818),
     surfaceContainerHighest = Color(0xFF202020)
-)
-
-private val ExpressiveShapes = Shapes(
-    extraSmall = RoundedCornerShape(4.dp),
-    small = RoundedCornerShape(8.dp),
-    medium = RoundedCornerShape(12.dp),
-    large = RoundedCornerShape(16.dp),
-    extraLarge = RoundedCornerShape(24.dp)
 )
 
 /**
@@ -158,7 +147,7 @@ fun IvorMusicTheme(
     MaterialExpressiveTheme(
         colorScheme = colorScheme,
         motionScheme = MotionScheme.expressive(),
-        shapes = ExpressiveShapes,
+        shapes = TriatShapes,
         typography = Typography,
     ) {
         // The app's own scheme, kept reachable from inside a local re-theme.

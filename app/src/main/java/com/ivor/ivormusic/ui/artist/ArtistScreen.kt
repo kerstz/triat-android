@@ -139,7 +139,7 @@ import com.ivor.ivormusic.ui.components.VideoThumbnail
 import com.ivor.ivormusic.ui.components.releaseCaption
 import com.ivor.ivormusic.ui.home.HomeViewModel
 import com.ivor.ivormusic.ui.library.songRowClick
-import com.ivor.ivormusic.ui.theme.MontserratFamily
+import com.ivor.ivormusic.ui.theme.GeistFamily
 import kotlinx.coroutines.launch
 
 /**
@@ -1034,7 +1034,7 @@ private fun ArtistHero(
                 Text(
                     text = name,
                     style = MaterialTheme.typography.displayMedium.copy(
-                        fontFamily = MontserratFamily,
+                        fontFamily = GeistFamily,
                         fontWeight = FontWeight.Bold,
                         letterSpacing = (-0.03).em,
                         lineHeight = 1.05.em
