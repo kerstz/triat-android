@@ -31,6 +31,11 @@ glance = "1.1.1"
 workManager = "2.10.0"
 benchmark = "1.5.0"
 uiautomator = "2.3.0"
+# Transitive floors, raised above published advisories (see the constraints
+# block in app/build.gradle.kts). jsoup comes through NewPipe Extractor,
+# Guava through media3-common and NewPipe.
+jsoup = "1.23.2"
+guava = "33.7.2-android"
 
 
 [libraries]
@@ -70,6 +75,8 @@ androidx-core-splashscreen = { group = "androidx.core", name = "core-splashscree
 # Used by ArtworkColorScheme and ChromaticMistBackground to pull colors out of artwork.
 androidx-palette = { group = "androidx.palette", name = "palette", version.ref = "palette" }
 newpipe-extractor = { group = "com.github.TeamNewPipe", name = "NewPipeExtractor", version.ref = "newpipeExtractor" }
+jsoup = { group = "org.jsoup", name = "jsoup", version.ref = "jsoup" }
+guava = { group = "com.google.guava", name = "guava", version.ref = "guava" }
 okhttp = { group = "com.squareup.okhttp3", name = "okhttp", version.ref = "okhttp" }
 androidx-security-crypto = { group = "androidx.security", name = "security-crypto", version.ref = "securityCrypto" }
 kotlinx-coroutines-guava = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-guava", version.ref = "coroutinesGuava" }

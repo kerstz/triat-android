@@ -260,6 +260,18 @@ dependencies {
         // adapter has no call sites in either the extractor or Koda.
         exclude(group = "org.mozilla", module = "rhino-engine")
     }
+    constraints {
+        // Transitive dependencies with published advisories, raised above
+        // what NewPipe Extractor v0.26.5 and media3 1.11.0 declare. A
+        // constraint only lifts the floor: once an upstream bump passes it,
+        // the entries below become no-ops and can be dropped.
+        implementation(libs.jsoup) {
+            because("GHSA-65r4-943x-97jj (CVE-2026-75140) and GHSA-pmhh-3w7g-xqp8 (CVE-2026-71497): jsoup < 1.23.2")
+        }
+        implementation(libs.guava) {
+            because("GHSA-xxph-c9ww-hj94 (CVE-2026-102554): Guava < 33.7.2, uncontrolled allocation on deserialization")
+        }
+    }
     implementation(libs.okhttp)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.security.crypto)
