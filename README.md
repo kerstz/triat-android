@@ -1,50 +1,79 @@
-# Triat for Android
-
-A music player for YouTube. No account required, no API key.
-
-Search for a song, see its cover, play it.
-
 <p align="center">
-  <img src="docs/screenshots/search-symbiose-dona.png" width="260" alt="Search results for symbiose dona, each with its cover">
-  <img src="docs/screenshots/search-vialice-two-drugs.png" width="260" alt="Search results for vialice two drugs, each with its cover">
-  <img src="docs/screenshots/player.png" width="260" alt="The player">
+  <img src="icon.svg" width="96" alt="Triat for Android logo">
 </p>
 
-Every search result comes with its artwork, so you can tell the original from
-the slowed edit or the one-hour loop before you tap.
+<h1 align="center">Triat for Android</h1>
 
-## Features
+<p align="center">
+  English | <a href="docs/README.fr.md">Français</a>
+</p>
 
-- Search songs, artists, albums and playlists, on YouTube Music or SoundCloud
+<p align="center">
+  A music player for YouTube. No account required, no API key, no analytics.
+</p>
+
+<p align="center">
+  <a href="LICENSE"><img alt="License: GPL-3.0" src="https://img.shields.io/badge/license-GPL--3.0-222222?style=flat"></a>
+  <img alt="Android 11 and newer" src="https://img.shields.io/badge/Android-11%2B-444444?style=flat">
+  <a href="https://github.com/kerstz/triat"><img alt="Desktop app for Linux" src="https://img.shields.io/badge/desktop-Linux-444444?style=flat"></a>
+  <a href="https://kerstz.github.io/triat/"><img alt="Website" src="https://img.shields.io/badge/site-kerstz.github.io%2Ftriat-222222?style=flat"></a>
+</p>
+
+<p align="center">
+  <img src="docs/screenshots/home.png" width="260" alt="Mockup of the home screen: a resume block, then rows of music">
+  <img src="docs/screenshots/player.png" width="260" alt="Mockup of the player: large artwork, progress bar and controls">
+  <img src="docs/screenshots/search.png" width="260" alt="Mockup of search results, each with its artwork">
+</p>
+
+Mockups, not screenshots: these images follow the design direction and use fictional content.
+
+Triat for Android has a [site](https://kerstz.github.io/triat/), and a desktop sibling, [Triat for Linux](https://github.com/kerstz/triat).
+
+## What it does
+
+- Search songs, artists, albums and playlists on YouTube Music
+- Optional second source: SoundCloud. It can be turned off in Settings, see the legal notice
 - Background playback with a queue, shuffle and repeat
-- SponsorBlock: skips intros, talking and sponsor reads
-- Discovery through the artists you already listen to, with the source of each
-  suggestion shown
-- Playlists, likes, listening history and downloads for offline listening
-  (see the legal notice below)
-- Import a plain text list of songs into a playlist
+- SponsorBlock: skips intros, talking and sponsor reads (turn it on in Settings)
+- Discovery through the artists you already listen to, with the source of each suggestion shown
+- Playlists, likes, listening history and downloads for offline listening (see the legal notice)
+- Import a plain text list of songs or YouTube links into a playlist
 - Wi-Fi sync with [Triat on desktop](https://github.com/kerstz/triat), no cloud
-- Dark, quiet interface, in French and English
+- Optional Last.fm scrobbling
+- Available in French, English and many other languages
+
+## Privacy
+
+No account is needed, and the app has no analytics, no telemetry and no remote crash reporting. A crash is saved on the phone, and you decide whether to send it.
+
+The hosts the app contacts, depending on what you use:
+
+| Host | Why |
+|---|---|
+| `youtube.com`, `music.youtube.com`, `youtubei.googleapis.com`, `i.ytimg.com` | Search, playback, artwork |
+| `sponsor.ajay.app` | SponsorBlock segments, if turned on |
+| `soundcloud.com` | The optional second source |
+| `api.github.com` | Looking for a newer release |
+| `noembed.com` | Finding a title when YouTube does not give one |
+| `music.apple.com`, `amp-api-edge.music.apple.com` | Animated artwork, off by default |
+| `ws.audioscrobbler.com`, `last.fm` | Last.fm, only if you connect it |
+| Your computer, on your local network | Sync, only if you pair it |
 
 ## Install
 
-Download the APK from the [Releases](https://github.com/kerstz/triat-android/releases)
-page and open it on your phone. On a recent phone, take the `arm64-v8a` one.
-Android 11 or newer is required.
+Download the APK from the [Releases](https://github.com/kerstz/triat-android/releases) page and open it on your phone. On a recent phone, take the `arm64-v8a` one. Android 11 or newer is required.
+
+SHA-256 checksums: coming with the next release. Until then, only install an APK from that page.
 
 ## Sync with the desktop app
 
-Playlists, likes and history stay the same on the phone and on the computer.
-Pair once, with the short code or by scanning the QR code shown in the desktop
-app (Settings, Synchronisation, Pair a phone). After that the phone syncs by
-itself whenever it is on the same Wi-Fi. Everything is encrypted, and your
-YouTube session is only shared if you allow it on both sides.
+Playlists, likes and history stay the same on the phone and on the computer. Pair once, with the short code or by scanning the QR code shown in the desktop app (Settings, Synchronisation, Pair a phone). After that the phone syncs by itself whenever it is on the same Wi-Fi. Everything is encrypted, and your YouTube session is only shared if you allow it on both sides.
+
+The protocol is described in [docs/sync.md](docs/sync.md).
 
 ## Based on Koda
 
-Triat is a fork of [Koda](https://github.com/Ivorisnoob/Koda) by Ivorisnoob.
-The player, most of the interface and the YouTube code come from there. Thank
-you to Ivorisnoob and to everyone who worked on it.
+Triat is a fork of [Koda](https://github.com/Ivorisnoob/Koda) by Ivorisnoob. The player, most of the interface and the YouTube code come from there. Thank you to Ivorisnoob and to everyone who worked on it.
 
 What changes here:
 
@@ -56,14 +85,11 @@ What changes here:
 - Wi-Fi sync with the desktop app, with QR pairing
 - Less on screen: fewer buttons, fewer shelves, fewer settings
 
-The Kotlin package is still called `com.ivor.ivormusic`, on purpose, so Koda's
-changes stay easy to follow.
+The Kotlin package is still called `com.ivor.ivormusic`, on purpose, so Koda's changes stay easy to follow.
 
-## Heads up
+## Built with AI assistance
 
-Most of this code was written with an AI, and I did not read every line. I use
-the app daily on my own phone and fix what breaks. Expect rough edges, and
-expect things to break when YouTube changes something. Bug reports are welcome.
+Most of this code was written with an AI (Claude), and I did not read every line. I am not a developer. I use the app daily on my own phone and fix what breaks. Expect rough edges, and expect things to break when YouTube changes something. Bug reports are welcome.
 
 ## Build it
 
@@ -75,40 +101,32 @@ cd triat-android
 ./gradlew assembleDebug
 ```
 
-The APK is written to `app/build/outputs/apk/debug/`. For a signed release
-build, see [docs/build-apk.md](docs/build-apk.md). The `docs/` folder and
-[CLAUDE.md](CLAUDE.md) explain how the code is organised.
+The APK is written to `app/build/outputs/apk/debug/`. For a signed release build, see [docs/build-apk.md](docs/build-apk.md). The `docs/` folder and [CLAUDE.md](CLAUDE.md) explain how the code is organised.
 
 ## Legal notice
 
-Triat for Android is an independent hobby project. It is **not affiliated
-with, endorsed by or sponsored by Google LLC, YouTube, YouTube Music or
-SoundCloud**. YouTube is a trademark of Google LLC, SoundCloud of SoundCloud
-Global Limited & Co. KG.
+Triat for Android is an independent hobby project. It is **not affiliated with, endorsed by or sponsored by Google LLC, YouTube, YouTube Music or SoundCloud**. YouTube is a trademark of Google LLC, SoundCloud of SoundCloud Global Limited & Co. KG.
 
-The app does not host or distribute any music. It plays what you choose to
-open from public services, and you are responsible for using it in line with
-those services' terms and with copyright law where you live. YouTube's Terms
-of Service do not allow downloading content unless YouTube offers a download
-option for it: only use the download feature for content you have the right
-to keep. This notice is not legal advice.
+The app does not host or distribute any music. It plays what you choose to open from public services. You are responsible for using it in line with those services' terms and with copyright law where you live. SoundCloud is an optional second source that can be turned off in Settings. Its terms may not allow this kind of use, so check them before you keep it on.
 
-The screenshots show artwork and titles owned by their respective rights
-holders, for illustration only.
+YouTube's Terms of Service do not allow downloading content unless YouTube offers a download option for it. Only use the download feature for content you have the right to keep.
+
+This notice is not legal advice.
+
+## Contributing, security and conduct
+
+- [CONTRIBUTING.md](CONTRIBUTING.md): external pull requests are paused for now, bug reports and ideas are welcome
+- [SECURITY.md](SECURITY.md): report vulnerabilities privately
+- [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md)
 
 ## Credits
 
 - [Koda](https://github.com/Ivorisnoob/Koda) by Ivorisnoob (GPL-3.0), see above.
-- [SponsorBlock](https://sponsor.ajay.app): segment data is fetched at run
-  time from the SponsorBlock API and is licensed under
-  [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/).
-  The app does not redistribute it.
-- [Last.fm](https://www.last.fm) (optional scrobbling).
+- [SponsorBlock](https://sponsor.ajay.app): segment data is fetched at run time from the SponsorBlock API and is licensed under [CC BY-NC-SA 4.0](https://creativecommons.org/licenses/by-nc-sa/4.0/). The app does not redistribute it.
+- [Last.fm](https://www.last.fm): optional scrobbling.
 
 ## License
 
-Free software under the [GNU General Public License v3.0](LICENSE), the same
-as Koda. If you share a modified version, it must stay under the same license
-and its source must be available.
+Free software under the [GNU General Public License v3.0](LICENSE), the same as Koda. If you share a modified version, it must stay under the same license and its source must be available.
 
 Koda is Copyright 2026 Ivorisnoob. Triat additions are by kerstz.
