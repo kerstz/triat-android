@@ -1116,7 +1116,7 @@
     <string name="si_cache_music">Garde sur le disque les titres diffusés récemment pour que les relectures démarrent instantanément et ne consomment pas de données. Les entrées les plus anciennes sont évincées quand la limite ci-dessous est atteinte.</string>
     <string name="si_preload">Récupère le début des prochains titres avant que tu n\'y arrives, pour que les sauts démarrent instantanément. Consomme un peu de données sur les réseaux limités.</string>
     <string name="si_load_local_songs">Analyse cet appareil à la recherche de fichiers musicaux et les affiche dans ta bibliothèque à côté de YouTube Music. Nécessite l\'autorisation d\'accès aux fichiers audio.</string>
-    <string name="si_compat_scan">Lit les fichiers musicaux directement depuis le stockage au lieu de l\'index multimédia d\'Android. Corrige les titres manquants sur HyperOS et MIUI, mais nécessite l\'autorisation d\'accès à tous les fichiers.</string>
+    <string name="si_compat_scan">Lit les fichiers musicaux directement depuis le stockage au lieu de l\'index multimédia d\'Android. Corrige les titres manquants sur HyperOS et MIUI. Seuls les dossiers déjà couverts par l\'autorisation musique sont lus.</string>
     <string name="si_battery">Les économiseurs de batterie agressifs coupent la lecture en arrière-plan. Ceci demande à Android de laisser Triat tourner pendant la lecture de la musique.</string>
     <string name="si_live_download">Affiche la progression des téléchargements sous forme de pastille de mise à jour en direct dans la barre d\'état pendant un transfert.</string>
     <string name="si_live_playback">Affiche le titre en cours de lecture sous forme de pastille de mise à jour en direct dans la barre d\'état.</string>

@@ -1139,7 +1139,7 @@
     <string name="si_cache_music">Keeps recently streamed songs on disk so replays start instantly and cost no data. The oldest entries are evicted when the limit below is reached.</string>
     <string name="si_preload">Fetches the beginning of upcoming songs before you reach them, so skips start instantly. Costs some data on metered networks.</string>
     <string name="si_load_local_songs">Scans this device for music files and shows them in your library next to YouTube Music. Needs the audio files permission.</string>
-    <string name="si_compat_scan">Reads music files directly from storage instead of Android\'s media index. Fixes songs missing on HyperOS and MIUI, but needs the all-files permission.</string>
+    <string name="si_compat_scan">Reads music files directly from storage instead of Android\'s media index. Fixes songs missing on HyperOS and MIUI. Only the folders the music permission already exposes are read.</string>
     <string name="si_battery">Aggressive battery savers kill background playback. This asks Android to leave Triat running while music plays.</string>
     <string name="si_live_download">Shows download progress as a Live Update chip in the status bar while a transfer runs.</string>
     <string name="si_live_playback">Shows the playing song as a Live Update chip in the status bar.</string>
