@@ -57,6 +57,7 @@ The hosts the app contacts, depending on what you use:
 | `noembed.com` | Finding a title when YouTube does not give one |
 | `music.apple.com`, `amp-api-edge.music.apple.com` | Animated artwork, off by default |
 | `ws.audioscrobbler.com`, `last.fm` | Last.fm, only if you connect it |
+| `accounts.google.com` | Sign in to YouTube Music, only when you choose to sign in (a web view, nothing is stored outside the app) |
 | Your computer, on your local network | Sync, only if you pair it |
 
 ## Install

@@ -57,6 +57,7 @@ Les hôtes que l'application contacte, selon ce que tu utilises :
 | `noembed.com` | Retrouver un titre quand YouTube n'en donne pas |
 | `music.apple.com`, `amp-api-edge.music.apple.com` | Pochettes animées, désactivées par défaut |
 | `ws.audioscrobbler.com`, `last.fm` | Last.fm, seulement si tu le connectes |
+| `accounts.google.com` | Connexion à YouTube Music, seulement si tu choisis de te connecter (une vue web, rien n'est stocké hors de l'app) |
 | Ton ordinateur, sur ton réseau local | Synchro, seulement si tu appaires |
 
 ## Installation
